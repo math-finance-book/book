@@ -1,22 +1,85 @@
-\chapter{Continuous-Time Models}\label{c_continuoustime}
+# Continuous-Time Models {#c_continuoustime}
 
-This chapter has three objectives.  The first is to introduce the concept of a Brownian motion.  A Brownian motion is a random process (a variable that changes randomly over time) that evolves continuously in time and has the property that its change over any time period is normally distributed with mean zero and variance equal to the length of the time period.  The ``mean zero'' feature means that a Brownian motion is a martingale.  We will also give a different characterization (Levy's theorem) emphasizing the ``quadratic variation'' process, which is a property of the paths (how the variable evolves over time, in a given state of the world) of the process.  
+This chapter has three objectives. The first is to introduce the concept
+of a Brownian motion. A Brownian motion is a random process (a variable
+that changes randomly over time) that evolves continuously in time and
+has the property that its change over any time period is normally
+distributed with mean zero and variance equal to the length of the time
+period. The "mean zero" feature means that a Brownian motion is a
+martingale. We will also give a different characterization (Levy's
+theorem) emphasizing the "quadratic variation" process, which is a
+property of the paths (how the variable evolves over time, in a given
+state of the world) of the process.
 
-The second objective is to explain It\^o's formula, which is the chain rule for stochastic calculus.  In the Black-Scholes model, the stock price is assumed to satisfy
-$$\frac{\D S}{S}=\mu\,\D t+\sigma\,\D B\; ,$$
-where $B$ is a Brownian motion.  In the case that the stock pays no dividend, the rate of return is its price change $\D S$ divided by the initial price $S$, so the model states that the expected rate of return in each instant $\D t$  is $\mu\,\D t$ (of course, $t$ denotes time, so $\D t$ is the change in time).  The variance of the rate of return depends on $\sigma$.  This model can be equivalently written in terms of the natural logarithm of $S$, which we will write as $\log S$.  The above equation for the rate of return is equivalent to
+The second objective is to explain Itô's formula, which is the chain
+rule for stochastic calculus. In the Black-Scholes model, the stock
+price is assumed to satisfy
+$$\frac{\D S}{S}=\mu\,\D t+\sigma\,\D B\; ,$$ where $B$ is a Brownian
+motion. In the case that the stock pays no dividend, the rate of return
+is its price change $\D S$ divided by the initial price $S$, so the
+model states that the expected rate of return in each instant $\D t$ is
+$\mu\,\D t$ (of course, $t$ denotes time, so $\D t$ is the change in
+time). The variance of the rate of return depends on $\sigma$. This
+model can be equivalently written in terms of the natural logarithm of
+$S$, which we will write as $\log S$. The above equation for the rate of
+return is equivalent to
+
 $$\D\,\log S = \left(\mu - \frac{1}{2}\sigma^2\right)\,\D t + \sigma\,\D B\; .$$
-We will explain this equivalence and other similar calculations that are useful for pricing derivatives.
+We will explain this equivalence and other similar calculations that are
+useful for pricing derivatives.
 
-The third objective is to explain how, when we change numeraires, as described in the previous chapter, we can calculate the expectation in the fundamental pricing formula \eqref{formula}.  The question is what effect does changing the numeraire (and hence the probability measure) have on the distribution of an asset price.  
+The third objective is to explain how, when we change numeraires, as
+described in the previous chapter, we can calculate the expectation in
+the fundamental pricing formula
+[\[formula\]](#formula){reference-type="eqref" reference="formula"}. The
+question is what effect does changing the numeraire (and hence the
+probability measure) have on the distribution of an asset price.
 
-Everything in the remainder of the book is based on the mathematics presented in this chapter.  For easy reference, the essential formulas have been highlighted in boxes.  
+Everything in the remainder of the book is based on the mathematics
+presented in this chapter. For easy reference, the essential formulas
+have been highlighted in boxes.
 
+# Simulating a Brownian Motion {#s_simulatingbrownian}
 
-\section{Simulating a Brownian Motion}\label{s_simulatingbrownian}
-We begin with the fact that changes in the value of a Brownian motion \index{Brownian motion} are normally distributed with mean zero and variance equal to the length of the time period.  Let $B(t)$ denote the value of a Brownian motion at time $t$.  Then for any date $u>t$, given the information at time $t$, the random variable $B(u) - B(t)$ is normally distributed with mean zero and variance equal to $u-t$.  Unless stated otherwise, our convention will be that a Brownian motion starts at $B(0)=0$.
+We begin with the fact that changes in the value of a Brownian motion
+are normally distributed with mean zero and variance equal to the length
+of the time period. Let $B(t)$ denote the value of a Brownian motion at
+time $t$. Then for any date $u>t$, given the information at time $t$,
+the random variable $B(u) - B(t)$ is normally distributed with mean zero
+and variance equal to $u-t$. Unless stated otherwise, our convention
+will be that a Brownian motion starts at $B(0)=0$.
 
-We can generate an approximate Brownian motion in Excel.  To do so, we take a small time period $\varDelta t$ and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance $\varDelta t$.  In the following procedure, the user is prompted to input the length $T$ of the entire time period over which the Brownian motion is to be simulated and to input the number $N$ of time periods of length $\varDelta t$ within the full interval $[0,T]$.  The length $\varDelta t$ of each individual time period is then calculated as $T/N$.  The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number $N$.  Plotting the output of the procedure creates a picture of what we call a ``path'' of the Brownian motion, which means that it shows the value taken at each time in one state of the world.  Running the procedure again (for the same $T$ and $N$) will create a different plot, which can be interpreted as the values of the Brownian motion in another state of the world.  In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Excel's random number generating function.\footnote{The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrtdt}*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\varDelta t}$ and hence its variance is $\varDelta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings ``Time'' and ``Brownian Motion.''  To plot the path of the Brownian motion, select the two columns and insert an ``XY (Scatter)'' chart, with data points connected by lines.}
+We can generate an approximate Brownian motion in Excel. To do so, we
+take a small time period $\varDelta t$ and define the value at the end
+of the period to be the value of the Brownian motion at the beginning
+plus a normally distributed variable with mean 0 and variance
+$\varDelta t$. In the following procedure, the user is prompted to input
+the length $T$ of the entire time period over which the Brownian motion
+is to be simulated and to input the number $N$ of time periods of length
+$\varDelta t$ within the full interval $[0,T]$. The length $\varDelta t$
+of each individual time period is then calculated as $T/N$. The quality
+of the approximation of this simulation to a true Brownian motion will
+be always be improved by increasing the number $N$. Plotting the output
+of the procedure creates a picture of what we call a "path" of the
+Brownian motion, which means that it shows the value taken at each time
+in one state of the world. Running the procedure again (for the same $T$
+and $N$) will create a different plot, which can be interpreted as the
+values of the Brownian motion in another state of the world. In other
+words, the path of the Brownian motion is itself random, depending in
+this approximation on the numbers produced by Excel's random number
+generating function.[^1]
+
+[^1]: The generation of normally distributed random numbers in Excel is
+    discussed in Appendix A. The function RandN() here is user-created
+    (to simplify typing) to equal the function
+    Application.NormSInv(Rnd()) supplied in VBA. The construction
+    $\text{sqrtdt}*z$ scales the standard normal $z$ so that its
+    standard deviation is $\sqrt{\varDelta t}$ and hence its variance is
+    $\varDelta t$, as desired. The subroutine creates two columns of
+    data below the active cell in the Excel worksheet with headings
+    "Time" and "Brownian Motion." To plot the path of the Brownian
+    motion, select the two columns and insert an "XY (Scatter)" chart,
+    with data points connected by lines.
 
 \addcontentsline{lof}{figure}{Simulating Brownian Motion}
 \small\begin{verbatim}
@@ -42,61 +105,171 @@ End Sub
 
 
 
-\section{Quadratic Variation}\label{s_quadraticvariation}
-If we take a large number $N$ of time steps in the simulation of the preceding section, we will see the distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name ``Brownian motion'' derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price.   
-The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
+# Quadratic Variation {#s_quadraticvariation}
+If we take a large number $N$ of time steps in the simulation of the
+preceding section, we will see the distinctive characteristic of a
+Brownian motion: it jiggles rapidly, moving up and down in a very
+erratic way. The name "Brownian motion" derives from the botanist Robert
+Brown's observations of the erratic behavior of particles suspended in a
+fluid. This has long been thought to be a reasonable model for the
+behavior of a stock price.
+
+The plot of other functions with which we may be familiar will be much
+smoother. This is captured in the concept of quadratic variation.
 
 Consider a discrete partition 
 $$0=t_0 < t_1 < t_2 < \cdots < t_N=T$$
 of the time interval $[0,T]$.  Let $B$ be a Brownian motion and calculate the sum of squared changes
 $$\sum_{i=1}^N [\varDelta B(t_i)]^2\; ,$$
-where $\varDelta B(t_i)$ denotes the change $B(t_i)-B(t_{i-1}).$  If we consider finer partitions with the length of each time interval $t_i-t_{i-1}$ going to zero, the limit of the sum is called the ``quadratic variation'' of the process.  \index{quadratic variation} For a Brownian motion, the quadratic variation over an interval $[0,T]$ is equal to $T$ with probability one.  
+where $\varDelta B(t_i)$ denotes the change $B(t_i)-B(t_{i-1}).$ If we
+consider finer partitions with the length of each time interval
+$t_i-t_{i-1}$ going to zero, the limit of the sum is called the
+"quadratic variation" of the process. For a Brownian motion, the
+quadratic variation over an interval $[0,T]$ is equal to $T$ with
+probability one.
 
-The functions with which we are normally familiar are continuously differentiable.  If $X$ is a continuously differentiable function of time (in each state of the world), then the quadratic variation of $X$ will be zero.  A simple example is a linear function: $X(t) = at$ for some constant $a$.  Then, taking $t_i-t_{i-1} = \varDelta t = T/N$ for each $i$, the sum of squared changes is
+The functions with which we are normally familiar are continuously
+differentiable. If $X$ is a continuously differentiable function of time
+(in each state of the world), then the quadratic variation of $X$ will
+be zero. A simple example is a linear function: $X(t) = at$ for some
+constant $a$. Then, taking $t_i-t_{i-1} = \varDelta t = T/N$ for each
+$i$, the sum of squared changes is
 $$\sum_{i=1}^N [\varDelta X(t_i)]^2 = \sum_{i=1}^N  [a\,\varDelta t]^2 = Na^2 (\varDelta t)^2 = Na^2 \left(\frac{T}{N}\right)^2 = \frac{a^2T^2}{N} \rightarrow 0$$
-as $N \rightarrow \infty$.  Essentially the same argument shows that the quadratic variation of any continuously differentiable function is zero, because such a function is approximately linear at each point.
+as $N \rightarrow \infty$. Essentially the same argument shows that the
+quadratic variation of any continuously differentiable function is zero,
+because such a function is approximately linear at each point.
 
-Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual.  To explain exactly how unusual it is, it is helpful to introduce the concept of ``total variation,'' \index{total variation} which is defined in the same way as quadratic variation but with the squared changes $[\varDelta B(t_i)]^2$ replaced by the absolute value of the changes $|\varDelta B(t_i)|.$  If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one).  It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion.  This is not quite right.  Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil.  Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has.  Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass.  If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function).  However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye---no matter how small the segment, one would still see the characteristic jiggling.
+Thus, the jiggling of a Brownian motion, which leads to the nonzero
+quadratic variation, is quite unusual. To explain exactly how unusual it
+is, it is helpful to introduce the concept of "total variation," which
+is defined in the same way as quadratic variation but with the squared
+changes $[\varDelta B(t_i)]^2$ replaced by the absolute value of the
+changes $|\varDelta B(t_i)|.$ If the quadratic variation of a continuous
+function is nonzero, then its total variation is necessarily infinite,
+so each path of a Brownian motion has infinite total variation (with
+probability one). It was mentioned above that, with a large number of
+time steps in the simulation of the preceding section, one could see the
+distinctive jiggling property of a Brownian motion. This is not quite
+right. Any plot drawn by a pencil (or a laser printer, for that matter)
+must have finite total variation, because the total variation is the
+total distance traveled by the pencil. Hence, no matter how many time
+steps one uses, one will never create a continuous plot with the nonzero
+quadratic variation (and infinite total variation) that a Brownian path
+has. Another way to understand this is to consider focusing on a small
+segment of a plot and viewing it with a magnifying glass. If the segment
+is small enough, and excluding the finite number of kinks that a pencil
+can draw in the plot of a function, it will look approximately like a
+straight line under the magnifying glass (with slope equal to the
+derivative of the function). However, if one could view a segment of a
+path of a true Brownian motion under a magnifying glass, it would look
+much the same as the entire picture does to the naked eye---no matter
+how small the segment, one would still see the characteristic jiggling.
 
-One may well question why we should be interested in this curious mathematical object.  The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing equation \eqref{formula} establishes.  Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants.  More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes.  So, we are led to a study of continuous martingales.  An important fact is that any non-constant continuous martingale must have infinite total variation!  So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.  
+One may well question why we should be interested in this curious
+mathematical object. The reason is that asset pricing inherently
+involves martingales (variables that evolve randomly over time in such a
+way that their expected changes are always zero), as our fundamental
+pricing equation [\[formula\]](#formula){reference-type="eqref"
+reference="formula"} establishes. Furthermore, continuous processes
+(variables whose paths are continuous functions of time) are much more
+tractable mathematically than are processes that can jump at some
+instants. More importantly, it is possible in a mathematical model with
+continuous processes to define perfect hedges much more readily than it
+is in a model involving jump processes. So, we are led to a study of
+continuous martingales. An important fact is that any non-constant
+continuous martingale must have infinite total variation! So, the normal
+functions with which we are familiar are left behind once we enter the
+study of continuous martingales.
 
-There remains perhaps the question of why we focus on Brownian motion within the world of continuous martingales.  The answer here is that any continuous martingale is really just a transformation of a Brownian motion.  This is a consequence of the following important fact, which is known as Levy's theorem: \index{Levy's theorem}
+There remains perhaps the question of why we focus on Brownian motion
+within the world of continuous martingales. The answer here is that any
+continuous martingale is really just a transformation of a Brownian
+motion. This is a consequence of the following important fact, which is
+known as Levy's theorem:
+
 \mybox{A continuous martingale is a Brownian motion if and only if its quadratic variation over each interval $[0,T]$ equals $T$.}
-Thus, among continuous martingales, a Brownian motion is defined by the condition that the quadratic variation over each interval $[0,T]$ is equal to $T$.  This is really just a normalization.  A different continuous martingale may have a different quadratic variation, but it can be converted to a Brownian motion just by deforming the time scale.  Furthermore, many continuous martingales can be constructed as ``stochastic integrals'' with respect to a Brownian motion.  We take up this topic in the next section.
+Thus, among continuous martingales, a Brownian motion is defined by the
+condition that the quadratic variation over each interval $[0,T]$ is
+equal to $T$. This is really just a normalization. A different
+continuous martingale may have a different quadratic variation, but it
+can be converted to a Brownian motion just by deforming the time scale.
+Furthermore, many continuous martingales can be constructed as
+"stochastic integrals" with respect to a Brownian motion. We take up
+this topic in the next section.
 
-\section{It\^o Processes}\label{s_itoprocesses}
+# Itô Processes {#s_itoprocesses}
 An It\^o process is a variable $X$ that changes over time as \index{It\^o process}
-\begin{equation}\label{itoprocess}
-\D X(t) = \mu(t)\,\D t+\sigma(t)\,\D B(t)\;,
-\end{equation}
-where $B$ is a Brownian motion, and $\mu$ and $\sigma$ can also be random processes.  Some regularity conditions are needed on $\mu$ and $\sigma$ which we will omit, except for noting that $\mu(t)$ and $\sigma(t)$ should be known at time $t$.  In particular, constant $\mu$ and $\sigma$ are certainly acceptable.  When we add the changes over time, we get
+$$\label{itoprocess}
+\D X(t) = \mu(t)\,\D t+\sigma(t)\,\D B(t)\;,$$
+
+where $B$ is a Brownian motion, and $\mu$ and $\sigma$ can also be
+random processes. Some regularity conditions are needed on $\mu$ and
+$\sigma$ which we will omit, except for noting that $\mu(t)$ and
+$\sigma(t)$ should be known at time $t$. In particular, constant $\mu$
+and $\sigma$ are certainly acceptable. When we add the changes over
+time, we get
 $$X(T)=X(0) + \int_0^T\mu(t)\,\D t + \int_0^T\sigma(t)\,\D B(t)$$
-for any $T>0$.  There are other types of random processes, in particular, processes that can jump, but we will not consider them in this book.
+for any $T>0$. There are other types of random processes, in particular,
+processes that can jump, but we will not consider them in this book.
 
-We will not formally define the integral $\int_0^T \sigma(t)\,\D B(t)$, but it should be understood as being approximately equal to a discrete sum of the form 
-$$\sum_{i=1}^N \sigma(t_{i-1})\,\varDelta B(t_i)\; ,$$
-where $0=t_0 < \cdots t_N=T$ and the time periods $t_i-t_{i-1}$ are small.  Given that we can simulate the changes $\varDelta B(t_i)$ as random normals, we can approximately simulate the random variable $\int_0^T \sigma(t)\,\D B(t)$ and hence we can approximately simulate $X(T)$.
+We will not formally define the integral $\int_0^T \sigma(t)\,\D B(t)$,
+but it should be understood as being approximately equal to a discrete
+sum of the form
+$$\sum_{i=1}^N \sigma(t_{i-1})\,\varDelta B(t_i)\; ,$$ where
+$0=t_0 < \cdots t_N=T$ and the time periods $t_i-t_{i-1}$ are small.
+Given that we can simulate the changes $\varDelta B(t_i)$ as random
+normals, we can approximately simulate the random variable
+$\int_0^T \sigma(t)\,\D B(t)$ and hence we can approximately simulate
+$X(T)$.
 
-An It\^o process evolves continuously over time.  We interpret $\mu(t)\,\D t$ as the expected change in $X$ in an instant $\D t$.  The quantity $\mu(t)$  is also called the ``drift'' of the process $X$ at time $t$.   \index{drift} The coefficient $\sigma(t)$ is called the ``diffusion'' coefficient of $X$ at time $t$.  \index{diffusion coefficient}
+An Itô process evolves continuously over time. We interpret
+$\mu(t)\,\D t$ as the expected change in $X$ in an instant $\D t$. The
+quantity $\mu(t)$ is also called the "drift" of the process $X$ at time
+$t$. The coefficient $\sigma(t)$ is called the "diffusion" coefficient
+of $X$ at time $t$.
 
-If $\mu$ and $\sigma$ are constant, it is standard to refer to an It\^o process $X$ as a $(\mu,\sigma)$--Brownian motion.  Of course, it is not a martingale when $\mu\neq 0$.  For example, when $\mu>0$, $X$ tends to increase over time.  However, it has the jiggling property of a Brownian motion, scaled by the diffusion coefficient $\sigma$. 
+If $\mu$ and $\sigma$ are constant, it is standard to refer to an Itô
+process $X$ as a $(\mu,\sigma)$--Brownian motion. Of course, it is not a
+martingale when $\mu\neq 0$. For example, when $\mu>0$, $X$ tends to
+increase over time. However, it has the jiggling property of a Brownian
+motion, scaled by the diffusion coefficient $\sigma$.
 
-A very important fact is that an It\^o process such as \eqref{itoprocess} can be a martingale only if $\mu=0$.  This should seem sensible, because $\mu\,\D t$ is the expected change in $X$, and a process is a martingale only if its expected change is zero.\footnote{If the sources of uncertainty in the market can be modeled as Brownian motions, then in fact every martingale is an It\^o process with $\mu=0$.  This is some justification for the assumption we will make in this book, when studying continuous-time models, that all martingales are It\^o processes.}   This observation plays a fundamental role in deriving asset pricing formulas, as we will begin to see in Sect.~\ref{s_girsanov}.
-Conversely, if $\mu=0$ and 
-\begin{equation}\label{regularity1}
-E \left[\int_0^T \sigma^2(t)\,\D t\right] < \infty
-\end{equation}
-for each $T$,  
-then the It\^o process is a continuous martingale and the variance of its date--$T$ value, calculated with the information available at date 0, is:
-$$\var[X(T)] = E \left[\int_0^T \sigma^2(t)\,\D t\right]\; .$$  
+A very important fact is that an Itô process such as
+[\[itoprocess\]](#itoprocess){reference-type="eqref"
+reference="itoprocess"} can be a martingale only if $\mu=0$. This should
+seem sensible, because $\mu\,\D t$ is the expected change in $X$, and a
+process is a martingale only if its expected change is zero.[^1] This
+observation plays a fundamental role in deriving asset pricing formulas,
+as we will begin to see in
+Sect. [\[s_girsanov\]](#s_girsanov){reference-type="ref"
+reference="s_girsanov"}.
 
-Whether $\mu$ is zero or not, and independently of the assumption \eqref{regularity1}, the quadratic variation of the It\^o process $X$ is 
-\begin{equation}\label{itoquadraticvariation}
-\lim_{N \rightarrow \infty} \sum_{i=1}^N[\varDelta X(t_i)]^2 = \int_0^T \sigma^2(t)\,\D t
-\end{equation}
-with probability one.  Thus we obtain (when $\mu=0$ and \eqref{regularity1} holds) a continuous martingale with a different quadratic variation than a Brownian motion via the diffusion function $\sigma$.
+[^1]: If the sources of uncertainty in the market can be modeled as
+    Brownian motions, then in fact every martingale is an Itô process
+    with $\mu=0$. This is some justification for the assumption we will
+    make in this book, when studying continuous-time models, that all
+    martingales are Itô processes.
 
-To ``compute'' the quadratic variation of an It\^o process, we use the following simple and important rules (for the sake of brevity, we drop the ``$(t)$'' notation from $B(t)$ here and sometimes later):
+Conversely, if $\mu=0$ and $$\label{regularity1}
+E \left[\int_0^T \sigma^2(t)\,\D t\right] < \infty$$ for each $T$, then
+the Itô process is a continuous martingale and the variance of its
+date--$T$ value, calculated with the information available at date 0,
+is: $$\var[X(T)] = E \left[\int_0^T \sigma^2(t)\,\D t\right]\; .$$
+
+Whether $\mu$ is zero or not, and independently of the assumption
+[\[regularity1\]](#regularity1){reference-type="eqref"
+reference="regularity1"}, the quadratic variation of the Itô process $X$
+is $$\label{itoquadraticvariation}
+\lim_{N \rightarrow \infty} \sum_{i=1}^N[\varDelta X(t_i)]^2 = \int_0^T \sigma^2(t)\,\D t$$
+with probability one. Thus we obtain (when $\mu=0$ and
+[\[regularity1\]](#regularity1){reference-type="eqref"
+reference="regularity1"} holds) a continuous martingale with a different
+quadratic variation than a Brownian motion via the diffusion function
+$\sigma$.
+
+To "compute" the quadratic variation of an Itô process, we use the
+following simple and important rules (for the sake of brevity, we drop
+the "$(t)$" notation from $B(t)$ here and sometimes later):
 \mybox{\begin{subequations}\label{multiplydifferentials}
 \begin{align}
 (\D t)^2 &= 0\;, \label{dtsquared}\\
@@ -114,59 +287,92 @@ We apply these rules to ``compute'' the quadratic variation of $X$ as follows:
 \end{align*}}
 We integrate this from 0 to $T$ to obtain the quadratic variation \eqref{itoquadraticvariation} over that time period:\footnote{In a more formal mathematical presentation, one normally writes $\D\langle X,X\rangle$ for what we are writing here as $(\D X)^2$.  This is the differential of the quadratic variation process, and the quadratic variation through date $T$ is
 $$\langle X,X\rangle (T) = \int_0^T \D\langle X,X\rangle(t) = \int_0^T \sigma^2(t)\,\D t\;.$$}
-\begin{equation}\label{itoquadraticvariation2}
-\int_0^T (\D X(t))^2 = \int_0^T \sigma^2(t)\,\D t\;.
-\end{equation}
+$$\label{itoquadraticvariation2}
+\int_0^T (\D X(t))^2 = \int_0^T \sigma^2(t)\,\D t\;.$$
 
 
 
-\section{It\^o's Formula}\label{s_itosformula}
+# Itô's Formula {#s_itosformula}
 
-First we recall some facts of the ordinary calculus.  If $y=g(x)$ and $x = f(t)$ with $f$ and $g$ being continuously differentiable functions, then 
+First we recall some facts of the ordinary calculus. If $y=g(x)$ and
+$x = f(t)$ with $f$ and $g$ being continuously differentiable functions,
+then
 $$\frac{\D y}{\D t} = \frac{\D y}{\D x}\times \frac{\D x}{\D t} = g'(x(t))f'(t)\; .$$
 Over a time period $[0,T]$, this implies that
 $$y(T) = y(0) + \int_0^T \frac{\D y}{\D t}\,\D t = y(0) + \int_0^T g'(x(t))f'(t)\,\D t\; .$$
 Substituting $\D x(t) = f'(t)\,\D t$, we can also write this as
-\begin{equation}\label{ordinarycalculus}
-y(T) = y(0) + \int_0^T g'(x(t))\,\D x(t)\;.
-\end{equation}
+$$\label{ordinarycalculus}
+y(T) = y(0) + \int_0^T g'(x(t))\,\D x(t)\;.$$
 
 We can contrast  \eqref{ordinarycalculus}  with a special case of It\^o's formula for the calculus of It\^o processes (the more general formula will be discussed in the next section).  If $B$ is a Brownian motion and $Y = g(B)$ for a twice-continuously differentiable function $g$, then \index{It\^o's formula}
-\begin{equation}\label{itonew1}
-Y(T) = Y(0) + \int_0^T g'(B(t))\,\D B(t) + \frac{1}{2}\int_0^T g''(B(t))\,\D t\;.
-\end{equation}
-Thus, relative to the ordinary calculus, It\^o's formula has an ``extra term'' involving the second derivative $g''$.  We can write \eqref{itonew1} in differential form as
+$$\label{itonew1}
+Y(T) = Y(0) + \int_0^T g'(B(t))\,\D B(t) + \frac{1}{2}\int_0^T g''(B(t))\,\D t\;.$$
+Thus, relative to the ordinary calculus, Itô's formula has an "extra
+term" involving the second derivative $g''$. We can write
+[\[itonew1\]](#itonew1){reference-type="eqref" reference="itonew1"} in
+differential form as
 $$dY(t) = \frac{1}{2}g''(B(t))\,\D t + g'(B(t))\,\D B(t).$$
-Thus, $Y=g(B)$ is an It\^o process with drift $g''(B(t))/2$ and diffusion coefficient $g'(B(t))$.
+Thus, $Y=g(B)$ is an Itô process with drift $g''(B(t))/2$ and diffusion
+coefficient $g'(B(t))$.
 
-To gain some intuition for the ``extra term'' in It\^o's formula, we return to the ordinary calculus.  Given dates $t<u$, the derivative defines a linear approximation of the change in $y$ over this time period; i.e., setting $\varDelta x = x(u)-x(t)$ and $\varDelta y = y(u) - y(t)$, we have the approximation
+To gain some intuition for the "extra term" in Itô's formula, we return
+to the ordinary calculus. Given dates $t<u$, the derivative defines a
+linear approximation of the change in $y$ over this time period; i.e.,
+setting $\varDelta x = x(u)-x(t)$ and $\varDelta y = y(u) - y(t)$, we
+have the approximation
 $$\varDelta y \approx g'(x(t)) \,\varDelta x\; .$$
 A better approximation is given by the second-order Taylor series expansion
 $$\varDelta y \approx g'(x(t))\,\varDelta x + \frac{1}{2} g''(x(t))\,[\varDelta x]^2\; .$$
-An interpretation of  \eqref{ordinarycalculus} is that the linear approximation works perfectly for infinitesimal time periods $\D t$, because we can compute the change in $y$ over the time period $[0,T]$ by ``summing up'' the infinitesimal changes $g'(x(t))\,\D x(t)$.  In other words, the second-order term $\frac{1}{2} g''(x(t))\,[\varDelta x]^2$ ``vanishes'' when we consider very small time periods.
+An interpretation of
+[\[ordinarycalculus\]](#ordinarycalculus){reference-type="eqref"
+reference="ordinarycalculus"} is that the linear approximation works
+perfectly for infinitesimal time periods $\D t$, because we can compute
+the change in $y$ over the time period $[0,T]$ by "summing up" the
+infinitesimal changes $g'(x(t))\,\D x(t)$. In other words, the
+second-order term $\frac{1}{2} g''(x(t))\,[\varDelta x]^2$ "vanishes"
+when we consider very small time periods.
 
 The second-order Taylor series expansion in the case of $Y=g(B)$ is 
 $$\varDelta Y \approx g'(B(t))\,\varDelta B + \frac{1}{2} g''(B(t))\,[\varDelta B]^2\; .$$
-For example, given a partition $0=t_0 < t_1 < \cdots < t_N=T$ of the time interval $[0,T]$, we have, with the same notation we have used earlier,
-\begin{align}
+For example, given a partition $0=t_0 < t_1 < \cdots < t_N=T$ of the
+time interval $[0,T]$, we have, with the same notation we have used
+earlier,
+$$\begin{aligned}
 Y(T) &= Y(0) + \sum_{i=1}^N \varDelta Y(t_i) \notag \\
 &\approx Y(0) + \sum_{i=1}^N g'(B(t_{i-1}))\,\varDelta B(t_i) + \frac{1}{2} \sum_{i=1}^N g''(B(t_{i-1}))\,[\varDelta B(t_i)]^2\;.\label{itonew2}
-\end{align}
-If we make the time intervals $t_i-t_{i-1}$ shorter, letting $N \rightarrow \infty$, we cannot expect that the ``extra'' term here will disappear, leading to the result \eqref{ordinarycalculus} of the ordinary calculus, because we know that
+\end{aligned}$$
+If we make the time intervals $t_i-t_{i-1}$ shorter, letting
+$N \rightarrow \infty$, we cannot expect that the "extra" term here will
+disappear, leading to the result
+[\[ordinarycalculus\]](#ordinarycalculus){reference-type="eqref"
+reference="ordinarycalculus"} of the ordinary calculus, because we know
+that
 $$\lim_{N \rightarrow \infty} \sum_{i=1}^N [\varDelta B(t_i)]^2 = T\; ,$$
-whereas for the continuously differentiable function $x(t) = f(t)$, the same limit is zero.  In fact it seems sensible to interpret the limit of $[\varDelta B]^2$ as $(\D B)^2 =\D t$.
-This is perfectly consistent with It\^o's formula: if we take the limit in \eqref{itonew2}, replacing the limit of $[\varDelta B(t_i)]^2$ with $(\D B)^2 = \D t$, we obtain \eqref{itonew1}.
+whereas for the continuously differentiable function $x(t) = f(t)$, the
+same limit is zero. In fact it seems sensible to interpret the limit of
+$[\varDelta B]^2$ as $(\D B)^2 =\D t$. This is perfectly consistent with
+Itô's formula: if we take the limit in
+[\[itonew2\]](#itonew2){reference-type="eqref" reference="itonew2"},
+replacing the limit of $[\varDelta B(t_i)]^2$ with $(\D B)^2 = \D t$, we
+obtain [\[itonew1\]](#itonew1){reference-type="eqref"
+reference="itonew1"}.
 
-\section{Multiple It\^o Processes}
+# Multiple Itô Processes
 
-Now consider two It\^o processes
-\begin{subequations}\label{itoprocess110111}
+Now consider two Itô processes
+$$\label{itoprocess110111}
 \begin{align}
 \D X(t) &= \mu_x(t)\,\D t + \sigma_x(t)\,\D B_x(t)\;,\label{itoprocess110}\\
 \D Y(t) &= \mu_y(t)\,\D t + \sigma_y(t)\,\D B_y(t)\;,\label{itoprocess111}
-\end{align}
-\end{subequations}
-where $B_x$ and $B_y$ can be different Brownian motions.  The relation between the two Brownian motions is determined by their covariance or correlation.  Given dates $t<u$, we know that both changes $B_x(u)-B_x(t)$ and $B_y(u)-B_y(t)$ are normally distributed with mean 0 and variance equal to $u-t$.  There will exist a (possibly random) process $\rho$ such that the covariance \index{covariance} of these two normally distributed random variables, given the information at date $t$, is 
+\end{align}$$
+where $B_x$ and $B_y$ can be different Brownian motions. The relation
+between the two Brownian motions is determined by their covariance or
+correlation. Given dates $t<u$, we know that both changes
+$B_x(u)-B_x(t)$ and $B_y(u)-B_y(t)$ are normally distributed with mean 0
+and variance equal to $u-t$. There will exist a (possibly random)
+process $\rho$ such that the covariance of these two normally
+distributed random variables, given the information at date $t$, is
+
 $$E_t \left[\int_t^u \rho(s)\,\D s\right]\; .$$
 The process $\rho$ is called the correlation coefficient of the two Brownian motions, \index{correlation coefficient} because when it is constant the correlation of the changes $B_x(u)-B_x(t)$ and $B_y(u)-B_y(t)$ is
 $$\frac{\text{covariance}}{\text{product of standard deviations}}  = \frac{\int_t^u \rho \,\D s}{\sqrt{u-t} \sqrt{u-t}} = \frac{(u-t)\rho}{u-t} = \rho\; .$$
