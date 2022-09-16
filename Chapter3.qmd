@@ -1,18 +1,38 @@
-\chapter{Black-Scholes}\label{c_blackscholes}
+# Black-Scholes {#c_blackscholes}
 
-In this chapter, we will study the value of European digital and share digital options and standard European puts and calls under the Black-Scholes assumptions.  We will also explain how to calculate implied volatilities and the option ``Greeks.''  The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
+In this chapter, we will study the value of European digital and share
+digital options and standard European puts and calls under the
+Black-Scholes assumptions. We will also explain how to calculate implied
+volatilities and the option "Greeks." The Black-Scholes assumptions are
+that the underlying asset pays a constant dividend yield $q$ and has
+price $S$ satisfying
 \begin{equation}\label{bs1}
 \frac{\D S}{S} = \mu\,\D t + \sigma\,\D B
 \end{equation}
 for a Brownian motion B.  Here $\sigma$ is assumed to be constant (though we will allow it to vary in a non-random way at the end of the chapter) and $\mu$ can be a quite general random process.  It is also assumed that there is a constant continuously-compounded risk-free rate~$r$.
 
-Under these assumptions, we will complete the discussion of Sect.~\ref{s_introoptions} to derive  option pricing formulas.  Recall that, to price a European call option, all that remains to be done is to calculate the probabilities of the option finishing in the money when we use the risk-free asset and the underlying asset as numeraires.  We will do this using the results of Sect.~\ref{s_girsanov}.  As in Sect.~\ref{s_introoptions}, we will approach the pricing of call and put options by first considering their basic building blocks: digitals and share digitals.
+Under these assumptions, we will complete the discussion of
+Sect. [\[s_introoptions\]](#s_introoptions){reference-type="ref"
+reference="s_introoptions"} to derive option pricing formulas. Recall
+that, to price a European call option, all that remains to be done is to
+calculate the probabilities of the option finishing in the money when we
+use the risk-free asset and the underlying asset as numeraires. We will
+do this using the results of
+Sect. [\[s_girsanov\]](#s_girsanov){reference-type="ref"
+reference="s_girsanov"}. As in
+Sect. [\[s_introoptions\]](#s_introoptions){reference-type="ref"
+reference="s_introoptions"}, we will approach the pricing of call and
+put options by first considering their basic building blocks: digitals
+and share digitals.
 
 
+# Digital Options {#s_digitals}
 
-\section{Digital Options}\label{s_digitals}
-
-A digital (or ``binary'') \index{digital} option pays a fixed amount in a certain event and zero otherwise.  Consider a digital that pays \$1 at date $T$ if $S(T)>K$, where $K$ is a number that is fixed by the contract.  This means that the digital pays $x$ dollars at date $T$ where $x$ is defined as
+A digital (or "binary") option pays a fixed amount in a certain event
+and zero otherwise. Consider a digital that pays \$1 at date $T$ if
+$S(T)>K$, where $K$ is a number that is fixed by the contract. This
+means that the digital pays $x$ dollars at date $T$ where $x$ is defined
+as
 \begin{equation*}
 x =  \begin{cases} 1 & \text{if $S(T)>K$}\; ,\\
 0 & \text{otherwise}\;.
@@ -26,11 +46,25 @@ E^R[x] \;&=\; 1 \times \text{prob}^R(x=1)\; + \;0 \times \text{prob}^R(x\!\!=\!\
 \end{align*}
 So we need to calculate this probability of the digital finishing in the money.
 
-In Sect.~\ref{s_girsanov}---see  \eqref{riskneutral11}---we learned that under the 
+In Sect. [\[s_girsanov\]](#s_girsanov){reference-type="ref"
+reference="s_girsanov"}---see
+[\[riskneutral11\]](#riskneutral11){reference-type="eqref"
+reference="riskneutral11"}---we learned that under the
 Black-Scholes assumption \eqref{bs1} we have
 $$\frac{\D S}{S} =( r-q)\,\D t+\sigma\,\D B^*\; ,$$
-where $B^*$ is a Brownian motion under the risk-neutral measure.\footnote{There is no other risky asset price $Y$ in this model, so the subscripts we used in Sect.~\ref{s_girsanov} on the volatility coefficients and on $B$ and $B^*$ to distinguish the Brownian motion driving $S$ from the Brownian motion driving $Y$ and to distinguish their volatilities are not needed here.}
-In Sect.~\ref{s_geometricbrownianmotion}, we observed that this is equivalent to
+where $B^*$ is a Brownian motion under the risk-neutral measure.[^1]
+
+[^1]: There is no other risky asset price $Y$ in this model, so the
+    subscripts we used in
+    Sect. [\[s_girsanov\]](#s_girsanov){reference-type="ref"
+    reference="s_girsanov"} on the volatility coefficients and on $B$
+    and $B^*$ to distinguish the Brownian motion driving $S$ from the
+    Brownian motion driving $Y$ and to distinguish their volatilities
+    are not needed here.
+    
+In Sect. [\[s_geometricbrownianmotion\]](#s_geometricbrownianmotion){reference-type="ref"
+reference="s_geometricbrownianmotion"}, we observed that this is
+equivalent to
 $$\D \log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\D t + \sigma\,\D B^*\; .$$
 Now using the formulas \eqref{tailprob01}--\eqref{tailprob3}, with $\alpha = r-q-\sigma^2/2$, we have $\text{prob}^R\big(S(T) > K\big) = \N(d_2)$ where 
 \begin{equation}\label{digital_d2}
@@ -51,9 +85,11 @@ $$\E^{-rT}E^R[y] = \E^{-rT}\text{prob}^R(y=1) = \E^{-rT}\text{prob}^R\big(S(T)<K
 From this fact and the formula \eqref{tailprob02}, we conclude:
 \mybox{The value of a digital option that pays \$1 when $S(T)<K$ is  $\E^{-rT}\N(-d_2)$, where $d_2$ is defined in \eqref{digital_d2}.}
 
-\section{Share Digitals}\label{s_sharedigitals}
+# Share Digitals {#s_sharedigitals}
 
-Consider a derivative security that pays one share of the underlying asset at date $T$ if $S(T)>K$ and pays zero otherwise.  This is called a ``share digital.'' \index{share digital} As before, let
+Consider a derivative security that pays one share of the underlying
+asset at date $T$ if $S(T)>K$ and pays zero otherwise. This is called a
+"share digital." As before, let
 \begin{equation*}
 x =  \begin{cases} 1 & \text{if $S(T)>K$}\; ,\\
 0 & \text{otherwise}\;.
@@ -61,12 +97,19 @@ x =  \begin{cases} 1 & \text{if $S(T)>K$}\; ,\\
 \end{equation*}
 Then the payoff of the share digital at date $T$ is $xS(T)$.  Let $Y(t)$ denote the value of this claim for $0\leq t\leq T$.  We have $Y(T)=xS(T)$ and we want to find $Y(0)$.  
 
-From Sect.~\ref{s_reinvestingdividends}, we know that $V(t)=\E^{qt}S(t)$ is the price of a non-dividend-paying portfolio.  From our fundamental pricing formula \eqref{formula}, using $V$ as the numeraire, we have
+From
+Sect. [\[s_reinvestingdividends\]](#s_reinvestingdividends){reference-type="ref"
+reference="s_reinvestingdividends"}, we know that $V(t)=\E^{qt}S(t)$ is
+the price of a non-dividend-paying portfolio. From our fundamental
+pricing formula [\[formula\]](#formula){reference-type="eqref"
+reference="formula"}, using $V$ as the numeraire, we have
+
 \begin{align*}
 Y(0) &= S(0) E^V \left[\frac{Y(T)}{\E^{q T}S(T)}\right]\\
 &=\E^{-q T}S(0)E^V [x]\;.
 \end{align*}
-As in the previous section, $E^V[x] = \text{prob}^V\!(x=1)$, so we need to compute this probability of the option finishing in the money.  
+As in the previous section, $E^V[x] = \text{prob}^V\!(x=1)$, so we need
+to compute this probability of the option finishing in the money.
 
 We follow the same steps as in the previous section.  From  \eqref{own11} we have
 $$
@@ -101,15 +144,26 @@ $$\text{prob}^V\!\big(S(T)<K\big) = \N(-d_1)\; .$$
 We conclude:
 \mybox{The value of a share digital that pays one share when $S(T)<K$  is $\E^{-q T}S(0)\N(-d_1)$, where $d_1$ is defined in \eqref{sharedigital_d1}.}
 
-\section{Puts and Calls}\label{s_blackscholes}
+# Puts and Calls {#s_blackscholes}
 
 A European call option pays $S(T)-K$ at date $T$ if $S(T)>K$ and 0 otherwise.  Again letting
+
 \begin{equation*}
 x =  \begin{cases} 1 & \text{if $S(T)>K$}\; ,\\
 0 & \text{otherwise}\;,
 \end{cases}
 \end{equation*}
-the payoff of the call can be written as $xS(T)-xK$.  This is equivalent to one share digital minus $K$ digitals, with the digitals paying in the event that $S(T)>K$.  The share digital is worth $\E^{-q T}S(0)\N(d_1)$ at date 0 and each digital is worth $\E^{-rT}\N(d_2)$.  Note that equations \eqref{digital_d2} and \eqref{sharedigital_d1} for $d_1$ and $d_2$ imply $d_2 = d_1-\sigma{\sqrt{T}}$.  Therefore, combining the results of the previous two sections yields the Black-Scholes formula: \index{Black-Scholes formula}
+the payoff of the call can be written as $xS(T)-xK$. This is equivalent
+to one share digital minus $K$ digitals, with the digitals paying in the
+event that $S(T)>K$. The share digital is worth $\E^{-q T}S(0)\N(d_1)$
+at date 0 and each digital is worth $\E^{-rT}\N(d_2)$. Note that
+equations [\[digital_d2\]](#digital_d2){reference-type="eqref"
+reference="digital_d2"} and
+[\[sharedigital_d1\]](#sharedigital_d1){reference-type="eqref"
+reference="sharedigital_d1"} for $d_1$ and $d_2$ imply
+$d_2 = d_1-\sigma{\sqrt{T}}$. Therefore, combining the results of the
+previous two sections yields the Black-Scholes formula:
+
 \mybox{The value of a European call option at date 0 is 
 \begin{equation}\label{blackscholescall}
 \E^{-q T}S(0)\N(d_1)-\E^{-rT}K\N(d_2)\;,
@@ -130,18 +184,33 @@ The payoff of the put option is $yK-yS(T)$.  This is equivalent to $K$ digitals 
 \end{equation}
 where $d_1$ is defined in \eqref{sharedigital_d1} and $d_2 = d_1-\sigma{\sqrt{T}}$.}Again, this is the Black-Scholes formula.
 
-The values of the European put and call satisfy put-call parity, \index{put-call parity} and we can also find one from the other by\footnote{The put-call parity relation follows from the fact that both the left and the right-hand sides are the prices of portfolios that have value $\max(S(T),K)$ at the maturity of the option.  To see this for the left-hand side, note that $\E^{-rT}K$ is sufficient cash to accumulate to $K$ at date $T$, allowing exercise of the call when it is in the money and retention of the cash $K$ otherwise.  For the right-hand side, note that $\E^{-q T}S(0)$ is enough cash to buy $\E^{-q T}$ shares of the stock at date 0 which, with reinvestment of dividends, will accumulate to one share at date $T$, enabling exercise of the put if it is in the money or retention of the share otherwise.}
-\begin{equation}\label{putcallparity11}
+The values of the European put and call satisfy put-call parity, and we
+can also find one from the other by[^1]
+
+[^1]: The put-call parity relation follows from the fact that both the
+    left and the right-hand sides are the prices of portfolios that have
+    value $\max(S(T),K)$ at the maturity of the option. To see this for
+    the left-hand side, note that $\E^{-rT}K$ is sufficient cash to
+    accumulate to $K$ at date $T$, allowing exercise of the call when it
+    is in the money and retention of the cash $K$ otherwise. For the
+    right-hand side, note that $\E^{-q T}S(0)$ is enough cash to buy
+    $\E^{-q T}$ shares of the stock at date 0 which, with reinvestment
+    of dividends, will accumulate to one share at date $T$, enabling
+    exercise of the put if it is in the money or retention of the share
+    otherwise.
+    
+    \begin{equation}\label{putcallparity11}
 \E^{-rT}K + \text{Call Price} = \E^{-q T}S(0)+ \text{Put Price}\;.
 \end{equation}
 
+# Greeks
 
-
-
-
-\section{Greeks}
-
-The derivatives (calculus derivatives, not financial derivatives!) of an option pricing formula with respect to the inputs are commonly called ``Greeks.''  \index{Greeks} The most important Greek is  the option ``delta.''  This measures the sensitivity of the option value to changes in the value of the underlying asset.  The following table shows the standard Greeks, with reference to the Black-Scholes pricing formula.
+The derivatives (calculus derivatives, not financial derivatives!) of an
+option pricing formula with respect to the inputs are commonly called
+"Greeks." The most important Greek is the option "delta." This measures
+the sensitivity of the option value to changes in the value of the
+underlying asset. The following table shows the standard Greeks, with
+reference to the Black-Scholes pricing formula.
 
 \begin{table}
 \centering
@@ -159,7 +228,20 @@ Stock price & $S$  &\qquad& delta &\qquad& $\delta$ \\
 \end{tabular}
 \end{table}
 \index{delta} \index{gamma} \index{theta} \index{vega} \index{rho}
-The second line of the above shows $\delta$ as an input.\footnote{The delta is frequently denoted by the upper case $\varDelta$, but we will use the lower case, reserving the upper case for discrete changes, e.g., $\varDelta t$.  One may have noticed also that the symbol for vega is a little different from the others; this reflects the fact that  vega is not actually a Greek letter.}  Of course, it is not an input but instead is calculated.  Gamma, the derivative of $\delta$, is the second derivative of the option price with respect to the underlying asset price.  The reason for calculating $\Theta$ as the derivative with respect to $-T$ instead of $T$ is that the time-to-maturity $T$ decreasing ($-T$ increasing) is equivalent to time passing, so $\Theta$ measures the change in the option value when time passes.  
+The second line of the above shows $\delta$ as an input.[^1] Of course,
+it is not an input but instead is calculated. Gamma, the derivative of
+$\delta$, is the second derivative of the option price with respect to
+the underlying asset price. The reason for calculating $\Theta$ as the
+derivative with respect to $-T$ instead of $T$ is that the
+time-to-maturity $T$ decreasing ($-T$ increasing) is equivalent to time
+passing, so $\Theta$ measures the change in the option value when time
+passes.
+
+[^1]: The delta is frequently denoted by the upper case $\varDelta$, but
+    we will use the lower case, reserving the upper case for discrete
+    changes, e.g., $\varDelta t$. One may have noticed also that the
+    symbol for vega is a little different from the others; this reflects
+    the fact that vega is not actually a Greek letter.
 
 We can calculate these from the Black-Scholes formula using the chain rule from differential calculus.  The derivative of the normal distribution function~$\N$ is the normal density function $\nd$ defined as
 $$\nd(d) = \frac{1}{\sqrt{2\pi}}\E^{-d^2/2}\; .$$
@@ -194,9 +276,21 @@ We can calculate the Greeks of a European put option from the call option Greeks
 $$\text{Put Price} = \text{Call Price} +\E^{-rT}K- \E^{-q T}S(0)\; .$$
 For example, the delta of a put is the delta of a call (with the same strike and maturity) minus $\E^{-q T}$, and the gamma of a put is the same as the gamma of the corresponding call.
 
-\section{Delta Hedging}\label{s_deltahedging}
+# Delta Hedging {#s_deltahedging}
 
-The ability to create a fully hedged (risk-free) portfolio of the stock and an option is the essence of the arbitrage argument underlying the Black-Scholes formula, as we saw in Chap.~\ref{c_basics} for the binomial model.  For a call option, such a portfolio consists of delta shares of the underlying asset and a short call option, or a short position of delta shares of the underlying and a long call option.  \index{delta hedge} These portfolios have no instantaneous exposure to the price of the underlying.  To create a perfect hedge, the portfolio must be adjusted continuously, because the delta changes when the price of the underlying changes and when time passes.  In practice, any hedge will therefore be imperfect, even if the assumptions of the model are satisfied. 
+The ability to create a fully hedged (risk-free) portfolio of the stock
+and an option is the essence of the arbitrage argument underlying the
+Black-Scholes formula, as we saw in
+Chap. [\[c_basics\]](#c_basics){reference-type="ref"
+reference="c_basics"} for the binomial model. For a call option, such a
+portfolio consists of delta shares of the underlying asset and a short
+call option, or a short position of delta shares of the underlying and a
+long call option. These portfolios have no instantaneous exposure to the
+price of the underlying. To create a perfect hedge, the portfolio must
+be adjusted continuously, because the delta changes when the price of
+the underlying changes and when time passes. In practice, any hedge will
+therefore be imperfect, even if the assumptions of the model are
+satisfied.
 
 We first consider the continuous-time hedging argument.  Consider a European call option with maturity $T$, and let $C(S,t)$ denote the value of the option at date $t<T$ when the stock price is $S$ at date $t$.  Consider a portfolio that is short one call option and long $\delta$ shares of the underlying asset and that has a (short) cash position equal to $C-\delta S$.  This portfolio has zero value at date $t$.  
 
@@ -206,28 +300,77 @@ The change in the value of the portfolio in an instant $\D t$ is
 \end{equation}
 The first term reflects the change in the value of the option, the second term is the capital gain or loss on $\delta$ shares of stock, the third term is the dividends received on $\delta$ shares of stock, and the fourth term is the interest expense on the short cash position.
 
-On the other hand, we know from It\^o's formula that
+On the other hand, we know from Itô's formula that
 \begin{align}
 \D C &= \frac{\partial C}{\partial S}\,\D S + \frac{\partial C}{\partial t}\,\D t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\D S)^2 \notag \\
 &= \delta \,\D S + \Theta \,\D t + \frac{1}{2}\Gamma \sigma^2S^2\,\D t\;.\label{changeportfoliovalue2}
 \end{align}
-Substituting \eqref{changeportfoliovalue2} into \eqref{changeportfoliovalue} shows that  the change in the value of the portfolio is
+Substituting
+[\[changeportfoliovalue2\]](#changeportfoliovalue2){reference-type="eqref"
+reference="changeportfoliovalue2"} into
+[\[changeportfoliovalue\]](#changeportfoliovalue){reference-type="eqref"
+reference="changeportfoliovalue"} shows that the change in the value of
+the portfolio is
 \begin{equation}\label{hedgeprofits}
 -\Theta \,\D t - \frac{1}{2}\Gamma \sigma^2S^2\,\D t+ q \delta S\,\D t+(C-\delta S)r\,\D t\;.
 \end{equation}
-Several aspects of this are noteworthy.  First, as noted earlier, the delta hedge (being long $\delta$ shares of the underlying) eliminates the exposure to changes in the price of the underlying---there is no $\D S$ term in \eqref{hedgeprofits}.  Second, $\Theta$ will be negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$.  Third, this portfolio is ``short gamma.''  We can also say it is ``short convexity,'' the term ``convexity'' \index{convexity} referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).  The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses.  Finally, the portfolio is earning dividends but paying interest.
+Several aspects of this are noteworthy. First, as noted earlier, the
+delta hedge (being long $\delta$ shares of the underlying) eliminates
+the exposure to changes in the price of the underlying---there is no
+$\D S$ term in [\[hedgeprofits\]](#hedgeprofits){reference-type="eqref"
+reference="hedgeprofits"}. Second, $\Theta$ will be negative, because it
+captures the time decay in the option value; being short the option
+means the portfolio will profit from time decay at rate $-\Theta$.
+Third, this portfolio is "short gamma." We can also say it is "short
+convexity," the term "convexity" referring to the convex shape of the
+option value as a function of the price of the underlying, which
+translates mathematically to a positive second derivative (gamma). The
+volatility in the stock makes convexity valuable, and a portfolio that
+is short convexity will suffer losses. Finally, the portfolio is earning
+dividends but paying interest.
 
 It is straightforward to check, from the definitions of $\Theta$, $\Gamma$ and $\delta$ in the preceding section, that
-the sum of the terms in \eqref{hedgeprofits} is zero.  The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest.
+the sum of the terms in
+[\[hedgeprofits\]](#hedgeprofits){reference-type="eqref"
+reference="hedgeprofits"} is zero. The time decay in the option value
+and dividends received on the shares of the underlying exactly offset
+the losses due to convexity and interest.
 Therefore, the delta hedge is a perfect hedge.  The portfolio, which has a zero cost, neither earns nor loses money.  This is true not only on average but for every possible change in the stock price.  
 
-To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in $S$ over time and sum the gains and losses over discrete rebalancing periods.  One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses.  This is discussed further in Sect.~\ref{s_blackscholes_vba}.
+To see how well this works with only discrete adjustments to the hedge,
+one can simulate the changes in $S$ over time and sum the gains and
+losses over discrete rebalancing periods. One should input the actual
+(not risk-neutral) expected rate of return on the asset to compute the
+actual distribution of gains and losses. This is discussed further in
+Sect. [\[s_blackscholes_vba\]](#s_blackscholes_vba){reference-type="ref"
+reference="s_blackscholes_vba"}.
 
-\section{Gamma Hedging}\label{s_gammahedging}
+# Gamma Hedging {#s_gammahedging}
 
-To attempt to improve the performance of a discretely rebalanced delta hedge, one can use another option to create a portfolio that is both delta and gamma neutral.  Being delta neutral means hedged as in the previous section---the portfolio value has no exposure to changes in the underlying asset price.  In other words, it means that the derivative of the portfolio value with respect to the price of the underlying (the portfolio delta) is zero.  Being gamma neutral means that the delta of the portfolio has no exposure to changes in the underlying price, which is equivalent to the second derivative of the portfolio value with respect to the price of the underlying (the portfolio gamma) being zero.  If the delta truly did not change, then there would be no need to rebalance continuously, and hence no hedging error introduced by only adjusting the portfolio at discrete times rather than continuously.   However, there is certainly no guarantee that a discretely-rebalanced delta/gamma hedge will perform better than a discretely rebalanced delta hedge.  \index{gamma hedge}
+To attempt to improve the performance of a discretely rebalanced delta
+hedge, one can use another option to create a portfolio that is both
+delta and gamma neutral. Being delta neutral means hedged as in the
+previous section---the portfolio value has no exposure to changes in the
+underlying asset price. In other words, it means that the derivative of
+the portfolio value with respect to the price of the underlying (the
+portfolio delta) is zero. Being gamma neutral means that the delta of
+the portfolio has no exposure to changes in the underlying price, which
+is equivalent to the second derivative of the portfolio value with
+respect to the price of the underlying (the portfolio gamma) being zero.
+If the delta truly did not change, then there would be no need to
+rebalance continuously, and hence no hedging error introduced by only
+adjusting the portfolio at discrete times rather than continuously.
+However, there is certainly no guarantee that a discretely-rebalanced
+delta/gamma hedge will perform better than a discretely rebalanced delta
+hedge.
 
-A delta/gamma hedge can be constructed as follows.  Suppose we have written (shorted) a call option and we want to hedge both the delta and gamma using the underlying asset and another option, for example, another call option with a different strike.  In practice, one would want to use a liquid option for this purpose, which typically means that the strike of the option will be near the current value of the underlying (i.e., the option used to hedge would be approximately at the money). 
+A delta/gamma hedge can be constructed as follows. Suppose we have
+written (shorted) a call option and we want to hedge both the delta and
+gamma using the underlying asset and another option, for example,
+another call option with a different strike. In practice, one would want
+to use a liquid option for this purpose, which typically means that the
+strike of the option will be near the current value of the underlying
+(i.e., the option used to hedge would be approximately at the money).
 
 Let $\delta$ and $\Gamma$ denote the delta and gamma of the written option and let $\delta'$ and $\Gamma'$ denote the delta and gamma of the option used to hedge.  Consider holding  $a$ of shares of the stock and $b$ units of the option used to hedge in conjunction with the short option.  The delta of the stock is one ($\D S/\D S = 1$), so to obtain a zero portfolio delta we need
 \begin{align}
@@ -235,7 +378,10 @@ Let $\delta$ and $\Gamma$ denote the delta and gamma of the written option and l
 \intertext{The gamma of the stock is zero ($\D^2 S/\D S^2 = d\,1/\D S = 0$), so to obtain a zero portfolio gamma we need}
 0 &= - \Gamma + b\Gamma'\;. \label{portfoliogamma}
 \end{align}
-Equation \eqref{portfoliogamma} shows that we should hold enough of the second option to neutralize the gamma of the option we have shorted; i.e.,
+Equation [\[portfoliogamma\]](#portfoliogamma){reference-type="eqref"
+reference="portfoliogamma"} shows that we should hold enough of the
+second option to neutralize the gamma of the option we have shorted;
+i.e.,
 \begin{align*}
 b&= \frac{\Gamma}{\Gamma'}
 \intertext{Equation \eqref{portfoliodelta} shows that we should use the stock to delta hedge the portfolio of options; i.e.,}
@@ -243,32 +389,83 @@ a&=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 \end{align*}
 
 
-\section{Implied Volatilities}\label{s_impliedvolatility}
+# Implied Volatilities {#s_impliedvolatility}
 
-All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient $\sigma$.  We can estimate $\sigma$ from historical data (see Chap.~\ref{c_stochasticvolatility}), or estimate it from the prices of other options.  The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the $\sigma$ that is input, so one can take the price as given and infer $\sigma$ from the formula. The $\sigma$ computed in this way is called the ``implied volatility.'' \index{implied volatility}  The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.  The calculation of implied volatilities is discussed in Sect.~\ref{s_blackscholes_vba}.
+All of the inputs into the option pricing formulas are in theory
+observable, except for the volatility coefficient $\sigma$. We can
+estimate $\sigma$ from historical data (see
+Chap. [\[c_stochasticvolatility\]](#c_stochasticvolatility){reference-type="ref"
+reference="c_stochasticvolatility"}), or estimate it from the prices of
+other options. The latter method exploits the fact that there is a
+one-to-one relationship between the price given by the Black-Scholes
+formula and the $\sigma$ that is input, so one can take the price as
+given and infer $\sigma$ from the formula. The $\sigma$ computed in this
+way is called the "implied volatility." The implied volatility from one
+option can be used to price another (perhaps non-traded or less actively
+traded) option. The calculation of implied volatilities is discussed in
+Sect. [\[s_blackscholes_vba\]](#s_blackscholes_vba){reference-type="ref"
+reference="s_blackscholes_vba"}.
+
+Even if we acknowledge that the model is not correct, the computation of
+implied volatilities is still useful for characterizing market prices,
+because we can quickly describe an option as "expensive" or "cheap"
+depending on whether its implied volatility is large or small. Somewhat
+paradoxically, it is less easy to see if an option is expensive or cheap
+by looking at its price, because one must consider the price in the
+context of the exercise price and maturity. To some extent, the implied
+volatility normalizes the price relative to the exercise price and
+maturity. Of course, it does not always pay to sell expensive options or
+buy cheap options, unless they are expensive or cheap relative to an
+accurate model!
 
 
-Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as ``expensive'' or ``cheap'' depending on whether its implied volatility is large or small.  Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity.  To some extent, the implied volatility normalizes the price relative to the exercise price and maturity.  Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!
+# Term Structure of Volatility {#s_timevaryingvolatility}
 
-
-
-\section{Term Structure of Volatility}\label{s_timevaryingvolatility}
-
-The option pricing formulas in this chapter are derived from the fact that the natural logarithm of the stock price at maturity is normally distributed with a certain mean (depending on the numeraire) and variance equal to $\sigma^2T$.  It is not actually necessary that the volatility be constant.  The formulas are still valid if
+The option pricing formulas in this chapter are derived from the fact
+that the natural logarithm of the stock price at maturity is normally
+distributed with a certain mean (depending on the numeraire) and
+variance equal to $\sigma^2T$. It is not actually necessary that the
+volatility be constant. The formulas are still valid if
 $$\frac{\D S(t)}{S(t)}= \mu(t)\,\D t + \sigma(t)\,\D B(t)$$
 where $\sigma(t)$ is some non-random function of time (and again $\mu$ can be a quite general random process).  In this case, the variance of $\log S(T)$ will be
 \begin{equation}\label{totalvariance}
 \int_0^T \sigma^2(t)\,\D t\;,
 \end{equation}
-which is essentially the sum of the instantaneous variances $\sigma^2(t)\,\D t$.  In the $d_1$'s and $d_2$'s in the option pricing formulas, $\sigma^2T$ should be replaced by \eqref{totalvariance}.  A convenient way of expressing this is as follows.  Let $\sigma_{\text{avg}}$ be the positive number such that
+which is essentially the sum of the instantaneous variances
+$\sigma^2(t)\,\D t$. In the $d_1$'s and $d_2$'s in the option pricing
+formulas, $\sigma^2T$ should be replaced by
+[\[totalvariance\]](#totalvariance){reference-type="eqref"
+reference="totalvariance"}. A convenient way of expressing this is as
+follows. Let $\sigma_{\text{avg}}$ be the positive number such that
 \begin{equation}\label{sigmaavg100}
 \sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2(t)\,\D t\;.
 \end{equation}
-Then we simply need to input $\sigma_{\text{avg}}$ as \verb!sigma! in our option pricing functions.  We will call $\sigma_{\text{avg}}$ the ``average volatility,'' though note that it is not really the average of $\sigma(t)$ but instead is the square root of the average of $\sigma^2(t)$.
+Then we simply need to input $\sigma_{\text{avg}}$ as `sigma` in our
+option pricing functions. We will call $\sigma_{\text{avg}}$ the
+"average volatility," though note that it is not really the average of
+$\sigma(t)$ but instead is the square root of the average of
+$\sigma^2(t)$.
 
-It is important to recognize that, throughout this chapter, date 0 means the date at which the option is being valued.  It is not necessarily the date at which the option was first bought or sold.  So $\sigma_{\text{avg}}$ is the average (in a sense) volatility during the remaining lifetime of the option, which need not be the same as the average during the option's  entire lifetime.  It is this remaining volatility that is important for pricing and hedging.  Moreover, it is a mistake at date 0 to use $\sigma(0)$ as the volatility to compute prices and hedges.  Instead, prices and hedges should be based on $\sigma_{\text{avg}}$.
+It is important to recognize that, throughout this chapter, date 0 means
+the date at which the option is being valued. It is not necessarily the
+date at which the option was first bought or sold. So
+$\sigma_{\text{avg}}$ is the average (in a sense) volatility during the
+remaining lifetime of the option, which need not be the same as the
+average during the option's entire lifetime. It is this remaining
+volatility that is important for pricing and hedging. Moreover, it is a
+mistake at date 0 to use $\sigma(0)$ as the volatility to compute prices
+and hedges. Instead, prices and hedges should be based on
+$\sigma_{\text{avg}}$.
 
-These considerations provide a way to address the following situation.  If we compute implied volatilities for options with different maturities, we will normally get different numbers.  For example, consider two at-the-money  options with maturities $T_1$ and $T_2$ where $T_2>T_1$.  Denote the implied volatilities by $\hat{\sigma}_1$ and $\hat{\sigma}_2$.  We want to interpret these as average volatilities for the time periods $[0,T_1]$ and $[0,T_2]$ respectively.  This requires the existence of a function $\sigma(t)$ such that
+These considerations provide a way to address the following situation.
+If we compute implied volatilities for options with different
+maturities, we will normally get different numbers. For example,
+consider two at-the-money options with maturities $T_1$ and $T_2$ where
+$T_2>T_1$. Denote the implied volatilities by $\hat{\sigma}_1$ and
+$\hat{\sigma}_2$. We want to interpret these as average volatilities for
+the time periods $[0,T_1]$ and $[0,T_2]$ respectively. This requires the
+existence of a function $\sigma(t)$ such that
+
 $$\hat{\sigma}_1^2 = \frac{1}{T_1}\int_0^{T_1} \sigma^2(t)\,\D t \quad \text{and} \quad \hat{\sigma}_2^2 = \frac{1}{T_2}\int_0^{T_2} \sigma^2(t)\,\D t\; .$$
 This would imply
 $$\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 = \int_{T_1}^{T_2} \sigma^2(t)\,\D t\; ,$$
@@ -284,18 +481,61 @@ More generally, given a sequence of at-the-money options with maturities $T_1<T_
 $$\sigma(t) = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}$$
 for $T_i<t\leq T_{i+1}$, provided the expression inside the square root symbol is positive. This $\sigma(t)$ is often called the ``term structure of (implied) volatilities.''  \index{term structure of volatility} Generally, we may expect $\sigma(t)$ to be a decreasing function of time $t$ when the current market is especially volatile and to be an increasing function when the current market is especially quiet.  
 
-\section{Smiles and Smirks}\label{s_smiles}
-If we compute implied volatilities for options  with the same maturity but different strikes, we will again obtain different implied volatilities for different options.  If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money).  The implied volatility will then generally flatten out or increase slightly at higher strikes.  The graph looks like a twisted smile (smirk).  \index{smile} \index{smirk} This pattern has been very pronounced in equity index option prices since the crash of 1987.  In contrast to the term structure of implied volatilities, this ``moneyness'' structure of implied volatilities is simply inconsistent with the model.  It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has ``fat tails'') with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is ``skewed'').  We will return to this subject in Sect.~\ref{s_smilesagain}.
+# Smiles and Smirks {#s_smiles}
 
+If we compute implied volatilities for options with the same maturity
+but different strikes, we will again obtain different implied
+volatilities for different options. If we plot implied volatility
+against the strike, the pattern one normally sees for equities and
+equity indices is the implied volatility declining as the strike
+increases until the strike is somewhere near the current value of the
+underlying (so the option is at the money). The implied volatility will
+then generally flatten out or increase slightly at higher strikes. The
+graph looks like a twisted smile (smirk). This pattern has been very
+pronounced in equity index option prices since the crash of 1987. In
+contrast to the term structure of implied volatilities, this "moneyness"
+structure of implied volatilities is simply inconsistent with the model.
+It suggests that the risk-neutral return distribution is not lognormal
+but instead exhibits a higher likelihood of extreme returns than the
+lognormal distribution (i.e., it has "fat tails") with the likelihood of
+extreme negative returns being higher than the likelihood of extreme
+positive returns (i.e., it is "skewed"). We will return to this subject
+in Sect. [\[s_smilesagain\]](#s_smilesagain){reference-type="ref"
+reference="s_smilesagain"}.
 
-\section{Calculations in VBA}\label{s_blackscholes_vba}
+# Calculations in VBA {#s_blackscholes_vba}
 
-The Black-Scholes call and put formulas and Greeks can easily be calculated in an Excel worksheet, using the standard functions \verb!Exp!, \verb!Ln! and the cumulative normal distribution function, which  is provided in Excel as \verb!NormSDist!.  However, if these are to be used repeatedly, it is useful to create functions in VBA.   In VBA, the cumulative normal distribution function is called \verb!Application.NormSDist!.  Also, the natural logarithm function in VBA is \verb!Log! rather than \verb!Ln! and the square root function in VBA is \verb!Sqr! rather than \verb!Sqrt!.
+The Black-Scholes call and put formulas and Greeks can easily be
+calculated in an Excel worksheet, using the standard functions `Exp`,
+`Ln` and the cumulative normal distribution function, which is provided
+in Excel as `NormSDist`. However, if these are to be used repeatedly, it
+is useful to create functions in VBA. In VBA, the cumulative normal
+distribution function is called `Application.NormSDist`. Also, the
+natural logarithm function in VBA is `Log` rather than `Ln` and the
+square root function in VBA is `Sqr` rather than `Sqrt`.
 
+## Black-Scholes Call and Put Formulas {#black-scholes-call-and-put-formulas .unnumbered}
+The following function implements the Black-Scholes call pricing
+formula. For the sake of completeness, the function returns a value even
+when a volatility of zero is input, in which case the formula
+[\[blackscholescall\]](#blackscholescall){reference-type="eqref"
+reference="blackscholescall"} is invalid (it involves division by zero
+in the calculation of $d_1$ and $d_2$). If the volatility is zero, then
+the stock is riskless and should appreciate at rate $r-q$. Moreover the
+option is riskless and its date--0 value should be the date--T value
+discounted at the risk-free rate. This implies that the call value at
+date 0 is[^1]
 
-\subsection*{Black-Scholes Call and Put Formulas}
-The following function implements the Black-Scholes call pricing formula. For the sake of completeness, the function returns a value even when a volatility of zero is input, in which case the formula \eqref{blackscholescall} is invalid (it involves division by zero in the calculation of $d_1$ and $d_2$).  If the volatility is zero, then the stock is riskless and should appreciate at rate $r-q$.  Moreover the option is riskless and its date--0 value should be the date--T value discounted at the risk-free rate.  This implies that the call value at date~0 is\footnote{This result can be verified by a simple arbitrage argument.  For example, if the call value were less than this formula, then put-call parity would show that the put price is negative, which is impossible.  On the other hand, if the call price is greater than this formula (and hence positive), then put-call parity shows that the put price is positive, and it is impossible that both the put and call will finish in the money (so, given that they are riskless, only one should have a positive value).}
-$$\E^{-rT}\max\left(0,\E^{(r-q)T}S(0)-K\right) = \max \left(0, \E^{-qT}S(0)-\E^{-rT}K\right)\; .$$
+[^1]: This result can be verified by a simple arbitrage argument. For
+    example, if the call value were less than this formula, then
+    put-call parity would show that the put price is negative, which is
+    impossible. On the other hand, if the call price is greater than
+    this formula (and hence positive), then put-call parity shows that
+    the put price is positive, and it is impossible that both the put
+    and call will finish in the money (so, given that they are riskless,
+    only one should have a positive value).
+    
+    $$\E^{-rT}\max\left(0,\E^{(r-q)T}S(0)-K\right) = \max \left(0, \E^{-qT}S(0)-\E^{-rT}K\right)\; .$$
 
 \addcontentsline{lof}{figure}{Black Scholes Call}
 \small\begin{verbatim}
@@ -335,8 +575,13 @@ gives the same result as
 \verb!Black_Scholes_Call(exp(-q*T)*S,K,r,sigma,0,T)!.
 \end{center}
 \normalsize
-In the latter formulation, we view the underlying asset as the portfolio which starts with $\E^{-qT}$ shares of the asset and reinvests dividends until date $T$.  This portfolio has value $S(T)$ at date $T$, so a European call option on this non-dividend-paying portfolio is equivalent to a European call option on the stock.  The initial value of the portfolio is $\E^{-qT}S(0)$, which is input as the asset price in the latter formulation.
-
+In the latter formulation, we view the underlying asset as the portfolio
+which starts with $\E^{-qT}$ shares of the asset and reinvests dividends
+until date $T$. This portfolio has value $S(T)$ at date $T$, so a
+European call option on this non-dividend-paying portfolio is equivalent
+to a European call option on the stock. The initial value of the
+portfolio is $\E^{-qT}S(0)$, which is input as the asset price in the
+latter formulation.
 
 The Black-Scholes formula for the value of a European put option can be implemented as follows.
 \addcontentsline{lof}{figure}{Black Scholes Put}
@@ -363,9 +608,14 @@ End If
 End Function
 \end{verbatim}\normalsize
 
-\subsection*{Black-Scholes Greeks}
+## Black-Scholes Greeks {#black-scholes-greeks .unnumbered}
 
-The delta and gamma of a European call option can be computed with the following functions.  The other Greeks are obviously calculated in a similar manner.  Note that the constant $\pi = 3.14159...$ is provided in Excel as the ``function'' \verb!Pi()! and can be accessed in Excel VBA as \verb!Application.Pi!. 
+The delta and gamma of a European call option can be computed with the
+following functions. The other Greeks are obviously calculated in a
+similar manner. Note that the constant $\pi = 3.14159...$ is provided in
+Excel as the "function" `Pi()` and can be accessed in Excel VBA as
+`Application.Pi`.
+
 \addcontentsline{lof}{figure}{Black Scholes Call Delta}
 \small\begin{verbatim}
 Function Black_Scholes_Call_Delta(S, K, r, sigma, q, T)
@@ -409,8 +659,14 @@ End Function
 
 
 
-\subsection*{Implied Volatilities}
-We could find an implied volatility using the Solver tool, but then we would have to re-run Solver each time we changed one of the input values.  We will need to solve similar problems on several occasions, so it seems worthwhile to program a Solver-like function in VBA.  We will write this in such a way that it can easily be applied in other contexts.  We will assume there is a single variable for which we want to solve, solving for multiple variables being  more difficult.
+## Implied Volatilities {#implied-volatilities .unnumbered}
+We could find an implied volatility using the Solver tool, but then we
+would have to re-run Solver each time we changed one of the input
+values. We will need to solve similar problems on several occasions, so
+it seems worthwhile to program a Solver-like function in VBA. We will
+write this in such a way that it can easily be applied in other
+contexts. We will assume there is a single variable for which we want to
+solve, solving for multiple variables being more difficult.
 
 Letting \verb!C! denote the market price of a European call option, the implied volatility is \verb!sigma! satisfying
 \small\begin{center}
@@ -420,17 +676,47 @@ The solution of this equation is called a ``root'' of the function \index{root}
 \small\begin{center}
 \verb! Black_Scholes_Call(S,K,r,sigma,q,T) - C!,
 \end{center}\normalsize
-and the problem of finding roots of functions is a standard numerical problem.  Roots are found by what are essentially sophisticated trial-and-error methods.  The simplest method is to start with upper and lower bounds for $\sigma$ and repeatedly bisect the interval containing $\sigma$, each time finding a new upper or lower bound.  \index{bisection} The program below is a standard bisection routine.
+and the problem of finding roots of functions is a standard numerical
+problem. Roots are found by what are essentially sophisticated
+trial-and-error methods. The simplest method is to start with upper and
+lower bounds for $\sigma$ and repeatedly bisect the interval containing
+$\sigma$, each time finding a new upper or lower bound. The program
+below is a standard bisection routine.
 
+For there to be a volatility that equates the market price to the
+Black-Scholes price, it is necessary for the call option price to
+satisfy the arbitrage bound[^1] $C +\E^{-rT}K \geq \E^{-qT}S$. We check
+this condition at the beginning of the program and supply an error
+message if it is violated.
 
-For there to be a volatility that equates the market price to the Black-Scholes price, it is necessary for the call option price to satisfy the arbitrage bound\footnote{Note that by put-call parity---equation \eqref{putcallparity11}---the difference between the left and right-hand sides of this inequality is the value of the put with the same strike and maturity as the call.  Thus, the inequality is equivalent to the statement that the put value is nonnegative, which must be the case.} $C +\E^{-rT}K \geq \E^{-qT}S$.  We check this condition at the beginning of the program and supply an error message if it is violated.  
+[^1]: Note that by put-call parity---equation
+    [\[putcallparity11\]](#putcallparity11){reference-type="eqref"
+    reference="putcallparity11"}---the difference between the left and
+    right-hand sides of this inequality is the value of the put with the
+    same strike and maturity as the call. Thus, the inequality is
+    equivalent to the statement that the put value is nonnegative, which
+    must be the case.
 
 We need to input  all of the inputs of \verb!Black_Scholes_Call! other than~$\sigma$, and we need to input the call option price.  The following uses an error tolerance of $10^{-6}$. \index{error tolerance}
 Therefore, the value that is returned will equal the exact implied volatility to at least five decimal places.  The bisection is begun with a lower bound of $\sigma =0$.  An iterative procedure is used to find an upper bound, starting with $\sigma = 100$\%.
 
 \newpage
 
-This same algorithm can be used to find a real number $x$ such that $f(x)=0$ for any (continuous) function $f$.  The only changes necessary are in the right hand sides of the assignment statements for \verb!flower!, \verb!fupper!, and \verb!fguess! and in finding lower and upper bounds (and obviously one would not check the arbitrage bound in general).\footnote{The key to the function  is checking each time whether the root is between the guess and the upper bound or between the guess and the lower bound.  If $\text{fupper} \times \text{fguess} < 0$, then there is a root between the guess and the upper bound.  In this case, we define the new lower bound to be the old  guess and define the new guess to be the midpoint of this new lower bound and the old upper bound.  We do the opposite if we find the root is between the guess and the lower bound.}  We will use this algorithm on several occasions to find roots of functions.
+This same algorithm can be used to find a real number $x$ such that
+$f(x)=0$ for any (continuous) function $f$. The only changes necessary
+are in the right hand sides of the assignment statements for `flower`,
+`fupper`, and `fguess` and in finding lower and upper bounds (and
+obviously one would not check the arbitrage bound in general).[^1] We
+will use this algorithm on several occasions to find roots of functions.
+
+[^1]: The key to the function is checking each time whether the root is
+    between the guess and the upper bound or between the guess and the
+    lower bound. If $\text{fupper} \times \text{fguess} < 0$, then there
+    is a root between the guess and the upper bound. In this case, we
+    define the new lower bound to be the old guess and define the new
+    guess to be the midpoint of this new lower bound and the old upper
+    bound. We do the opposite if we find the root is between the guess
+    and the lower bound.
 
 \addcontentsline{lof}{figure}{Black Scholes Implied Vol}
 \small\begin{verbatim}
@@ -482,19 +768,46 @@ There are faster root-finding methods than bisection.  These use other methods t
 \begin{center}
 \verb!guess = guess - call/vega!\;.
 \end{center}
-This amounts to approximating the Black-Scholes formula as being linear in~$\sigma$ and using the root of the approximation as the updated guess.  This is the essence of the \emph{Newton-Raphson} method.  \index{Newton-Raphson method} A similar idea that does not require the computation of vega is to keep track of the two most recent (\verb!guess!, \verb!call!) pairs and to approximate \verb!vega! as: 
+This amounts to approximating the Black-Scholes formula as being linear
+in $\sigma$ and using the root of the approximation as the updated
+guess. This is the essence of the *Newton-Raphson* method. A similar
+idea that does not require the computation of vega is to keep track of
+the two most recent (`guess`, `call`) pairs and to approximate `vega`
+as:
 \begin{center}
 \verb!vega = (call - prior_call) / (guess - prior_guess)!\;.
  \end{center}
 This is the essence of the \emph{secant} method. \index{secant method}
 
-\subsection*{Discretely-Rebalanced Delta Hedges}
-To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return $\mu$.  We consider adjusting the hedge at dates $0=t_0<t_1<\cdots<t_N=T$, with $t_i-t_{i-1}=\varDelta t = T/N$ for each $i$.  The changes in the natural logarithm of the stock price between successive dates $t_{i-1}$ and $t_i$ are simulated as
+## Discretely-Rebalanced Delta Hedges {#discretely-rebalanced-delta-hedges .unnumbered}
+To compute the real-world distribution of gains and losses from a
+discretely-rebalanced delta hedge, we input the expected rate of return
+$\mu$. We consider adjusting the hedge at dates
+$0=t_0<t_1<\cdots<t_N=T$, with $t_i-t_{i-1}=\varDelta t = T/N$ for each
+$i$. The changes in the natural logarithm of the stock price between
+successive dates $t_{i-1}$ and $t_i$ are simulated as
+
 $$\varDelta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\varDelta t + \sigma\,\varDelta B\; ,$$
 where $\varDelta B$ is normally distributed with mean zero and variance $\varDelta t$.  The random variables $\varDelta B$ are simulated as standard normals multiplied by
 $\sqrt{\varDelta t}$.  We begin with the portfolio that is short a call, long $\delta$ shares of the underlying, and short $\delta S-C$ in cash.  After the stock price changes, say from $S$ to $S'$, we compute the new delta $\delta'$.  The cash flow from adjusting the hedge is $(\delta-\delta')S'$.  Accumulation (or payment) of interest on the cash position is captured by the factor $e^{r\varDelta t}$.  Continuous payment of dividends is modelled similarly: the dividends earned during the period $\varDelta t$ is taken to be $\delta S\left(e^{q\varDelta t}-1\right)$.  The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge.  At date $T$, the value of the portfolio is the cash position less the intrinsic value of the option.
 
-To describe the distribution of gains and losses, we compute percentiles of the distribution.  You should see that the hedge becomes more nearly perfect as the number of periods $N$ is increased.  Note that this is true regardless of the $\mu$ that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Excel \verb!Percentile! function.\footnote{If numsims = 11 and pct =0.1, the percentile function returns the second lowest element in the series.  The logic is that 10\% of the numbers, excluding the number returned, are below the number returned---i.e., 1 out of the other 10 are below---and 90\% of the others are above.  In particular, if pct = 0.5, the percentile function returns the median.  When necessary, the function interpolates; for example, if numsims = 10 and pct=0.1, then the number returned is an interpolation between the lowest and second lowest numbers.} 
+To describe the distribution of gains and losses, we compute percentiles
+of the distribution. You should see that the hedge becomes more nearly
+perfect as the number of periods $N$ is increased. Note that this is
+true regardless of the $\mu$ that is input, which reaffirms the point
+that option values and hedges do not depend on the expected rate of
+return of the underlying. The percentile is calculated with the Excel
+`Percentile` function.[^1]
+
+[^1]: If numsims = 11 and pct =0.1, the percentile function returns the
+    second lowest element in the series. The logic is that 10% of the
+    numbers, excluding the number returned, are below the number
+    returned---i.e., 1 out of the other 10 are below---and 90% of the
+    others are above. In particular, if pct = 0.5, the percentile
+    function returns the median. When necessary, the function
+    interpolates; for example, if numsims = 10 and pct=0.1, then the
+    number returned is an interpolation between the lowest and second
+    lowest numbers.
 
 \addcontentsline{lof}{figure}{Simulated Delta Hedge Profit}
 \small\begin{verbatim}
@@ -546,13 +859,17 @@ Simulated_Delta_Hedge_Profit = Application.Percentile(Profit, pct)
 End Function
 \end{verbatim}\normalsize
 
-\section*{Problems}\addcontentsline{toc}{section}{Problems}
+# Problems {#problems .unnumbered}
 \begin{prob} \label{problem4.1} Create an Excel worksheet in which the user inputs $K$, $r$, $\sigma$, $q$ and $T$.  Compute the delta of a call option 
 for stock prices $S = .01K$, $.02K$, \ldots, $1.99K$, $2K$ (i.e., $S = iK/100$ for $i=1, \ldots 200$) and plot the delta against the stock price.  
 \end{prob}
 \begin{prob} The delta of a digital option that pays \$1 when $S(T)>K$ is 
 $$\frac{\E^{-rT}\nd(d_2)}{\sigma S\sqrt{T}}\; .$$
-Repeat  the previous problem for the delta of this digital.  Given that in reality it is costly to trade (due to commissions, the bid-ask spread and possible adverse price impacts for large trades), do you see any problems with delta hedging a short digital near maturity if it is close to being at the money?
+Repeat the previous problem for the delta of this digital. Given that in
+reality it is costly to trade (due to commissions, the bid-ask spread
+and possible adverse price impacts for large trades), do you see any
+problems with delta hedging a short digital near maturity if it is close
+to being at the money?
 \end{prob}
 \begin{prob} Repeat Prob.~\ref{problem4.1} for the gamma of a call option.
 \end{prob}\begin{prob} Use put-call parity to derive the Greeks of a put option, and write a VBA function that computes the value and Greeks.
