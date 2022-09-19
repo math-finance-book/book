@@ -1,29 +1,85 @@
-\chapter[Fixed Income Concepts]{Fixed Income Concepts}\label{c_fixedincomeconcepts}
+# Fixed Income Concepts {#c_fixedincomeconcepts}
 
-In this part of the book, we will study the pricing and hedging of fixed-income derivatives, that is, derivatives that can be viewed as written on bonds or on interest rates.  The complexities of this subject stem from the fact that the underlying bonds or rates will have time-varying and generally random volatilities and have volatilities that must be linked in some way to each other.  We are not free to arbitrarily specify the volatilities and correlations, as we can, for example, with basket equity options, because such a specification may imply there is an arbitrage opportunity available from trading the underlying assets, and, of course, one could not trust a derivative value or a hedging strategy derived from such a model.  There are many books that provide a more comprehensive and advanced treatment than we will be able to give here, among which  Rebonato \cite{Rebonato98, Rebonato02}, James and Webber \cite{JW} and Brigo and Mercurio \cite{BM} seem particularly useful.
+In this part of the book, we will study the pricing and hedging of
+fixed-income derivatives, that is, derivatives that can be viewed as
+written on bonds or on interest rates. The complexities of this subject
+stem from the fact that the underlying bonds or rates will have
+time-varying and generally random volatilities and have volatilities
+that must be linked in some way to each other. We are not free to
+arbitrarily specify the volatilities and correlations, as we can, for
+example, with basket equity options, because such a specification may
+imply there is an arbitrage opportunity available from trading the
+underlying assets, and, of course, one could not trust a derivative
+value or a hedging strategy derived from such a model. There are many
+books that provide a more comprehensive and advanced treatment than we
+will be able to give here, among which Rebonato
+[@Rebonato98; @Rebonato02], James and Webber [@JW] and Brigo and
+Mercurio [@BM] seem particularly useful.
 
-We will focus on derivatives and underlyings that have very little default risk and ignore the pricing of default (credit) risk.  Credit risk and credit derivatives are booming areas in both theory and practice.  For this topic, one can consult the recent books of Bielecki and Rutkowski \cite{BR}, Duffie and Singleton \cite{DS}, Sch{\"o}nbucher \cite{Schonbucher}, and Tavakoli \cite{Tavakoli}. 
+We will focus on derivatives and underlyings that have very little
+default risk and ignore the pricing of default (credit) risk. Credit
+risk and credit derivatives are booming areas in both theory and
+practice. For this topic, one can consult the recent books of Bielecki
+and Rutkowski [@BR], Duffie and Singleton [@DS], Schönbucher
+[@Schonbucher], and Tavakoli [@Tavakoli].
 Another important topic that will not be covered is mortgages.
 
 In the first section, we introduce a fundamental construct: the yield curve, by which we mean the yields of (possibly theoretical) zero-coupon bonds of various maturities.  The last two sections of the chapter (on principal components) are optional---nothing else in the book builds upon them.
 
-\section{The Yield Curve}\label{s_yieldcurve}
+# The Yield Curve {#s_yieldcurve}
 
-Given prices of discount (zero-coupon) bonds of all maturities, any coupon paying bond can be priced as a portfolio of discount bonds.  The relationship between time to maturity and the price of the corresponding discount bond with \$1 face value is sometimes called the discount function.  An equivalent concept is the yield curve, \index{yield curve}which is the relationship between time to maturity and the yield of the corresponding discount bond.  Yields can be quoted according to different compounding conventions (semi-annual being the most common), but we will continue to use continuous compounding.\footnote{The relationship between the annually compounded rate $y_a$, the semi-annually compounded rate $y_s$ and the continuously compounded rate $y_c$ is  $\E^{y_c} = 1+y_a = (1+y_s/2)^2$.}
-With this convention, the yield of a zero-coupon bond \index{discount bond yield} with  \$1 face value having $\tau$ years to maturity and price $P$ is defined to be the rate $y$ such that
-$P = \E^{-y\tau}$.  Denoting this yield $y$ at maturity $\tau$ by $y(\tau)$, the yield curve is the collection of yields $\{y(\tau)| \tau>0\}$, conventionally plotted with maturity~$\tau$ on the horizontal axis and the yields $y(\tau)$ on the vertical.  Usually (but certainly not always) this is an upward sloping curve, meaning that rates at longer maturities are higher than rates at shorter maturities.  
+Given prices of discount (zero-coupon) bonds of all maturities, any coupon paying bond can be priced as a portfolio of discount bonds.  The relationship between time to maturity and the price of the corresponding discount bond with \$1 face value is sometimes called the discount function.  An equivalent concept is the yield curve, \index{yield curve}which is the relationship between time to maturity and the yield of the
+corresponding discount bond. Yields can be quoted according to different
+compounding conventions (semi-annual being the most common), but we will
+continue to use continuous compounding.[^1] With this convention, the
+yield of a zero-coupon bond
 
-Some amount of estimation is necessary to compute the yield curve.  We would like to know yields at arbitrary maturities, but there are not enough actively traded zero-coupon bonds to provide this information.  Thus, we have to ``fill in'' the missing maturities.  We may also use coupon-paying bonds (or swap rates, as we will discuss later) to estimate the yields.
+[^1]: The relationship between the annually compounded rate $y_a$, the
+    semi-annually compounded rate $y_s$ and the continuously compounded
+    rate $y_c$ is $\E^{y_c} = 1+y_a = (1+y_s/2)^2$.
+    
+\index{discount bond yield} with  \$1 face value having $\tau$ years to maturity and price $P$ is defined to be the rate $y$ such that
+$P = \E^{-y\tau}$. Denoting this yield $y$ at maturity $\tau$ by
+$y(\tau)$, the yield curve is the collection of yields
+$\{y(\tau)| \tau>0\}$, conventionally plotted with maturity $\tau$ on
+the horizontal axis and the yields $y(\tau)$ on the vertical. Usually
+(but certainly not always) this is an upward sloping curve, meaning that
+rates at longer maturities are higher than rates at shorter maturities.
 
-The most popular method of estimating the yield curve from bond prices is to fit a ``cubic spline,'' \index{cubic spline} using the prices of a finite set of actively traded bonds.  Given the set of bonds, let $P_i$ denote the price of bond $i$, $N_i$ the number of dates at which bond $i$ pays a coupon or its face value, and $\{\tau_{ij}| j=1, \ldots, N_i\}$ the dates at which bond $i$ pays a coupon or its face value.  Finally, let $C_{ij}$ denote the cash flow paid by bond $i$ at date $\tau_{ij}$ for $j=1,\ldots,N_i$.  Then for each $i$ it ``should'' be the case that
+Some amount of estimation is necessary to compute the yield curve. We
+would like to know yields at arbitrary maturities, but there are not
+enough actively traded zero-coupon bonds to provide this information.
+Thus, we have to "fill in" the missing maturities. We may also use
+coupon-paying bonds (or swap rates, as we will discuss later) to
+estimate the yields.
+
+The most popular method of estimating the yield curve from bond prices is to fit a "cubic spline," \index{cubic spline} using the prices of a finite set of actively traded bonds. Given the set
+of bonds, let $P_i$ denote the price of bond $i$, $N_i$ the number of
+dates at which bond $i$ pays a coupon or its face value, and
+$\{\tau_{ij}| j=1, \ldots, N_i\}$ the dates at which bond $i$ pays a
+coupon or its face value. Finally, let $C_{ij}$ denote the cash flow
+paid by bond $i$ at date $\tau_{ij}$ for $j=1,\ldots,N_i$. Then for each
+$i$ it "should" be the case that
+
 \begin{equation}\label{yieldcurve1}
 P_i = \sum_{j=1}^{N_i} \E^{-y(\tau_{ij})\tau_{ij}}C_{ij}\;.
 \end{equation}
 This simply says that the price should be the present value of the cash flows.  
-However, in practice, we will typically be unable to find yields $y(\tau_{ij})$ such that \eqref{yieldcurve1} holds exactly for each bond $i$.  This is due to ``measurement errors'' in the form of bid-ask spreads and nonsynchronous pricing.  Furthermore, even if we can find such yields, we still face the issue of estimating the yields at other maturities $\tau \notin \{\tau_{ij}\}$.   The cubic spline is one way to address these issues.
+However, in practice, we will typically be unable to find yields
+$y(\tau_{ij})$ such that
+[\[yieldcurve1\]](#yieldcurve1){reference-type="eqref"
+reference="yieldcurve1"} holds exactly for each bond $i$. This is due to
+"measurement errors" in the form of bid-ask spreads and nonsynchronous
+pricing. Furthermore, even if we can find such yields, we still face the
+issue of estimating the yields at other maturities
+$\tau \notin \{\tau_{ij}\}$. The cubic spline is one way to address
+these issues.
 
-
-A cubic spline consists of several cubic polynomials ``spliced'' together at a set of ``knot points.''  Specifically, it consists of maturities $\tau_1,\ldots, \tau_n$ (the ``knot points'') and coefficients $(a_i, b_i, c_i, d_i)$ for $i= 0,\ldots,n$, and the yield curve is modeled as
+A cubic spline consists of several cubic polynomials "spliced" together
+at a set of "knot points." Specifically, it consists of maturities
+$\tau_1,\ldots, \tau_n$ (the "knot points") and coefficients
+$(a_i, b_i, c_i, d_i)$ for $i= 0,\ldots,n$, and the yield curve is
+modeled as
 $$y(\tau) = \begin{cases} a_0 \tau^3 + b_0 \tau^2 + c_0 \tau + d_0 & \text{for $0 < \tau \leq \tau_1\;,$}\\
  a_1 \tau^3 + b_1 \tau^2 + c_1 \tau + d_1 & \text{for $\tau_1 < \tau \leq \tau_2\;,$}\\
 \cdots & \cdots \\
@@ -37,7 +93,11 @@ y(\tau) = \begin{cases} a_0 \tau^3 + b_0 \tau^2 + c_0 \tau + d_0 & \text{for $0 
 a_{n} (\tau-\tau_n)^3 + b_{n} (\tau-\tau_n)^2 + c_{n} (\tau-\tau_n) + d_{n} & \text{for $\tau_n < \tau \leq T\;.$}\end{cases}
 \end{equation}
 
-To ``splice'' these polynomials together at the knot points means to choose the coefficients so that the two polynomials that meet at a knot point have the same value and the same first and second derivatives at the knot point.  For example, at the first knot point $\tau_1$, we want the adjacent polynomials to satisfy
+To "splice" these polynomials together at the knot points means to
+choose the coefficients so that the two polynomials that meet at a knot
+point have the same value and the same first and second derivatives at
+the knot point. For example, at the first knot point $\tau_1$, we want
+the adjacent polynomials to satisfy
 $$
 \begin{array}{llrcl}
 \text{Equality of yields:} &\quad &a_0 \tau_1^3 + b_0 \tau_1^2 + c_0 \tau_1 + d_0 &= &d_1\; ,\\
@@ -52,66 +112,172 @@ $$
 \text{Second derivatives:} & \quad &6a_1 (\tau_2-\tau_1) + 2b_1  &= &2b_2\;.
 \end{array}$$
 Thus, the only free coefficient for the third polynomial is~$a_2$.
-Continuing in this way, we see that the cubic spline is defined by the knot points and the coefficients $a_0$, $b_0$, $c_0$, $d_0$, $a_1$, $a_2$, \ldots, $a_n$.  One wants to choose the knot points (hopefully, not too many) and these coefficients so that the relations \eqref{yieldcurve1} hold as closely as possible in some sense.  For more on this subject, a good reference is James and Webber \cite{JW}.
+Continuing in this way, we see that the cubic spline is defined by the
+knot points and the coefficients $a_0$, $b_0$, $c_0$, $d_0$, $a_1$,
+$a_2$, ..., $a_n$. One wants to choose the knot points (hopefully, not
+too many) and these coefficients so that the relations
+[\[yieldcurve1\]](#yieldcurve1){reference-type="eqref"
+reference="yieldcurve1"} hold as closely as possible in some sense. For
+more on this subject, a good reference is James and Webber [@JW].
 
-\section{LIBOR}
+# LIBOR
 
-Many fixed-income instruments have cash flows tied to interest rate indices that are quoted as simple (i.e., noncompounded) interest rates.   If you deposit \$1 at an annualized simple interest rate of $\mathcal{R}$ for a period of time $\varDelta t$, then at the end of the period you will have $1+\mathcal{R}\,\varDelta t$ dollars.\footnote{The calligraphic symbol $\mathcal{R}$ will be used only for simple interest rates and hopefully will not be confused with the symbol $R$ used for the accumulation factor $R(t)=\E^{\int_0^t r(s)\,ds}$ and the corresponding risk-neutral expectation $E^R$.}  The most common interest rate index is LIBOR (London Inter-Bank Offered Rate) \index{LIBOR} which is an average rate offered by large London banks on large  deposits for a specific term.  For example, if $\mathcal{R}$ denotes six-month LIBOR, a \$1 million deposit at this rate will grow in six months to \$1 million times $1+\mathcal{R}\,\varDelta t$, where $\varDelta t=1/2$.  We will use ``LIBOR'' as a generic term for such indices.  
+Many fixed-income instruments have cash flows tied to interest rate
+indices that are quoted as simple (i.e., noncompounded) interest rates.
+If you deposit \$1 at an annualized simple interest rate of
+$\mathcal{R}$ for a period of time $\varDelta t$, then at the end of the
+period you will have $1+\mathcal{R}\,\varDelta t$ dollars.[^1] The most
+common interest rate index is LIBOR (London Inter-Bank Offered Rate)
+
+[^1]: The calligraphic symbol $\mathcal{R}$ will be used only for simple
+    interest rates and hopefully will not be confused with the symbol
+    $R$ used for the accumulation factor $R(t)=\E^{\int_0^t r(s)\,ds}$
+    and the corresponding risk-neutral expectation $E^R$.
+    
+\index{LIBOR} which is an average rate offered by large London banks on large deposits
+for a specific term. For example, if $\mathcal{R}$ denotes six-month
+LIBOR, a \$1 million deposit at this rate will grow in six months to \$1
+million times $1+\mathcal{R}\,\varDelta t$, where $\varDelta t=1/2$. We
+will use "LIBOR" as a generic term for such indices.  
 
 We will frequently find it convenient to express LIBOR rates in terms of equivalent bond prices.  As before,
-let $P(t,u)$ denote the price at date $t$ of a  zero-coupon bond with a face value of \$1 maturing at date $u$, having $\varDelta t = u-t$ years to maturity.  Previously, we used this notation only for default-free bonds such as Treasuries.  However, there is a small amount of credit risk in LIBOR rates because of the possibility of a bank failure.  In discussing derivatives linked to LIBOR rates, such as swaps, caps, and floors, we will use the notation $P(t,u)$ for the price of a bond having the same default risk as a LIBOR deposit, but our models will ignore the possibility of default.  An investment of \$1 at date $t$ in the bond will purchase $1/P(t,u)$ units of the bond, which, in the absence of default, will be worth $1/P(t,u)$ dollars at maturity.  We will assume
+let $P(t,u)$ denote the price at date $t$ of a zero-coupon bond with a
+face value of \$1 maturing at date $u$, having $\varDelta t = u-t$ years
+to maturity. Previously, we used this notation only for default-free
+bonds such as Treasuries. However, there is a small amount of credit
+risk in LIBOR rates because of the possibility of a bank failure. In
+discussing derivatives linked to LIBOR rates, such as swaps, caps, and
+floors, we will use the notation $P(t,u)$ for the price of a bond having
+the same default risk as a LIBOR deposit, but our models will ignore the
+possibility of default. An investment of \$1 at date $t$ in the bond
+will purchase $1/P(t,u)$ units of the bond, which, in the absence of
+default, will be worth $1/P(t,u)$ dollars at maturity. We will assume
+
 \begin{equation}\label{spot1}
 \frac{1}{P(t,u)} = 1+\mathcal{R}\,\varDelta t\;.
 \end{equation}
-When necessary for clarity, we call the rate $\mathcal{R}$ a ``spot rate'' \index{spot rate} (at date $t$ for the time period $\varDelta t$), to distinguish it from ``forward rates'' to be defined later.  The spot rate is also called a ``floating rate,'' \index{floating rate} because it changes with market conditions.
+When necessary for clarity, we call the rate $\mathcal{R}$ a "spot rate" \index{spot rate} (at date $t$ for the time period $\varDelta t$), to distinguish it from "forward rates" to be defined later. The spot
+rate is also called a "floating rate," \index{floating rate} because it changes with market conditions.
 
-\section{Swaps}\label{s_swaps}
+# Swaps {#s_swaps}
 
-A ``plain vanilla'' interest rate swap \index{interest rate swap} involves the swap of a fixed interest rate for a floating interest rate on a given ``notional principal.''  Let $\bar{\mathcal{R}}$ denote the fixed rate on a swap.    The floating rate will be LIBOR (or some other interest rate index).  In addition to $\bar{\mathcal{R}}$ and the floating rate index, the swap is defined by ``payment dates,'' which we will denote by $t_1,\dots,t_N$, with $t_{i+1}-t_i=\varDelta t$.   In the most common form, the  ``reset dates'' are $t_0,\ldots,t_{N-1}$, with $t_1-t_0=\varDelta t$ also.  
+A "plain vanilla" interest rate swap \index{interest rate swap} involves the swap of a fixed interest rate for a floating interest rate
+on a given "notional principal." Let $\bar{\mathcal{R}}$ denote the
+fixed rate on a swap. The floating rate will be LIBOR (or some other
+interest rate index). In addition to $\bar{\mathcal{R}}$ and the
+floating rate index, the swap is defined by "payment dates," which we
+will denote by $t_1,\dots,t_N$, with $t_{i+1}-t_i=\varDelta t$. In the
+most common form, the "reset dates" are $t_0,\ldots,t_{N-1}$, with
+$t_1-t_0=\varDelta t$ also.  
 
-At each reset date $t_i$, the simple interest rate $\mathcal{R}_i$ for period $\varDelta t$ is observed.  This rate determines a payment at the following date $t_{i+1}$.  In terms of bond prices, $\mathcal{R}_i$ is defined in accord with \eqref{spot1}, substituting date $t_i$ for date $t$ and date $t_{i+1}$ for date $u$; i.e.,
+At each reset date $t_i$, the simple interest rate $\mathcal{R}_i$ for
+period $\varDelta t$ is observed. This rate determines a payment at the
+following date $t_{i+1}$. In terms of bond prices, $\mathcal{R}_i$ is
+defined in accord with [\[spot1\]](#spot1){reference-type="eqref"
+reference="spot1"}, substituting date $t_i$ for date $t$ and date
+$t_{i+1}$ for date $u$; i.e.,
 \begin{equation}\label{spot2}
 \frac{1}{P(t_i,t_{i+1})} = 1+\mathcal{R}_i\,\varDelta t\;.
 \end{equation}
 
-One can enter a swap as the fixed-rate payer, normally called simply the ``payer''  \index{payer} or as the fixed-rate receiver, normally called  the ``receiver.''  \index{receiver} The payer pays the fixed rate $\bar{\mathcal{R}}$ and receives the spot rate $\mathcal{R}_i$  at each payment date $t_{i+1}$.  Only the net payment is exchanged.  If $\bar{\mathcal{R}} > \mathcal{R}_i$ then the amount $(\bar{\mathcal{R}}-\mathcal{R}_i)\,\varDelta t$ is paid at date $t_{i+1}$ by the payer to the receiver for each \$1 of notional principal.  If $\bar{\mathcal{R}} <  \mathcal{R}_i$, then the payer receives $(\mathcal{R}_i - \bar{\mathcal{R}})\,\varDelta t$ from the receiver for each \$1 of notional principal at date $t_{i+1}$.  To state this more simply, the cash flow to the payer is $(\mathcal{R}_i - \bar{\mathcal{R}})\,\varDelta t$ and the cash flow to the receiver is $(\bar{\mathcal{R}}-\mathcal{R}_i)\,\varDelta t$, with the usual understanding that a negative cash flow is an outflow.  Note that there is no exchange of principal at initiation, and there is no return of principal at the end of the swap.  The principal is ``notional'' \index{notional principal} because it is used only to define the interest payments.
+One can enter a swap as the fixed-rate payer, normally called simply the
+"payer"  \index{payer} or as the fixed-rate receiver, normally called the "receiver."  \index{receiver} The payer pays the fixed rate $\bar{\mathcal{R}}$ and receives the spot rate $\mathcal{R}_i$ at each payment date $t_{i+1}$. Only the net payment is exchanged. If
+$\bar{\mathcal{R}} > \mathcal{R}_i$ then the amount
+$(\bar{\mathcal{R}}-\mathcal{R}_i)\,\varDelta t$ is paid at date
+$t_{i+1}$ by the payer to the receiver for each \$1 of notional
+principal. If $\bar{\mathcal{R}} <  \mathcal{R}_i$, then the payer
+receives $(\mathcal{R}_i - \bar{\mathcal{R}})\,\varDelta t$ from the
+receiver for each \$1 of notional principal at date $t_{i+1}$. To state
+this more simply, the cash flow to the payer is
+$(\mathcal{R}_i - \bar{\mathcal{R}})\,\varDelta t$ and the cash flow to
+the receiver is $(\bar{\mathcal{R}}-\mathcal{R}_i)\,\varDelta t$, with
+the usual understanding that a negative cash flow is an outflow. Note
+that there is no exchange of principal at initiation, and there is no
+return of principal at the end of the swap. The principal is "notional" \index{notional principal} because it is used only to define the interest payments.
 
 
 The value of a swap to the fixed-rate payer at any date $t \leq t_0$ is
 \begin{equation}\label{swapvalue100}
 P(t,t_0) - P(t,t_N) - \bar{\mathcal{R}}\,\varDelta t\sum_{i=1}^N P(t,t_i)\;.
 \end{equation}
-To see this, note that $P(t,t_0)$ is the cost at date~$t$ of receiving \$1 at $t_0$.  This \$1 can be invested at $t_0$ at the rate $\mathcal{R}_0$ and the amount $\mathcal{R}_0 \,\varDelta t$ withdrawn at $t_1$ with the \$1 principal  rolled over at the new rate $\mathcal{R}_1$.  Continuing in this way, one obtains the cash flow $\mathcal{R}_i\,\varDelta t$ at each payment date $t_{i+1}$ and the recovery of the \$1 principal at date $t_N$.  The value of the \$1 principal at date $t_N$ is negated in expression \eqref{swapvalue100} by the term 
-$-P(t,t_N)$.  Thus, $P(t,t_0)-P(t,t_N)$ is the value of the floating rate payments on the notional principal.  On the other hand, $\bar{\mathcal{R}}\,\varDelta t\sum_{i=1}^N P(t,t_i)$ is the value of the fixed-rate payments.  Therefore, expression \eqref{swapvalue100} is the difference in the values of the floating and fixed-rate legs. \index{fixed-rate leg} \index{floating-rate leg}
+To see this, note that $P(t,t_0)$ is the cost at date $t$ of receiving
+\$1 at $t_0$. This \$1 can be invested at $t_0$ at the rate
+$\mathcal{R}_0$ and the amount $\mathcal{R}_0 \,\varDelta t$ withdrawn
+at $t_1$ with the \$1 principal rolled over at the new rate
+$\mathcal{R}_1$. Continuing in this way, one obtains the cash flow
+$\mathcal{R}_i\,\varDelta t$ at each payment date $t_{i+1}$ and the
+recovery of the \$1 principal at date $t_N$. The value of the \$1
+principal at date $t_N$ is negated in expression
+[\[swapvalue100\]](#swapvalue100){reference-type="eqref"
+reference="swapvalue100"} by the term $-P(t,t_N)$.  Thus, $P(t,t_0)-P(t,t_N)$ is the value of the floating rate payments on the notional principal.  On the other hand, $\bar{\mathcal{R}}\,\varDelta t\sum_{i=1}^N P(t,t_i)$ is the value of the fixed-rate payments.  Therefore, expression \eqref{swapvalue100} is the difference in the values of the floating and fixed-rate legs. \index{fixed-rate leg} \index{floating-rate leg}
 
-As with a forward price, the swap rate is usually set so that the value of the swap is zero at initiation.  A swap initiated at date $t \leq t_0$ has zero value at initiation if the fixed rate $\bar{\mathcal{R}}$ equates the expression \eqref{swapvalue100} to zero.  This means that $\bar{\mathcal{R}}=\mathcal{R}(t)$, where $\mathcal{R}(t)$ is defined by
+As with a forward price, the swap rate is usually set so that the value
+of the swap is zero at initiation. A swap initiated at date $t \leq t_0$
+has zero value at initiation if the fixed rate $\bar{\mathcal{R}}$
+equates the expression
+[\[swapvalue100\]](#swapvalue100){reference-type="eqref"
+reference="swapvalue100"} to zero. This means that
+$\bar{\mathcal{R}}=\mathcal{R}(t)$, where $\mathcal{R}(t)$ is defined by
 \begin{equation}\label{swaprate1}
 P(t,t_0) = P(t,t_N) + \mathcal{R}(t)\,\varDelta t\sum_{i=1}^N P(t,t_i)\;.
 \end{equation}
-If $t=t_0$ the rate $\mathcal{R}(t)$ is a ``spot swap rate,'' \index{spot swap rate} and if $t<t_0$ the rate $\mathcal{R}(t)$ is a ``forward swap rate.''  \index{forward swap rate} The concept of forward swap rates will be important in the discussion of swaptions in Sect.~\ref{s_swaptions}.  Of course, there are many spot and forward swap rates at any date, corresponding to swaps with different maturities and different payment (and reset) dates.
+If $t=t_0$ the rate $\mathcal{R}(t)$ is a "spot swap rate," \index{spot swap rate} and and if
+$t<t_0$ the rate $\mathcal{R}(t)$ is a "forward swap rate."  \index{forward swap rate} The concept of forward swap rates will be important in the discussion of
+swaptions in Sect. [\[s_swaptions\]](#s_swaptions){reference-type="ref"
+reference="s_swaptions"}. Of course, there are many spot and forward
+swap rates at any date, corresponding to swaps with different maturities
+and different payment (and reset) dates.
 
-The ``swap yield curve'' or simply ``swap curve'' \index{swap curve} is the relation between time-to-maturity and the yields of discount bonds, where the discount bond prices and yields are inferred from market swap rates.  To explain this in a manner consistent with Sect.~\ref{s_yieldcurve}, consider date $t=0$ and consider swaps with $t_0=0$ (i.e., spot swaps).  In the notation of Sect.~\ref{s_yieldcurve}, and noting that $P(0,0)=1$, equation \eqref{swaprate1} can be written in terms of yields as
+The "swap yield curve" or simply "swap curve" \index{swap curve} is the relation between time-to-maturity and the yields of discount bonds, where the discount bond prices and yields are inferred from market swap rates.  To explain this in a manner consistent with
+Sect. [\[s_yieldcurve\]](#s_yieldcurve){reference-type="ref"
+reference="s_yieldcurve"}, consider date $t=0$ and consider swaps with
+$t_0=0$ (i.e., spot swaps). In the notation of
+Sect. [\[s_yieldcurve\]](#s_yieldcurve){reference-type="ref"
+reference="s_yieldcurve"}, and noting that $P(0,0)=1$, equation
+[\[swaprate1\]](#swaprate1){reference-type="eqref"
+reference="swaprate1"} can be written in terms of yields as
 \begin{equation}\label{swaprate1b}
 1 = \E^{-y(t_N)t_N}  + \sum_{i=1}^N \E^{-y(t_i)t_i}\mathcal{R}(0)\,\varDelta t\; .
 \end{equation}
-Consider for example a collection of nineteen swaps at date~0 with semi-annual payments and maturity dates $t_N=1.0$, $t_N=1.5$, \ldots, $t_N=10.0$.  Each market swap rate (a different rate $\mathcal{R}(0)$ for each maturity) can be considered to satisfy  \eqref{swaprate1b}.  In these equations we have the twenty yields $y(0.5)$, $y(1.0)$, $y(10.0)$.  The yield $y(0.5)$ will be given by six-month LIBOR according to  \eqref{spot1}.  The other nineteen yields can be obtained by simultaneously solving the system of nineteen equations of the form \eqref{swaprate1b}, given the nineteen market swap rates.  In practice, there are missing maturities and the swap curve is estimated using a cubic spline or some other technique, as discussed in Sect.~\ref{s_yieldcurve}.
+Consider for example a collection of nineteen swaps at date 0 with
+semi-annual payments and maturity dates $t_N=1.0$, $t_N=1.5$, ...,
+$t_N=10.0$. Each market swap rate (a different rate $\mathcal{R}(0)$ for
+each maturity) can be considered to satisfy
+[\[swaprate1b\]](#swaprate1b){reference-type="eqref"
+reference="swaprate1b"}. In these equations we have the twenty yields
+$y(0.5)$, $y(1.0)$, $y(10.0)$. The yield $y(0.5)$ will be given by
+six-month LIBOR according to [\[spot1\]](#spot1){reference-type="eqref"
+reference="spot1"}. The other nineteen yields can be obtained by
+simultaneously solving the system of nineteen equations of the form
+[\[swaprate1b\]](#swaprate1b){reference-type="eqref"
+reference="swaprate1b"}, given the nineteen market swap rates. In
+practice, there are missing maturities and the swap curve is estimated
+using a cubic spline or some other technique, as discussed in
+Sect. [\[s_yieldcurve\]](#s_yieldcurve){reference-type="ref"
+reference="s_yieldcurve"}.
 
 
+# Yield to Maturity, Duration, and Convexity {#s_duration}
 
-\section{Yield to Maturity, Duration, and Convexity}\label{s_duration}
-
-Consider a bond with cash flows $C_1, \ldots, C_N$ at dates $u_1 < \cdots < u_N$ and price~$P$ at date $t$, where $t< u_1$.  Write $\tau_j = u_j-t$ as the time remaining until the $j$--th cash flow is paid.  The (continuously compounded) yield to maturity \index{yield to maturity} of the bond at date $t$ is defined to be the rate $\mathbf{y}$ such that
+Consider a bond with cash flows $C_1, ..., C_N$ at dates $u_1 < ... < u_N$ and price~$P$ at date $t$, where $t< u_1$.  Write $\tau_j = u_j-t$ as the time remaining until the $j$--th cash flow is paid.  The (continuously compounded) yield to maturity \index{yield to maturity} of the bond at date $t$ is defined to be the rate $\mathbf{y}$ such that
 \begin{equation}\label{yieldtomaturity}
 P = \sum_{j=1}^N \E^{-\mathbf{y}\tau_j}C_j\;.
 \end{equation}
 The bold character $\mathbf{y}$ is meant to distinguish this from the yield $y$ of a discount bond. 
-Viewing the right-hand side of \eqref{yieldtomaturity} as a function of $\mathbf{y}$, we can express the first derivative in differential form as
+Viewing the right-hand side of
+[\[yieldtomaturity\]](#yieldtomaturity){reference-type="eqref"
+reference="yieldtomaturity"} as a function of $\mathbf{y}$, we can
+express the first derivative in differential form as
 $$\D P = -\sum_{j=1}^N \tau_j\E^{-\mathbf{y}\tau_j}C_j\, \D \mathbf{y}\; ,$$
 or, equivalently,
 $$\frac{\D P}{P} = -\sum_{j=1}^N \frac{\E^{-\mathbf{y}\tau_j}C_j}{P}\tau_j\, \D \mathbf{y}\; .$$
 The factor 
 $$\sum_{j=1}^N \frac{\E^{-\mathbf{y}\tau_j}C_j}{P}\tau_j$$
-is called the ``Macaulay duration'' \index{Macaulay duration} of the bond, and we will simplify this to ``duration.''  \index{duration} It is a weighted average of the times to maturity $\tau_j$ of the cash flows, the weight on each time~$\tau_j$ being the fraction of the bond value that the cash flow constitutes (using the same rate $\mathbf{y}$ to discount all of the cash flows).   Thus, we have
+is called the "Macaulay duration" \index{Macaulay duration} of the bond, and we will simplify this to "duration."  \index{duration} It is a weighted average of the times to maturity $\tau_j$ of the cash
+flows, the weight on each time $\tau_j$ being the fraction of the bond
+value that the cash flow constitutes (using the same rate $\mathbf{y}$
+to discount all of the cash flows). Thus, we have
+
 \begin{equation}\label{durationreturn}
 \frac{\D P}{P} = - \text{Duration} \times \,\D \mathbf{y}\;.
 \end{equation}
@@ -123,13 +289,29 @@ Given the initial yield $\mathbf{y}$ and a change in the yield to $\mathbf{y}'$,
 \end{equation}
 where $\varDelta \mathbf{y} = \mathbf{y}'-\mathbf{y}$.  
 
-The relationship \eqref{durationreturn2} is the foundation for ``duration hedging.''  \index{duration hedging} For example, to duration hedge a liability with a present value of $x_L$  dollars and a duration of $D_L$ years, one needs an asset with a value of $x_A$ dollars and a  duration of $D_A$ satisfying $x_AD_A = x_LD_L$.  If the change in  the yields to maturity of the asset and liability are the same number $\varDelta \mathbf{y}$, then by \eqref{durationreturn2} the change in the value of the liability will be approximately $-D_L\,\varDelta \mathbf{y}$ per dollar of initial value, for a total change in value of $-x_LD_L\,\varDelta \mathbf{y}$ dollars.  The change in the value of the asset will approximately offset the change in the value of the liability.
+The relationship \eqref{durationreturn2} is the foundation for "duration hedging."  \index{duration hedging} For example, to duration hedge a liability with a present value of $x_L$  dollars and a duration of $D_L$ years, one needs an asset with a value of $x_A$ dollars and a  duration of $D_A$ satisfying $x_AD_A = x_LD_L$.  If the change in  the yields to maturity of the asset and liability are the same number $\varDelta \mathbf{y}$, then by \eqref{durationreturn2} the change in the value of the liability will be approximately $-D_L\,\varDelta \mathbf{y}$ per dollar of initial value, for a total change in value of $-x_LD_L\,\varDelta \mathbf{y}$ dollars.  The change in the value of the asset will approximately offset the change in the value of the liability.
 
 Actually, because of the convexity \index{convexity} of the bond price \eqref{yieldtomaturity} as a function of the yield $\mathbf{y}$, the approximation \eqref{durationreturn2} will overstate the loss on an asset when the yield rises and understate the gain when the yield falls.  Given a change in yield $\varDelta \mathbf{y}$, the change in price $\varDelta P = P'-P$ would actually satisfy
 $$\varDelta P > -  \text{Duration} \times P \times \varDelta \mathbf{y}\; .$$
-Thus, if a liability is duration hedged, and the asset value is a ``more convex'' function of its yield than is the liability value, then an equal change $\varDelta \mathbf{y}$ in their yields will lead to a net gain, the asset value falling less than the liability if $\varDelta \mathbf{y} >0$ and gaining more than the liability if $\varDelta \mathbf{y}<0$.  The value of convexity (as a function of the yield to maturity) in a bond portfolio is the same as the value of convexity (as a function of the price of the underlying) in option hedging---cf.~Sect.~\ref{s_deltahedging}.
+Thus, if a liability is duration hedged, and the asset value is a "more
+convex" function of its yield than is the liability value, then an equal
+change $\varDelta \mathbf{y}$ in their yields will lead to a net gain,
+the asset value falling less than the liability if
+$\varDelta \mathbf{y} >0$ and gaining more than the liability if
+$\varDelta \mathbf{y}<0$. The value of convexity (as a function of the
+yield to maturity) in a bond portfolio is the same as the value of
+convexity (as a function of the price of the underlying) in option
+hedging---cf. Sect. [\[s_deltahedging\]](#s_deltahedging){reference-type="ref"
+reference="s_deltahedging"}.
 
-In general, the changes in the yields of an asset and a liability (or two different coupon bonds) will not be equal.  To understand how the changes will be related, note that the definition \eqref{yieldtomaturity} of the yield to maturity and the formula \eqref{yieldcurve1} relating a bond price to the yields of discount bonds imply
+In general, the changes in the yields of an asset and a liability (or
+two different coupon bonds) will not be equal. To understand how the
+changes will be related, note that the definition
+[\[yieldtomaturity\]](#yieldtomaturity){reference-type="eqref"
+reference="yieldtomaturity"} of the yield to maturity and the formula
+[\[yieldcurve1\]](#yieldcurve1){reference-type="eqref"
+reference="yieldcurve1"} relating a bond price to the yields of discount
+bonds imply
 $$\sum_{j=1}^N \E^{-\mathbf{y}\tau_j}C_j =  \sum_{j=1}^{N} \E^{-y(\tau_{j})\tau_{j}}C_{j}\; .$$
 Taking differentials of both sides, we have
 $$\D P = -P \times \text{Duration} \times \D \mathbf{y} = -\sum_{j=1}^{N} \tau_j \E^{-y(\tau_{j})\tau_{j}}C_{j}\,\D y(\tau_j)\; .$$
@@ -139,30 +321,93 @@ where we define
 \begin{equation}\label{newduration100}
 \text{Duration}' = \sum_{j=1}^N \frac{\E^{-y(\tau_j)\tau_j}C_j}{P}\tau_j.
 \end{equation}
-This new definition of duration differs from the previous by using the yields of discount bonds to define the fraction of the bond value that each cash flow contributes, rather than the yield to maturity.  If the changes in the yields of discount bonds are equal, then we say that there has been a ``parallel shift'' in the yield curve---it has moved up or down with the new curve being at each point the same distance from the old.  Our previous discussion shows that duration hedging works if we use the new definition \eqref{newduration100} of duration and if the yield curve shifts in a parallel fashion.  Of course, parallel shifts in the yield curve are not the only, or even most common, types of shifts.  In the next two sections, we discuss hedging against more general types of shifts in the yield curve.
+This new definition of duration differs from the previous by using the
+yields of discount bonds to define the fraction of the bond value that
+each cash flow contributes, rather than the yield to maturity. If the
+changes in the yields of discount bonds are equal, then we say that
+there has been a "parallel shift" in the yield curve---it has moved up
+or down with the new curve being at each point the same distance from
+the old. Our previous discussion shows that duration hedging works if we
+use the new definition
+[\[newduration100\]](#newduration100){reference-type="eqref"
+reference="newduration100"} of duration and if the yield curve shifts in
+a parallel fashion. Of course, parallel shifts in the yield curve are
+not the only, or even most common, types of shifts. In the next two
+sections, we discuss hedging against more general types of shifts in the
+yield curve.
 
-Something very similar to duration hedging works if we can continuously rebalance the hedge and there is only a single factor determining the yield curve (meaning a single Brownian motion driving all yields).  To understand this, we must first note that  the expressions given in this section for $\D P$ are not the It\^o differential, which explains how the bond price evolves over time and would include a second-derivative term.  For example, in \eqref{durationreturn} we are simply asking how different the price would be if the yield to maturity had been different at a given point in time.  To define the It\^o differential, let now $\mathbf{y}(t)$ denote the yield to maturity of the bond at date~$t$.   Equation \eqref{yieldtomaturity} can be restated as
+Something very similar to duration hedging works if we can continuously
+rebalance the hedge and there is only a single factor determining the
+yield curve (meaning a single Brownian motion driving all yields). To
+understand this, we must first note that the expressions given in this
+section for $\D P$ are not the Itô differential, which explains how the
+bond price evolves over time and would include a second-derivative term.
+For example, in
+[\[durationreturn\]](#durationreturn){reference-type="eqref"
+reference="durationreturn"} we are simply asking how different the price
+would be if the yield to maturity had been different at a given point in
+time. To define the Itô differential, let now $\mathbf{y}(t)$ denote the
+yield to maturity of the bond at date $t$. Equation
+[\[yieldtomaturity\]](#yieldtomaturity){reference-type="eqref"
+reference="yieldtomaturity"} can be restated as
 \begin{equation}\label{yieldtomaturityt}
 P(t) = f(t,\mathbf{y}(t)) = \sum_{j=1}^N \E^{\mathbf{y}(t)(u_j-t)}C_j\;.
 \end{equation}
 Note that even if the yield to maturity were constant over time, the bond price would change with $t$ as a result of the changes in the times to maturity $u_j-t$ of the cash flows.  This creates the dependence on $t$ in the function $f(t,\mathbf{y})$.
 
-From It\^o's formula, we have
+From Itô's formula, we have
 $$\D P = \frac{\partial f}{\partial t} \, \D t + \frac{\partial f}{\partial \mathbf{y}} \,\D \mathbf{y} + \frac{1}{2} \frac{\partial ^2 f}{\partial \mathbf{y}^2} (\D \mathbf{y})^2\; .$$  
-As explained above, the factor $\partial f/\partial \mathbf{y}$ equals $ -  \text{Duration} \times P$.  The value of convexity appears here in the last term, the derivative $\partial ^2 f/\partial \mathbf{y}^2$ being positive as a result of convexity and analogous to the gamma of an option.
+As explained above, the factor $\partial f/\partial \mathbf{y}$ equals
+$-  \text{Duration} \times P$. The value of convexity appears here in
+the last term, the derivative $\partial ^2 f/\partial \mathbf{y}^2$
+being positive as a result of convexity and analogous to the gamma of an
+option.
 Assuming $\D \mathbf{y}(t) = \alpha(t)\,\D t+\sigma(t)\,\D B(t)$ for a Brownian motion $B$ and some $\alpha$ and $\sigma$, we have
 $$\frac{\D P}{P} = \frac{1}{P}\left(\frac{\partial f}{\partial t}  + \frac{\partial f}{\partial \mathbf{y}}\alpha + \frac{1}{2} \frac{\partial ^2 f}{\partial \mathbf{y}^2} \sigma^2\right)\D t-  \text{Duration}\times\sigma \,\D B\; .$$
- If the yields of an asset and liability are driven by the same Brownian motion and the duration hedge is adjusted for the relative volatilities of the asset and liability (holding more of the asset if its yield volatility is lower), then a duration hedge will hedge the risky part of the change in the liability value.  If adjusted continuously, it will provide a perfect hedge, exactly analogous to a delta hedge of an option position.  The Vasicek model we will discuss in Chap.~\ref{c_vasicek} and the Cox-Ingersoll-Ross model we will discuss in Chap.~\ref{c_survey} are examples of continuous-time models that assume a single Brownian motion driving all yields (i.e., they are single-factor models).\index{single-factor model}The Ho-Lee, Black-Derman-Toy, and Black-Karasinski binomial models that will be discussed in Chap.~\ref{c_survey} are also single-factor models and have the same implication for hedging.  In the following section, we will discuss the fact that, empirically, there appears to be more than one factor determining the yield curve.
+If the yields of an asset and liability are driven by the same Brownian
+motion and the duration hedge is adjusted for the relative volatilities
+of the asset and liability (holding more of the asset if its yield
+volatility is lower), then a duration hedge will hedge the risky part of
+the change in the liability value. If adjusted continuously, it will
+provide a perfect hedge, exactly analogous to a delta hedge of an option
+position. The Vasicek model we will discuss in
+Chap. [\[c_vasicek\]](#c_vasicek){reference-type="ref"
+reference="c_vasicek"} and the Cox-Ingersoll-Ross model we will discuss
+in Chap. [\[c_survey\]](#c_survey){reference-type="ref"
+reference="c_survey"} are examples of continuous-time models that assume
+a single Brownian motion driving all yields (i.e., they are
+single-factor models). \index{single-factor model}The Ho-Lee, Black-Derman-Toy, and Black-Karasinski binomial models that will be discussed in Chap. [\[c_survey\]](#c_survey){reference-type="ref"
+reference="c_survey"} are also single-factor models and have the same
+implication for hedging. In the following section, we will discuss the
+fact that, empirically, there appears to be more than one factor
+determining the yield curve. 
  
  
-\section{Principal Components}\label{s_principalcomponents}
+# Principal Components {#s_principalcomponents}
 
-This section will describe a popular statistical method for determining the factors that have the most impact on the yield curve.  We consider yields at fixed maturities $\tau_1, \ldots, \tau_N$, the yield for maturity $\tau_j$ at date $t$ being denoted $y(t,\tau_j)$.  We assume that we have a sample of past yields at dates $t_0, \ldots, t_M$ at equally spaced dates.  Thus, $t_i-t_{i-1} = \varDelta t$  for some $\varDelta t$ and each $i$.  We compute the changes in yields:
+This section will describe a popular statistical method for determining
+the factors that have the most impact on the yield curve. We consider
+yields at fixed maturities $\tau_1, ..., \tau_N$, the yield for
+maturity $\tau_j$ at date $t$ being denoted $y(t,\tau_j)$. We assume
+that we have a sample of past yields at dates $t_0, ..., t_M$ at
+equally spaced dates. Thus, $t_i-t_{i-1} = \varDelta t$ for some
+$\varDelta t$ and each $i$. We compute the changes in yields:
 $$\varDelta_{ij} = y(t_i, \tau_j) - y(t_{i-1}, \tau_j)\; .$$
 Thus we are looking at the changes in the yield curve over time periods of length $\varDelta t$, focusing on $N$ points on the yield curve defined by the maturities~$\tau_j$.  Let $V$ denote the sample covariance matrix \index{covariance matrix} of the changes in  yields: 
- the element in row $j$ and column $k$ of $V$ is the sample covariance of the changes in yields at maturities $\tau_j$ and $\tau_k$; thus, the diagonal elements are the sample variances.\footnote{The sample covariance matrix $V$  is an estimate of the  ``unconditional'' covariances.  It is a common finding that variances and covariances change over time.  Thus,  we could (and probably should) use methods such as those described in Chap.~\ref{c_stochasticvolatility} to estimate the covariance matrix.  The following applies equally well to other estimates $V$ of the covariance matrix.}  
+the element in row $j$ and column $k$ of $V$ is the sample covariance of
+the changes in yields at maturities $\tau_j$ and $\tau_k$; thus, the
+diagonal elements are the sample variances.[^1]
 
-The method of principal components \index{principal components} is to compute the ``eigenvectors'' and ``eigenvalues'' of the estimated covariance matrix~$V$.  An eigenvector \index{eigenvector} is a vector~$x$ for which there corresponds a number $\lambda$ such that $Vx = \lambda x$.  The number $\lambda$ is called the eigenvalue \index{eigenvalue} corresponding to the eigenvector $x$.  Given the $N \times N$ symmetric matrix $V$, we can construct an $N\times N$ matrix $C$ whose columns are eigenvectors of $V$ and an $N \times N$ diagonal matrix $D$ containing the eigenvalues of $V$ on the diagonal.  The eigenvectors can be normalized to have unit length and to be mutually orthogonal, which means that the matrix~$C$ of eigenvectors has the property that $C^{-1} = C^\top$, where $C^{-1}$ denotes the inverse of $C$ and $C^\top$ its transpose.  The property $Vx = \lambda x$ for the columns~$x$ of $C$ implies that $VC= CD$.  Hence $C^\top VC = C^\top CD = D$.
+[^1]: The sample covariance matrix $V$ is an estimate of the
+    "unconditional" covariances. It is a common finding that variances
+    and covariances change over time. Thus, we could (and probably
+    should) use methods such as those described in
+    Chap. [\[c_stochasticvolatility\]](#c_stochasticvolatility){reference-type="ref"
+    reference="c_stochasticvolatility"} to estimate the covariance
+    matrix. The following applies equally well to other estimates $V$ of
+    the covariance matrix.
+
+The method of principal components \index{principal components} is to compute the "eigenvectors" and "eigenvalues" of the estimated covariance matrix~$V$.  An eigenvector \index{eigenvector} is a vector~$x$ for which there corresponds a number $\lambda$ such that $Vx = \lambda x$.  The number $\lambda$ is called the eigenvalue \index{eigenvalue} corresponding to the eigenvector $x$.  Given the $N \times N$ symmetric matrix $V$, we can construct an $N\times N$ matrix $C$ whose columns are eigenvectors of $V$ and an $N \times N$ diagonal matrix $D$ containing the eigenvalues of $V$ on the diagonal.  The eigenvectors can be normalized to have unit length and to be mutually orthogonal, which means that the matrix~$C$ of eigenvectors has the property that $C^{-1} = C^\top$, where $C^{-1}$ denotes the inverse of $C$ and $C^\top$ its transpose.  The property $Vx = \lambda x$ for the columns~$x$ of $C$ implies that $VC= CD$.  Hence $C^\top VC = C^\top CD = D$.
 
 This can be understood as a factor model \index{factor model} for the changes in yields, where there are as many factors as maturities.  At date $t_i$, the vector of factor realizations $z_{ij}$ is computed as
 \begin{equation}\label{pc1}
@@ -179,7 +424,7 @@ Let $\beta_{k\ell}$ denote the $(k,\ell)$--th element of $C$.  Then we can write
 \begin{equation}\label{pc3}\begin{matrix} \varDelta_{i1} \\ \vdots \\ \varDelta_{iN} \end{matrix} 
 \;\begin{matrix}= \\ \vdots \\ = \end{matrix}\;
 \begin{matrix} \beta_{11}z_{i1} + \cdots + \beta_{1N}z_{iN}, \\ \vdots \\ \beta_{N1}z_{i1} + \cdots + \beta_{NN}z_{iN} \;.\end{matrix}\end{equation}
-As in any factor model, the factors are common to all of the maturities.  Each factor is random, taking a different value at each date $t_i$.  The $\beta$'s represent the ``loadings'' \index{factor loading} of the yield changes on the factors, $\beta_{k\ell}$ being the loading of the change in the yield at maturity $\tau_k$ on the $\ell$-th factor.
+As in any factor model, the factors are common to all of the maturities.  Each factor is random, taking a different value at each date $t_i$.  The $\beta$'s represent the "loadings" \index{factor loading} of the yield changes on the factors, $\beta_{k\ell}$ being the loading of the change in the yield at maturity $\tau_k$ on the $\ell$-th factor.
 
 In a normal factor model, there are fewer factors than variables being explained.  It serves no point to have a factor model with as many factors as there are variables to be explained (in our case, as many factors as maturities).  We can improve the usefulness of the above by omitting some factors.  We will omit the factors that are least important in explaining the changes in yields.  For example, if we omit all but the first three factors, we will have
 \begin{equation}\label{pc32}\begin{matrix} \varDelta_{i1} \\ \vdots \\ \varDelta_{iN} \end{matrix} 
@@ -189,13 +434,45 @@ where
 \begin{equation}\label{principalcomponentsresiduals}
 \varepsilon_{ij} = \beta_{j4}z_{i4} + \cdots + \beta_{jN}z_{iN}
 \end{equation}
-is interpreted   as the ``residual'' part\footnote{Frequently, the definition of ``factor model'' requires the residuals to be uncorrelated, in which case they are called ``idiosyncratic risks.''  \index{idiosyncratic risk} Rather than producing uncorrelated residuals, the principal components methods identifies factors such that the residuals are ``small.''} of $\varDelta_{ij}$.
+is interpreted   as the "residual" part[^1] of $\varDelta_{ij}$.
 
-The importance of a factor depends on the factor loadings and the variance of the factor.  The loadings on the $j$--th factor are the elements in the $j$--th column of $C$, which is the $j$--th eigenvector of $V$.   Because the eigenvectors all have unit length and are mutually orthogonal, each vector of loadings has the same importance as any other for explaining the changes in yields.  Thus, the importance of a factor in this model depends on the variance of the factor.  The variance of the $j$--th factor is the $j$--th element on the diagonal of $D$, which is the eigenvalue corresponding to the $j$--th eigenvector.  The factors that we should omit are clearly those with small eigenvalues.  
+[^1]: Frequently, the definition of "factor model" requires the
+    residuals to be uncorrelated, in which case they are called
+    "idiosyncratic risks." Rather than producing uncorrelated residuals,
+    the principal components methods identifies factors such that the
+    residuals are "small." of $\varDelta_{ij}$.
 
-As an example, an analysis of monthly changes in (continuously compounded) U.S. Treasury yields from 1992 through 2002 at maturities of 1 month, 3 months, 1 year, 2 years, 3 years, 4 years, and 5 years\footnote{These were computed from discount bond price and yield data from the Center for Research in Security Prices (CRSP) at the University of Chicago.}  produces seven eigenvalues (corresponding to the seven maturities) that sum to $5.526 \times 10^{-5}$.  This sum is the total variance of the seven factors.  The largest eigenvalue is 74\% of the total, the  two largest eigenvalues constitute 94\% of the total, and the three largest constitute 98\% of the total.  Thus, three factors contribute 98\% of the total factor variance for this data set, so a factor model with three (or even two) factors explains a very high percentage of the changes in yields for this data set.  
+The importance of a factor depends on the factor loadings and the
+variance of the factor. The loadings on the $j$--th factor are the
+elements in the $j$--th column of $C$, which is the $j$--th eigenvector
+of $V$. Because the eigenvectors all have unit length and are mutually
+orthogonal, each vector of loadings has the same importance as any other
+for explaining the changes in yields. Thus, the importance of a factor
+in this model depends on the variance of the factor. The variance of the
+$j$--th factor is the $j$--th element on the diagonal of $D$, which is
+the eigenvalue corresponding to the $j$--th eigenvector. The factors
+that we should omit are clearly those with small eigenvalues.
 
-The factors can be interpreted by examining the corresponding eigenvectors.  The eigenvectors corresponding to the three largest eigenvalues in this data set are the columns below (the first column corresponding to the largest eigenvalue, etc.):
+As an example, an analysis of monthly changes in (continuously
+compounded) U.S. Treasury yields from 1992 through 2002 at maturities of
+1 month, 3 months, 1 year, 2 years, 3 years, 4 years, and 5 years[^1]
+produces seven eigenvalues (corresponding to the seven maturities) that
+sum to $5.526 \times 10^{-5}$. This sum is the total variance of the
+seven factors. The largest eigenvalue is 74% of the total, the two
+largest eigenvalues constitute 94% of the total, and the three largest
+constitute 98% of the total. Thus, three factors contribute 98% of the
+total factor variance for this data set, so a factor model with three
+(or even two) factors explains a very high percentage of the changes in
+yields for this data set.
+
+[^1]: These were computed from discount bond price and yield data from
+    the Center for Research in Security Prices (CRSP) at the University
+    of Chicago.
+
+The factors can be interpreted by examining the corresponding
+eigenvectors. The eigenvectors corresponding to the three largest
+eigenvalues in this data set are the columns below (the first column
+corresponding to the largest eigenvalue, etc.):
 \small\begin{verbatim}
                      0.1967   -0.8512    0.4782
                      0.2234   -0.3740   -0.6389
@@ -205,14 +482,29 @@ The factors can be interpreted by examining the corresponding eigenvectors.  The
                      0.4428    0.2013    0.2043
                      0.4158    0.2294    0.2834
 \end{verbatim}\normalsize
-We can interpret these as follows.  A positive value in a given month for the factor with the highest variance will lead to an increase in all of the yields, because all of the elements in the first column are positive (it will also lead to a slight increase in the slope due to the loadings at longer maturities being generally slightly larger than the loadings at smaller maturities).  A positive value for the next factor will decrease yields at short maturities and increase the yields at longer maturities, thus leading to an increase in the slope of the yield curve.  A positive value for the third factor will lead to an increase in yields at short and long maturities and a decrease in yields at intermediate maturities, thus affecting the curvature of the yield curve.  Results of this sort are common for data sets containing longer maturities also, leading to the conclusion that the most important factor is the level of the yield curve, the second most important factor is the slope of the yield curve, and the third most important factor is the curvature of the yield curve, with three factors explaining nearly all of the variations in yields.
+We can interpret these as follows. A positive value in a given month for
+the factor with the highest variance will lead to an increase in all of
+the yields, because all of the elements in the first column are positive
+(it will also lead to a slight increase in the slope due to the loadings
+at longer maturities being generally slightly larger than the loadings
+at smaller maturities). A positive value for the next factor will
+decrease yields at short maturities and increase the yields at longer
+maturities, thus leading to an increase in the slope of the yield curve.
+A positive value for the third factor will lead to an increase in yields
+at short and long maturities and a decrease in yields at intermediate
+maturities, thus affecting the curvature of the yield curve. Results of
+this sort are common for data sets containing longer maturities also,
+leading to the conclusion that the most important factor is the level of
+the yield curve, the second most important factor is the slope of the
+yield curve, and the third most important factor is the curvature of the
+yield curve, with three factors explaining nearly all of the variations
+in yields.
 
 
 
+# Hedging Principal Components {#s_hedgingprincipalcomponents}
 
-\section{Hedging Principal Components}\label{s_hedgingprincipalcomponents}
-
-Consider again  a bond with cash flows $C_1, \ldots, C_N$ at dates $\tau_1 < \cdots < \tau_N$ and price $P$ and recall that the price at date $0 < \tau_1$ should be
+Consider again  a bond with cash flows $C_1, ..., C_N$ at dates $\tau_1 < ... < \tau_N$ and price $P$ and recall that the price at date $0 < \tau_1$ should be
 $$P = \sum_{j=1}^{N} \E^{-y_j\tau_{j}}C_{j}\; ,$$
 where for convenience we are writing $y_j$ for the yield $y(0,\tau_j)$ of the discount bond maturing at $\tau_j$.  Viewing the price as a function of $y_1, \ldots, y_N$, we can write the differential as
 $$\D P = -\sum_{j=1}^{N} \tau_j\E^{-y_j\tau_{j}}C_{j}\, \D y_j\; .$$
@@ -222,12 +514,30 @@ Given discrete changes $\varDelta y_j$ in the yields, this implies the following
 \begin{equation}\label{durationreturn11}
 \frac{\varDelta P}{P} \approx -\sum_{j=1}^{N} \frac{\E^{-y_j\tau_{j}}C_{j}\tau_j}{P}\, \varDelta y_j\;.
 \end{equation}
-As in Sect.~\ref{s_duration}, because of convexity, the approximation understates the new price $P' = P + \varDelta P$.  In Sect.~\ref{s_duration} we considered this equation assuming equal changes in the yields (a parallel shift in the yield curve).  Here, we will discuss the more general case.
+As in Sect. [\[s_duration\]](#s_duration){reference-type="ref"
+reference="s_duration"}, because of convexity, the approximation
+understates the new price $P' = P + \varDelta P$. In
+Sect. [\[s_duration\]](#s_duration){reference-type="ref"
+reference="s_duration"} we considered this equation assuming equal
+changes in the yields (a parallel shift in the yield curve). Here, we
+will discuss the more general case.
 
 
+The approximation
+[\[durationreturn11\]](#durationreturn11){reference-type="eqref"
+reference="durationreturn11"} suggests how we can hedge against the
+factors identified in the previous section. For example, let
+$\beta_{1\ell}, \ldots, \beta_{N\ell}$ denote the loadings of the yields
+at maturities $\tau_1, \ldots, \tau_N$ on the factor with the $\ell$--th
+greatest variance, for $\ell=1, 2, 3$.[^1] Then the factor model
+suggests
 
-The approximation \eqref{durationreturn11} suggests how we can hedge against the factors identified in the previous section.  For example, let $\beta_{1\ell}, \ldots, \beta_{N\ell}$ denote the loadings of the yields at maturities $\tau_1, \ldots, \tau_N$ on the factor with the $\ell$--th greatest variance, for $\ell=1, 2, 3$.\footnote{It is unlikely that these specific maturities would have been used in the principal components algorithm, so the loadings  would have to be estimated by interpolating or fitting some type of curve to the loadings of the maturities that were used.}  Then the factor model suggests
-$$\varDelta y_j \approx \beta_{j1} z_1 + \beta_{j2} z_2 + \beta_{j3} z_3\; ,$$
+[^1]: It is unlikely that these specific maturities would have been used
+    in the principal components algorithm, so the loadings would have to
+    be estimated by interpolating or fitting some type of curve to the
+    loadings of the maturities that were used.
+    
+    $$\varDelta y_j \approx \beta_{j1} z_1 + \beta_{j2} z_2 + \beta_{j3} z_3\; ,$$
 where the $z_k$ denote the realizations of the factors.  Combining this with \eqref{durationreturn11} results in
 \begin{align*}
 \frac{\varDelta P}{P} &\approx -\sum_{j=1}^{N} \left(\frac{\E^{-y_j\tau_{j}}C_{j}\tau_j}{P}\sum_{k=1}^3 \beta_{jk}z_k \right)\\
@@ -237,11 +547,20 @@ This means that the bond return is approximately a linear combination of the fac
 \begin{equation}\label{modifiedduration3}
 -\sum_{j=1}^{N} \frac{\E^{-y_j\tau_{j}}C_{j}\tau_j\beta_{jk}}{P}\;.
 \end{equation}
-To hedge a liability against the factor, we want this coefficient for the asset multiplied by the dollar value of the asset to equal the corresponding coefficient for the liability multiplied by its dollar value.  There are three conditions of this type in a three-factor model, which means that a portfolio of three distinct assets is necessary to hedge a liability.
-A similar application is in bond portfolio management.  If we want to avoid exposing ourselves to factor risk relative to a benchmark portfolio, then we should match the loadings \eqref{modifiedduration3} for our portfolio with the corresponding loadings of the benchmark.
+To hedge a liability against the factor, we want this coefficient for
+the asset multiplied by the dollar value of the asset to equal the
+corresponding coefficient for the liability multiplied by its dollar
+value. There are three conditions of this type in a three-factor model,
+which means that a portfolio of three distinct assets is necessary to
+hedge a liability.
+A similar application is in bond portfolio management. If we want to
+avoid exposing ourselves to factor risk relative to a benchmark
+portfolio, then we should match the loadings
+[\[modifiedduration3\]](#modifiedduration3){reference-type="eqref"
+reference="modifiedduration3"} for our portfolio with the corresponding
+loadings of the benchmark.
 
-
-\section*{Problems}
+# Problems {#problems .unnumbered}
 \addcontentsline{toc}{section}{Problems}
 Assume the following discount bond prices for each of the following exercises:
 \begin{align*}
@@ -259,12 +578,11 @@ P(0,5.0) & = 0.850
 \begin{prob} Compute the six-month and one-year LIBOR rates.
 \end{prob}\begin{prob} Compute the swap rate for a two-year swap with semi-annual payments.
 \end{prob}\begin{prob} Compute the forward swap rate for a two-year swap with semi-annual payments beginning in 
-\begin{enumerate}
+
 \renewcommand{\labelenumi}{(\alph{enumi})}
-\item one year,
-\item two years,
-\item three years.
-\end{enumerate}
+1. one year,
+2. two years,
+3. three years.
 \end{prob}\begin{prob} Compute and plot the continuously-compounded discount-bond yields at maturities 0.5, 1.0, 1.5, \ldots, 5.0.
 \end{prob}\begin{prob} Consider a cubic spline as defined in \eqref{cubicspline00} with knot points at two and four years and the following coefficients:
 \begin{align*}
@@ -281,18 +599,17 @@ b_2 & =    0.00141\\
 c_2 & =    0.00552\\
 d_2 & =    0.02725
 \end{align*}
-\begin{enumerate}
+
 \renewcommand{\labelenumi}{(\alph{enumi})}
-\item Plot the cubic spline and compare it to the plot from the previous exercise.
-\item Confirm that the adjacent polynomials have the same values, first derivatives, and second derivatives at each of the two knot points.
-\end{enumerate}
+1. Plot the cubic spline and compare it to the plot from the previous exercise.
+2. Confirm that the adjacent polynomials have the same values, first derivatives, and second derivatives at each of the two knot points.
+
 \end{prob}\begin{prob} Create a VBA function \verb!DiscountBondPrice! that takes the time $\tau$ to maturity as an input and returns an estimated price for a discount bond maturing at $\tau$, using the cubic spline formula \eqref{cubicspline00}, knot points at 2 and 4 years, and the coefficients in the previous exercise.  Confirm that it gives approximately the same discount bond prices as those at the beginning of this set of exercises.  \emph{A Warning about Extrapolating to Longer Maturities}:  What price does the function give for a discount bond maturing in ten years?
 \end{prob}\begin{prob} Consider a two-year coupon bond with \$1 face value and a semi-annual coupon of \$0.03, with the first coupon being six months away.
-\begin{enumerate}\renewcommand{\labelenumi}{(\alph{enumi})}
-\item Compute the price of the bond.
-\item Compute the yield to maturity of the bond.  Note: There are many ways to do this, including the Excel IRR function.
-\item Compute the duration of the bond.
-\end{enumerate}
+1. Compute the price of the bond.
+2. Compute the yield to maturity of the bond.  Note: There are many ways to do this, including the Excel IRR function.
+3. Compute the duration of the bond.
+
 \end{prob}\begin{prob} Repeat the previous exercise for a one-year coupon bond with \$1 face value and a semi-annual coupon of \$0.04.
 \end{prob}\begin{prob} Repeat the previous exercise for a five-year coupon bond with \$1 face value and a semi-annual coupon of \$0.02.
 \end{prob}\begin{prob} Suppose you have shorted \$100 million of the two-year bond with the semi-annual coupon of \$0.03.  How much of the five-year bond with the semi-annual coupon of \$0.02 should you hold to duration hedge the short position?
