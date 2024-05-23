@@ -13,10 +13,10 @@ $$ {#eq-pathdependent}
 where $\mathrm{n}u = r-q-\sigma^2/2$ and $z$ is a standard normal.  Given that there are~$N$ time periods of length $\Delta t$, we need to generate $N$ standard normals to generate a stock price path.  If we generate $M$ paths to obtain a sample of $M$ option values, then we will need to generate $MN$ standard normals.  
 
 
-Consider for example a floating-strike lookback call.  \index{lookback option} The formula for this option given in Sect.~\ref{s_lookbacks} assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price.  In practice, the minimum will be computed by recording the price at a discrete number of dates.  We can value the discretely sampled lookback using Monte-Carlo by choosing $\Delta t$ to be the interval of time (e.g., a day or week) at which the price is recorded.  For example, if the contract calls for weekly observation, we will attain maximum precision by setting $N$ to be the number of weeks before the option matures.  
+Consider for example a floating-strike lookback call.  \index{lookback option} The formula for this option given in @sec-s_lookbacks assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price.  In practice, the minimum will be computed by recording the price at a discrete number of dates.  We can value the discretely sampled lookback using Monte-Carlo by choosing $\Delta t$ to be the interval of time (e.g., a day or week) at which the price is recorded.  For example, if the contract calls for weekly observation, we will attain maximum precision by setting $N$ to be the number of weeks before the option matures.  
 
 
-Asian and barrier options are also subject to discrete rather than continuous sampling and can be valued by Monte-Carlo in the same way as lookbacks.  We will discuss Asian options in Sect.~\ref{s_controlvariates}.
+Asian and barrier options are also subject to discrete rather than continuous sampling and can be valued by Monte-Carlo in the same way as lookbacks.  We will discuss Asian options in @sec-s_controlvariates.
 
 ## Binomial Valuation of Basket and Spread Options {#sec-s_curse}
 
@@ -26,19 +26,18 @@ Consider two stocks with constant dividend yields $q_i$ and constant volatilitie
 
 Given the period length $\Delta t$, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns $\Delta S_i/S_i$ or the continuously-compounded returns $\Delta \log S_i$.  There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters.  As in @sec-c_introcomputation, it is convenient to take $d_i = 1/u_i$, leaving five restrictions and five free parameters.
 
-As discussed in Sect.~\ref{s_binomialparameters}, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
-Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in Sect.~\ref{s_binomialparameters},
-\begin{align*}
+As discussed in @sec-s_binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
+Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s_binomialparameters,
+$$
 \log u_i=\sqrt{\sigma_i^2\Delta t + \mathrm{n}u_i^2(\Delta t)^2}\; ,
 $$
 $$
 p_i = \frac{1}{2}+\frac{\mathrm{n}u_i\Delta t}{2\log u_i}\;.
-\end{align*}
+$$
 where $\mathrm{n}u_i=r-q_i-\sigma_i^2/2$.
 In terms of the notation $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$, the probability of the up state for stock 1 is $p_1=p_{uu}+p_{ud}$ and the probability of the up state for stock 2 is $p_2=p_{uu}+p_{du}$.  Therefore,
 
-$$ {#eq-prob13combined}
-
+$$
 p_{uu}+p_{ud} = \frac{1}{2}+\frac{\mathrm{n}u_1\Delta t}{2\log u_1}\;,
 $$ {#eq-prob1}
 
@@ -57,39 +56,38 @@ $$ {#eq-prob3}
 
 
 
-We can solve the system @eq-prob13combined, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a VBA function for valuing an American spread call option are given in Sect.~\ref{s_montecarlo_matlab}.  This function operates much like the binomial valuation of American options described in @sec-c_introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
+We can solve the system @eq-prob13combined, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a VBA function for valuing an American spread call option are given in @sec-s_montecarlo_matlab.  This function operates much like the binomial valuation of American options described in @sec-c_introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
 The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.  
 
 Likewise, in an $N$--period model for a basket option written on three assets, there are $(n+1)^3$ combinations of nodes to be considered at date $n$; if there are five assets, there are $(n+1)^5$ combinations, etc.  Thus, the computation time required increases exponentially with the number of assets.  This can be a serious problem.  For example, with five assets and $N=99$, we would have $100^5$ (10 billion) combinations.  As this suggests, problems with multiple assets quickly become intractable in a binomial framework.  This is called the curse of dimensionality. \index{curse of dimensionality}
 
 ## Monte Carlo Valuation of Basket and Spread Options {#sec-montecarlomultiple}
 
-\index{basket option} \index{spread option} \index{Monte Carlo} In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method.  As noted in Sect.~\ref{s_baskets}, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. 
+\index{basket option} \index{spread option} \index{Monte Carlo} In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method.  As noted in @sec-s_baskets, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. 
 Discounting the average terminal value gives the estimate of the option value as usual.  
 
 The difference between binomial and Monte Carlo methods for options written on multiple assets can be understood as follows.  Both methods attempt to estimate the discounted expected value of the option (under the risk-neutral measure).  In an $N$--period model, the binomial model produces $N+1$ values for the terminal price of each underlying asset.  Letting $k$ denote the number of underlying assets, this produces $(N+1)^k$ combinations of asset prices.  Of course, each combination has an associated probability.  In contrast, the Monte Carlo method produces $M$ combinations of terminal prices, where~$M$ is the number of simulations.  Each combination is given the same weight ($1/M$) when estimating the expected value.  
 
-With a single underlying asset, the binomial model is more efficient, as discussed in Sect.~\ref{s_introbinomial}, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices.  However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets.  The reason is that many of the $(N+1)^k$ combinations of prices in the binomial model will have very low probabilities.  For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest.  It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value.  On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation.  Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations.  However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy---even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.
+With a single underlying asset, the binomial model is more efficient, as discussed in @sec-s_introbinomial, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices.  However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets.  The reason is that many of the $(N+1)^k$ combinations of prices in the binomial model will have very low probabilities.  For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest.  It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value.  On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation.  Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations.  However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy---even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.
 
 To implement Monte Carlo valuation of options on multiple assets, we must first explain how to simulate correlated asset prices.
-As observed in Sect.~\ref{s_stochasticvolatility}, we can simulate the changes in two Brownian motions $B_1$ and $B_2$ that have correlation $\rho$ by generating two independent standard normals $Z_1$ and $Z_2$ and defining
+As observed in @sec-s_stochasticvolatility, we can simulate the changes in two Brownian motions $B_1$ and $B_2$ that have correlation $\rho$ by generating two independent standard normals $Z_1$ and $Z_2$ and defining
 $$\Delta B_1 = \sqrt{\Delta t}\,Z_1\;, \qquad \text{and} \qquad \Delta B_2 = \sqrt{\Delta t}\,Z\; ,$$
 where $Z$ is defined as 
 $$Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\; .$$
 The random variable $Z$ is also a standard normal, and the correlation between $Z_1$ and $Z$ is~$\rho$.  
 Thus, we can simulate the changes in the logarithms of two correlated asset prices as
-\begin{align*}
+$$
 \Delta \log S_1 = \mathrm{n}u_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,
 $$
 $$
 \Delta \log S_2 = \mathrm{n}u_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
-\end{align*}
+$$
 where $\mathrm{n}u_i = r-q_1-\sigma_i^2/2$ and the $Z_i$ are independent standard normals.  
 
 To generalize this idea to more than two assets, we introduce some additional notation.  The simulation for the case of two assets can be written as
 
-$$ {#eq-mc_twoabcombined}
-
+$$
 \Delta \log S_1 = \mathrm{n}u_1\Delta t + a_{11}\sqrt{\Delta t}Z_1 + a_{12}\sqrt{\Delta t}Z_2\;,
 $$ {#eq-mc_twoa}
 
@@ -107,8 +105,7 @@ a_{21}=\sigma_2\rho\;, \qquad  a_{22} = \sigma_2\sqrt{1-\rho^2}\;.
 \end{array}$$
 These are not the only possible choices for the constants $a_{ij}$.  Given that $Z_1$ and $Z_2$ are independent standard normals, the conditions the $a_{ij}$ must satisfy in order to match the variances $\sigma_i^2\Delta t$ and correlation $\rho$ of the changes in the logarithms are
 
-$$ {#eq-a13combined}
-
+$$
 a_{11}^2+a_{12}^2 =\sigma_1^2\;,
 $$ {#eq-a1}
 
@@ -138,9 +135,9 @@ $$a_{21}  a_{22}\end{pmatrix}$$
 satisfies 
 $$AA^\top = \text{covariance matrix}$$
 is called the \index{Cholesky decomposition}
-the Cholesky decomposition of the covariance matrix.  Given any number $L$ of assets, provided none of the assets is redundant (perfectly correlated with a portfolio of the  others), the Cholesky decomposition of the $L\times L$ covariance matrix always exists. An algorithm for computing the Cholesky decomposition is given in Sect.~\ref{s_montecarlo_matlab}. 
+the Cholesky decomposition of the covariance matrix.  Given any number $L$ of assets, provided none of the assets is redundant (perfectly correlated with a portfolio of the  others), the Cholesky decomposition of the $L\times L$ covariance matrix always exists. An algorithm for computing the Cholesky decomposition is given in @sec-s_montecarlo_matlab. 
 
-We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoabcombined.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in Sect.~\ref{s_mc_europeans}.  The value of a basket call option at its maturity $T$ is 
+We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoabcombined.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in @sec-s_mc_europeans.  The value of a basket call option at its maturity $T$ is 
 $$\max\left(0,\;\sum_{i=1}^L w_iS_i(T)-K\right)\; ,$$
 where $L$ is the number of assets in the basket (portfolio) and $w_i$ is the weight of the $i$--th asset in the basket.
 The logarithm of the $i$--th asset price at maturity is simulated as
@@ -159,15 +156,15 @@ The negative correlation between $x$ and $y$ is essential for this method to gen
 In the context of derivative valuation, the standard application of this idea is to generate two negatively correlated underlying asset prices (or price paths, if the derivative is path dependent).  The terminal value of the derivative written on the first asset serves as $x$ and the terminal value of the derivative written on the second serves as $y$.  Because both asset prices have the same distribution, the means of $x$ and $y$ will be the same, and the discounted mean is the date--0 value of the derivative. 
 
 Consider for example a non-path-dependent option in a world with constant volatility.  In each simulation $i$ ($i=1,\ldots,M$), we would generate a standard normal $Z_i$ and compute
-\begin{align*}
+$$
 \log S_i(T) = \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma\sqrt{T}Z_i\; ,
 $$
 $$
 \log S_i'(T) = \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T - \sigma\sqrt{T}Z_i\;.
-\end{align*}
+$$
 Given the first terminal price, the value of the derivative will be some number $x_i$ and given the second it will be some number $y_i$.  The date--0 value of the derivative is estimated as
 $$\mathrm{e}^{-rT}\frac{1}{M}\sum_{i=1}^M\frac{x_i+y_i}{2}\; .$$
-We will illustrate this method for the floating-strike lookback call in Sect.~\ref{s_montecarlo_matlab}. 
+We will illustrate this method for the floating-strike lookback call in @sec-s_montecarlo_matlab. 
 
 
 ## Control Variates in Monte Carlo {#sec-s_controlvariates}
@@ -179,12 +176,12 @@ In general, the correction term $\hat{\beta}(\phi-\bar{y})$ will have a nonzero 
 As an example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date 0 is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A(0)$ computed up to date 0, assuming this average includes the price $S(0)$ at date 0.  The average price at date $T$ will be 
 $$A(T) = \frac{\tau}{T+\tau}A(0) + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S(t_i)}{N}\right)\; .$$
 The average-price call pays $\max(0,A(T)-K)$ at its maturity $T$, and we can write this as
-\begin{align*}
+$$
 \max(A(T)-K,0) = \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S(t_i)}{N}\right) - \left(K - \frac{\tau}{T+\tau}A(0)\right), 0\right)
 $$
 $$
 = \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;,
-\end{align*}
+$$
 where 
 $$K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A(0)\; .$$
 Therefore, the value at date 0 of the discretely-sampled average-price call is
@@ -201,13 +198,13 @@ We can use the sample mean of $y$ and its known mean $\phi$ to adjust the sample
 Broadie and Detemple [@BD] show that a modified binomial model is a quite efficient way to value American put options.  They modify the binomial model as follows: (i) the Black-Scholes formula is used to value the option at the penultimate date, and (ii) Richardson extrapolation is used to estimate what the option value would be with an infinite number of periods.  
 
 If an option is not exercised at date $N-1$ in an $N$--period binomial model (i.e., one date from the end), then, because in the binomial model there are no further opportunities for early exercise, the American option at date $N-1$ is equivalent to a European option at that date.  The value of a European option is given by the Black-Scholes formula.  Therefore, the estimate of the option value can be improved by replacing
-\small\begin{verbatim}
+\begin{verbatim}
 PutV(j) = max(S-K, dpd*PutV(j)+dpu*PutV(j+1))
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 with
-\small\begin{verbatim}
+\begin{verbatim}
 PutV(j) = max(S-K,Black_Scholes_Put(S,K,r,sigma,q,dt))
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 at date $N-1$ (of course this also means that we do not need to compute the intrinsic value at date $N$).
 This idea can be effectively used in binomial valuation of any option for which there is a closed-form solution (like the Black-Scholes formula) for the value of the corresponding European option in a continuous-time model.
 
@@ -231,7 +228,7 @@ y_2 =     a + bx_2 \;,
 and subtracting gives us $y_1-y_2 = bx_2$, which implies from the bottom equation that $a = 2y_2-y_1$.  We can think of $N_2$ as being the number of periods we want to use in the binomial model, in which case $y_2$ would be our estimate of the option value.  Richardson extrapolation here means also running the binomial model for half as many periods ($N_1 = N_2/2$) and adding the difference of the estimates $y_2-y_1$ to the estimate $y_2$.  
 
 Richardson extrapolation can be viewed as cancelling the first-order term in the Taylor series expansion of $f$.  We have
-\begin{align*}
+$$
 y_1 = f(x_1) = f(0) + f'(0)x_1 + \text{higher order terms} 
 $$
 $$
@@ -239,8 +236,8 @@ $$
 $$
 $$
 y_2 = f(x_2) = f(0) + f'(0)x_2 + \text{higher order terms}\;.
-\end{align*}
-\mathrm{n}ewpage\mathrm{n}oindent
+$$
+\mathrm{n}oindent
 This implies
 $$2y_2-y_1 = f(0) + \text{difference of higher order terms}\;.$$
 Having eliminated the first-order term, one can hope to obtain a closer approximation to $f(0)$.
@@ -251,10 +248,10 @@ Having eliminated the first-order term, one can hope to obtain a closer approxim
 ### Monte Carlo Valuation of Path-Dependent Options
 
 We will illustrate the valuation of path-dependent options by Monte Carlo by valuing a discretely-sampled floating-strike lookback call.  
-The inputs of the following are the same as for the lookback-call pricing function in Sect.~\ref{s_lookbacks}, plus the number of time periods \verb!N! and the number of simulations \verb!M!.  The logarithm of the initial stock price \verb!S! and the logarithm of the historical minimum \verb!Smin! are calculated and stored at the beginning of the program.  In each simulation $i = 1,\ldots, M$, the variables \verb!logS! and \verb!logSmin! are initialized to equal the stored values.  They are then updated at each time period $j=1,\ldots N$ in accord with @eq-pathdependent, with \verb!LogSmin! being changed only when a new minimum is reached.
+The inputs of the following are the same as for the lookback-call pricing function in @sec-s_lookbacks, plus the number of time periods \verb!N! and the number of simulations \verb!M!.  The logarithm of the initial stock price \verb!S! and the logarithm of the historical minimum \verb!Smin! are calculated and stored at the beginning of the program.  In each simulation $i = 1,\ldots, M$, the variables \verb!logS! and \verb!logSmin! are initialized to equal the stored values.  They are then updated at each time period $j=1,\ldots N$ in accord with @eq-pathdependent, with \verb!LogSmin! being changed only when a new minimum is reached.
 
 \addcontentsline{lof}{figure}{Floating Strike Call MC SE}
-\small\begin{verbatim}
+\begin{verbatim}
 Function Floating_Strike_Call_MC_SE(S, r, sigma, q, SMin, T, N, M)
 '
 ' Inputs are S = initial stock price
@@ -292,7 +289,7 @@ CallV = Exp(-r * T) * SumCall / M
 StdError = Exp(-r*T) * Sqr((SumCallSq-SumCall*SumCall/M)/(M*(M-1)))
 Floating_Strike_Call_MC_SE = Array(CallV, StdError)
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 ### Binomial Valuation of American Spread Options
 
@@ -300,7 +297,7 @@ To illustrate binomial valuation of basket and spread options, we will consider 
 $$\max\big(0,K-[S_1(T)-S_2(T)]\big) = \max\big(0,K-S_1(T)+S_2(T)\big)\; .$$
 We input the stock parameters as vectors \verb!S! $=\{S(1),S(2)\}$, \verb!q! $= \{q(1),q(2)\}$, \verb!sigma! $=\{\sigma(1),\sigma(2)\}$.  This can be done by inputting a cell range (e.g., \verb!A2:B2!) for each variable  or by inputting the values enclosed in curly braces (e.g., $\{50,40\}$).  The following declares certain arrays and defines the binomial parameters.
 \addcontentsline{lof}{figure}{American Spread Put Binomial}
-\small\begin{verbatim}
+\begin{verbatim}
 Function American_Spread_Put_Binomial(S, K, r, sigma, rho, q, T, N)
 '
 ' Inputs are S = 2-vector of initial stock prices
@@ -340,10 +337,10 @@ dpuu = disc * puu                       ' prob x discount factor
 dpud = disc * pud                       ' prob x discount factor
 dpdu = disc * pdu                       ' prob x discount factor
 dpdd = disc * pdd                       ' prob x discount factor
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 In each of the two binomial models, there are $N+1$ nodes at the last date.  This implies $(N+1)^2$ possible combinations.  We define the put values at the last date by looping over the $N+1$ possibilities for the second stock price, for each possible value for the first stock price.  Rather than recalculating the $N+1$ values for the second stock price each time we loop over them, it is more efficient to store them in a vector.  For the sake of simplicity, we will do the same for the first stock.  We store all the prices in a $2 \times (N\!+\!1)$ array denoted \verb!Stock!.  We store the put values in an $(N\!+\!1) \times (N\!+\!1)$ array.  \verb!PutV(0,0)! is the put value when both stocks are at their bottom nodes, \verb!PutV(0,1)! is the value when the first stock is at its bottom node and the second stock is one  node up from the bottom, etc.
-\small\begin{verbatim}
+\begin{verbatim}
 For x = 1 To 2                          ' for matrix at last date
     Stock(x, 0) = S(x) * d(x) ^ N       ' stock x at bottom node
     For j = 1 To N                      ' step up in tree x 
@@ -355,9 +352,9 @@ For j = 0 To N                          ' loop over nodes in tree 1
         PutV(j, h) = Application.Max(K-Stock(1,j)+Stock(2,h),0)
     Next h
 Next j
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 Now we back up $N$ times to get to the beginning of the tree, checking the early exercise condition at each date, and return the put value as \verb!PutV(0,0)!.
-\small\begin{verbatim}
+\begin{verbatim}
 For i = N - 1 To 0 Step -1              ' back up in time to date 0
     For x = 1 To 2
         Stock(x, 0) = S(x) * d(x) ^ i   ' stock x at bottom node
@@ -376,14 +373,14 @@ For i = N - 1 To 0 Step -1              ' back up in time to date 0
 Next i
 American_Spread_Put_Binomial = PutV(0, 0)
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 ### Cholesky Decomposition
 
 An algorithm for computing the decomposition is as follows.  We assume the $L\times L$ matrix has been input as \verb!cov!, with the interpretation that \verb!cov(i,j)! is $\sigma_i\sigma_j\rho_{ij}$ and \verb!cov(i,i)! is~$\sigma_i^2$ for $i, j = 1, \ldots, L$.  We start the indices $i,j$ at 1 because this is the convention when inputting arrays from an Excel worksheet.  The output matrix is also indexed $i,j = 1, \ldots, L$.
 
 \addcontentsline{lof}{figure}{Cholesky}
-\small\begin{verbatim}
+\begin{verbatim}
 Function Cholesky(L, cov)
 '
 ' Inputs are L = number of assets
@@ -408,14 +405,14 @@ For i = 1 To L
 Next i
 Cholesky = a
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 ### Monte Carlo Valuation of European Basket Options
 
 We input \verb!S! as the vector of initial asset prices, \verb!q! as the vector of dividend yields, \verb!cov! as the covariance matrix, \verb!w! as the vector of weights defining the basket option, and \verb!L! as the number of assets in the basket.  The following function can also be used to value a spread option, by inputting \verb!L! $=2$ and \verb!w! = $[1, -1]$.
 
 \addcontentsline{lof}{figure}{European Basket Call MC}
-\small\begin{verbatim}
+\begin{verbatim}
 Function European_Basket_Call_MC(S, K, r, cov, q, w, T, L, M)
 '
 ' Inputs are S = L-vector of initial stock prices
@@ -459,7 +456,7 @@ For h = 1 To M
 Next h
 European_Basket_Call_MC = Exp(-r * T) * SumCall / M
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 
 
@@ -475,7 +472,7 @@ We compute the minimums \verb!LogSMin(1)! and \verb!LogSMin(2)! of the logarithm
 and compute at the end of each simulated path the average call value
 $$0.5 \times \max\left(0,\mathrm{e}^{\text{LogS(1)}} - \mathrm{e}^{\text{LogSMin(1)}}\right) + 0.5 \times \max\left(0,\mathrm{e}^{\text{LogS(2)}} - \mathrm{e}^{\text{LogSMin(2)}}\right)\; .$$
 \addcontentsline{lof}{figure}{Floating Strike Call MC AV SE}
-\small\begin{verbatim}
+\begin{verbatim}
 Function Floating_Strike_Call_MC_AV_SE(S,r,sigma,q,SMin,T,N,M)
 '
 ' Inputs are S = initial stock price
@@ -519,14 +516,14 @@ CallV = Exp(-r * T) * SumCall / M
 StdError = Exp(-r*T)*Sqr((SumCallSq-SumCall*SumCall/M)/(M*(M-1)))
 Floating_Strike_Call_MC_AV_SE = Array(CallV, StdError)
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 ### Monte Carlo Valuation with a Control Variate
 
 We use the geometric average as a control variate for the arithmetic average in an average-price call, using a pre-sample to estimate the beta.  For pedagogic purposes, we return the beta in addition to the call value.    
 
 \addcontentsline{lof}{figure}{Average Price Call MC}
-\small\begin{verbatim}
+\begin{verbatim}
 Function Average_Price_Call_MC(S,K,r,sigma,q,Avg,TPast,TFut,N,M1,M2)
 '
 ' Inputs are S = initial stock price
@@ -607,7 +604,7 @@ Next i
 CallV = (TFut/(TFut+TPast))*(Sumx/M2+beta*(phi-Sumy/M2))
 Average_Price_Call_MC = Array(CallV, beta)
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 
 ### Accelerated Binomial Valuation of American Puts
@@ -615,7 +612,7 @@ End Function
 First we create a binomial valuation program that replaces (i) calculation of the intrinsic value at maturity and (ii) calculation of the value at the penultimate date as the larger of intrinsic value and the discounted value at maturity with (iii) calculation of the value at the penultimate date as the larger of intrinsic value and the Black-Scholes value of a European option with one period to maturity.
 
 \addcontentsline{lof}{figure}{American Put Binomial BS}
-\small\begin{verbatim}
+\begin{verbatim}
 Function American_Put_Binomial_BS(S0, K, r, sigma, q, T, N)
 '
 ' Inputs are S0 = initial stock price
@@ -659,12 +656,12 @@ For i = N - 2 To 0 Step -1
 Next i
 American_Put_Binomial_BS = PutV(0)         
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 \mathrm{n}oindent Now we create a program that uses Richardson extrapolation from a binomial model with $N$ periods and a binomial model with $N/2$ periods to estimate the value from a binomial model with an infinite number of periods.  We use the previous program as our binomial model.
 
 \addcontentsline{lof}{figure}{American Put Binomial BS RE}
-\small\begin{verbatim}
+\begin{verbatim}
 Function American_Put_Binomial_BS_RE(S, K, r, sigma, q, T, N)
 '
 ' Inputs are S = initial stock price
@@ -684,7 +681,7 @@ y2 = American_Put_Binomial_BS(S, K, r, sigma, q, T, N)
 y1 = American_Put_Binomial_BS(S, K, r, sigma, q, T, N / 2)
 American_Put_Binomial_BS_RE = 2 * y2 - y1
 End Function
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 
 
@@ -698,20 +695,20 @@ End Function
 
 ::: {#exr-e_richextrap}
  Create an Excel worksheet to compare the estimates of the value of an American put given by the functions 
-\begin{center}\small
+\begin{center}
 \verb!American_Put_Binomial!
-\end{center}\mathrm{n}ormalsize
+\end{center}
 and 
-\begin{center}\small
+\begin{center}
 \verb!American_Put_Binomial_BS_RE!
-\end{center}\mathrm{n}ormalsize
+\end{center}
 for various values of $N$.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, and $T$.  To assess the quality of the estimates, provide also the estimate given by the function \verb!American_Put_Binomial! with a large value of $N$ (say $N = 1000$).  :::
 
 ::: {#exr-nolabel}
  Estimate the value of option (c) in Prob.~\ref{e_averagehedge} using the function 
-\begin{center}\small
+\begin{center}
 \verb!Average_Price_Call_MC!.
-\end{center}\mathrm{n}ormalsize
+\end{center}
 Complete the simulations in Prob.~\ref{e_averagehedge2} by including the cost of the options for hedge (c).:::
 
 ::: {#exr-e_basketbinomial}

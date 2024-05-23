@@ -2,7 +2,7 @@
 
 This chapter has three objectives.  The first is to introduce the concept of a Brownian motion.  A Brownian motion is a random process (a variable that changes randomly over time) that evolves continuously in time and has the property that its change over any time period is normally distributed with mean zero and variance equal to the length of the time period.  The mean zero feature means that a Brownian motion is a martingale.  We will also give a different characterization (Levy's theorem) emphasizing the quadratic variation process, which is a property of the paths (how the variable evolves over time, in a given state of the world) of the process.  
 
-The second objective is to explain It\^o's formula, which is the chain rule for stochastic calculus.  In the Black-Scholes model, the stock price is assumed to satisfy
+The second objective is to explain Ito's formula, which is the chain rule for stochastic calculus.  In the Black-Scholes model, the stock price is assumed to satisfy
 $$\frac{\mathrm{d} S}{S}=\mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,$$
 where $B$ is a Brownian motion.  In the case that the stock pays no dividend, the rate of return is its price change $\mathrm{d} S$ divided by the initial price $S$, so the model states that the expected rate of return in each instant $\mathrm{d} t$  is $\mu\,\mathrm{d} t$ (of course, $t$ denotes time, so $\mathrm{d} t$ is the change in time).  The variance of the rate of return depends on $\sigma$.  This model can be equivalently written in terms of the natural logarithm of $S$, which we will write as $\log S$.  The above equation for the rate of return is equivalent to
 $$\mathrm{d}\,\log S = \left(\mu - \frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .$$
@@ -19,7 +19,7 @@ We begin with the fact that changes in the value of a Brownian motion \index{Bro
 We can generate an approximate Brownian motion in Excel.  To do so, we take a small time period $\Delta t$ and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance $\Delta t$.  In the following procedure, the user is prompted to input the length $T$ of the entire time period over which the Brownian motion is to be simulated and to input the number $N$ of time periods of length $\Delta t$ within the full interval $[0,T]$.  The length $\Delta t$ of each individual time period is then calculated as $T/N$.  The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number $N$.  Plotting the output of the procedure creates a picture of what we call a path of the Brownian motion, which means that it shows the value taken at each time in one state of the world.  Running the procedure again (for the same $T$ and $N$) will create a different plot, which can be interpreted as the values of the Brownian motion in another state of the world.  In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Excel's random number generating function.^[The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrtdt]*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\Delta t}$ and hence its variance is $\Delta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings Time and Brownian Motion.  To plot the path of the Brownian motion, select the two columns and insert an XY (Scatter) chart, with data points connected by lines.}
 
 \addcontentsline{lof}{figure}{Simulating Brownian Motion}
-\small\begin{verbatim}
+\begin{verbatim}
 Sub Simulating_Brownian_Motion()
 Dim T, dt, Sqrdt, BrownianMotion, i, N
 T = InputBox("Enter the length of the time period (T)")
@@ -37,7 +37,7 @@ For i = 1 To N
   ActiveCell.Offset(i + 1, 1) = BrownianMotion  ' next value
 Next i
 End Sub
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 
 
@@ -58,9 +58,10 @@ as $N \rightarrow \infty$.  Essentially the same argument shows that the quadrat
 
 Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual.  To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, \index{total variation} which is defined in the same way as quadratic variation but with the squared changes $[\Delta B(t_i)]^2$ replaced by the absolute value of the changes $|\Delta B(t_i)|.$  If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one).  It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion.  This is not quite right.  Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil.  Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has.  Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass.  If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function).  However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye---no matter how small the segment, one would still see the characteristic jiggling.
 
-One may well question why we should be interested in this curious mathematical object.  The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing @eq-formula establishes.  Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants.  More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes.  So, we are led to a study of continuous martingales.  An important fact is that any non-constant continuous martingale must have infinite total variation!  So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.  
+One may well question why we should be interested in this curious mathematical object.  The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing equation @eq-formula establishes.  Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants.  More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes.  So, we are led to a study of continuous martingales.  An important fact is that any non-constant continuous martingale must have infinite total variation!  So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.  
 
 There remains perhaps the question of why we focus on Brownian motion within the world of continuous martingales.  The answer here is that any continuous martingale is really just a transformation of a Brownian motion.  This is a consequence of the following important fact, which is known as Levy's theorem: \index{Levy's theorem}
+
 ::: {.callout-tip}
 ## 
 A continuous martingale is a Brownian motion if and only if its quadratic variation over each interval $[0,T]$ equals $T$.
@@ -68,8 +69,8 @@ A continuous martingale is a Brownian motion if and only if its quadratic variat
 
 Thus, among continuous martingales, a Brownian motion is defined by the condition that the quadratic variation over each interval $[0,T]$ is equal to $T$.  This is really just a normalization.  A different continuous martingale may have a different quadratic variation, but it can be converted to a Brownian motion just by deforming the time scale.  Furthermore, many continuous martingales can be constructed as stochastic integrals with respect to a Brownian motion.  We take up this topic in the next section.
 
-## It\^o Processes {#sec-s_itoprocesses}
-An It\^o process is a variable $X$ that changes over time as \index{It\^o process}
+## Ito Processes {#sec-s_itoprocesses}
+An Ito process is a variable $X$ that changes over time as \index{Ito process}
 $$
 \mathrm{d} X(t) = \mu(t)\,\mathrm{d} t+\sigma(t)\,\mathrm{d} B(t)\;,
 $$ {#eq-itoprocess}
@@ -82,33 +83,33 @@ We will not formally define the integral $\int_0^T \sigma(t)\,\mathrm{d} B(t)$, 
 $$\sum_{i=1}^N \sigma(t_{i-1})\,\Delta B(t_i)\; ,$$
 where $0=t_0 < \cdots t_N=T$ and the time periods $t_i-t_{i-1}$ are small.  Given that we can simulate the changes $\Delta B(t_i)$ as random normals, we can approximately simulate the random variable $\int_0^T \sigma(t)\,\mathrm{d} B(t)$ and hence we can approximately simulate $X(T)$.
 
-An It\^o process evolves continuously over time.  We interpret $\mu(t)\,\mathrm{d} t$ as the expected change in $X$ in an instant $\mathrm{d} t$.  The quantity $\mu(t)$  is also called the drift of the process $X$ at time $t$.   \index{drift} The coefficient $\sigma(t)$ is called the diffusion coefficient of $X$ at time $t$.  \index{diffusion coefficient}
+An Ito process evolves continuously over time.  We interpret $\mu(t)\,\mathrm{d} t$ as the expected change in $X$ in an instant $\mathrm{d} t$.  The quantity $\mu(t)$  is also called the drift of the process $X$ at time $t$.   \index{drift} The coefficient $\sigma(t)$ is called the diffusion coefficient of $X$ at time $t$.  \index{diffusion coefficient}
 
-If $\mu$ and $\sigma$ are constant, it is standard to refer to an It\^o process $X$ as a $(\mu,\sigma)$--Brownian motion.  Of course, it is not a martingale when $\mu\mathrm{n}eq 0$.  For example, when $\mu>0$, $X$ tends to increase over time.  However, it has the jiggling property of a Brownian motion, scaled by the diffusion coefficient $\sigma$. 
+If $\mu$ and $\sigma$ are constant, it is standard to refer to an Ito process $X$ as a $(\mu,\sigma)$--Brownian motion.  Of course, it is not a martingale when $\mu\mathrm{n}eq 0$.  For example, when $\mu>0$, $X$ tends to increase over time.  However, it has the jiggling property of a Brownian motion, scaled by the diffusion coefficient $\sigma$. 
 
-A very important fact is that an It\^o process such as @eq-itoprocess can be a martingale only if $\mu=0$.  This should seem sensible, because $\mu\,\mathrm{d} t$ is the expected change in $X$, and a process is a martingale only if its expected change is zero.^[If the sources of uncertainty in the market can be modeled as Brownian motions, then in fact every martingale is an It\^o process with $\mu=0$.  This is some justification for the assumption we will make in this book, when studying continuous-time models, that all martingales are It\^o processes.]   This observation plays a fundamental role in deriving asset pricing formulas, as we will begin to see in Sect.~\ref{s_girsanov}.
+A very important fact is that an Ito process such as @eq-itoprocess can be a martingale only if $\mu=0$.  This should seem sensible, because $\mu\,\mathrm{d} t$ is the expected change in $X$, and a process is a martingale only if its expected change is zero.^[If the sources of uncertainty in the market can be modeled as Brownian motions, then in fact every martingale is an Ito process with $\mu=0$.  This is some justification for the assumption we will make in this book, when studying continuous-time models, that all martingales are Ito processes.]   This observation plays a fundamental role in deriving asset pricing formulas, as we will begin to see in @sec-s_girsanov.
 Conversely, if $\mu=0$ and 
 $$
 E \left[\int_0^T \sigma^2(t)\,\mathrm{d} t\right] < \infty
 $$ {#eq-regularity1}
 
 for each $T$,  
-then the It\^o process is a continuous martingale and the variance of its date--$T$ value, calculated with the information available at date 0, is:
+then the Ito process is a continuous martingale and the variance of its date--$T$ value, calculated with the information available at date 0, is:
 $$\mathrm{var}[X(T)] = E \left[\int_0^T \sigma^2(t)\,\mathrm{d} t\right]\; .$$  
 
-Whether $\mu$ is zero or not, and independently of the assumption @eq-regularity1, the quadratic variation of the It\^o process $X$ is 
+Whether $\mu$ is zero or not, and independently of the assumption @eq-regularity1, the quadratic variation of the Ito process $X$ is 
 $$
 \lim_{N \rightarrow \infty} \sum_{i=1}^N[\Delta X(t_i)]^2 = \int_0^T \sigma^2(t)\,\mathrm{d} t
 $$ {#eq-itoquadraticvariation}
 
 with probability one.  Thus we obtain (when $\mu=0$ and @eq-regularity1 holds) a continuous martingale with a different quadratic variation than a Brownian motion via the diffusion function $\sigma$.
 
-To compute the quadratic variation of an It\^o process, we use the following simple and important rules (for the sake of brevity, we drop the $(t)$ notation from $B(t)$ here and sometimes later):
+To compute the quadratic variation of an Ito process, we use the following simple and important rules (for the sake of brevity, we drop the $(t)$ notation from $B(t)$ here and sometimes later):
+
 ::: {.callout-tip}
 ## 
 
-$$ {#eq-multiplydifferentials}
-
+$$
 (\mathrm{d} t)^2 = 0\;, 
 $$ {#eq-dtsquared}
 
@@ -125,10 +126,11 @@ $$ {#eq-dBsquared}
 
 
 We apply these rules to compute the quadratic variation of $X$ as follows:
+
 ::: {.callout-tip}
 ## 
 If $\mathrm{d} X = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B$ for a Brownian motion $B$, then
-\begin{align*}
+$$
 (\mathrm{d} X)^2 = (\mu\,\mathrm{d} t+\sigma\,\mathrm{d} B)^2
 $$
 $$
@@ -136,7 +138,7 @@ $$
 $$
 $$
 = 0 + 0 + \sigma^2\,\mathrm{d} t\;.
-\end{align*}
+$$
 :::
 
 We integrate this from 0 to $T$ to obtain the quadratic variation @eq-itoquadraticvariation over that time period:^[In a more formal mathematical presentation, one normally writes $\mathrm{d]\langle X,X\rangle$ for what we are writing here as $(\mathrm{d} X)^2$.  This is the differential of the quadratic variation process, and the quadratic variation through date $T$ is
@@ -148,7 +150,7 @@ $$ {#eq-itoquadraticvariation2}
 
 
 
-## It\^o's Formula {#sec-s_itosformula}
+## Ito's Formula {#sec-s_itosformula}
 
 First we recall some facts of the ordinary calculus.  If $y=g(x)$ and $x = f(t)$ with $f$ and $g$ being continuously differentiable functions, then 
 $$\frac{\mathrm{d} y}{\mathrm{d} t} = \frac{\mathrm{d} y}{\mathrm{d} x}\times \frac{\mathrm{d} x}{\mathrm{d} t} = g'(x(t))f'(t)\; .$$
@@ -160,16 +162,16 @@ y(T) = y(0) + \int_0^T g'(x(t))\,\mathrm{d} x(t)\;.
 $$ {#eq-ordinarycalculus}
 
 
-We can contrast  @eq-ordinarycalculus  with a special case of It\^o's formula for the calculus of It\^o processes (the more general formula will be discussed in the next section).  If $B$ is a Brownian motion and $Y = g(B)$ for a twice-continuously differentiable function $g$, then \index{It\^o's formula}
+We can contrast  @eq-ordinarycalculus  with a special case of Ito's formula for the calculus of Ito processes (the more general formula will be discussed in the next section).  If $B$ is a Brownian motion and $Y = g(B)$ for a twice-continuously differentiable function $g$, then \index{Ito's formula}
 $$
 Y(T) = Y(0) + \int_0^T g'(B(t))\,\mathrm{d} B(t) + \frac{1}{2}\int_0^T g''(B(t))\,\mathrm{d} t\;.
 $$ {#eq-itonew1}
 
-Thus, relative to the ordinary calculus, It\^o's formula has an extra term involving the second derivative $g''$.  We can write @eq-itonew1 in differential form as
+Thus, relative to the ordinary calculus, Ito's formula has an extra term involving the second derivative $g''$.  We can write @eq-itonew1 in differential form as
 $$dY(t) = \frac{1}{2}g''(B(t))\,\mathrm{d} t + g'(B(t))\,\mathrm{d} B(t).$$
-Thus, $Y=g(B)$ is an It\^o process with drift $g''(B(t))/2$ and diffusion coefficient $g'(B(t))$.
+Thus, $Y=g(B)$ is an Ito process with drift $g''(B(t))/2$ and diffusion coefficient $g'(B(t))$.
 
-To gain some intuition for the extra term in It\^o's formula, we return to the ordinary calculus.  Given dates $t<u$, the derivative defines a linear approximation of the change in $y$ over this time period; i.e., setting $\Delta x = x(u)-x(t)$ and $\Delta y = y(u) - y(t)$, we have the approximation
+To gain some intuition for the extra term in Ito's formula, we return to the ordinary calculus.  Given dates $t<u$, the derivative defines a linear approximation of the change in $y$ over this time period; i.e., setting $\Delta x = x(u)-x(t)$ and $\Delta y = y(u) - y(t)$, we have the approximation
 $$\Delta y \approx g'(x(t)) \,\Delta x\; .$$
 A better approximation is given by the second-order Taylor series expansion
 $$\Delta y \approx g'(x(t))\,\Delta x + \frac{1}{2} g''(x(t))\,[\Delta x]^2\; .$$
@@ -179,7 +181,7 @@ The second-order Taylor series expansion in the case of $Y=g(B)$ is
 $$\Delta Y \approx g'(B(t))\,\Delta B + \frac{1}{2} g''(B(t))\,[\Delta B]^2\; .$$
 For example, given a partition $0=t_0 < t_1 < \cdots < t_N=T$ of the time interval $[0,T]$, we have, with the same notation we have used earlier,
 $$
-Y(T) = Y(0) + \sum_{i=1}^N \Delta Y(t_i) \mathrm{n}otag 
+Y(T) = Y(0) + \sum_{i=1}^N \Delta Y(t_i)  
 $$
 $$
 \approx Y(0) + \sum_{i=1}^N g'(B(t_{i-1}))\,\Delta B(t_i) + \frac{1}{2} \sum_{i=1}^N g''(B(t_{i-1}))\,[\Delta B(t_i)]^2\;.
@@ -188,14 +190,13 @@ $$ {#eq-itonew2}
 If we make the time intervals $t_i-t_{i-1}$ shorter, letting $N \rightarrow \infty$, we cannot expect that the extra term here will disappear, leading to the result @eq-ordinarycalculus of the ordinary calculus, because we know that
 $$\lim_{N \rightarrow \infty} \sum_{i=1}^N [\Delta B(t_i)]^2 = T\; ,$$
 whereas for the continuously differentiable function $x(t) = f(t)$, the same limit is zero.  In fact it seems sensible to interpret the limit of $[\Delta B]^2$ as $(\mathrm{d} B)^2 =\mathrm{d} t$.
-This is perfectly consistent with It\^o's formula: if we take the limit in @eq-itonew2, replacing the limit of $[\Delta B(t_i)]^2$ with $(\mathrm{d} B)^2 = \mathrm{d} t$, we obtain @eq-itonew1.
+This is perfectly consistent with Ito's formula: if we take the limit in @eq-itonew2, replacing the limit of $[\Delta B(t_i)]^2$ with $(\mathrm{d} B)^2 = \mathrm{d} t$, we obtain @eq-itonew1.
 
-## Multiple It\^o Processes
+## Multiple Ito Processes
 
-Now consider two It\^o processes
+Now consider two Ito processes
 
-$$ {#eq-itoprocess110111}
-
+$$
 \mathrm{d} X(t) = \mu_x(t)\,\mathrm{d} t + \sigma_x(t)\,\mathrm{d} B_x(t)\;,
 $$ {#eq-itoprocess110}
 
@@ -221,6 +222,7 @@ $$
 \sum_{i=1}^N \Delta X(t_i) \times \Delta Y(t_i) \rightarrow \int_0^T \sigma_x(t)\sigma_y(t)\rho(t)\,\mathrm{d} t\;.
 $$ {#eq-itoprocess113}
 
+
 ::: {.callout-tip}
 ## 
 By adding the rule 
@@ -229,10 +231,10 @@ $$
 $$ {#eq-dBdB}
  to the rules @eq-dtsquared--@eq-dBsquared, we can compute the limit in @eq-itoprocess113 as
 $$
-\lim_{N \rightarrow\infty} \sum_{i=1}^N \Delta X(t_i) \times \Delta Y(t_i)  = \int_0^T (\mathrm{d} X)(\mathrm{d} Y)\mathrm{n}otag
+\lim_{N \rightarrow\infty} \sum_{i=1}^N \Delta X(t_i) \times \Delta Y(t_i)  = \int_0^T (\mathrm{d} X)(\mathrm{d} Y)
 $$
 $$
-= \int_0^T (\mu_x\,\mathrm{d} t +\sigma_x\,\mathrm{d} B_x)(\mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y)\mathrm{n}otag
+= \int_0^T (\mu_x\,\mathrm{d} t +\sigma_x\,\mathrm{d} B_x)(\mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y)
 $$
 $$
 = \int_0^T\sigma_x(t)\sigma_y(t) \rho(t)\,\mathrm{d} t\;.
@@ -241,19 +243,19 @@ $$ {#eq-itojointvariation}
 :::
 
 
-The most general case of It\^o's formula that we will need is for a function $Z(t) = g(t, X(t), Y(t))$ where $X$ and $Y$ are It\^o processes as in @eq-itoprocess110111.  In this case, It\^o's formula is^[We need to assume $g(t,x,y)$ is continuously differentiable in $t$ and twice continuously differentiable in $(x,y)$ for @eq-itogeneralnew] and @eq-itogeneralnew2 to be valid.  Note also that we are using a short-hand notation here.  The partial derivatives of $g$ will generally depend on $t$, $X(t)$ and $Y(t)$ just as $g$ does.
+The most general case of Ito's formula that we will need is for a function $Z(t) = g(t, X(t), Y(t))$ where $X$ and $Y$ are Ito processes as in @eq-itoprocess110111.  In this case, Ito's formula is^[We need to assume $g(t,x,y)$ is continuously differentiable in $t$ and twice continuously differentiable in $(x,y)$ for @eq-itogeneralnew and @eq-itogeneralnew2 to be valid.  Note also that we are using a short-hand notation here.  The partial derivatives of $g$ will generally depend on $t$, $X(t)$ and $Y(t)$ just as $g$ does.]
 $$
-Z(T) = Z(0) + \int_0^T \frac{\partial g}{\partial t}\,\mathrm{d} t + \int_0^T \frac{\partial g}{\partial x}\,\mathrm{d} X(t) + \int_0^T \frac{\partial g}{\partial y}\,\mathrm{d} Y(t) \mathrm{n}otag
+Z(T) = Z(0) + \int_0^T \frac{\partial g}{\partial t}\,\mathrm{d} t + \int_0^T \frac{\partial g}{\partial x}\,\mathrm{d} X(t) + \int_0^T \frac{\partial g}{\partial y}\,\mathrm{d} Y(t) 
 $$
 $$
-+ \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X(t))^2 +  \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y(t))^2\mathrm{n}otag 
++ \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X(t))^2 +  \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y(t))^2 
 $$
 $$
 +  \int_0^T \frac{\partial^2 g}{\partial x\partial y}\,(\mathrm{d} X(t))( \mathrm{d} Y(t))\;.
 $$ {#eq-itogeneralnew}
 
 In this equation, we apply the rules @eq-dtsquared--@eq-dBdB to compute
-\begin{align*}
+$$
 (\mathrm{d} X(t))^2= \sigma_x^2(t)\,\mathrm{d} t\; ,
 $$
 $$
@@ -261,14 +263,15 @@ $$
 $$
 $$
 (\mathrm{d} X(t))( \mathrm{d} Y(t)) = \sigma_x(t)\sigma_y(t)\rho(t)\,\mathrm{d} t\;.
-\end{align*}
-It\^o's formula @eq-itogeneralnew appears a bit simpler (and easier to remember) if we write it in differential form."  We have:
+$$
+Ito's formula @eq-itogeneralnew appears a bit simpler (and easier to remember) if we write it in differential form."  We have:
+
 
 ::: {.callout-tip}
 ## 
-If $Z(t) = g(t, X(t), Y(t))$ where $X$ and $Y$ are It\^o processes as in @eq-itoprocess110111, then
+If $Z(t) = g(t, X(t), Y(t))$ where $X$ and $Y$ are Ito processes as in @eq-itoprocess110111, then
 $$
-\mathrm{d} Z =  \frac{\partial g}{\partial t}\,\mathrm{d} t + \frac{\partial g}{\partial x}\,\mathrm{d} X +  \frac{\partial g}{\partial y}\,\mathrm{d} Y + \frac{1}{2} \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X)^2 +  \frac{1}{2}  \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y)^2 \mathrm{n}otag
+\mathrm{d} Z =  \frac{\partial g}{\partial t}\,\mathrm{d} t + \frac{\partial g}{\partial x}\,\mathrm{d} X +  \frac{\partial g}{\partial y}\,\mathrm{d} Y + \frac{1}{2} \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X)^2 +  \frac{1}{2}  \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y)^2 
 $$
 $$
 + \frac{\partial^2 g}{\partial x\partial y}\,(\mathrm{d} X)(\mathrm{d} Y)\;.
@@ -278,8 +281,9 @@ $$ {#eq-itogeneralnew2}
 :::
 
 
-## Examples of It\^o's Formula {#sec-s_examples}
-The following are the applications of It\^o's formula that will be used most frequently in the book.  They follow from the boxed formula at the end of the previous section by taking $g(x,y)=xy$ or $g(x,y)=y/x$ or $g(x)=e^x$ or $g(x) = \log x$.
+## Examples of Ito's Formula {#sec-s_examples}
+The following are the applications of Ito's formula that will be used most frequently in the book.  They follow from the boxed formula at the end of the previous section by taking $g(x,y)=xy$ or $g(x,y)=y/x$ or $g(x)=e^x$ or $g(x) = \log x$.
+
 
 
 
@@ -297,6 +301,7 @@ $$ {#eq-rule2}
 
 
 
+
 ::: {.callout-tip}
 ## 
 
@@ -309,6 +314,7 @@ $$ {#eq-rule4}
 :::
 
 
+
 ::: {.callout-tip}
 ## 
 
@@ -319,6 +325,7 @@ $$ {#eq-rule5}
 
 
 :::
+
 
 
 ::: {.callout-tip}
@@ -334,13 +341,14 @@ $$ {#eq-rule6}
 :::
 
 
+
 ::: {.callout-tip}
 ## 
 
 \textbf{Compounding/Discounting.}
 Let  
 $$Y(t) =\exp\left(\int_0^t q(s)\,\mathrm{d} s\right)$$
-for some (possibly random) process $q$ and define $Z=XY$ for any It\^o process~$X$.
+for some (possibly random) process $q$ and define $Z=XY$ for any Ito process~$X$.
 The usual calculus gives us 
 $\mathrm{d} Y(t)=q(t)Y(t)\,\mathrm{d} t$,
 and the product rule above implies
@@ -359,14 +367,14 @@ This is the same as in the usual calculus.
 
 Frequently, we will assume that the asset underlying a derivative security pays a constant dividend yield, \index{dividend yield} which we will denote by $q$.  This means, for an asset with price $S(t)$, that the dividend in an instant $\mathrm{d} t$ is $q S(t)\,\mathrm{d} t$.  If the dividends are reinvested in new shares, the number of shares will grow exponentially at rate $q$.  To see this, consider the portfolio starting with a single share of the asset and reinvesting dividends until some date $T$.  Let $X(t)$ denote the number of shares resulting from this strategy at any time $t\leq T$.  Then the dividend received at date $t$ is $q S(t)X(t)\,\mathrm{d} t$, which can be used to purchase $q X(t)\,\mathrm{d} t$ new shares.  This implies that $\mathrm{d} X(t)=q X(t)\,\mathrm{d} t$, or $\mathrm{d} X(t)/\mathrm{d} t = q X(t)$, and it is easy to check (and very well known) that this equation is solved by $X(t)=\mathrm{e}^{q t}X(0)$.  In our case, with $X(0)=1$, we have $X(t)=\mathrm{e}^{q t}$.
 
-The dollar value of the trading strategy just described will be $X(t)S(t) = \mathrm{e}^{q t}S(t)$.  Denote this by $V(t)$.  This is the value of a non-dividend-paying portfolio, because all dividends are reinvested.  From the Compounding/Discounting example in Sect.~\ref{s_examples}, we know that
+The dollar value of the trading strategy just described will be $X(t)S(t) = \mathrm{e}^{q t}S(t)$.  Denote this by $V(t)$.  This is the value of a non-dividend-paying portfolio, because all dividends are reinvested.  From the Compounding/Discounting example in @sec-s_examples, we know that
 $$ 
 \frac{\mathrm{d} V}{V} = q\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\;.
 $$ {#eq-reinvestingdividends}
 
 This means that the rate of return on the portfolio is the dividend yield $q\,\mathrm{d} t$ plus the return $\mathrm{d} S/S$ due to capital gains.
 
-\mathrm{n}ewpage
+
 ## Geometric Brownian Motion {#sec-s_geometricbrownianmotion}
 Let
 $$
@@ -381,7 +389,7 @@ $$ {#eq-Y}
 
 When we see an equation of the form @eq-Y, we should recognize @eq-exponential1 as the solution.  
 
-The process $S$ is called a geometric Brownian motion.  \index{geometric Brownian motion} In keeping with the discussion of Sect.~\ref{s_itoprocesses}, we interpret @eq-Y as stating that $\mu\,\mathrm{d} t$ is the expected rate of change of $S$ and $\sigma^2\,\mathrm{d} t$ is the variance of the rate of change in an instant $\mathrm{d} t$.  We call $\mu$ the drift and $\sigma$ the volatility.  \index{volatility} The geometric Brownian motion will grow at the average rate of $\mu$, in the sense that $E[S(t)] = \mathrm{e}^{\mu t}S(0)$.
+The process $S$ is called a geometric Brownian motion.  \index{geometric Brownian motion} In keeping with the discussion of @sec-s_itoprocesses, we interpret @eq-Y as stating that $\mu\,\mathrm{d} t$ is the expected rate of change of $S$ and $\sigma^2\,\mathrm{d} t$ is the variance of the rate of change in an instant $\mathrm{d} t$.  We call $\mu$ the drift and $\sigma$ the volatility.  \index{volatility} The geometric Brownian motion will grow at the average rate of $\mu$, in the sense that $E[S(t)] = \mathrm{e}^{\mu t}S(0)$.
 
 Taking the natural logarithm of @eq-exponential1 gives an equivalent form of the solution:
 $$
@@ -395,6 +403,7 @@ $$
 $$ {#eq-exponential3}
 
 We conclude:
+
 ::: {.callout-tip}
 ## 
 
@@ -407,8 +416,8 @@ The solution of both equations is @eq-exponential1 or the equivalent formula @eq
 :::
 
 
-\mathrm{n}ewpage
-Over a discrete time interval $\Delta t$, @eq-exponential3 implies that the change in the logarithm of $S$ is 
+
+Over a discrete time interval $\Delta t$, equation @eq-exponential3 implies that the change in the logarithm of $S$ is 
 $$
 \Delta \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\Delta t+ \sigma\,\Delta B\;.
 $$ {#eq-exponential11}
@@ -428,7 +437,7 @@ This means that $r_i$ is normally distributed with mean $\mu-\sigma^2/2$ and var
 We can simulate a path of $S$ by simulating the changes $\Delta \log S$.  The random variable $\sigma \Delta B$  in  @eq-exponential11 has a normal distribution with zero mean and variance equal to $\sigma^2\Delta t$.  We simulate it as $\sigma\sqrt{\Delta t}$ multiplied by a standard normal.
 
 \addcontentsline{lof}{figure}{Simulating Geometric Brownian Motion}
-\small\begin{verbatim}
+\begin{verbatim}
 Sub Simulating_Geometric_Brownian_Motion()
 Dim T, S, mu, sigma, dt, SigSqrdt, LogS, drift, i, N
 T = InputBox("Enter the length of the time period (T)")
@@ -450,26 +459,26 @@ For i = 1 To N
   ActiveCell.Offset(i + 1, 1) = Exp(LogS)   ' next stock price
 Next i
 End Sub
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 
 
 
 ## Numeraires and Probabilities {#sec-s_girsanov}
-When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  (Likewise, a martingale is unlikely to remain a martingale when we change probabilities.)  However, the Brownian motion $B$ will still be an It\^o process under the new probability measure.  In fact, every It\^o process under one probability measure will still be an It\^o process under the new probability measure, and the diffusion coefficient of the It\^o process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire]) this will always be true for us.  Changing probabilities only changes the drift of an It\^o process.  
+When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  (Likewise, a martingale is unlikely to remain a martingale when we change probabilities.)  However, the Brownian motion $B$ will still be an Ito process under the new probability measure.  In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire) this will always be true for us.]  Changing probabilities only changes the drift of an Ito process.  
 
-In a sense, this should not be surprising.  It was noted in Sect.~\ref{s_quadraticvariation} that a Brownian motion $B$ can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval $[0,T]$ is equal to $T$.  Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in $B$) but it will not affect how each path jiggles. So, under the new probability measure, $B$ should still be like a Brownian motion but it may have a nonzero drift.  If we consider a general It\^o process, the reasoning is the same.  The diffusion coefficient $\sigma$ determines how much each path jiggles, and this is unaffected by changing the probability measure.  Furthermore, instantaneous covariances---the $(\mathrm{d} X)(\mathrm{d} Y)$ terms---between It\^o processes are unaffected by changing the probability measure.  Only the drifts are affected.
+In a sense, this should not be surprising.  It was noted in @sec-s_quadraticvariation that a Brownian motion $B$ can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval $[0,T]$ is equal to $T$.  Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in $B$) but it will not affect how each path jiggles. So, under the new probability measure, $B$ should still be like a Brownian motion but it may have a nonzero drift.  If we consider a general Ito process, the reasoning is the same.  The diffusion coefficient $\sigma$ determines how much each path jiggles, and this is unaffected by changing the probability measure.  Furthermore, instantaneous covariances---the $(\mathrm{d} X)(\mathrm{d} Y)$ terms---between Ito processes are unaffected by changing the probability measure.  Only the drifts are affected.
 
-As explained in Sect.~\ref{s_introoptions}, we need to know the distribution of the underlying under probability measures corresponding to different numeraires.  Let~$S$ be the price of an asset that has a constant dividend yield $q$, and, as in Sect.~\ref{s_reinvestingdividends}, let $V(t)=\mathrm{e}^{qt}S(t)$.  This is the price of the portfolio in which all dividends are reinvested, and we have 
+As explained in @sec-s_introoptions, we need to know the distribution of the underlying under probability measures corresponding to different numeraires.  Let~$S$ be the price of an asset that has a constant dividend yield $q$, and, as in @sec-s_reinvestingdividends, let $V(t)=\mathrm{e}^{qt}S(t)$.  This is the price of the portfolio in which all dividends are reinvested, and we have 
 $$\frac{\mathrm{d} V}{V} = q\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\; .$$
 Let $Y$ be the price of another another asset that does not pay dividends.  Let~$r(t)$ denote the instantaneous risk-free rate at date $t$ and let $R(t) = \exp\left(\int_0^t r(s)\,\mathrm{d} s\right)$.  Assume
-\begin{align*}
+$$
  \frac{\mathrm{d} S}{S} = \mu_s\,\mathrm{d} t+\sigma_s\,\mathrm{d} B_s\; ,
 $$
 $$
  \frac{\mathrm{d} Y}{Y} = \mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y\;,
-\end{align*}
+$$
 where $B_s$ and $B_y$ are Brownian motions under the actual probability measure with correlation $\rho$, and where $\mu_s, \mu_y, \sigma_s, \sigma_y$ and $\rho$ can be quite general random pro\-cesses.  
-We consider the dynamics of the asset price $S$ under three different probability measures.  In each case, we follow the same steps: (i) we note that the ratio of an asset price to the numeraire asset price must be a martingale, (ii) we use It\^o's formula to calculate the drift of this ratio, and (iii) we use the fact that the drift of a martingale must be zero to compute the drift of $\mathrm{d} S/S$.
+We consider the dynamics of the asset price $S$ under three different probability measures.  In each case, we follow the same steps: (i) we note that the ratio of an asset price to the numeraire asset price must be a martingale, (ii) we use Ito's formula to calculate the drift of this ratio, and (iii) we use the fact that the drift of a martingale must be zero to compute the drift of $\mathrm{d} S/S$.
 
 
 ### Risk-Neutral Probabilities
@@ -478,6 +487,7 @@ $$Z(t) = \frac{V(t)}{R(t)} = \exp\left(-\int_0^t r(s)\,\mathrm{d} s\right)V(t)$$
 is a martingale.  Using the compounding/discounting rule, we have
 $$\frac{\mathrm{d} Z}{Z} =-r\,\mathrm{d} t + \frac{\mathrm{d} V}{V} = (q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\; .$$
 For $Z$ to be a martingale, the drift ($\mathrm{d} t$ part) of $\mathrm{d} Z/Z$ must be zero.  Therefore, the drift of $\mathrm{d} S/S$ must be $(r-q)\,\mathrm{d} t$ under the risk-neutral measure.  Because the change of measure does not affect the volatility, this implies:
+
 ::: {.callout-tip}
 ## 
 $$
@@ -497,6 +507,7 @@ is a martingale.  Using the rule for ratios, we have
 $$\frac{\mathrm{d} Z}{Z} =r\,\mathrm{d} t - \frac{\mathrm{d} V}{V} + \left(\frac{\mathrm{d} V}{V}\right)^2 = (r -q+ \sigma^2_s)\,\mathrm{d} t - \frac{\mathrm{d} S}{S}\; .$$
 Because the drift of $\mathrm{d} Z/Z$ must be zero, this implies that the drift of $\mathrm{d} S/
 S$ is $(r -q + \sigma^2_s)\,\mathrm{d} t$.  We conclude that:
+
 ::: {.callout-tip}
 ## 
 $$
@@ -511,7 +522,7 @@ where now $B^*_s$ denotes a Brownian motion when $V(t)=\mathrm{e}^{qt}S(t)$ is t
 ### Another Risky Asset as the Numeraire
 When $Y$ is the numeraire, $Z(t)$ defined as 
 $$Z(t) = \frac{V(t)}{Y(t)}$$ must be a martingale.  Using again the rule for ratios, we have
-\begin{align*}
+$$
 \frac{\mathrm{d} Z}{Z} = \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y}- \left(\frac{\mathrm{d} V}{V}\right)\left(\frac{\mathrm{d} Y}{Y}\right) + \left(\frac{\mathrm{d} Y}{Y}\right)^2
 $$
 $$
@@ -519,9 +530,10 @@ $$
 $$
 $$
 = \frac{\mathrm{d} S}{S} -\frac{\mathrm{d} Y}{Y} + (q-\rho\sigma_s\sigma_y\,\mathrm{d} t+\sigma_y^2)\,\mathrm{d} t\; .
-\end{align*}
+$$
 We can apply our previous example to compute the dynamics of $Y$ when $Y$ is the numeraire.  This shows that the drift of $\mathrm{d} Y/Y$ is $(r+ \sigma^2_y)\,\mathrm{d} t$.  Because the drift of $\mathrm{d} Z/Z$ must be zero, it follows that the drift of $\mathrm{d} S/S$ is
 $(r-q+ \rho\sigma_s\sigma_y)\,\mathrm{d} t$.  We conclude that:
+
 ::: {.callout-tip}
 ## 
 $$
@@ -555,7 +567,7 @@ Then
 $$\mathrm{d} B^*_s = \frac{1}{\sigma_s}\left(\frac{\mathrm{d} Z}{Z}\right)$$
 and hence is a continuous martingale under the risk-neutral measure.  We can compute its quadratic variation as
 $$(\mathrm{d} B^*_s)^2 = \left(\frac{q-r+\mu_s}{\sigma_s}\right)^2(\mathrm{d} t)^2 + 2\left(\frac{q-r+\mu_s}{\sigma_s}\right)(\mathrm{d} t)(\mathrm{d} B_s) + (\mathrm{d} B_s)^2 = \mathrm{d} t\; .$$
-Therefore, by Levy's theorem (Sect.~\ref{s_quadraticvariation}), $B^*_s$ is a Brownian motion under the risk-neutral measure.   From  @eq-numeraire101 and @eq-numeraire102 we have
+Therefore, by Levy's theorem (@sec-s_quadraticvariation), $B^*_s$ is a Brownian motion under the risk-neutral measure.   From  @eq-numeraire101 and @eq-numeraire102 we have
 $$(q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = \sigma_s\,\mathrm{d} B^*_s \quad \Longleftrightarrow \quad \frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B^*_s\;,$$
 as in  @eq-riskneutral11.
 
@@ -584,22 +596,23 @@ Equation @eq-tailprob1 gives us
 $$\log S(T) = \log S(0) + \alpha T + \sigma B(T)\; .$$
 Given this, we deduce
 $$ 
-S(T) > K  \quad\Longleftrightarrow\quad \log S(T) > \log K\mathrm{n}otag
+S(T) > K  \quad\Longleftrightarrow\quad \log S(T) > \log K
 $$
 $$
- \quad\Longleftrightarrow\quad \sigma B(T) > \log K - \log S(0)-\alpha T\mathrm{n}otag
+ \quad\Longleftrightarrow\quad \sigma B(T) > \log K - \log S(0)-\alpha T
 $$
 $$
- \quad\Longleftrightarrow\quad \frac{B(T)}{\sqrt{T}} > \frac{\log K - \log S(0)-\alpha T}{\sigma\sqrt{T}}\mathrm{n}otag
+ \quad\Longleftrightarrow\quad \frac{B(T)}{\sqrt{T}} > \frac{\log K - \log S(0)-\alpha T}{\sigma\sqrt{T}}
 $$
 $$
- \quad\Longleftrightarrow\quad -\frac{B(T)}{\sqrt{T}} < \frac{\log S(0)-\log K + \alpha T}{\sigma\sqrt{T}}\mathrm{n}otag
+ \quad\Longleftrightarrow\quad -\frac{B(T)}{\sqrt{T}} < \frac{\log S(0)-\log K + \alpha T}{\sigma\sqrt{T}}
 $$
 $$
  \quad\Longleftrightarrow\quad -\frac{B(T)}{\sqrt{T}} < \frac{\log \left(\frac{S(0)}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
 $$ {#eq-tailprob2}
 
 The random variable on the left-hand side of @eq-tailprob2 has the standard normal distribution---it is normally distributed with mean equal to zero and variance equal to one.  As is customary, we will denote the probability that a standard normal is less than some number $d$ as $\mathrm{N}(d)$.  We conclude:
+
 ::: {.callout-tip}
 ## 
 Assume $\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B$, where $B$ is a Brownian motion.  Then, for any number~$K$,
@@ -616,6 +629,7 @@ $$ {#eq-tailprob3}
 
 
 The  probability $\text{prob}(S(T)<K)$ can be calculated similarly, but the simplest way to derive it is to note that the events $S(T)>K$ and $S(T)<K$ are complementary---their probabilities sum to one (the event $S(T)=K$ having zero probability).  Therefore $\text{prob}(S(T)<K) = 1-\mathrm{N}(d)$.  This is the probability that a standard normal is greater than $d$, and by virtue of the symmetry of the standard normal distribution, it equals the probability that a standard normal is less than $-d$.  Therefore, we have:
+
 ::: {.callout-tip}
 ## 
 Assume $\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B$, where $B$ is a Brownian motion.  Then, for any number~$K$,
@@ -630,9 +644,9 @@ where $d$ is defined in @eq-tailprob3.
 
 ## Volatilities {#sec-s_volatilities}
 
-As mentioned in Sect.~\ref{s_geometricbrownianmotion}, when we encounter an equation of the form 
+As mentioned in @sec-s_geometricbrownianmotion, when we encounter an equation of the form 
 $$\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B$$
-where $B$ is a Brownian motion, we will say  ``$\sigma$ is the volatility of $S$.  For example, in the Black-Scholes model, the most important assumption is that the volatility of the underlying asset price is constant.  We will occasionally need to compute the volatilities of products or ratios of random processes.  These computations follow directly from It\^o's formula.
+where $B$ is a Brownian motion, we will say  ``$\sigma$ is the volatility of $S$.  For example, in the Black-Scholes model, the most important assumption is that the volatility of the underlying asset price is constant.  We will occasionally need to compute the volatilities of products or ratios of random processes.  These computations follow directly from Ito's formula.
 
 Suppose 
 $$\frac{\mathrm{d} X}{X} = \mu_x\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x \qquad \text{and} \qquad 
@@ -646,13 +660,14 @@ $$
 $$ {#eq-volproduct1}
 
 The instantaneous variance of $\mathrm{d} Z/Z$ is calculated, using the rules for products of differentials, as
-\begin{align*}
+$$
 \left(\frac{\mathrm{d} Z}{Z}\right)^2 = (\sigma_x\,\mathrm{d} B_x + \sigma_y\,\mathrm{d} B_y)^2
 $$
 $$
 = (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
-\end{align*}
+$$
 As will be explained below, the volatility is the square root of the instantaneous variance (dropping the $\mathrm{d} t$).  This implies:
+
 ::: {.callout-tip}
 ## 
 The volatility of $XY$ is
@@ -671,13 +686,14 @@ $$
 $$ {#eq-ratioproduct1}
 
 The instantaneous variance of $\mathrm{d} Z/Z$ is therefore
-\begin{align*}
+$$
 \left(\frac{\mathrm{d} Z}{Z}\right)^2 = (\sigma_y\,\mathrm{d} B_y - \sigma_x\,\mathrm{d} B_x)^2
 $$
 $$
 = (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
-\end{align*}
+$$
 This implies:
+
 ::: {.callout-tip}
 ## 
 The volatility of $Y/X$ is  
@@ -700,8 +716,8 @@ Then we can write  @eq-volproduct1 as
 $$
 \frac{\mathrm{d} Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;.$$ {#eq-volproduct2}
 
-From the discussion in Sect.~\ref{s_itoprocesses}, we know that $B$ is a continuous martingale.  We can compute its quadratic variation from
-\begin{align*}
+From the discussion in @sec-s_itoprocesses, we know that $B$ is a continuous martingale.  We can compute its quadratic variation from
+$$
 (\mathrm{d} B)^2 = \left(\frac{\sigma_x\,\mathrm{d} B_x + \sigma_s\,\mathrm{d} B_s}{\sigma}\right)^2
 $$
 $$
@@ -709,8 +725,8 @@ $$
 $$
 $$
 = \mathrm{d} t\;.
-\end{align*}
-By Levy's theorem (see Sect.~\ref{s_quadraticvariation}), any continuous martingale with this quadratic variation is necessarily a Brownian motion.  Therefore,  @eq-volproduct2 shows that $\sigma$ is the volatility of $Z$ as defined at the beginning of the section.
+$$
+By Levy's theorem (see @sec-s_quadraticvariation), any continuous martingale with this quadratic variation is necessarily a Brownian motion.  Therefore,  @eq-volproduct2 shows that $\sigma$ is the volatility of $Z$ as defined at the beginning of the section.
 
 
 ## Exercises
@@ -722,13 +738,13 @@ $$X(t)=\mathrm{e}^t\; .$$
 Create a VBA subroutine, prompting the user to input $T$ and $N$, which computes and prints $\sum_{i=1}^N [\Delta X(t_i)]^2$, where 
 $$\Delta X(t_i) = X(t_i)-X(t_{i-1}) = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .$$
 Hint: The sum can be computed as follows.
-\small\begin{verbatim}
+\begin{verbatim}
 sum = 0
 For i = 1 To N
     DeltaX = Exp(i/N)-Exp((i-1)/N)
     sum = sum + DeltaX * DeltaX
 Next i
-\end{verbatim}\mathrm{n}ormalsize
+\end{verbatim}
 :::
 ::: {#exr-nolabel}
  Repeat the previous problem for the function $X(t) = t^3$.  In both this and the previous problem, what happens to $\sum_{i=1}^N [\Delta X(t_i)]^2$ as $N \rightarrow \infty$?
