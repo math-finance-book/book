@@ -28,14 +28,13 @@ Given the period length $\Delta t$, we want to choose the up and down parameters
 
 As discussed in @sec-s_binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
 Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s_binomialparameters,
-$$
-\log u_i=\sqrt{\sigma_i^2\Delta t + \mathrm{n}u_i^2(\Delta t)^2}\; ,
-$$
-$$
-p_i = \frac{1}{2}+\frac{\mathrm{n}u_i\Delta t}{2\log u_i}\;.
-$$
+\begin{align*}
+\log u_i&=\sqrt{\sigma_i^2\Delta t + \mathrm{n}u_i^2(\Delta t)^2}\; ,\\
+p_i &= \frac{1}{2}+\frac{\mathrm{n}u_i\Delta t}{2\log u_i}\;.
+\end{align*}
 where $\mathrm{n}u_i=r-q_i-\sigma_i^2/2$.
 In terms of the notation $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$, the probability of the up state for stock 1 is $p_1=p_{uu}+p_{ud}$ and the probability of the up state for stock 2 is $p_2=p_{uu}+p_{du}$.  Therefore,
+
 
 $$
 p_{uu}+p_{ud} = \frac{1}{2}+\frac{\mathrm{n}u_1\Delta t}{2\log u_1}\;,
@@ -44,6 +43,7 @@ $$ {#eq-prob1}
 $$
 p_{uu}+p_{du} = \frac{1}{2}+\frac{\mathrm{n}u_2\Delta t}{2\log u_2}\;.
 $$ {#eq-prob2}
+
 
 
 In the continuous time model, over a discrete time period $\Delta t$, the covariance of $\Delta \log S_1$ and $\Delta \log S_2$ is $\rho\sigma_1\sigma_2\Delta t$.  In the binomial model, with $d_i=1/u_i$, we have
@@ -77,15 +77,14 @@ where $Z$ is defined as
 $$Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\; .$$
 The random variable $Z$ is also a standard normal, and the correlation between $Z_1$ and $Z$ is~$\rho$.  
 Thus, we can simulate the changes in the logarithms of two correlated asset prices as
-$$
-\Delta \log S_1 = \mathrm{n}u_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,
-$$
-$$
-\Delta \log S_2 = \mathrm{n}u_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
-$$
+\begin{align*}
+\Delta \log S_1 &= \mathrm{n}u_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,\\
+\Delta \log S_2 &= \mathrm{n}u_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
+\end{align*}
 where $\mathrm{n}u_i = r-q_1-\sigma_i^2/2$ and the $Z_i$ are independent standard normals.  
 
 To generalize this idea to more than two assets, we introduce some additional notation.  The simulation for the case of two assets can be written as
+
 
 $$
 \Delta \log S_1 = \mathrm{n}u_1\Delta t + a_{11}\sqrt{\Delta t}Z_1 + a_{12}\sqrt{\Delta t}Z_2\;,
@@ -96,14 +95,14 @@ $$
 $$ {#eq-mc_twob}
 
 
+
 where
 $$\begin{array}{rclcrcl}
-a_{11}=\sigma_1\;, \qquad  a_{12}=0\; ,
-$$
-$$
-a_{21}=\sigma_2\rho\;, \qquad  a_{22} = \sigma_2\sqrt{1-\rho^2}\;.
+a_{11}&=&\sigma_1\;, &\qquad & a_{12}&=&0\; ,\\
+a_{21}&=&\sigma_2\rho\;, &\qquad & a_{22} &= &\sigma_2\sqrt{1-\rho^2}\;.
 \end{array}$$
 These are not the only possible choices for the constants $a_{ij}$.  Given that $Z_1$ and $Z_2$ are independent standard normals, the conditions the $a_{ij}$ must satisfy in order to match the variances $\sigma_i^2\Delta t$ and correlation $\rho$ of the changes in the logarithms are
+
 
 $$
 a_{11}^2+a_{12}^2 =\sigma_1^2\;,
@@ -118,20 +117,13 @@ a_{11}a_{21}+a_{12}a_{22} = \sigma_1\sigma_2\rho\;.
 $$ {#eq-a3}
 
 
+
 These three equations in the four coefficients $a_{ij}$ leave one degree of freedom.  We choose to take $a_{12}=0$ and then solve for the other three.
 
 In matrix notation, the system @eq-a13combined plus the condition $a_{12}=0$ can be written as the equation
-$$\begin{pmatrix}a_{11}  0 
-$$
-$$a_{21}  a_{22}\end{pmatrix}\begin{pmatrix}a_{11}  0 
-$$
-$$a_{21}  a_{22}\end{pmatrix}^\top = \begin{pmatrix}\sigma_1^2  \rho\sigma_1\sigma_2 
-$$
-$$\rho\sigma_1\sigma_2  \sigma_2^2\end{pmatrix}\; ,$$
+$$\begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}\begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}^\top = \begin{pmatrix}\sigma_1^2 & \rho\sigma_1\sigma_2 \\\rho\sigma_1\sigma_2 & \sigma_2^2\end{pmatrix}\; ,$$
 where $^\top$ denotes the matrix transpose.  The matrix on the right hand side is the covariance matrix \index{covariance matrix} of the continuously-compounded annual returns (changes in log asset prices).  Choosing the $a_{ij}$ so that the lower triangular matrix \index{lower triangular matrix}
-$$A \equiv \begin{pmatrix}a_{11}  0 
-$$
-$$a_{21}  a_{22}\end{pmatrix}$$
+$$A \equiv \begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}$$
 satisfies 
 $$AA^\top = \text{covariance matrix}$$
 is called the \index{Cholesky decomposition}
@@ -156,12 +148,10 @@ The negative correlation between $x$ and $y$ is essential for this method to gen
 In the context of derivative valuation, the standard application of this idea is to generate two negatively correlated underlying asset prices (or price paths, if the derivative is path dependent).  The terminal value of the derivative written on the first asset serves as $x$ and the terminal value of the derivative written on the second serves as $y$.  Because both asset prices have the same distribution, the means of $x$ and $y$ will be the same, and the discounted mean is the date--0 value of the derivative. 
 
 Consider for example a non-path-dependent option in a world with constant volatility.  In each simulation $i$ ($i=1,\ldots,M$), we would generate a standard normal $Z_i$ and compute
-$$
-\log S_i(T) = \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma\sqrt{T}Z_i\; ,
-$$
-$$
-\log S_i'(T) = \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T - \sigma\sqrt{T}Z_i\;.
-$$
+\begin{align*}
+\log S_i(T) &= \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma\sqrt{T}Z_i\; ,\\
+\log S_i'(T) &= \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T - \sigma\sqrt{T}Z_i\;.
+\end{align*}
 Given the first terminal price, the value of the derivative will be some number $x_i$ and given the second it will be some number $y_i$.  The date--0 value of the derivative is estimated as
 $$\mathrm{e}^{-rT}\frac{1}{M}\sum_{i=1}^M\frac{x_i+y_i}{2}\; .$$
 We will illustrate this method for the floating-strike lookback call in @sec-s_montecarlo_matlab. 
@@ -176,12 +166,10 @@ In general, the correction term $\hat{\beta}(\phi-\bar{y})$ will have a nonzero 
 As an example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date 0 is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A(0)$ computed up to date 0, assuming this average includes the price $S(0)$ at date 0.  The average price at date $T$ will be 
 $$A(T) = \frac{\tau}{T+\tau}A(0) + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S(t_i)}{N}\right)\; .$$
 The average-price call pays $\max(0,A(T)-K)$ at its maturity $T$, and we can write this as
-$$
-\max(A(T)-K,0) = \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S(t_i)}{N}\right) - \left(K - \frac{\tau}{T+\tau}A(0)\right), 0\right)
-$$
-$$
-= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;,
-$$
+\begin{align*}
+\max(A(T)-K,0) &= \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S(t_i)}{N}\right) - \left(K - \frac{\tau}{T+\tau}A(0)\right), 0\right)\\
+&= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;,
+\end{align*}
 where 
 $$K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A(0)\; .$$
 Therefore, the value at date 0 of the discretely-sampled average-price call is
@@ -220,23 +208,17 @@ $$y_i=a + bx_i$$
 for $a$ and $b$.
 Of course, $g(0) = a$, so we will return the constant $a$ as our estimate of $f(0)$.  This is simpler than it may appear---we put
 \begin{equation*}\begin{array}{rclcl}
-y_1 = a + bx_1 = a+2bx_2\;,
-$$
-$$
-y_2 =     a + bx_2 \;,
+y_1 &= &a + bx_1 &= &a+2bx_2\;,\\
+y_2 &= & &  & a + bx_2 \;,
 \end{array}\end{equation*}
 and subtracting gives us $y_1-y_2 = bx_2$, which implies from the bottom equation that $a = 2y_2-y_1$.  We can think of $N_2$ as being the number of periods we want to use in the binomial model, in which case $y_2$ would be our estimate of the option value.  Richardson extrapolation here means also running the binomial model for half as many periods ($N_1 = N_2/2$) and adding the difference of the estimates $y_2-y_1$ to the estimate $y_2$.  
 
 Richardson extrapolation can be viewed as cancelling the first-order term in the Taylor series expansion of $f$.  We have
-$$
-y_1 = f(x_1) = f(0) + f'(0)x_1 + \text{higher order terms} 
-$$
-$$
- = f(0) + 2f'(0)x_2 + \text{higher order terms}\;,
-$$
-$$
-y_2 = f(x_2) = f(0) + f'(0)x_2 + \text{higher order terms}\;.
-$$
+\begin{align*}
+y_1 = f(x_1) &= f(0) + f'(0)x_1 + \text{higher order terms} \\
+& = f(0) + 2f'(0)x_2 + \text{higher order terms}\;,\\
+y_2 = f(x_2) &= f(0) + f'(0)x_2 + \text{higher order terms}\;.
+\end{align*}
 \mathrm{n}oindent
 This implies
 $$2y_2-y_1 = f(0) + \text{difference of higher order terms}\;.$$

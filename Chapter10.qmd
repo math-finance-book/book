@@ -11,6 +11,7 @@ where $\mathrm{n}u =r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-
 
 Let $T$ denote the maturity date of a derivative security.  At time $t$ (when the remaining time to maturity is $T-t$), assume the price of the derivative can be represented as $C(t,X(t))$.^[If the price of the derivative is a function of the asset price $S$ and time, then we can always write it in this form as a function of the natural logarithm of $S$ and time.]  
 Since $C$ is a function of $t$ and $X$, Ito's formula implies
+
 $$
 \mathrm{d} C  = \frac{\partial C}{\partial t}\,\mathrm{d} t + \frac{\partial C}{\partial X}\,\mathrm{d} X +\frac{1}{2}\frac{\partial^2 C}{\partial X^2}(\mathrm{d} X)^2
 $$ {#eq-2}
@@ -18,6 +19,7 @@ $$ {#eq-2}
 $$
 =\frac{\partial C}{\partial t}\,\mathrm{d} t+ \frac{\partial C}{\partial X}\big(\mathrm{n}u\,\mathrm{d} t+\sigma\,\mathrm{d} B\big) + \frac{1}{2}\frac{\partial^2 C}{\partial X^2}\sigma^2\,\mathrm{d} t\;.
 $$
+
 On the other hand, under the risk-neutral measure, the instantaneous expected rate of return on the derivative is the risk-free rate, so
 $$\frac{\mathrm{d} C}{C} =r\,\mathrm{d} t + \text{something}\,\,\mathrm{d} B\; .$$
 where the something is the volatility of the derivative value.  We can of course rearrange this as
@@ -72,6 +74,7 @@ $$\frac{C_{\text{right}}-C_{\text{left}}}{2\Delta t}\; .$$
 This is \emph{not} the estimate we are going to use.  The reason is that we want to solve for the call values on the grid in much the same way that we solved the binomial model---starting at the end and working backwards.  If we use the above estimate of the time derivative, then at each point $(t_i,x_j)$, equation @eq-3 will link the call values at times $t_{i-1}$, $t_i$ and $t_{i+1}$.  This would substantially complicate the backing up process.  However, in a sense, it is the right estimate, and the Crank-Nicolson method to be discussed below uses a similar idea.
 
 The other two choices for estimating $\partial C/\partial t$ are analogous to the other two choices for estimating $\partial C/\partial X$.  We can use either
+
 $$
 \frac{\partial C}{\partial t} \approx \frac{C-C_{\text{left}}}{\Delta t}\;,
 $$ {#eq-explicit_dt}
@@ -82,6 +85,7 @@ or
 $$
 \frac{\partial C}{\partial t} \approx \frac{C_{\text{right}}-C}{\Delta t}\;. 
 $$ {#eq-implicit_dt}
+
 
 
 Using the first is called the explicit method of solving the pde, and using the second is called the implicit method.  The reason for these names should become clear below.
@@ -103,18 +107,14 @@ C_{\text{left}} = \big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC_{\text{do
 $$ {#eq-fdtrinomial}
 
 where
-$$
-p_u = \frac{\sigma^2\Delta t+\mathrm{n}u\Delta t\Delta x}{2(1-r\Delta t)(\Delta x)^2}\; ,
-$$
-$$
-p_d = \frac{\sigma^2\Delta t-\mathrm{n}u\Delta t\Delta x}{2(1-r\Delta t)(\Delta x)^2}\; ,
-$$
-$$
+\begin{align*}
+p_u &= \frac{\sigma^2\Delta t+\mathrm{n}u\Delta t\Delta x}{2(1-r\Delta t)(\Delta x)^2}\; ,\\
+p_d &= \frac{\sigma^2\Delta t-\mathrm{n}u\Delta t\Delta x}{2(1-r\Delta t)(\Delta x)^2}\; ,\\
 $$
 and
 $$
-p = 1- p_u-p_d\;.
-$$
+p &= 1- p_u-p_d\;.
+\end{align*}
 This can be interpreted as discounting the probability-weighted values of the call at the next date, where we consider that starting at the grid point $(t_{i},x_j)$, the logarithm of the stock price takes three possible values ($x_j-\Delta x$, $x_j$, and $x_j+\Delta x$) at the next date $t_{i+1}$, and where we use $1-r\Delta t$ as the discount factor. Thus, it is essentially a trinomial model.  \index{trinomial model}This relationship was first noted by Brennan and Schwartz [@BrennanSchwartz]. 
 
 Actually, for this to be a sensible trinomial model, the probabilities $p_u$, $p$ and $p_d$ should be nonnegative.  Assuming $1-r\Delta t>0$, this will be the case if and only if
@@ -158,21 +158,19 @@ rC^{\text{mid}} = \frac{C'-C}{\Delta t}+ \mathrm{n}u\left(\frac{C^{\text{mid}}_{
 $$ {#eq-crank}
 
 Substituting from the formulas for $C^{\text{mid}}$, $C^{\text{mid}}_{\text{up}}$, and $C^{\text{mid}}_{\text{down}}$, we can re-write @eq-crank as
-\begin{multline}
-\left(\frac{r}{2}+\frac{1}{\Delta t}+\frac{\sigma^2}{2(\Delta x)^2}\right)C - \left(\frac{\sigma^2}{4(\Delta x)^2}+\frac{\mathrm{n}u}{4\Delta x}\right)C_{\text{up}}
-$$ {#eq-crank2}
 
-$$ - \left(\frac{\sigma^2}{4(\Delta x)^2}-\frac{\mathrm{n}u}{4\Delta x}\right)C_{\text{down}} 
-\quad = \quad \left(\frac{1}{\Delta t}- \frac{r}{2}-\frac{\sigma^2}{2(\Delta x)^2}\right)C' 
 $$
-$$+ \left(\frac{\sigma^2}{4(\Delta x)^2}+\frac{\mathrm{n}u}{4\Delta x}\right)C'_{\text{up}} + \left(\frac{\sigma^2}{4(\Delta x)^2}-\frac{\mathrm{n}u}{4\Delta x}\right)C'_{\text{down}}
+\begin{multline}
+\left(\frac{r}{2}+\frac{1}{\Delta t}+\frac{\sigma^2}{2(\Delta x)^2}\right)C - \left(\frac{\sigma^2}{4(\Delta x)^2}+\frac{\mathrm{n}u}{4\Delta x}\right)C_{\text{up}}\\ - \left(\frac{\sigma^2}{4(\Delta x)^2}-\frac{\mathrm{n}u}{4\Delta x}\right)C_{\text{down}} 
+\quad = \quad \left(\frac{1}{\Delta t}- \frac{r}{2}-\frac{\sigma^2}{2(\Delta x)^2}\right)C' \\+ \left(\frac{\sigma^2}{4(\Delta x)^2}+\frac{\mathrm{n}u}{4\Delta x}\right)C'_{\text{up}} + \left(\frac{\sigma^2}{4(\Delta x)^2}-\frac{\mathrm{n}u}{4\Delta x}\right)C'_{\text{down}}
 \end{multline}
+$$ {#eq-crank101}
+
 We can also write this as
 $$
 a_1C - a_2C_{\text{up}} - a_3C_{\text{down}} 
 = a_4C' + a_2C'_{\text{up}} + a_3C'_{\text{down}}\;,
-$$ {#eq-crank3}
-
+$$
 where the constants $a_i$ are the factors in parentheses in @eq-crank2.
 
 As before, we start at the final date $t_N$ and define the call value at that date by its intrinsic value.  Consider a grid point $(t_{N-1},x_j)$.  Forcing  @eq-3 to hold at the midpoint $(t_{N-1}+\Delta t/2,x_j)$ leads us to @eq-crank3.  In this equation, $C'$, $C'_{\text{up}}$ and $C'_{\text{down}}$ are known from the intrinsic value at maturity, and we need to solve for $C$, $C_{\text{up}}$ and $C_{\text{down}}$.  There are $2M-1$ linear equations of this type and we will add linear equations at the upper and lower boundaries of the grid and solve the resulting system of $2M+1$ linear equations for the $2M+1$ call values.  After finding the call values at date $t_{N-1}$, we then repeat the calculation at $t_{N-2}$ and continue backing up in this way until we reach the initial date.
@@ -187,34 +185,32 @@ The boundary conditions normally used at the bottom and top of the grid are cond
 $$
 \lim_{S \rightarrow \infty} \frac{\partial C}{\partial S} =  \lambda_0\;,\qquad \text{and} \qquad
 \lim_{S \rightarrow 0} \frac{\partial C}{\partial S} = \lambda_{\infty}\;,
-$$ {#eq-cn_boundary}
-
+$$
 for constants $\lambda_0$ and $\lambda_{\infty}$.
 In the case of a call option, we have $\lambda_0=0$ and $\lambda_{\infty}=1$.  For a put option, we have $\lambda_0=-1$ and $\lambda_\infty = 0.$
 
 These conditions are implemented on the grid by forcing each value $C$ at a point $(t_i,x_{-M})$ on the bottom of the grid to satisfy
 
+
 $$
 C - C_{\text{up}} = \lambda_0 (S - S_{\text{up}})
-$$ {#eq-crank4a}
-
+$$
 $$
 $$
 and by forcing each value $C$ at a point $(t_i,x_{M
 $$)$ on the top of the grid to satisfy}
 C-C_{\text{down}} = \lambda_\infty(S-S_{\text{down}})\;.
-$$ {#eq-crank4b}
-
+$$
 
 These two linear equations in the values at time $t_i$ augment the $2M-1$ equations already described to form a system of $2M+1$ linear equations to be solved for the derivative values at the $2M+1$ grid points at time $t_i$.  
 
-## American Options
+\section{American Options}
 
 The explicit method is easily adapted to American options.  As in a binomial model, we compute the option value at each node as the larger of its discounted expected value and its intrinsic value.  To be somewhat more precise, we replace the trinomial value @eq-fdtrinomial with
 $$C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC_{\text{down}}\big), \text{intrinsic value}\right)\; .$$
 In the Crank-Nicolson method, one can in similar fashion compute the value of the derivative at each space node at any date by solving the system of equations @eq-crank3 and then replace the computed values by the intrinsic value when that is higher.  However, because the values at the different space nodes are linked (i.e., the method is an implicit-type method), this one-at-a-time replacement of values by intrinsic values is not the most efficient method.  See Wilmott [@Wilmott] for more details (and for VBA code implementing the projected successive over-relaxation method).
 
-## Barrier Options {#sec-s_finitedifferencebarriers}
+\section{Barrier Options}
 
 
 \index{barrier option}\index{down-and-out option}\index{down-and-in option}\index{knock-out option}\index{knock-in option}Finite-difference methods work well for valuing discretely-sampled barrier options.  For a down-and-out option, one should place the bottom of the grid at the knock-out boundary.  For an up-and-out option, one should place the top of the grid at the knock-out boundary.  As discussed in @sec-c_exotics, knock-in options can be valued as standard options minus knock-out options.  
@@ -229,7 +225,7 @@ For barrier options, the boundary information @eq-cn_boundary can be replaced by
 
 
 
-## Calculations in VBA {#sec-s_finitedifferences_matlab}
+\section{Calculations in VBA}
 
 ### Crank-Nicolson
 
@@ -239,82 +235,42 @@ We will write the boundary conditions @eq-crank4a and @eq-crank4b, respectively,
 
 $$
 C = z_1 + b_1C_{\text{up}}\;,
-$$ {#eq-crank4aa}
-
+$$
 and
 $$
 C = z_L + b_LC_{\text{down}}\;,
-$$ {#eq-crank4bb}
-
-
+$$
 where $z_1$, $b_1$, $z_L$ and $b_L$ are numbers to be calculated or input by the user.
  The equations @eq-crank4a and @eq-crank4b are the special cases in which  $z_1 = \lambda_0(S-S_{\text{up}})$, $b_1 = 1$, $z_L = \lambda_\infty(S-S_{\text{down}})$,  and $b_L=1$.   The additional generality in allowing $b_1$ and $b_L$ to be different from one is important for many purposes, and we will see an example of it in the valuation of barrier options.  
 
 The system of equations that we want to solve is therefore 
 \setcounter{MaxMatrixCols}{11}
-$$ {#eq-page_cn}
-
+$$
 \begin{pmatrix} 
-1  -b_1  0  0  0   \cdots   0  0  0  0  0
-$$
-$$
--a_3  a_1  - a_2  0  0  \cdots  0  0  0  0  0
-$$
-$$
-0  - a_3  a_1  -a_2  0  \cdots  0  0  0  0  0
-$$
-$$
-\vdots  \vdots  \vdots  \vdots  \vdots  \vdots \vdots  \vdots  \vdots  \vdots  \vdots 
-$$
-$$
-0  0  0  0  0  \cdots  0  -a_3  a_1  - a_2  0
-$$
-$$
-0  0  0  0  0  \cdots   0  0  -a_3  a_1  - a_2 
-$$
-$$
-0  0  0  0  0  \cdots   0  0  0  -b_L  1 \end{pmatrix}
+1 & -b_1 & 0 & 0 & 0  & \cdots  & 0 & 0 & 0 & 0 & 0\\
+-a_3 & a_1 & - a_2 & 0 & 0 & \cdots & 0 & 0 & 0 & 0 & 0\\
+0 & - a_3 & a_1 & -a_2 & 0 & \cdots & 0 & 0 & 0 & 0 & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots &\vdots & \vdots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & 0 & 0 & \cdots & 0 & -a_3 & a_1 & - a_2 & 0\\
+0 & 0 & 0 & 0 & 0 & \cdots  & 0 & 0 & -a_3 & a_1 & - a_2 \\
+0 & 0 & 0 & 0 & 0 & \cdots  & 0 & 0 & 0 & -b_L & 1 \end{pmatrix}
 \begin{pmatrix}
-C_1 
-$$
-$$
-C_2
-$$
-$$
-C_3
-$$
-$$
-\vdots
-$$
-$$
-C_{L-2}
-$$
-$$
-C_{L-1}
-$$
-$$
+C_1 \\
+C_2\\
+C_3\\
+\vdots\\
+C_{L-2}\\
+C_{L-1}\\
 C_L
 \end{pmatrix}
 = 
 \begin{pmatrix}
-z_1 
-$$
-$$
-z_2
-$$
-$$
-z_3
-$$
-$$
-\vdots
-$$
-$$
-z_{L-2}
-$$
-$$
-z_{L-1}
-$$
-$$
+z_1 \\
+z_2\\
+z_3\\
+\vdots\\
+z_{L-2}\\
+z_{L-1}\\
 z_L
 \end{pmatrix}$$
 where we are denoting the derivative values to be determined at date $t_i$ across the $L$ ($=2M+1$) space nodes as $C_1, \ldots, C_L$.  The coefficients $a_i$ are defined in  @eq-crank3.  The numbers $z_2, \ldots, z_{L-1}$ are the right-hand sides of  @eq-crank3 and are determined by the coefficients $a_i$ and the derivative values $y_1, \ldots, y_{L}$ at date $t_{i+1}$.  The system of equations that must be solved to implement the implicit method is of this same form.
@@ -328,20 +284,17 @@ where $u_1 = z_1$.
 By induction, we will see that we can write, for each $j = 2, \ldots, L$,
 $$
 C_{j-1} = u_{j-1} + b_{j-1}C_{j}
-$$ {#eq-crank101}
-
+$$
 for some coefficients $u_{j-1}$ and $b_{j-1}$ to be determined.  
 The $j$--th equation ($j = 2, \ldots, L-1$) in the array (equation @eq-crank3)  is 
 $$-a_3C_{j-1}+a_1C_j-a_2C_{j+1} = z_j\; .$$
 Supposing @eq-crank101 holds and using it to substitute for $C_{j-1}$, we have
 $$-a_3\left(u_{j-1} + b_{j-1}C_{j}\right) +a_1C_j-a_2C_{j+1} = z_j \quad\Longleftrightarrow\quad C_{j} = u_{j} + b_{j}C_{j+1}\; ,$$
 where
-$$
-u_j = \frac{z_j + a_3u_{j-1}}{a_1-a_3b_{j-1}} \;,
-$$
-$$
-b_j = \frac{a_2}{a_1-a_3b_{j-1}}\;.
-$$
+\begin{align*}
+u_j &= \frac{z_j + a_3u_{j-1}}{a_1-a_3b_{j-1}} \;,\\
+b_j &= \frac{a_2}{a_1-a_3b_{j-1}}\;.
+\end{align*}
 This establishes that @eq-crank101 holds for each $j = 2, \ldots, L$.
 
 The last equation in the array (equation @eq-crank4bb) is 

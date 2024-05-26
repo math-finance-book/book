@@ -1,4 +1,4 @@
-\chapter[Fixed Income Concepts]{Fixed Income Concepts}
+## Fixed Income Concepts {#sec-c_fixedincomeconcepts}
 
 In this part of the book, we will study the pricing and hedging of fixed-income derivatives, that is, derivatives that can be viewed as written on bonds or on interest rates.  The complexities of this subject stem from the fact that the underlying bonds or rates will have time-varying and generally random volatilities and have volatilities that must be linked in some way to each other.  We are not free to arbitrarily specify the volatilities and correlations, as we can, for example, with basket equity options, because such a specification may imply there is an arbitrage opportunity available from trading the underlying assets, and, of course, one could not trust a derivative value or a hedging strategy derived from such a model.  There are many books that provide a more comprehensive and advanced treatment than we will be able to give here, among which  Rebonato [@Rebonato98, Rebonato02], James and Webber [@JW] and Brigo and Mercurio [@BM] seem particularly useful.
 
@@ -16,8 +16,7 @@ $P = \mathrm{e}^{-y\tau}$.  Denoting this yield $y$ at maturity $\tau$ by $y(\ta
 Some amount of estimation is necessary to compute the yield curve.  We would like to know yields at arbitrary maturities, but there are not enough actively traded zero-coupon bonds to provide this information.  Thus, we have to fill in the missing maturities.  We may also use coupon-paying bonds (or swap rates, as we will discuss later) to estimate the yields.
 
 The most popular method of estimating the yield curve from bond prices is to fit a cubic spline, \index{cubic spline} using the prices of a finite set of actively traded bonds.  Given the set of bonds, let $P_i$ denote the price of bond $i$, $N_i$ the number of dates at which bond $i$ pays a coupon or its face value, and $\{\tau_{ij}| j=1, \ldots, N_i\}$ the dates at which bond $i$ pays a coupon or its face value.  Finally, let $C_{ij}$ denote the cash flow paid by bond $i$ at date $\tau_{ij}$ for $j=1,\ldots,N_i$.  Then for each $i$ it should be the case that
-$$ {#eq-c_fixedincomeconcepts}
-
+$$
 P_i = \sum_{j=1}^{N_i} \mathrm{e}^{-y(\tau_{ij})\tau_{ij}}C_{ij}\;.
 $$ {#eq-yieldcurve1}
 
@@ -26,52 +25,33 @@ However, in practice, we will typically be unable to find yields $y(\tau_{ij})$ 
 
 
 A cubic spline consists of several cubic polynomials spliced together at a set of knot points.  Specifically, it consists of maturities $\tau_1,\ldots, \tau_n$ (the knot points) and coefficients $(a_i, b_i, c_i, d_i)$ for $i= 0,\ldots,n$, and the yield curve is modeled as
-$$y(\tau) = \begin{cases} a_0 \tau^3 + b_0 \tau^2 + c_0 \tau + d_0  \text{for $0 < \tau \leq \tau_1\;,$}
-$$
-$$
- a_1 \tau^3 + b_1 \tau^2 + c_1 \tau + d_1  \text{for $\tau_1 < \tau \leq \tau_2\;,$}
-$$
-$$
-\cdots  \cdots 
-$$
-$$
-a_{n} \tau^3 + b_{n} \tau^2 + c_{n} \tau + d_{n}  \text{for $\tau_n < \tau \leq T$,}\end{cases}
+$$y(\tau) = \begin{cases} a_0 \tau^3 + b_0 \tau^2 + c_0 \tau + d_0 & \text{for $0 < \tau \leq \tau_1\;,$}\\
+ a_1 \tau^3 + b_1 \tau^2 + c_1 \tau + d_1 & \text{for $\tau_1 < \tau \leq \tau_2\;,$}\\
+\cdots & \cdots \\
+a_{n} \tau^3 + b_{n} \tau^2 + c_{n} \tau + d_{n} & \text{for $\tau_n < \tau \leq T$,}\end{cases}
 $$
 where $T$ is the maximum maturity considered.  By changing the constants $d_1,\ldots,d_n$, we can write this in an equivalent and more convenient form:
 $$
-y(\tau) = \begin{cases} a_0 \tau^3 + b_0 \tau^2 + c_0 \tau + d_0  \text{for $0 < \tau \leq \tau_1\;,$}
+y(\tau) = \begin{cases} a_0 \tau^3 + b_0 \tau^2 + c_0 \tau + d_0 & \text{for $0 < \tau \leq \tau_1\;,$}\\
+ a_1 (\tau-\tau_1)^3 + b_1 (\tau-\tau_1)^2 + c_1 (\tau-\tau_1)+ d_1 & \text{for $\tau_1 < \tau \leq \tau_2\;,$}\\
+\cdots & \cdots \\
+a_{n} (\tau-\tau_n)^3 + b_{n} (\tau-\tau_n)^2 + c_{n} (\tau-\tau_n) + d_{n} & \text{for $\tau_n < \tau \leq T\;.$}\end{cases}
 $$ {#eq-cubicspline00}
 
-$$
- a_1 (\tau-\tau_1)^3 + b_1 (\tau-\tau_1)^2 + c_1 (\tau-\tau_1)+ d_1  \text{for $\tau_1 < \tau \leq \tau_2\;,$}
-$$
-$$
-\cdots  \cdots 
-$$
-$$
-a_{n} (\tau-\tau_n)^3 + b_{n} (\tau-\tau_n)^2 + c_{n} (\tau-\tau_n) + d_{n}  \text{for $\tau_n < \tau \leq T\;.$}\end{cases}
-$$
+
 To splice these polynomials together at the knot points means to choose the coefficients so that the two polynomials that meet at a knot point have the same value and the same first and second derivatives at the knot point.  For example, at the first knot point $\tau_1$, we want the adjacent polynomials to satisfy
 $$
 \begin{array}{llrcl}
-\text{Equality of yields:} \quad a_0 \tau_1^3 + b_0 \tau_1^2 + c_0 \tau_1 + d_0 = d_1\; ,
-$$
-$$
-\text{Equality of first derivatives:}  \quad 3a_0 \tau_1^2 + 2b_0 \tau_1 + c_0  = c_1\; ,
-$$
-$$
-\text{Equality of second derivatives:}  \quad 6a_0 \tau_1 + 2b_0  = 2b_1\;.
+\text{Equality of yields:} &\quad &a_0 \tau_1^3 + b_0 \tau_1^2 + c_0 \tau_1 + d_0 &= &d_1\; ,\\
+\text{Equality of first derivatives:} & \quad &3a_0 \tau_1^2 + 2b_0 \tau_1 + c_0  &= &c_1\; ,\\
+\text{Equality of second derivatives:} & \quad &6a_0 \tau_1 + 2b_0  &= &2b_1\;.
 \end{array}$$
 Thus, given the coefficients $a_0, b_0, c_0, d_0$, the only free coefficient for the second polynomial is~$a_1$.  Likewise, at the second knot point $\tau_2$, we want the adjacent polynomials to agree with regard to:
 $$
 \begin{array}{llrcl}
-\text{Yields:} \quad a_1 (\tau_2-\tau_1)^3 + b_1(\tau_2- \tau_1)^2 + c_1 (\tau_2-\tau_1) + d_1 = d_2\; ,
-$$
-$$
-\text{First derivatives:}  \quad 3a_1 (\tau_2-\tau_1)^2 + 2b_1(\tau_2- \tau_1) + c_1  = c_2\; ,
-$$
-$$
-\text{Second derivatives:}  \quad 6a_1 (\tau_2-\tau_1) + 2b_1  = 2b_2\;.
+\text{Yields:} &\quad &a_1 (\tau_2-\tau_1)^3 + b_1(\tau_2- \tau_1)^2 + c_1 (\tau_2-\tau_1) + d_1 &= &d_2\; ,\\
+\text{First derivatives:} & \quad &3a_1 (\tau_2-\tau_1)^2 + 2b_1(\tau_2- \tau_1) + c_1  &= &c_2\; ,\\
+\text{Second derivatives:} & \quad &6a_1 (\tau_2-\tau_1) + 2b_1  &= &2b_2\;.
 \end{array}$$
 Thus, the only free coefficient for the third polynomial is~$a_2$.
 Continuing in this way, we see that the cubic spline is defined by the knot points and the coefficients $a_0$, $b_0$, $c_0$, $d_0$, $a_1$, $a_2$, \ldots, $a_n$.  One wants to choose the knot points (hopefully, not too many) and these coefficients so that the relations @eq-yieldcurve1 hold as closely as possible in some sense.  For more on this subject, a good reference is James and Webber [@JW].
@@ -198,69 +178,29 @@ The method of principal components \index{principal components} is to compute th
 
 This can be understood as a factor model \index{factor model} for the changes in yields, where there are as many factors as maturities.  At date $t_i$, the vector of factor realizations $z_{ij}$ is computed as
 $$
-\begin{pmatrix} z_{i1} 
+\begin{pmatrix} z_{i1} \\ \vdots \\ z_{iN} \end{pmatrix} = C^\top \begin{pmatrix} \Delta_{i1} \\ \vdots \\ \Delta_{iN} \end{pmatrix}\;.
 $$ {#eq-pc1}
 
-$$ \vdots 
-$$
-$$ z_{iN} \end{pmatrix} = C^\top \begin{pmatrix} \Delta_{i1} 
-$$
-$$ \vdots 
-$$
-$$ \Delta_{iN} \end{pmatrix}\;.
-$$
 Thus,
 $$
-\begin{pmatrix} \Delta_{i1} 
-$$ {#eq-pc2}
+\begin{pmatrix} \Delta_{i1} \\ \vdots \\ \Delta_{iN} \end{pmatrix}  
+= C \begin{pmatrix} z_{i1} \\ \vdots \\ z_{iN} \end{pmatrix}\;.$$ {#eq-pc2}
 
-$$ \vdots 
-$$
-$$ \Delta_{iN} \end{pmatrix}  
-= C \begin{pmatrix} z_{i1} 
-$$
-$$ \vdots 
-$$
-$$ z_{iN} \end{pmatrix}\;.$$
 Given any random vector $\xi$ with covariance matrix $\Sigma$ and a linear transformation $\xi' = L \xi$, the covariance matrix of $\xi'$ is $L\Sigma L^\top$.  Therefore, 
  @eq-pc1 implies that the covariance matrix of the factors is $C^\top VC$, and we observed in the previous paragraph that $C^\top VC=D$.   Therefore, the factors are uncorrelated, and the factor variances are the eigenvalues of $V$.  
 
 Let $\beta_{k\ell}$ denote the $(k,\ell)$--th element of $C$.  Then we can write @eq-pc2 as
-$$\begin{matrix} \Delta_{i1} 
-$$ {#eq-pc3}
+$$\begin{matrix} \Delta_{i1} \\ \vdots \\ \Delta_{iN} \end{matrix} 
+\;\begin{matrix}= \\ \vdots \\ = \end{matrix}\;
+\begin{matrix} \beta_{11}z_{i1} + \cdots + \beta_{1N}z_{iN}, \\ \vdots \\ \beta_{N1}z_{i1} + \cdots + \beta_{NN}z_{iN} \;.\end{matrix}$$ {#eq-pc3}
 
-$$ \vdots 
-$$
-$$ \Delta_{iN} \end{matrix} 
-\;\begin{matrix}= 
-$$
-$$ \vdots 
-$$
-$$ = \end{matrix}\;
-\begin{matrix} \beta_{11}z_{i1} + \cdots + \beta_{1N}z_{iN}, 
-$$
-$$ \vdots 
-$$
-$$ \beta_{N1}z_{i1} + \cdots + \beta_{NN}z_{iN} \;.\end{matrix}$$
 As in any factor model, the factors are common to all of the maturities.  Each factor is random, taking a different value at each date $t_i$.  The $\beta$'s represent the loadings \index{factor loading} of the yield changes on the factors, $\beta_{k\ell}$ being the loading of the change in the yield at maturity $\tau_k$ on the $\ell$-th factor.
 
 In a normal factor model, there are fewer factors than variables being explained.  It serves no point to have a factor model with as many factors as there are variables to be explained (in our case, as many factors as maturities).  We can improve the usefulness of the above by omitting some factors.  We will omit the factors that are least important in explaining the changes in yields.  For example, if we omit all but the first three factors, we will have
-$$\begin{matrix} \Delta_{i1} 
-$$ {#eq-pc32}
+$$\begin{matrix} \Delta_{i1} \\ \vdots \\ \Delta_{iN} \end{matrix} 
+\;\begin{matrix}= \\ \vdots \\ = \end{matrix}\;
+\begin{matrix} \beta_{11}z_{i1} + \beta_{12}z_{i2}+ \beta_{13}z_{i3} +\mathrm{var}epsilon_{i1}, \\ \vdots \\ \beta_{N1}z_{i1} + \beta_{N2}z_{i2}+ \beta_{N3}z_{i3} +\mathrm{var}epsilon_{iN}\; ,\end{matrix}$$ {#eq-pc32}
 
-$$ \vdots 
-$$
-$$ \Delta_{iN} \end{matrix} 
-\;\begin{matrix}= 
-$$
-$$ \vdots 
-$$
-$$ = \end{matrix}\;
-\begin{matrix} \beta_{11}z_{i1} + \beta_{12}z_{i2}+ \beta_{13}z_{i3} +\mathrm{var}epsilon_{i1}, 
-$$
-$$ \vdots 
-$$
-$$ \beta_{N1}z_{i1} + \beta_{N2}z_{i2}+ \beta_{N3}z_{i3} +\mathrm{var}epsilon_{iN}\; ,\end{matrix}$$
 where 
 $$
 \mathrm{var}epsilon_{ij} = \beta_{j4}z_{i4} + \cdots + \beta_{jN}z_{iN}
@@ -307,12 +247,10 @@ As in @sec-s_duration, because of convexity, the approximation understates the n
 The approximation @eq-durationreturn11 suggests how we can hedge against the factors identified in the previous section.  For example, let $\beta_{1\ell}, \ldots, \beta_{N\ell}$ denote the loadings of the yields at maturities $\tau_1, \ldots, \tau_N$ on the factor with the $\ell$--th greatest variance, for $\ell=1, 2, 3$.^[It is unlikely that these specific maturities would have been used in the principal components algorithm, so the loadings  would have to be estimated by interpolating or fitting some type of curve to the loadings of the maturities that were used.]  Then the factor model suggests
 $$\Delta y_j \approx \beta_{j1} z_1 + \beta_{j2} z_2 + \beta_{j3} z_3\; ,$$
 where the $z_k$ denote the realizations of the factors.  Combining this with @eq-durationreturn11 results in
-$$
-\frac{\Delta P}{P} \approx -\sum_{j=1}^{N} \left(\frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j}{P}\sum_{k=1}^3 \beta_{jk}z_k \right)
-$$
-$$
-= -\sum_{k=1}^3 \left(\sum_{j=1}^{N} \frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j\beta_{jk}}{P}\right)z_k.
-$$
+\begin{align*}
+\frac{\Delta P}{P} &\approx -\sum_{j=1}^{N} \left(\frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j}{P}\sum_{k=1}^3 \beta_{jk}z_k \right)\\
+&= -\sum_{k=1}^3 \left(\sum_{j=1}^{N} \frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j\beta_{jk}}{P}\right)z_k.
+\end{align*}
 This means that the bond return is approximately a linear combination of the factors, with the coefficient (loading) on the $k$--th factor being
 $$
 -\sum_{j=1}^{N} \frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j\beta_{jk}}{P}\;.
@@ -327,36 +265,18 @@ A similar application is in bond portfolio management.  If we want to avoid expo
 
 
 Assume the following discount bond prices for each of the following exercises:
-$$
-P(0,0.5)  = 0.995
-$$
-$$
-P(0,1.0)  = 0.988
-$$
-$$
-P(0,1.5)  = 0.978
-$$
-$$
-P(0,2.0)  = 0.966
-$$
-$$
-P(0,2.5)  = 0.951
-$$
-$$
-P(0,3.0)  = 0.935
-$$
-$$
-P(0,3.5)  = 0.916
-$$
-$$
-P(0,4.0)  = 0.896
-$$
-$$
-P(0,4.5)  = 0.874
-$$
-$$
-P(0,5.0)  = 0.850
-$$
+\begin{align*}
+P(0,0.5) & = 0.995\\
+P(0,1.0) & = 0.988\\
+P(0,1.5) & = 0.978\\
+P(0,2.0) & = 0.966\\
+P(0,2.5) & = 0.951\\
+P(0,3.0) & = 0.935\\
+P(0,3.5) & = 0.916\\
+P(0,4.0) & = 0.896\\
+P(0,4.5) & = 0.874\\
+P(0,5.0) & = 0.850
+\end{align*}
 ::: {#exr-nolabel}
  Compute the six-month and one-year LIBOR rates.
 :::
@@ -379,42 +299,21 @@ $$
 :::
 ::: {#exr-nolabel}
  Consider a cubic spline as defined in @eq-cubicspline00 with knot points at two and four years and the following coefficients:
-$$
-a_0  =  -0.00163  
-$$
-$$
-b_0  =   0.00812
-$$
-$$
-c_0  =   -0.00676 
-$$
-$$
-d_0  =    0.01184
-$$
-$$
-a_1  =    0.00052
-$$
-$$
-b_1  =    -0.00169
-$$
-$$
-c_1  =    0.00609
-$$
-$$
-d_1  =    0.01770
-$$
-$$
-a_2  =    -0.00175
-$$
-$$
-b_2  =    0.00141
-$$
-$$
-c_2  =    0.00552
-$$
-$$
-d_2  =    0.02725
-$$
+\begin{align*}
+a_0 & =  -0.00163  \\
+b_0 & =   0.00812\\
+c_0 & =   -0.00676 \\
+d_0 & =    0.01184\\
+a_1 & =    0.00052\\
+b_1 & =    -0.00169\\
+c_1 & =    0.00609\\
+d_1 & =    0.01770\\
+a_2 & =    -0.00175\\
+b_2 & =    0.00141\\
+c_2 & =    0.00552\\
+d_2 & =    0.02725
+\end{align*}
+
 
 
 1. Plot the cubic spline and compare it to the plot from the previous exercise.

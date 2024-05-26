@@ -15,10 +15,8 @@ A forward-start option \index{forward-start option} is an option for which the s
 A forward-start call is defined by its maturity date $T'$ and the date $T<T'$ at which the strike price is set.  The value of a forward-start call at maturity is
 $$\max(0,S(T')-S(T))\; .$$
 Let
-$$x= \begin{cases} 1 \text{if $S(T')>S(T)$\;,}
-$$
-$$
-                               0  \text{otherwise\;.}
+$$x= \begin{cases} 1 &\text{if $S(T')>S(T)$\;,}\\
+                               0 & \text{otherwise\;.}
         \end{cases}
 $$
 Then, the value of the call at maturity can be written as 
@@ -29,15 +27,11 @@ $$xS(T')-xS(T)\; .$$
 1. Use $V(t)=\mathrm{e}^{qt}S(t)$ as numeraire to price the payoff $xS(T')$.  From the fundamental pricing formula @eq-formula, the value at date~0 is
 $$\mathrm{e}^{-qT'}S(0)E^V[x] = \mathrm{e}^{-qT'}S(0)\times \text{prob}^V\!(S(T')>S(T))\; .$$
 2. To price the payoff $xS(T)$, use the following portfolio as numeraire:^[We are going to use equation~@eq-probSnumeraire at date $T'$ to define the probabilities, because it will not be known until date $T'$ whether the event $S(T')>S(T)$ is true.  Thus, we need the price of a numeraire asset at date~$T'$.  We would like this price to be a constant times $S(T)$, which is what we will obtain.  An equivalent numeraire is to make a smaller investment in the same portfolio: start with $\mathrm{e]^{-r(T'-T)-qT}$ shares.  This results in a final value of $S(T)$ at date~$T'$.  As will be seen, this is useful for deriving the put-call parity relation for forward-start options.} purchase $\mathrm{e}^{-qT}$ shares of the stock at date 0 and reinvest dividends until date~$T$.  This will result in the ownership of one share at date $T$, worth $S(T)$ dollars.  At date $T$, sell the share and invest the proceeds in the risk-free asset and hold this position until date $T'$.  At date $T'$, the portfolio will be worth $\mathrm{e}^{r(T'-T)}S(T)$.  Let $Z(t)$ denote the value of this portfolio for each $0\leq t\leq T'$.  The fundamental pricing formula @eq-formula implies that the value of receiving $xS(T)$ at date $T'$ is
-$$ {#eq-forwardstartnote}
+\begin{align*}
+Z(0)E^Z\left[ \frac{xS(T)}{Z(T')}\right] &=
+\mathrm{e}^{-qT}S(0)E^Z\left[ \frac{xS(T)}{\mathrm{e}^{r(T'-T)}S(T)}\right]\\&= \mathrm{e}^{-qT-r(T'-T)}S(0)E^Z[x] \\&= \mathrm{e}^{-qT-r(T'-T)}S(0) \times\text{prob}^Z(S(T')>S(T))\;.
+\end{align*}
 
-Z(0)E^Z\left[ \frac{xS(T)}{Z(T')}\right] =
-\mathrm{e}^{-qT}S(0)E^Z\left[ \frac{xS(T)}{\mathrm{e}^{r(T'-T)}S(T)}\right]
-$$
-$$= \mathrm{e}^{-qT-r(T'-T)}S(0)E^Z[x] 
-$$
-$$= \mathrm{e}^{-qT-r(T'-T)}S(0) \times\text{prob}^Z(S(T')>S(T))\;.
-$$
 
 
 
@@ -46,7 +40,8 @@ $$
 
 
 1. As in the case of a share digital, we know that
-$$\log S(t) = \log S(0) + \left(r-q +\frac{1}{2}\sigma^2\right)t + \sigma B^*(t)$$
+$$ {#eq-forwardstartnote}
+\log S(t) = \log S(0) + \left(r-q +\frac{1}{2}\sigma^2\right)t + \sigma B^*(t)$$
 for all $t>0$,
 where $B^*$ is a Brownian motion when $V$ is used as the numeraire.  Taking $t=T'$ and $t=T$ and subtracting yields
 $$\log S(T')-\log S(T) = \left(r-q +\frac{1}{2}\sigma^2\right)(T'-T) + \sigma \left[B^*(T')-B^*(T)\right]\; .$$
@@ -133,23 +128,17 @@ S(T) > S^* \quad\text{and}\quad S(T')>K'\;.
 $$ {#eq-compound1}
 
 Let
-$$
-x= \begin{cases} 1 \text{if $S(T)>S^*$\;,}
-$$
-$$
-                               0  \text{otherwise\;,}
-        \end{cases}
-$$
-$$
+\begin{align*}
+x&= \begin{cases} 1 &\text{if $S(T)>S^*$\;,}\\
+                               0 & \text{otherwise\;,}
+        \end{cases}\\
 $$
 and let
 $$
-y= \begin{cases} 1 \text{if $S(T)>S^*$ and $S(T')>K'$\;,}
-$$
-$$
-                               0  \text{otherwise\;.}
+y&= \begin{cases} 1 &\text{if $S(T)>S^*$ and $S(T')>K'$\;,}\\
+                               0 & \text{otherwise\;.}
         \end{cases} 
-$$ 
+\end{align*} 
 The cash flows of the compound option are $-xK$ at date $T$ and $yS(T')-yK'$ at date $T'$.  We can value the compound option at date 0 by valuing these separate cash flows.
 
 The cash flow $-xK$ is the cash flow from being short $K$ digital options on the underlying asset with strike price $S^*$ and maturity $T$.  Therefore the value at date 0 of this cash flow is $-\mathrm{e}^{-rT}K\mathrm{N}(d_2)$, where
@@ -212,12 +201,14 @@ We conclude:
 ::: {.callout-tip}
 ## 
 The value of a call on a call is
+
+$$
 \begin{multline}
 -\mathrm{e}^{-rT}K\mathrm{N}(d_2) + \mathrm{e}^{-q T'}S(0)\M\!\left(d_1,d_1',\sqrt{T/T'}\right)
- 
-$$
-$$- \mathrm{e}^{-rT'}K'\M\!\left(d_2,d_2',\sqrt{T/T'}\right)\;,
+ \\- \mathrm{e}^{-rT'}K'\M\!\left(d_2,d_2',\sqrt{T/T'}\right)\;,
  \end{multline}
+$$ {#eq-e_averagehedge2}
+
  where $d_1$ and  $d_2$ are defined in @eq-calloncalld1d2 and $d_1'$ and $d_2'$ are defined in @eq-callcallds.
 :::
 
@@ -228,15 +219,11 @@ European compound options with the same underlyings and strikes satisfy put-call
 $$\text{Cash} + \text{Call} = \text{Underlying} + \text{Put}\; .$$
 The portfolio on each side of this equation gives the owner the maximum of the strike and the value of the underlying at the option maturity.  In the case of options on calls, put-call parity is specifically
 \begin{multline*}
-\mathrm{e}^{-rT}K + \text{Value of call on call} 
-$$
-$$= \text{Value of underlying call} + \text{Value of put on call}\; ,
+\mathrm{e}^{-rT}K + \text{Value of call on call} \\= \text{Value of underlying call} + \text{Value of put on call}\; ,
 \end{multline*}
 where $K$ is the strike price of the compound options and $T$ is their maturity date.  Likewise, for options on puts, we have
 \begin{multline*}
-\mathrm{e}^{-rT}K + \text{Value of call on put} 
-$$
-$$= \text{Value of underlying put} + \text{Value of put on put}\; .
+\mathrm{e}^{-rT}K + \text{Value of call on put} \\= \text{Value of underlying put} + \text{Value of put on put}\; .
 \end{multline*}
 Thus, the value of a put on a call can be derived from the value of a call on a call.  The value of a put on a put can be derived from the value of a call on a put, which we will now consider.
 
@@ -254,45 +241,36 @@ We leave it as an exercise to confirm the following.
 ::: {.callout-tip}
 ## 
 The value of a call on a put is
-\begin{multline}
--\mathrm{e}^{-rT}K\mathrm{N}(-d_2) + \mathrm{e}^{-rT'}K'\M\!\left(-d_2,-d_2',\sqrt{T/T'}\right) 
-$$ {#eq-callonaput}
 
-$$- \mathrm{e}^{-q T'}S(0)\M\!\left(-d_1,-d_1',\sqrt{T/T'}\right) \;,
+$$
+\begin{multline}
+-\mathrm{e}^{-rT}K\mathrm{N}(-d_2) + \mathrm{e}^{-rT'}K'\M\!\left(-d_2,-d_2',\sqrt{T/T'}\right) \\- \mathrm{e}^{-q T'}S(0)\M\!\left(-d_1,-d_1',\sqrt{T/T'}\right) \;,
  \end{multline}
+$$ {#eq-e_averagehedge2}
+
  where $d_1$ and  $d_2$ are defined in @eq-calloncalld1d2 and $d_1'$ and $d_2'$ are defined in @eq-callcallds.
 :::
 
 
-## American Calls with Discrete Dividends {#sec-s_discrete}
+## American Calls with Discrete Dividends
 
 It can be optimal to exercise an American call option early if the underlying asset pays a dividend.  The optimal exercise date will be immediately prior to the asset going ex-dividend.  Consider a call option maturing at $T'$ on an asset that will pay a known cash dividend $D$ at a known date $T<T'$.  We assume there is no continuous dividend payment, so $q=0$.  For simplicity, we assume that the date of the dividend payment is also the date that the asset goes ex-dividend; i.e., ownership of the asset at any date $t<T$ entitles the owner to receive the dividend at date $T$.  Under this assumption, it is reasonable also to assume that the stock price drops by $D$ when the dividend is paid.  
 
 There is some ambiguity about how to define the asset price at the instant the dividend is paid---whether to include or exclude the dividend.  We will let $S(T)$ denote the price including the dividend and denote the price excluding the dividend by $Z(T)$, so $Z(T) = S(T)-D$.   In fact, it is convenient to let $Z(t)$ denote the price stripped of the dividend value at all dates $t \leq T$, so we will define 
 $$
-Z(t) = \begin{cases}S(t)-\mathrm{e}^{-r(T-t)}D  \text{if $t \leq T$\;,}
-$$
-$$
-S(t)  \text{if $t > T$\;.}
+Z(t) = \begin{cases}S(t)-\mathrm{e}^{-r(T-t)}D & \text{if $t \leq T$\;,}\\
+S(t) & \text{if $t > T$\;.}
 \end{cases}$$
 Note that $Z$ is the price of the following non-dividend-paying portfolio: buy one unit of the asset at date 0, borrow $\mathrm{e}^{-rT}D$ at date 0 to help finance the purchase, and use the dividend~$D$ at date $T$ to retire the debt.
 
 If we assume as usual that the asset price $S$ has a constant volatility, then, using formula @eq-exponential1 for a geometric Brownian motion and letting $B^*$ denote a Brownian motion under the risk-neutral measure, we have
-$$
-S(T') = [S(T)-D]\exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}
-$$
-$$
-= \left[S(0)\exp\left\{(r-\sigma^2/2)T+\sigma B^*(T)\right\}-D\right]
-$$
-$$
-\qquad \times \exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}
-$$
-$$
-=S(0)\exp\left\{(r-\sigma^2/2)T'+\sigma B^*(T')\right\} 
-$$
-$$
-\qquad - D\exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}\;.
-$$
+\begin{align*}
+S(T') &= [S(T)-D]\exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}\\
+&= \left[S(0)\exp\left\{(r-\sigma^2/2)T+\sigma B^*(T)\right\}-D\right]\\
+&\qquad \times \exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}\\
+&=S(0)\exp\left\{(r-\sigma^2/2)T'+\sigma B^*(T')\right\} \\
+&\qquad - D\exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}\;.
+\end{align*}
 Thus, $S$ will be a sum of lognormal random variables.  A sum of lognormals is not itself lognormal, so $S$ will not be lognormal, and we are unable to calculate the option value in a simple way.
 
 We will assume instead that $Z$ has a constant volatility $\sigma$.  Thus, $Z$ is the price of a non-dividend-paying portfolio, it satisfies the Black-Scholes assumptions, and we have $S(T')=Z(T')$.  To value a European option, we would simply use $Z(0)=S(0)-\mathrm{e}^{-rT}D$ as the initial asset price and $\sigma$ as the volatility.
@@ -317,20 +295,14 @@ all $Z(T)>Z^*$.  This $Z^*$ is defined by
 As in the previous section, we can compute $Z^*$ by bisection.  
 
 Define
-$$
-x= \begin{cases} 1 \text{if $Z(T)>Z^*$\;,}
-$$
-$$
-                               0  \text{otherwise\;,}
-        \end{cases}
-$$
-$$
-y= \begin{cases} 1 \text{if $Z(T)\leq Z^*$ and $Z(T')>K$\;,}
-$$
-$$
-                               0  \text{otherwise\;.}
+\begin{align*}
+x&= \begin{cases} 1 &\text{if $Z(T)>Z^*$\;,}\\
+                               0 & \text{otherwise\;,}
+        \end{cases}\\
+y&= \begin{cases} 1 &\text{if $Z(T)\leq Z^*$ and $Z(T')>K$\;,}\\
+                               0 & \text{otherwise\;.}
         \end{cases} 
-$$ 
+\end{align*} 
 Then the American call option will pay $[Z(T)+D-K]x$ at date $T$ (due to early exercise) and $[Z(T')-K]y$ at date $T'$ (due to exercise at maturity), if $D-K > -\mathrm{e}^{-r(T'-T)}K$.  
 
 ### Numeraires
@@ -338,17 +310,16 @@ Assume for now that $D-K > -\mathrm{e}^{-r(T'-T)}K$.  The payoff $(D-K)x$ is the
 $$Z(0)\mathrm{N}(d_1) + \mathrm{e}^{-rT}(D-K)\mathrm{N}(d_2)\; ,$$
 where
 
+
 $$
 d_1 = \frac{\log\left(\frac{Z(0)}{Z^*}\right)+\left(r+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
 $$
 $$
 = \frac{\log\left(\frac{S(0)-\mathrm{e}^{-rT}D}{Z^*}\right)+\left(r+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}} \;,
-$$ {#eq-americancalld1star}
-
+$$
 $$
 d_2=d_1-\sigma\sqrt{T}\;.
-$$ {#eq-americancalld2star}
-
+$$
 As in the previous section,^[The only difference is that here $Z$ is the price of a non-dividend-paying portfolio, so, in the notation of the previous section, we have $V(t)=Z(t)$.] the value of receiving $[Z(T)-K]y$ at date $T'$ is 
 $$Z(0)\times \text{prob}^Z(y=1) - \mathrm{e}^{-rT'}K\times \text{prob}^R(y=1)\; .$$
 ### Calculating Probabilities
@@ -363,21 +334,19 @@ where $B^*$ is a Brownian motion when the underlying asset (with price $Z$) is u
 We can write this as
 $$
 \frac{B^*(T)}{\sqrt{T}} < -d_1 \quad \text{and} \quad - \frac{B^*(T')}{\sqrt{T'}} < d_1'\;,
-$$ {#eq-new100}
-
+$$
 where $d_1$ is defined in @eq-americancalld1star,
+
 
 $$
 d_1' = \frac{\log\left(\frac{Z(0)}{K}\right)+\left(r+\frac{1}{2}\sigma^2\right)T'}{\sigma\sqrt{T'}}
 $$
 $$
 = \frac{\log\left(\frac{S(0)-\mathrm{e}^{-rT}D}{K}\right)+\left(r+\frac{1}{2}\sigma^2\right)T'}{\sigma\sqrt{T'}}
-$$ {#eq-americancalld1}
-
+$$
 $$
 d_2'=d_1'-\sigma\sqrt{T'}\;.
-$$ {#eq-americancalld2}
-
+$$
 The two standard normal variables on the left-hand sides in @eq-new100 have a covariance equal to
 $$-\frac{1}{\sqrt{TT'}}\cov(B(T),B(T')) = -\frac{1}{\sqrt{TT'}}\cov(B(T),B(T)) = -\sqrt{\frac{T}{T'}}\; .$$
 Hence, $\text{prob}^Z(y=1)$ is the probability that $a\leq -d_1$ and $b\leq d_1'$, where $a$ and $b$ are standard normal random variables with covariance (= correlation coefficient) of $-\sqrt{T/T'}$.  We are writing this probability as $\M\!\left(-d_1,d_1',-\sqrt{T/T'}\right)$.  
@@ -390,8 +359,7 @@ $$\log Z(0) + \left(r+\frac{1}{2}\sigma^2\right)T'+\sigma B^*(T') > \log K\; ,$$
 where $B^*$ now denotes a Brownian motion under the risk-neutral measure.  These are equivalent to
 $$
 \frac{B^*(T)}{\sqrt{T}} \leq -d_2 \quad \text{and} \quad - \frac{B^*(T')}{\sqrt{T'}} < d_2'\;.
-$$ {#eq-new11}
-
+$$
 Hence, $\text{prob}^R(y=1)=\M\!\left(-d_2,d_2',-\sqrt{T/T'}\right)$.  
 
 
@@ -410,13 +378,13 @@ where $d_1'$ and $d_2'$ are defined in @eq-americancallcombined.
 On the other hand, if 
 $$D-K > -\mathrm{e}^{-r(T'-T)}K\;,$$
 then the value of the call is
+
+$$
 \begin{multline}
-[S(0)-\mathrm{e}^{-rT}D]\mathrm{N}(d_1) + \mathrm{e}^{-rT}(D-K)\mathrm{N}(d_2)
-$$
-$$ +[S(0)-\mathrm{e}^{-rT}D]\M\!\left(-d_1,d_1',-\sqrt{T/T'}\right) 
-$$
-$$- \mathrm{e}^{-rT'}K\M\!\left(-d_2,d_2',-\sqrt{T/T'}\right)\;,
+[S(0)-\mathrm{e}^{-rT}D]\mathrm{N}(d_1) + \mathrm{e}^{-rT}(D-K)\mathrm{N}(d_2)\\ +[S(0)-\mathrm{e}^{-rT}D]\M\!\left(-d_1,d_1',-\sqrt{T/T'}\right) \\- \mathrm{e}^{-rT'}K\M\!\left(-d_2,d_2',-\sqrt{T/T'}\right)\;,
 \end{multline}
+$$ {#eq-e_averagehedge2}
+
 where $d_1$ and $d_2$ are defined in @eq-americancallstarcombined and $d_1'$ and $d_2'$ are defined in @eq-americancallcombined.
 :::
 
@@ -424,7 +392,7 @@ where $d_1$ and $d_2$ are defined in @eq-americancallstarcombined and $d_1'$ and
 
 
 
-## Choosers {#sec-s_choosers}
+\section{Choosers}
 A chooser option \index{chooser} allows the holder to choose whether the option will be a put or call at some fixed date before the option maturity.  Let $T$ denote the date at which the choice is made, $T_c$ the date at which the call expires, $T_p$ the date at which the put expires, $K_c$ the exercise price of the call, and $K_p$ the exercise price of the put, where $0<T<T_c$ and $0<T<T_p$.  A simple chooser has $T_c=T_p$ and $K_c=K_p$.  A chooser is similar in spirit to a straddle: it is a bet on volatility without making a bet on direction.  A simple chooser must be cheaper than a straddle with the same exercise price and maturity $T'=T_c=T_p$, because a straddle is always in the money at maturity, whereas a simple chooser has the same value as the straddle if it is in the money but is only in the money at $T'$ when the choice made at $T$ turns out to have been the best one.  
 
 ### Chooser Payoff
@@ -438,41 +406,36 @@ The value of the chooser at date $T$ will be the larger of the call and put pric
 \mathrm{n}oindent For a simple chooser with $K_c=K_p=K$ and $T_c=T_p=T'$, we can find $S^*$ from the put-call parity relation at $T$, leading to $S^*=\mathrm{e}^{(q-r)(T'-T)}K.$
 
 The call will be chosen when $S(T)>S^*$ and it finishes in the money if $S(T_c)>K_c$ at date $T_c$, so the payoff of the chooser is $S(T_c)-K_c$ when 
-$$ {#eq-americancall}
-S(T)>S^* \quad \text{and}\quad S(T_c)>K_c\;.
+$$S(T)>S^* \quad \text{and}\quad S(T_c)>K_c\;.
 $$
 The payoff is $K_p-S(T_p)$ at date $T_p$ when 
 $$
 S(T)<S^* \quad \text{and}\quad S(T_p)<K_p\;.
 $$
 Let 
-$$
-x= \begin{cases} 1 \text{if $S(T)>S^* $ and $S(T_c)>K_c$\;,}
-$$
-$$
-                               0  \text{otherwise\;.}
-        \end{cases}
-$$
-$$
+\begin{align*}
+x&= \begin{cases} 1 &\text{if $S(T)>S^* $ and $S(T_c)>K_c$\;,}\\
+                               0 & \text{otherwise\;.}
+        \end{cases}\\
 $$
 Likewise, let
 $$
-y= \begin{cases} 1 \text{if $S(T)<S^*$ and $S(T_p)<K_p$\;,}
-$$
-$$
-                               0  \text{otherwise\;.}
+y&= \begin{cases} 1 &\text{if $S(T)<S^*$ and $S(T_p)<K_p$\;,}\\
+                               0 & \text{otherwise\;.}
         \end{cases} 
-$$
+\end{align*}
 Then the payoff of the chooser is $xS(T_c)-xK_c$ at date $T_c$ and $yK_p-yS(T_p)$ at date $T_p$.
 
 ### Numeraires
 As in the analysis of compound options, the value of the chooser at date 0 must be 
-\begin{multline}
-\mathrm{e}^{-q T_c}S(0)\times\text{prob}^V\!(x=1) \;- \;\mathrm{e}^{-rT_c}K_c\times\text{prob}^R(x=1)
 
 $$
-$$+\; \mathrm{e}^{-rT_p}K_p\times\text{prob}^R(y=1) \;- \;\mathrm{e}^{-q T_p}S(0)\times\text{prob}^V\!(y=1)\;,
+\begin{multline}
+\mathrm{e}^{-q T_c}S(0)\times\text{prob}^V\!(x=1) \;- \;\mathrm{e}^{-rT_c}K_c\times\text{prob}^R(x=1)
+\\+\; \mathrm{e}^{-rT_p}K_p\times\text{prob}^R(y=1) \;- \;\mathrm{e}^{-q T_p}S(0)\times\text{prob}^V\!(y=1)\;,
 \end{multline}
+$$ {#eq-e_averagehedge2}
+
 where we use $V(t)=\mathrm{e}^{qt}S(t)$ and $R(t)=\mathrm{e}^{rt}$ as numeraires. 
 
 ### Chooser Pricing Formula
@@ -482,31 +445,23 @@ Equation @eq-chooser1 and calculations similar to those of the previous two sect
 ::: {.callout-tip}
 ## 
 The value of a chooser option is 
-\begin{multline}
-\mathrm{e}^{-q T_c}S(0)\M\!\left(d_1,d_{1c},\sqrt{T/T_c}\right) - \mathrm{e}^{-rT_c}K_c\M\!\left(d_2,d_{2c},\sqrt{T/T_c}\right)
-$$ {#eq-chooser2}
- {#eq-chooser1}
 
-$$ +\mathrm{e}^{-rT_p}K_p\M\!\left(-d_2,-d_{2p} , \sqrt{T/T_p}\right) 
 $$
-$$- \mathrm{e}^{-q T_p}S(0)\M\!\left(-d_1 ,-d_{1p} ,\sqrt{T/T_p}\right)\;,
+\begin{multline}
+\mathrm{e}^{-q T_c}S(0)\M\!\left(d_1,d_{1c},\sqrt{T/T_c}\right) - \mathrm{e}^{-rT_c}K_c\M\!\left(d_2,d_{2c},\sqrt{T/T_c}\right)\\ +\mathrm{e}^{-rT_p}K_p\M\!\left(-d_2,-d_{2p} , \sqrt{T/T_p}\right) \\- \mathrm{e}^{-q T_p}S(0)\M\!\left(-d_1 ,-d_{1p} ,\sqrt{T/T_p}\right)\;,
 \end{multline}
+$$ {#eq-e_averagehedge2}
+
 where
 \begin{equation*}
 \begin{array}{ll}
 d_1 = \frac{\log\left(\frac{S(0)}{S^*}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;,
- \qquad d_2=d_1-\sigma\sqrt{T}\;,
-$$
-$$
-$$
-$$
+& \qquad d_2=d_1-\sigma\sqrt{T}\;,\\
+&\\
 d_{1c} = \frac{\log\left(\frac{S(0)}{K_c}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T_c}{\sigma\sqrt{T_c}}\;,
- \qquad d_{2c}=d_{1c}-\sigma\sqrt{T_c}\;,
-$$
-$$
-$$
-$$d_{1p} = \frac{\log\left(\frac{S(0)}{K_p}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T_p}{\sigma\sqrt{T_p}}\;,
- \qquad d_{2p}=d_{1p}-\sigma\sqrt{T_p}\;.
+& \qquad d_{2c}=d_{1c}-\sigma\sqrt{T_c}\;,\\
+&\\d_{1p} = \frac{\log\left(\frac{S(0)}{K_p}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T_p}{\sigma\sqrt{T_p}}\;,
+& \qquad d_{2p}=d_{1p}-\sigma\sqrt{T_p}\;.
 \end{array}
 \end{equation*}
 :::
@@ -514,7 +469,7 @@ $$d_{1p} = \frac{\log\left(\frac{S(0)}{K_p}\right)+\left(r-q+\frac{1}{2}\sigma^2
 
 
 
-## Options on the Max or Min
+\section{Options on the Max or Min}
 
 We will consider here an option written on the maximum or minimum of two asset prices; for example, a call on the maximum pays
 $$\max(0,\max(S_1(T), S_2(T))-K) = \max(0,S_1(T)-K,S_2(T)-K)$$
@@ -523,33 +478,21 @@ at maturity $T$.  There are also call options on $\min(S_1(T), S_2(T))$ and put 
 \vfil\eject
 ### Call-on-the-Max Payoff
 To value the above option, define the random variables:
-$$
-x= \begin{cases} 1  \text{if $S_1(T)>S_2(T)$ and $S_1(T)>K$}\; ,
-$$
-$$
-0  \text{otherwise}\;, \end{cases}
-$$
-$$
-y= \begin{cases} 1  \text{if $S_2(T)> S_1(T)$ and $S_2(T)>K$}\; ,
-$$
-$$
-0  \text{otherwise}\;, \end{cases}
-$$
-$$
-z= \begin{cases} 1  \text{if $S_1(T) > K$ or $S_2(T)> K$}\; ,
-$$
-$$
-0  \text{otherwise}\;. \end{cases}
-$$
+\begin{align*}
+x&= \begin{cases} 1 & \text{if $S_1(T)>S_2(T)$ and $S_1(T)>K$}\; ,\\
+0 & \text{otherwise}\;, \end{cases}\\
+y&= \begin{cases} 1 & \text{if $S_2(T)> S_1(T)$ and $S_2(T)>K$}\; ,\\
+0 & \text{otherwise}\;, \end{cases}\\
+z&= \begin{cases} 1 & \text{if $S_1(T) > K$ or $S_2(T)> K$}\; ,\\
+0 & \text{otherwise}\;. \end{cases}
+\end{align*}
 Then the value of the option at maturity is
 $$xS_1(T) + yS_2(T) - zK\; .$$
 ### Numeraires
 Consider numeraires  $V_1(t) = \mathrm{e}^{q_1t}S_1(t)$,  $V_2(t)=\mathrm{e}^{q_2t}S_2(t)$, and $R(t)=\mathrm{e}^{rt}$.
 By familiar arguments, the value of the option at date 0 is
 \begin{multline*}
-\mathrm{e}^{-q_1T}S_1(0)\times\text{prob}^{V_1}(x=1) + \mathrm{e}^{-q_2T}S_2(0)\times\text{prob}^{V_2}(y=1) 
-$$
-$$- \mathrm{e}^{-rT}K\times\text{prob}^R(z=1)\; .
+\mathrm{e}^{-q_1T}S_1(0)\times\text{prob}^{V_1}(x=1) + \mathrm{e}^{-q_2T}S_2(0)\times\text{prob}^{V_2}(y=1) \\- \mathrm{e}^{-rT}K\times\text{prob}^R(z=1)\; .
 \end{multline*}
 
 ### Calculating Probabilities
@@ -557,46 +500,37 @@ $$- \mathrm{e}^{-rT}K\times\text{prob}^R(z=1)\; .
 
 1.
 We will begin by calculating $\text{prob}^{V_1}(x=1)$.  From the second and third examples in @sec-s_girsanov, the asset prices satisfy
-$$
-\frac{\mathrm{d} S_1}{S_1} = (r-q_1+\sigma^2_1)\,\mathrm{d} t + \sigma_1\,\mathrm{d} B^*_{1}\; ,
-$$
-$$
-\frac{\mathrm{d} S_2}{S_2} = (r-q_2+\rho\sigma_1\sigma_2)\,\mathrm{d} t + \sigma_2\,\mathrm{d} B^*_{2}\;,
-$$
+\begin{align*}
+\frac{\mathrm{d} S_1}{S_1} &= (r-q_1+\sigma^2_1)\,\mathrm{d} t + \sigma_1\,\mathrm{d} B^*_{1}\; ,\\
+\frac{\mathrm{d} S_2}{S_2} &= (r-q_2+\rho\sigma_1\sigma_2)\,\mathrm{d} t + \sigma_2\,\mathrm{d} B^*_{2}\;,
+\end{align*}
 where $B^*_{1}$ and $B^*_{2}$ are Brownian motions when we use $V_1$ as the numeraire.
 Thus,
-$$
-\log S_1(T) = \log S_1(0) + \left(r-q_1+\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}(T)\; ,
-$$
-$$
-\log S_2(T) = \log S_2(0) + \left(r-q_2+\rho\sigma_1\sigma_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}(T)\;.
-$$
+\begin{align*}
+\log S_1(T) &= \log S_1(0) + \left(r-q_1+\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}(T)\; ,\\
+\log S_2(T) &= \log S_2(0) + \left(r-q_2+\rho\sigma_1\sigma_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}(T)\;.
+\end{align*}
 The condition $\log S_1(T) > \log K$ is therefore equivalent to 
 
  $$
  -\frac{1}{\sqrt{T}}B^*_{1}(T) < d_{11}\;,
- $$ {#eq-max1}
-
+ $$
 and the condition $\log S_1(T)>\log S_2(T)$ is equivalent to
 $$
 \frac{\sigma_2B^*_{2}(T)-\sigma_1B^*_{1}(T)}{\sigma\sqrt{T}} < d_1\;,
-$$ {#eq-max2}
-
-
+$$
 where
 $$
 \sigma =\sqrt{\sigma_1^2-2\rho\sigma_1\sigma_2+\sigma_2^2}\;,
-$$ {#eq-max2a}
-
+$$
 and
+
 $$
 d_1 = \frac{\log\left(\frac{S_1(0)}{S_2(0)}\right)+\left(q_2-q_1+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
-$$ {#eq-max4}
-
+$$
 $$
 d_{11}=\frac{\log\left(\frac{S_1(0)}{K}\right)+\left(r-q_1+\frac{1}{2}\sigma_1^2\right)T}{\sigma_1\sqrt{T}}\;, \qquad d_{12} = d_{11} - \sigma_1\sqrt{T}\;.
-$$ {#eq-max3}
-
+$$
  The random variables on the left-hand sides of @eq-max12combined have standard normal distributions and their correlation is
 $$\rho_1 = \frac{\sigma_1-\rho\sigma_2}{\sigma}\; .$$
 Therefore,
@@ -615,29 +549,25 @@ Therefore,
 where
 $$
 d_{21}=\frac{\log\left(\frac{S_2(0)}{K}\right)+\left(r-q_2+\frac{1}{2}\sigma_2^2\right)T}{\sigma_2\sqrt{T}},\qquad d_{22} = d_{21}-\sigma_2\sqrt{T}\;,
-$$ {#eq-max31}
-
+$$
 and
 $$\rho_2 = \frac{\sigma_2-\rho\sigma_1}{\sigma}\; .$$
 3. As usual, we have
-$$
-\log S_1(T) = \log S_1(0) + \left(r-q_1-\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}(T)\; ,
-$$
-$$
-\log S_2(T) = \log S_2(0) + \left(r-q_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}(T)\;,
-$$
+\begin{align*}
+\log S_1(T) &= \log S_1(0) + \left(r-q_1-\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}(T)\; ,\\
+\log S_2(T) &= \log S_2(0) + \left(r-q_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}(T)\;,
+\end{align*}
 where $B^*_{1}$ and $B^*_{2}$ now denote Brownian motions under the risk-neutral measure.  The event $z=1$ is the complement of the event
 $$S_1(T)\leq K \quad \text{and} \quad S_2(T)\leq K\; ,$$
 which is equivalent to 
+
 $$
 \frac{1}{\sqrt{T}}B^*_{1}(T) < -d_{12}\;,
-$$ {#eq-max32}
-
+$$
 and
 $$
 \frac{1}{\sqrt{T}}B^*_{2}(T) < -d_{22}\;.
-$$ {#eq-max42}
-
+$$
 
 The random variables on the left-hand sides of @eq-max32 and @eq-max42 are standard normals and have correlation $\rho$.
 Therefore,
@@ -654,17 +584,18 @@ Therefore,
 ## 
 
 The value of a call option on the maximum of two risky asset prices with volatilities $\sigma_1$ and~$\sigma_2$ and correlation $\rho$ is
-\begin{multline}
-\mathrm{e}^{-q_1T}S_1(0)\M\!\left(d_{11},d_1,\frac{\sigma_1-\rho\sigma_2}{\sigma}\right) + \mathrm{e}^{-q_2T}S_2(0)\M\!\left(d_{21},-d_2,\frac{\sigma_2-\rho\sigma_1}{\sigma}\right)
-$$ {#eq-callonmaxformula}
 
-$$+ \mathrm{e}^{-rT}K\M(-d_{12},-d_{22},\rho) - \mathrm{e}^{-rT}K\;,
+$$
+\begin{multline}
+\mathrm{e}^{-q_1T}S_1(0)\M\!\left(d_{11},d_1,\frac{\sigma_1-\rho\sigma_2}{\sigma}\right) + \mathrm{e}^{-q_2T}S_2(0)\M\!\left(d_{21},-d_2,\frac{\sigma_2-\rho\sigma_1}{\sigma}\right)\\+ \mathrm{e}^{-rT}K\M(-d_{12},-d_{22},\rho) - \mathrm{e}^{-rT}K\;,
 \end{multline}
+$$ {#eq-e_averagehedge2}
+
 where $\sigma$ is defined in @eq-max2a and  $d_1$, $d_2$, $d_{11}$, $d_{12}$, $d_{21}$ and $d_{22}$ are defined in @eq-max34combined.
 :::
 
 
-## Barrier Options {#sec-s_barriers}
+\section{Barrier Options}
 
 \index{barrier option} \index{down-and-out option} \index{down-and-in option} \index{knock-out option} \index{knock-in option} A down-and-out call pays the usual call value at maturity if and only if the stock price does not hit a specified lower bound during the lifetime of the option.  If it does breach the lower barrier, then it is out.  Conversely, a down-and-in call pays off only if the stock price \emph{does} hit the lower bound.  Up-and-out and up-and-in calls are defined similarly, and there are also put options of this sort.  The out versions are called knock-outs and the in versions are called knock-ins.  
 
@@ -683,10 +614,8 @@ Let $L$ denote the lower barrier for the down-and-out call and assume it has not
 The down-and-out call will pay $\max(0,S(T)-K)$ if $z > L$ and 0 otherwise, 
 at its maturity T.  
 Let
-$$x = \begin{cases} 1  \text{if $S(T)>K$ and $z > L$\;,}
-$$
-$$
-0  \text{otherwise\;.} \end{cases}$$
+$$x = \begin{cases} 1 & \text{if $S(T)>K$ and $z > L$\;,}\\
+0 & \text{otherwise\;.} \end{cases}$$
 Then the value of the down-and-out call at maturity is
 $$xS(T) - xK\; .$$
 ### Numeraires
@@ -699,74 +628,59 @@ To calculate $\text{prob}^{V}(x=1)$ and $\text{prob}^{R}(x=1)$, we consider two 
 
 
 1. Suppose $K>L$.  Define
-$$y = \begin{cases} 1  \text{if $S(T)>K$ and $z \leq L$}
-$$
-$$
-0  \text{otherwise\;.} \end{cases}$$   The event $S(T)>K$ is equal to the union of the disjoint events $x=1$ and $y=1$.  Therefore,
-$$
-\text{prob}^{V}(x=1) = \text{prob}^{V}(S(T)\!>\!K) - \text{prob}^{V}(y=1)\; ,
-$$
-$$
-\text{prob}^{R}(x=1) = \text{prob}^{R}(S(T)\!>\!K) - \text{prob}^{R}(y=1)\;.
-$$
+$$y = \begin{cases} 1 & \text{if $S(T)>K$ and $z \leq L$}\\
+0 & \text{otherwise\;.} \end{cases}$$   The event $S(T)>K$ is equal to the union of the disjoint events $x=1$ and $y=1$.  Therefore,
+\begin{align*}
+\text{prob}^{V}(x=1) &= \text{prob}^{V}(S(T)\!>\!K) - \text{prob}^{V}(y=1)\; ,\\
+\text{prob}^{R}(x=1) &= \text{prob}^{R}(S(T)\!>\!K) - \text{prob}^{R}(y=1)\;.
+\end{align*}
+
 As in the derivation of the Black-Scholes formula, we have
 $$
 \text{prob}^{V}(S(T)\!>\!K) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^{R}(S(T)\!>\!K) = \mathrm{N}(d_2)\;,
-$$ {#eq-casea2}
-
+$$
 where
 
 $$
 d_1= \frac{\log\left(\frac{S(0)}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,\qquad  d_2 = d_1-\sigma\sqrt{T}\;.
-$$ {#eq-casea3}
-
+$$
 Furthermore , defining 
 $$
 d_1' = \frac{\log\left(\frac{L^2}{KS(0)}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2' = d_1'-\sigma\sqrt{T}\;,
-$$ {#eq-casea5}
-
+$$
 it can be shown (see Appendix~\ref{a_minimum}) that
+
 
 $$
 \text{prob}^{V}(y=1) = \left(\frac{L}{S(0)}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\;,
-$$ {#eq-casea4}
-
+$$
 $$
 \text{prob}^{R}(y=1) = \left(\frac{L}{S(0)}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\;.
-$$ {#eq-casea41}
-
+$$
 
 
 
 2. Suppose $K \leq L$.  Then the condition $S(T)>K$ in the definition of the event $x=1$ is redundant: if $z > L \geq K$, then it is necessarily true that $S(T)>K$.  Therefore, the probability (under either numeraire) of the event $x=1$ is the probability that $z > L$.  Define
-$$y = \begin{cases} 1  \text{if $S(T)>L$ and $z \leq L$\;,}
-$$
-$$
-0  \text{otherwise\;.} \end{cases}$$
+$$y = \begin{cases} 1 & \text{if $S(T)>L$ and $z \leq L$\;,}\\
+0 & \text{otherwise\;.} \end{cases}$$
 The event $S(T)>L$ is the union of the disjoint events $x=1$ and $y=1$.  Therefore, as in the previous case (but now with $K$ replaced by $L$),
-$$
-\text{prob}^{V}(x=1) = \text{prob}^{V}(S(T)\!>\!L) - \text{prob}^{V}(y=1)\; ,
-$$
-$$
-\text{prob}^{R}(x=1) = \text{prob}^{R}(S(T)\!>\!L) - \text{prob}^{R}(y=1)\;.
-$$
+\begin{align*}
+\text{prob}^{V}(x=1) &= \text{prob}^{V}(S(T)\!>\!L) - \text{prob}^{V}(y=1)\; ,\\
+\text{prob}^{R}(x=1) &= \text{prob}^{R}(S(T)\!>\!L) - \text{prob}^{R}(y=1)\;.
+\end{align*}
 Also as before, we know that
 $$
 \text{prob}^{V}(S(T)\!>\!L) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^{R}(S(T)\!>\!L) = \mathrm{N}(d_2)\;,
-$$ {#eq-caseb2}
-
+$$
 where now
 
 $$
 d_1= \frac{\log\left(\frac{S(0)}{L}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,\qquad  d_2 = d_1-\sigma\sqrt{T}\;.
-$$ {#eq-caseb3}
-
+$$
 Moreover, $\text{prob}^{V}(y=1)$ and $\text{prob}^{R}(y=1)$ are given by @eq-casea441combined but with $K$ replaced by $L$, which means that
 $$
 d_1' = \frac{\log\left(\frac{L}{S(0)}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'= d_1' - \sigma\sqrt{T}\;.
-$$ {#eq-caseb5}
-
-
+$$
 
 
 
@@ -776,12 +690,13 @@ $$ {#eq-caseb5}
 ::: {.callout-tip}
 ## 
 The value of a continuously-sampled down-and-out call option with barrier~$L$ is 
-\begin{multline}
-\mathrm{e}^{-qT}S(0)\left[\mathrm{N}(d_1)-\left(\frac{L}{S(0)}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\right]
-$$ {#eq-downout100}
 
-$$ - \mathrm{e}^{-rT}K\left[\mathrm{N}(d_2) - \left(\frac{L}{S(0)}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\right]\;,
+$$
+\begin{multline}
+\mathrm{e}^{-qT}S(0)\left[\mathrm{N}(d_1)-\left(\frac{L}{S(0)}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\right]\\ - \mathrm{e}^{-rT}K\left[\mathrm{N}(d_2) - \left(\frac{L}{S(0)}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\right]\;,
 \end{multline}
+$$ {#eq-e_averagehedge2}
+
 where 
 
 
@@ -794,7 +709,7 @@ where
 :::
 
 
-## Lookbacks {#sec-s_lookbacks}
+\section{Lookbacks}
 
 \index{lookback option} \index{floating-strike lookback option} \index{fixed-strike lookback option} A floating-strike lookback call pays the difference between the asset price at maturity and the minimum price realized during the life of the contract.  A floating-strike lookback put pays the difference between the maximum price over the life of the contract and the price at maturity.  Thus, the floating-strike lookback call allows one to buy the asset at its minimum price, and the floating-strike lookback put allows one to sell the asset at its maximum price.   Of course, one pays upfront for this opportunity to time the market.  These options were first discussed by Goldman, Sosin and Gatto [@GSG].
 
@@ -813,21 +728,18 @@ The value at date 0 of the piece $S(T)$ is simply $\mathrm{e}^{-qT}S(0)$.  Using
 $$\min(z, S_{\text{min}})$$
 at date $T$ is
 \begin{multline*}
-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) -\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S(0)}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S(0)\mathrm{N}(d_2') 
-$$
-$$
+\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) -\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S(0)}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S(0)\mathrm{N}(d_2') \\
 +\left(1+ \frac{\sigma^2}{2(r-q)}\right)\mathrm{e}^{-qT}S(0)\mathrm{N}(-d_1)\;.
 \end{multline*}
 where
 
+
 $$
 d_1 = \frac{\log\left(\frac{S(0)}{S_{\text{min}}}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; , \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
-$$ {#eq-fslc100a}
-
+$$
 $$
 d_1' = \frac{\log\left(\frac{S_{\text{min}}}{S(0)}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'=d_1' - \sigma\sqrt{T} \;.
-$$ {#eq-fslc100c}
-
+$$
 Using the fact that $[1-\mathrm{N}(-d_1)]\mathrm{e}^{-qT}S(0)=\mathrm{e}^{-qT}S(0)\mathrm{N}(d_1)$, this implies:
 
 ### Floating-Strike Lookback Call Pricing Formula
@@ -835,20 +747,19 @@ Using the fact that $[1-\mathrm{N}(-d_1)]\mathrm{e}^{-qT}S(0)=\mathrm{e}^{-qT}S(
 ::: {.callout-tip}
 ## 
 The value at date 0 of a continuously-sampled floating-strike lookback call, given that the minimum price during the lifetime of the contract through date 0 is $S_{\text{min}}$ and the remaining time to maturity is $T$, is
-\begin{multline}
-\mathrm{e}^{-qT}S(0)\mathrm{N}(d_1)-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) 
-$$ {#eq-fslc100}
 
-$$+\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S(0)}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S(0)\mathrm{N}(d_2') 
 $$
-$$
+\begin{multline}
+\mathrm{e}^{-qT}S(0)\mathrm{N}(d_1)-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) \\+\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S(0)}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S(0)\mathrm{N}(d_2') \\
 -\frac{\sigma^2}{2(r-q)}\mathrm{e}^{-qT}S(0)\mathrm{N}(-d_1)\;,
 \end{multline}
+$$ {#eq-e_averagehedge2}
+
 where $d_1$, $d_2$, and $d_2'$ are defined in @eq-fslc100combined.
 :::
 
 
-## Basket and Spread Options {#sec-s_baskets}
+\section{Basket and Spread Options}
 
 A spread option \index{spread option} \index{basket option} is a call or a put written on the difference of two asset prices.  For example, a spread call will pay at maturity $T$ the larger of zero and $S_1(T)-S_2(T)-K$, where the $S_i$ are the asset prices and $K$ is the strike price of the call.  Spread options can be used by producers to hedge the difference between an input price and an output price.  They are also useful for hedging basis risk.  For example, someone may want to hedge an asset by selling a futures contract on a closely related but not identical asset.  This exposes the hedger to basis risk: the difference in value between the asset and the underlying asset on the futures contract.  A spread call can hedge the basis risk: take $S_1$ to be the value of the asset underlying the futures contract and $S_2$ the value of the asset being hedged.
 
@@ -866,17 +777,15 @@ A basket option is an option written on a portfolio of assets.  For example, som
 Letting $S_1$, \ldots, $S_n$ denote the asset prices and $w_1$, \ldots, $w_n$ the weights specified by the contract, a basket call would pay
 $$\max\left(0,\;\sum_{i=1}^n w_iS_i(T) - K\right)$$
 at maturity $T$.  A spread option is actually a special case of a basket option, with $n=2$, $w_1=1$, and $w_2=-1$.  The difficulty in valuing basket options is the same as that encountered in valuing spread options.  The volatility of the basket price $\sum_{i=1}^nw_iS_i(t)$ will vary over time, depending on the relative volatilities of the assets and the price changes in the assets.  For example, consider the case $n=2$ and write $S(t)$ for the basket price $w_1S_1(t)+w_2S_2(t)$.  Then
-$$
-\frac{\mathrm{d} S}{S} = \frac{w_1\,\mathrm{d} S_1}{S} + \frac{w_2\,\mathrm{d} S_2}{S}
-$$
-$$
-=\frac{w_1S_1}{S}\times \frac{\mathrm{d} S_1}{S_1} + \frac{w_2S_2}{S}\times \frac{\mathrm{d} S_2}{S_2}\;.
-$$
+\begin{align*}
+\frac{\mathrm{d} S}{S} &= \frac{w_1\,\mathrm{d} S_1}{S} + \frac{w_2\,\mathrm{d} S_2}{S}\\
+&=\frac{w_1S_1}{S}\times \frac{\mathrm{d} S_1}{S_1} + \frac{w_2S_2}{S}\times \frac{\mathrm{d} S_2}{S_2}\;.
+\end{align*}
 Let $x_i(t)=w_iS_i(t)/S(t)$.  This is the fraction of the portfolio value that the $i$--th asset contributes.  It will vary randomly over time as the prices change.  Letting $\sigma_i$ denote the volatilities of the individual assets and $\rho$ their correlation, the formula just given for $\mathrm{d} S/S$ shows that the instantaneous volatility of the basket price at any date $t$ is
 $$\sqrt{x_1^2(t)\sigma_1^2 + 2x_1(t)x_2(t)\rho\sigma_1\sigma_2 + x_2^2(t)\sigma_2^2}\; .$$
 Hence, the volatility will vary randomly over time as the $x_i$ change.  As in the case of spread options, there is no simple closed-form solution for the value of a basket option.
 
-## Asian Options {#sec-s_asians}
+\section{Asian Options}
 
 An Asian option \index{Asian option} \index{average-price option} \index{average-strike option} is an option the value of which depends on the average underlying asset price during the lifetime of the option.  Average-price calls and puts are defined like standard calls and puts but with the final asset price replaced by the average price.  Average-strike calls and puts are defined like standard calls and puts but with the exercise price replaced by the average asset price.   A firm that must purchase an input at frequent intervals or will sell a product in a foreign currency at frequent intervals can use an average price option as an alternative to buying multiple options with different maturity dates.  The average-price option will generally be both less expensive and a better hedge than purchasing multiple options.
 
@@ -891,15 +800,11 @@ $$A_\text{g}(T) = \exp\left(\frac{1}{T}\int_0^T \log S(t)\,\mathrm{d} t\right)\;
 The concavity of the logarithm function guarantees that
 $$\log \frac{1}{T}\int_0^T S(t) > \frac{1}{T}\int_0^T \log S(t)\,\mathrm{d} t \; .$$
 Therefore,
-$$
-A(T) = \exp\left(\log \frac{1}{T}\int_0^T S(t)\right)
-$$
-$$
-> \exp\left(\frac{1}{T}\int_0^T \log S(t)\,\mathrm{d} t\right) 
-$$
-$$
-= A_\text{g}(T)\; .
-$$
+\begin{align*}
+A(T) &= \exp\left(\log \frac{1}{T}\int_0^T S(t)\right)\\
+&> \exp\left(\frac{1}{T}\int_0^T \log S(t)\,\mathrm{d} t\right) \\
+&= A_\text{g}(T)\; .
+\end{align*}
 Consequently, approximating the value of an average-price or average-strike option by substituting $A_\text{g}(T)$ for $A(T)$ will produce a biased estimate of the value.  Nevertheless, the geometric average$A_\text{g}(T)$ and the arithmetic average $A(T)$ will be highly correlated, so $A_\text{g}(T)$ forms a very useful \text{control variate} for Monte-Carlo valuation of average-price and average-strike options, as will be discussed in @sec-c_montecarlo.  To implement the idea, we need a valuation formula for options written on $A_\text{g}(T)$.  We will derive this for an average-price call, in which $A_\text{g}(T)$ substitutes for $A(T)$.
 
 Specifically, consider a contract that pays
@@ -914,16 +819,15 @@ $$A_g(t) = \exp\left(\frac{1}{t}\int_0^t \log S(u)\,du\right)\; .$$
 We will verify at the end of this section that
 $$
 V(t) = \mathrm{e}^{-r(T-t)}A_g(t)^{\frac{t}{T}}S(t)^{\frac{T-t}{T}}\exp\left(\frac{(r-q-\sigma^2/2)(T-t)^2}{2T} + \frac{\sigma^2(T-t)^3}{6T^2}\right)\;.
-$$ {#eq-geometricaveragev1}
-
+$$
 Two points are noteworthy.  First, the value at date 0 is
+
 $$
 V(0) = \mathrm{e}^{-rT}S(0)\exp\left(\frac{(r-q-\sigma^2/2)T}{2} + \frac{\sigma^2T}{6}\right)
 $$
 $$
 =\exp\left(-\frac{6r+6q + \sigma^2}{12}T\right)S(0)\;.
-$$ {#eq-asianV0}
-
+$$
 Second, the volatility comes from the factor
 $$S(t)^{\frac{T-t}{T}}\; ,$$
 and, by Ito's formula,
@@ -948,33 +852,32 @@ $V(0)$ is defined in @eq-asianV0, and $\sigma_{\text{avg}}=\sigma/\sqrt{3}$.
 We can also value a discretely-sampled geometric-average-price call by the same arguments.  Consider dates $0<t_0< t_1 < \cdots t_N=T$, where $t_i-t_{i-1}=\Delta t$ for each $i$ and suppose the price is to be sampled  at the dates $t_1,\ldots,t_N$.  Now let $V(t)$ denote the value at date $t$ of the contract that pays
 $$
 \exp\left(\frac{1}{N} \sum_{i=1}^N \log S(t_i)\right) = \left(\prod_{i=1}^N S(t_i)\right)^{1/N}
-$$ {#eq-geometricaveragev0}
-
+$$
 at date $T$.  The call option will pay $\max(0,V(T)-K)$ at date $T$.  Let $k$ denote the integer such that $t_{N-k-1} \leq t < t_{N-k}$.  This means that we have already observed the prices $S(t_1), \ldots, S(t_{N-k-1})$ and we have yet to observe the $k+1$ prices $S(t_{N-k}), \ldots ,S(t_N)$.  Define $\mathrm{var}epsilon = (t_{N\!-k}-t)/\Delta t$, which is fraction of the interval $\Delta t$ that must pass before we reach the next sampling date $t_{N\!-k}$.  We will show at the end of this section that 
-\begin{multline}
-V(t) = \mathrm{e}^{-r(T-t)}S(t)^{\frac{k+1}{N}}\prod_{i=1}^{N-k-1}S(t_i)^{\frac{1}{N}}
-$$ {#eq-geometricaveragev2}
 
 $$
+\begin{multline}
+V(t) = \mathrm{e}^{-r(T-t)}S(t)^{\frac{k+1}{N}}\prod_{i=1}^{N-k-1}S(t_i)^{\frac{1}{N}}\\
 \times\,\exp\left(\left[ \frac{(k+1)\mathrm{var}epsilon\mathrm{n}u}{N}\!+\! \frac{k(k+1)\mathrm{n}u}{2N}\! +\! \frac{(k+1)^2\sigma^2\mathrm{var}epsilon}{2N^2}\!+\!\frac{k(k+1)(2k+1)\sigma^2}{12N^2} \right]\Delta t\right)\;,
 \end{multline}
+$$ {#eq-e_averagehedge2}
+
 where $\mathrm{n}u = r-q-\sigma^2/2$
 
 Again, two points are noteworthy.  Assume the call was written at date 0 and the first observation date $t_1$ is $\Delta t$ years away.  Then, we have $k+1=N$ and $\mathrm{var}epsilon=1$ so
 $$
 V(0) = \mathrm{e}^{-rT}S(0)\exp\left( \frac{(N+1)\mathrm{n}u\Delta t}{2} + \frac{(N+1)(2N+1)\sigma^2\Delta t}{12N} \right)\;.
-$$ {#eq-asianV02}
-
+$$
 Second, the volatility of $V(t)$ comes from the factor $S(t)^{(k+1)/N}$, and
 $$\frac{ \mathrm{d} S^{\frac{k+1}{N}}}{S^{\frac{k+1}{N}}} = \text{something}\,\,\mathrm{d} t + \left(\frac{k+1}{N}\right)\sigma\,\mathrm{d} B\; .$$
 This implies that the average volatility, in the sense of @sec-s_timevaryingvolatility, is
+
 $$
 \sigma_{\text{avg}} = \sqrt{\frac{1}{N}\sum_{k=0}^{N-1} \left(\frac{k+1}{N}\right)^2\sigma^2\,\mathrm{d} t}
 $$
 $$
 =\frac{\sigma}{N^{3/2}}\sqrt{\frac{N(N+1)(2N+1)}{6}}\;,
-$$ {#eq-asiansigmaavg}
-
+$$
 where we have used the fact that $\sum_{i=1}^N i^2 = N(N+1)(2N+1)/6$ to obtain the second equality.
 Thus, the Black-Scholes formula implies:
 
@@ -984,8 +887,7 @@ Thus, the Black-Scholes formula implies:
 The value at date 0 of a discretely-sampled geometric-average-price call written at date~0 and having $T$ years to maturity is 
 $$
 V(0)\mathrm{N}(d_1)-\mathrm{e}^{-rT}K\mathrm{N}(d_2)\;,
-$$ {#eq-disc_geom_avg_call}
-
+$$
 where
 $$d_1 = \frac{\log\left(\frac{V(0)}{K}\right)+\left(r+\frac{1}{2}\sigma_{\text{avg}}^2\right)T}{\sigma_{\text{avg}}\sqrt{T}}, \qquad d_2 = d_1 - \sigma_{\text{avg}}\sqrt{T}\; ,$$
 $V(0)$ is defined in @eq-asianV02,
@@ -1000,24 +902,19 @@ This formula will be used in @sec-s_controlvariates as a control variate for pri
 
 We will now derive equations @eq-geometricaveragev1 and @eq-geometricaveragev2.  We will begin with @eq-geometricaveragev1.
 The random variable $A_g(T)$  is normally distributed under the risk-neutral measure given information at time $t$.  To establish this, and to calculate the mean and variance of $A_g(T)$, the key is to change the order of integration in the integral in the second line below to obtain the third line:
-$$
-\int_t^T \log S(u)\,du = \int_t^T \left\{\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)(u-t) + \sigma [B(u)-B(t)]\right\}\,du
-$$
-$$
-= (T-t)\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_t^u \mathrm{d} B(s)\,du
-$$
-$$
-= (T-t)\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_s^T du\,\mathrm{d} B(s)
-$$
-$$
-= (T-t)\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T (T-s)\,\mathrm{d} B(s)
-$$
+\begin{align*}
+\int_t^T \log S(u)\,du &= \int_t^T \left\{\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)(u-t) + \sigma [B(u)-B(t)]\right\}\,du\\
+&= (T-t)\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_t^u \mathrm{d} B(s)\,du\\
+&= (T-t)\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_s^T du\,\mathrm{d} B(s)\\
+&= (T-t)\log S(t) + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T (T-s)\,\mathrm{d} B(s)
+\end{align*}
 and then to note that $\int_t^T (T-s)\,\mathrm{d} B(s)$ is normally distributed with mean zero and variance equal to 
 $$\int_t^T (T-s)^2\,ds =\frac{(T-t)^3}{3}\; .$$
 Therefore $E^R_t\left[A_g(T)\right]$ is the expectation of the exponential of a normally distributed random variable.  Equation~@eq-geometricaveragev1 now follows from the fact that if $x$ is normally distributed with mean $\mu$ and variance $\sigma^2$ then $E\left[\mathrm{e}^x\right] = \mathrm{e}^{\mu+\sigma^2/2}$.  
 
 
 To establish @eq-geometricaveragev2, note that the discounted risk-neutral expectation of @eq-geometricaveragev0, conditional on having observed $S(t_1), \ldots, S(t_{N-k-1})$, is
+
 $$
 V(t) = \mathrm{e}^{-r(T-t)}E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log S(t_i)\right)\right]
 $$
@@ -1026,16 +923,11 @@ $$
 $$
 $$
 =\left(\prod_{i=1}^{N-k-1}S(t_i)^{\frac{1}{N}}\right)\times \mathrm{e}^{-r(T-t)}E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=N-k}^N \log S(t_i)\right)\right]\;.
-$$ {#eq-geometricaveragev3}
-
+$$
 Let  $\Delta_0B = B(t_{N-k})-B(t)$ and $\Delta_iB = B(t_{N\!-k+i})-B(t_{N\!-k+i-1})$ for $i \geq 1$.  We can write the sum of logarithms inside the expectation above as
 \begin{multline*}
-\sum_{i=0}^{k}\big\{[\log S(t) + (t_{N-k+i}-t)\mathrm{n}u + \sigma [B(t_{N-k+i})-B(t)]\big\}
-$$
-$$
-=(k+1)\log S(t) + \sum_{i=0}^{k} (\mathrm{var}epsilon + i)\mathrm{n}u\Delta t + \sigma\sum_{i=0}^{k} [\Delta_0B + \Delta_1B + \cdots + \Delta_iB] 
-$$
-$$
+\sum_{i=0}^{k}\big\{[\log S(t) + (t_{N-k+i}-t)\mathrm{n}u + \sigma [B(t_{N-k+i})-B(t)]\big\}\\
+=(k+1)\log S(t) + \sum_{i=0}^{k} (\mathrm{var}epsilon + i)\mathrm{n}u\Delta t + \sigma\sum_{i=0}^{k} [\Delta_0B + \Delta_1B + \cdots + \Delta_iB] \\
 =(k+1)\log S(t) + (k+1)\mathrm{var}epsilon\mathrm{n}u\Delta t + \frac{k(k+1)}{2}\mathrm{n}u\Delta t + \sigma\sum_{i=0}^{k} (k+1-i)\Delta_iB\;,
 \end{multline*}
 where to obtain the last equality we used the fact that $\sum_{i=0}^k i = k(k+1)/2$.
@@ -1050,7 +942,7 @@ $$S(t)^{\frac{k+1}{N}}\exp\left(\left[ \frac{(k+1)\mathrm{var}epsilon\mathrm{n}u
 which implies @eq-geometricaveragev2.
 :::
 
-## Calculations in VBA {#sec-s_exotics_matlab}
+\section{Calculations in VBA}
 
 The new features in the option pricing formulas in this chapter are the use of the bivariate normal distribution function and sometimes the need to compute a critical (at-the-money) value of the underlying asset price.  We will compute the critical values by bisection, in the same way that we computed implied volatilities for the Black-Scholes formula in @sec-c_blackscholes.
 
@@ -1068,7 +960,7 @@ y = Array(0.10024215, 0.48281397, 1.0609498, _
         1.7797294, 2.6697604)
 a1 = a / Sqr(2 * (1 - rho ^ 2))
 b1 = b / Sqr(2 * (1 - rho ^ 2))
-If a <= 0  b <= 0  rho <= 0 Then
+If a <= 0 & b <= 0 & rho <= 0 Then
     sum = 0
     For i = 0 To 4
         For j = 0 To 4
@@ -1079,11 +971,11 @@ If a <= 0  b <= 0  rho <= 0 Then
         Next j
     Next i
     BiNormalProb = sum * Sqr(1 - rho ^ 2) / Application.Pi
-ElseIf a <= 0  b >= 0  rho >= 0 Then
+ElseIf a <= 0 & b >= 0 & rho >= 0 Then
     BiNormalProb = Application.NormSDist(a)-BiNormalProb(a,-b,-rho)
-ElseIf a >= 0  b <= 0  rho >= 0 Then
+ElseIf a >= 0 & b <= 0 & rho >= 0 Then
     BiNormalProb = Application.NormSDist(b)-BiNormalProb(-a,b,-rho)
-ElseIf a >= 0  b >= 0  rho <= 0 Then
+ElseIf a >= 0 & b >= 0 & rho <= 0 Then
     sum = Application.NormSDist(a) + Application.NormSDist(b)
     BiNormalProb = sum - 1 + BiNormalProb(-a, -b, rho)
 ElseIf a * b * rho > 0 Then
@@ -1549,7 +1441,7 @@ End Function
 ::: {#exr-nolabel}
  A stock has fallen in price and you are attempting to persuade a client that it is now a good buy.  The client believes it may fall further before bouncing back and hence is inclined to postpone a decision.  To convince the client to buy now, you offer to deliver the stock to him at the end of two months at which time he will pay you the lowest price it trades during the two months plus a fee for your costs.  The stock is not expected to pay a dividend during the next two months.  Assuming the stock actually satisfies the Black-Scholes assumptions, find a formula for the minimum fee that you would require.  (Hint:  It is almost in @sec-s_lookbacks.)  Create an Excel worksheet allowing the user to input $S$, $r$, and $\sigma$  and computing the minimum fee.
 :::
-::: {#exr-e_standardknockout}
+::: {#exr-nolabel}
   Suppose you must purchase 100 units of an asset at the end of a year.  Create an Excel worksheet simulating the asset price and comparing the quality of the following hedges (assuming 100 contracts of each):
 
 
@@ -1560,19 +1452,19 @@ End Function
 
 Take both options to be at the money at the beginning of the year.  Allow the user to input $S$, $r$, $\sigma$ and $q$.   Generate 500 simulated end-of-year costs (net of the option values at maturity) for each hedging strategy and create histogram charts to visually compare the hedges.  Note: to create histograms, you will need the Data Analysis add-in, which may be need to be loaded (click Tools/Add Ins).
 :::
-::: {#exr-e_standardknockout2}
+::: {#exr-nolabel}
 
 Compute the prices of the options in the previous exercise.  Modify the simulations to compare the end-of-year costs including the costs of the options, adding interest on the option prices to put everything on an end-of-year basis.
 :::
-::: {#exr-e_standardknockout3}
+::: {#exr-nolabel}
  
 Modify Prob.~\ref{e_standardknockout} by including a third hedge: a combination of a down-and-out call as in part (b) of Prob.~\ref{e_standardknockout} and a down-and-in call with knockout barrier and strike 10\% below the current price of the asset.  Note that this combination forms a call option with strike that is reset when the underlying asset price hits a barrier.
 :::
-::: {#exr-e_standardknockout4}
+::: {#exr-nolabel}
 
 Modify Prob.~\ref{e_standardknockout2} by including the hedge in Prob.~\ref{e_standardknockout3}.  Value the down-and-in call using the function \verb!Down_And_Out_Call! and the fact that a down-and-out and down-and-in with the same strikes and barriers form a standard option. 
 :::
-::: {#exr-e_averagehedge}
+::: {#exr-nolabel}
   Each week you purchase 100 units of an asset, and you want to hedge your total quarterly (13-week) cost.  Create an Excel worksheet simulating the asset price and comparing the quality of the following hedges: 
 
 
@@ -1585,7 +1477,7 @@ Modify Prob.~\ref{e_standardknockout2} by including the hedge in Prob.~\ref{e_st
 
 Allow the user to input $S$, $r$, $\sigma$ and $q$.  Assume all of the options are at the money at the beginning of the quarter ($K=S$).  Compare the hedges as in Prob.~\ref{e_standardknockout}.
 :::
-::: {#exr-e_averagehedge2}
+::: {#exr-nolabel}
  In the setting of the previous problem, compute the prices of the options in parts (a), (b) and (d).  Modify the simulations in the previous problem to compare the end-of-quarter costs including the costs of the options (adding interest on the option prices to put everything on an end-of-quarter basis).
 :::
 ::: {#exr-nolabel}
@@ -1603,12 +1495,8 @@ Allow the user to input $S$, $r$, $\sigma$ and $q$.  Assume all of the options a
 ::: {#exr-nolabel}
  Using the result of the preceding exercise and Margrabe's formula, verify that calls and puts (having the same strike $K$ and maturity $T$) on the maximum of two risky asset prices satisfy the following put-call parity relation:
 \begin{multline*}
-\mathrm{e}^{-rT}K + \text{Value of call on max} 
-$$
-$$
-= \mathrm{e}^{-q_2T}S_2(0) + \text{Value of option to exchange asset 2 for asset 1} 
-$$
-$$+ \text{Value of put on max}\;.
+\mathrm{e}^{-rT}K + \text{Value of call on max} \\
+= \mathrm{e}^{-q_2T}S_2(0) + \text{Value of option to exchange asset 2 for asset 1} \\+ \text{Value of put on max}\;.
 \end{multline*}
 :::
 

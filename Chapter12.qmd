@@ -38,14 +38,13 @@ This implies that the value at date $t<t_i$ of receiving $\mathcal{R}_i\,\Delta 
 
 At date $t_i$ the spot rate $\mathcal{R}_i$ becomes known.  Between $t_i$ and $t_{i+1}$, the value of receiving $\mathcal{R}_i\,\Delta t$ dollars at date $t_{i+1}$ is the present value of this known cash flow, which is $\mathcal{R}_i\,\Delta t\,P(t, t_{i+1})$.  To summarize, the value of receiving $\mathcal{R}_i\,\Delta t$ dollars at date $t_{i+1}$ is
 $$
-S_i(t) = \begin{cases} P(t,t_i)-P(t,t_{i+1})  \text{if } t < t_{i}\; ,
+S_i(t) = \begin{cases} P(t,t_i)-P(t,t_{i+1}) & \text{if } t < t_{i}\; ,\\
+\mathcal{R}_i\,\Delta t\, P(t,t_{i+1}) & \text{if }  t_{i} \leq t \leq t_{i+1}\;. \end{cases}
 $$ {#eq-S_i}
 
-$$
-\mathcal{R}_i\,\Delta t\, P(t,t_{i+1})  \text{if }  t_{i} \leq t \leq t_{i+1}\;. \end{cases}
-$$
  
 Actually, we will view a caplet as an option on a forward contract and apply Black's formula.  To do this, we need to know the forward price of the asset with price $S_i(t)$ for a contract maturing at $t_{i+1}$.  We denote this forward price by $F_i(t)$.  The synthetic forward argument presented in @sec-s_merton shows that for any non-dividend paying asset with price $S$, the forward price for a contract maturing at $T$ is $S(t)/P(t,T)$.  So, $F_i$ is given by
+
 $$
 F_i(t) = \begin{cases} \frac{P(t,t_i)}{P(t,t_{i+1})}-1  \text{if } t < t_{i}\; ,
 $$
@@ -58,6 +57,7 @@ $$
 $$
 \mathcal{R}_i\,\Delta t  \text{if }  t_{i} \leq t \leq t_{i+1}\;, \end{cases}
 $$ {#eq-F_i}
+
 
 where $\mathcal{R}_i(t)$ is the forward rate defined in @eq-forward2.  Thus, the asset with price $S_i(t)$ pays the spot rate at date $t_i$ times the period length at date $t_{i+1}$, and the forward price of this asset is the forward rate times the period length.
 
@@ -93,12 +93,14 @@ P(0,t_{i+1})\bar{\mathcal{R}}\,\Delta t\,N(-d_2)- P(0,t_{i+1})\mathcal{R}_i(0)\,
 $$ {#eq-blackfloorlet100}
 
 where
+
 $$
 d_1 = \frac{\log \left(\mathcal{R}_i(0)/\bar{\mathcal{R}}\right)+\frac{1}{2}\sigma^2 t_i}{\sigma\sqrt{t_i}}\; ,
 $$
 $$
 d_2 = d_1 - \sigma\sqrt{t_i}\;.
 $$
+
 
 :::
 
@@ -121,12 +123,14 @@ A payer swaption has similarities to a cap.  The owner of a cap has the right to
 Consider a payer swaption with maturity date $T$ and swap rate $\bar{\mathcal{R}}$, where the underlying swap has payment dates $t_1,\ldots,t_N$ with the first reset date of the swap being $t_0 = t_1-\Delta t \geq T$.  We assume the notional principal of the swap is \$1.  Expression @eq-swapvalue100 in @sec-s_swaps gives the value at date $T$ to the payer in the swap as
 $$S(T)-Z(T)\; ,$$
 where we define
+
 $$
 S(t)=P(t,t_0)- P(t,t_N)\; ,
 $$
 $$
 Z(t) =  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)\;.
 $$ {#eq-fixedrateside}
+
 
 As explained in @sec-s_swaps, $S(t)$ is the value of the floating-rate payments in the swap and $Z(t)$ is the value of the fixed-rate payments.  The value of a payer swaption at its maturity~$T$ is therefore
 $$\max(0,S(T)-Z(T))\; .$$
@@ -155,6 +159,7 @@ $$
 $$ {#eq-margrabereceiverswaption100}
 
 where
+
 $$
 d_1 = \frac{\log\big(P(0,t_0)-P(0,t_N)\big) - \log\left(\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(0,t_i)\right) + \frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
 $$ {#eq-margrabepayerswaption100d1}
@@ -163,24 +168,24 @@ $$
 d_2 = d_1-\sigma\sqrt{T}.
 $$
 
+
 :::
 
 
 Put-call parity \index{put-call parity} for swaptions is as follows: fixed-rate cash flows plus the option to exchange for floating is equivalent to floating-rate cash flows plus the option to exchange for fixed.  In each side of this equivalence, one obtains, at the option maturity, the larger of the values of the fixed and floating-rate legs.  More formally,
-\begin{multline*} \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(T,t_i) + \max\left(0, \,P(T,t_0)- P(T,t_N)-  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(T,t_i)\right) 
-$$
-$$= P(T,t_0)- P(T,t_N) + \max\left(0,\,  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(T,t_i)-P(T,t_0)+ P(T,t_N)\right).
+\begin{multline*} \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(T,t_i) + \max\left(0, \,P(T,t_0)- P(T,t_N)-  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(T,t_i)\right) \\= P(T,t_0)- P(T,t_N) + \max\left(0,\,  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(T,t_i)-P(T,t_0)+ P(T,t_N)\right).
 \end{multline*}
 Therefore, at any date $t \leq T$,
-\begin{multline}
-\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)\; + \;\text{Value of Payer Swaption}
-$$ {#eq-swaptionparity}
 
-$$ = 
+$$
+\begin{multline}
+\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)\; + \;\text{Value of Payer Swaption}\\ = 
 P(t,t_0)- P(t,t_N) \;+ \;\text{Value of Receiver Swaption}.
 \end{multline}
+$$ {#eq-e_eicchorn}
 
-## A Comment on Consistency {#sec-s_consistency}
+
+## A Comment on Consistency
 It is well known that it is inconsistent to assume both that the forward rates $\mathcal{R}_i(t)$ and 
 the forward swap rate $\mathcal{R}(t)$ have constant volatilities.  We can obtain some intuition for this as follows.  Recall that
 $$\mathcal{R}_i(t)\,\Delta t = \frac{P(t,t_i)-P(t,t_{i+1})}{P(t,t_{i+1})}\; ,$$
@@ -195,15 +200,11 @@ $$w_i(t) = \frac{P(t,t_{i+1})}{\sum_{i=0}^{N-1}P(t,t_{i+1})}\; .$$
 Therefore, the forward swap rate is a weighted average of the forward rates.  A sum (or average) of lognormal variables is not lognormal, so if the forward rate has a constant volatility, then the forward swap rate will not (and vice versa), absent very peculiar assumptions about the weights $w_i(t)$.
 This means that one should not really simultaneously use Black's formula for valuing caps (or floors) and Margrabe's formula for valuing swaptions (though there is evidence that the error introduced by doing so may be small).  In the following chapters, we will consider other models that do not suffer from this type of inconsistency.
 
-## Caplets as Puts on Discount Bonds {#sec-s_caps2}
+\section{Caplets as Puts on Discount Bonds}
 Previously, we considered a caplet \index{caplet} as a call option on the forward rate and thus a bet on higher interest rates.  This is equivalent to a bet on lower bond prices, and we will now show that a caplet with payment date $t_{i+1}$ is equivalent to $1+\bar{\mathcal{R}}\,\Delta t$ put options on the $t_{i+1}$--maturity discount bond.  The put options mature at the reset date $t_i$ of the caplet and have strike equal to $1/(1+ \bar{\mathcal{R}}\,\Delta t)$.  To see this equivalence, note that the value of $1+\bar{\mathcal{R}}\,\Delta t$ such options at their maturity date~$t_i$~is
 \begin{multline*}
-\big[1+\bar{\mathcal{R}}\,\Delta t\big] \max\left(0,\frac{1}{1+ \bar{\mathcal{R}}\,\Delta t}-P(t_i,t_{i+1})\right) 
-$$
-$$ \begin{array}{l}
-= \max\big(0,\,1-\big[1+\bar{\mathcal{R}}\,\Delta t\big]P(t_i,t_{i+1})\big)
-$$
-$$
+\big[1+\bar{\mathcal{R}}\,\Delta t\big] \max\left(0,\frac{1}{1+ \bar{\mathcal{R}}\,\Delta t}-P(t_i,t_{i+1})\right) \\ \begin{array}{l}
+= \max\big(0,\,1-\big[1+\bar{\mathcal{R}}\,\Delta t\big]P(t_i,t_{i+1})\big)\\
 =P(t_i,t_{i+1})\max\left(0,\frac{1}{P(t_i,t_{i+1})}-1-\bar{\mathcal{R}}\,\Delta t\right)\;. \end{array}
 \end{multline*}
 Given that $1/P(t_i,t_{i+1}) = 1+\mathcal{R}_i\,\Delta t$, this equals
@@ -213,7 +214,7 @@ This is the value  at date $t_i$ of the caplet with payment date $t_{i+1}$ shown
 Similarly, a floorlet \index{floorlet} with payment date $t_{i+1}$ is equivalent to $1+\bar{\mathcal{R}}\,\Delta t$ call options on the $t_{i+1}$--maturity discount bond, with the call options maturing at date $t_i$ and having strike equal to $1/(1+ \bar{\mathcal{R}}\,\Delta t)$.  
 In the following chapters, we will describe models for valuing bond options.  These models will also be applied to price caps, as portfolios of put options on discount bonds, and to price floors, as portfolios of calls.  \index{discount bond option}
 
-## Swaptions as Options on Coupon Bonds {#sec-s_swaptionscouponbondoptions}
+\section{Swaptions as Options on Coupon Bonds}
 
 As noted previously, the value at date $T$ of the payer swaption, if exercised, is
 $$P(T,t_0)-P(T,t_N) - \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)\; .$$
@@ -223,7 +224,7 @@ $Z(T) = \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, the value of the fixe
 Typically, $t_0=T$ (the swap starts at the swaption maturity), in which case $P(T,t_0)=1$ and the payer (receiver) swaption is a standard put (call) option on the coupon bond, with exercise price equal to 1.  The models developed in later chapters for valuing options on coupon bonds can therefore also be applied to value swaptions. 
 
 
-## Calculations in VBA {#sec-s_fixedincomederivatives_matlab}
+\section{Calculations in VBA}
 
 ### Valuing Caps with Black's Formula
 
@@ -231,8 +232,7 @@ We will compute the value of each caplet with the \verb!Black_Call! function.
 In the \verb!Black_Call! function, we input the forward price for the caplet with reset date $t_i$ as
 $$
 F_i(0) = \mathcal{R}_i(0)\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
-$$ {#eq-capletforwardprice}
-
+$$
 as given in equations @eq-forward2 and @eq-F_i.  The exercise price of each caplet is $K=\bar{\mathcal{R}}\,\Delta t$.  We also need to input the discounting factor $P(0,t_{i+1})$.
 The discount bond prices $P(0,t_1)$, \ldots, $P(0, t_N)$ are input as a vector \verb!P!.  The discount bond price $P(0,t_0)$ is input as \verb!P0!.^[The reason for separating the bond maturing at $t_0$ is that vectors input as arrays from Excel worksheets are automatically indexed beginning with the index 1.  To keep the indexing consistent with our notation, we want the first element of the input vector to be $P(0,t_1)$, the second element to be $P(0,t_2)$, etc.  This consistency is convenient, though obviously not essential.]  We will assume the same volatility for each forward rate.
 
@@ -297,7 +297,7 @@ End Function
 ## Exercises
 
 
-::: {#exr-exercise121}
+::: {#exr-nolabel}
   Modify the function \verb!MarketModel_Cap! so that rather than taking \verb!P0! and the vector \verb!P! of discount bond prices as inputs, it looks up discount bond prices from a function \verb!DiscountBondPrice! that returns a discount bond price for any maturity.  For example, \verb!DiscountBondPrice! might be based on a cubic spline fit to the yield curve as discussed in @sec-s_yieldcurve.  To test the new function \verb!MarketModel_Cap!, you will need to create a test function \verb!DiscountBondPrice!.  For example, you could use the following, which corresponds to a rather steeply increasing yield curve, especially at the short end.
 \addcontentsline{lof}{figure}{DiscountBondPrice}
 \begin{verbatim}
@@ -321,7 +321,7 @@ End Function
 ::: {#exr-nolabel}
  Create a VBA function \verb!MarketModel_Receiver_Swaption! to value a receiver swaption, assuming the forward swap rate has a constant volatility.  Write the function so that it looks up discount bond prices from the \verb!DiscountBondPrice! function.
 :::
-::: {#exr-e_eicchorn}
+::: {#exr-nolabel}
   The following exercise is motivated by an example presented in one of my classes by David Eichhorn of NISA Investment Advisors.
 
 

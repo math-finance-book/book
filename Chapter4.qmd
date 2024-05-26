@@ -16,18 +16,12 @@ $$s^2=\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2\; ,$$
 and the best estimate of $\sigma$ is the square root
 $$s=\sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2}\; .$$
 To calculate $s^2$, notice that 
-$$
-\sum_{i=1}^{N} (x_i-\bar{x})^2 = \sum_{i=1}^{N} (x_i^2-2x_i\bar{x}+\bar{x}^2)
-$$
-$$
-=\sum_{i=1}^{N} x_i^2 -2\bar{x}\sum_{i=1}^{N} x_i + \sum_{i=1}^N \bar{x}^2
-$$
-$$
-=\sum_{i=1}^{N} x_i^2 -2\bar{x}(N\bar{x})+N\bar{x}^2
-$$
-$$
-=\sum_{i=1}^{N} x_i^2 -N\bar{x}^2\;.
-$$
+\begin{align*}
+\sum_{i=1}^{N} (x_i-\bar{x})^2 &= \sum_{i=1}^{N} (x_i^2-2x_i\bar{x}+\bar{x}^2)\\
+&=\sum_{i=1}^{N} x_i^2 -2\bar{x}\sum_{i=1}^{N} x_i + \sum_{i=1}^N \bar{x}^2\\
+&=\sum_{i=1}^{N} x_i^2 -2\bar{x}(N\bar{x})+N\bar{x}^2\\
+&=\sum_{i=1}^{N} x_i^2 -N\bar{x}^2\;.
+\end{align*}
 Therefore
 $$s=\sqrt{\frac{1}{N-1}\left(\sum_{i=1}^{N} x_i^2-N\bar{x}^2\right)}\; .$$
 
@@ -67,6 +61,7 @@ This means that we estimate $\mu$ as
 $$\hat{\mu} = \frac{\bar{y}}{\sqrt{\Delta t}} + \frac{1}{2}\hat{\sigma}^2 = \bar{r}+ \frac{1}{2}\hat{\sigma}^2\; .$$ 
 
 Let us digress for a moment to discuss the reliability of $\hat{\mu}$ as an estimate of $\mu$.  Notice that 
+
 $$
 \bar{r} 
 = \frac{\sum_{i=1}^N \log S(t_i)-\log S(t_{i-1})}{N\Delta t}
@@ -77,6 +72,7 @@ $$
 $$
  = \frac{\log S(T)-\log S(0)}{T}\;.
 $$ {#eq-volrbar}
+
 
 Therefore the first component $\bar{r}$ of the estimate of $\mu$ depends only on the total change in $S$ over the time period.  Hence, the reliability of this component cannot depend on how frequently we observe $S$ within the time period $[0,T]$.  The standard deviation of $\bar{r}$ in repeated samples
 is the standard deviation of $[\log S(T)-\log S(0)]/T$, which is $\sigma/\sqrt{T}$.  This is likely to be quite large.  For example, with $\sigma =0.3$ and ten years of data ($T=10$), the standard deviation of $\bar{r}$ is 9.5\%, which means that a 95\% confidence interval will be a band of roughly 38\%.  Given that $\mu$ itself should be of the order of magnitude of 10\%, such a wide confidence interval is useless for all practical purposes.
@@ -91,12 +87,14 @@ $$\bar{y} =  \frac{\sqrt{\Delta t}}{T}[\log S(T)-\log S(0)]\; .$$
 Hence, the second term in @eq-estimator_sig2 is
 $$ \frac{N}{N-1}\left(\frac{\Delta t}{T^2}\right)[\log S(T)-\log S(0)]^2\; .$$
 If we observe the stock price sufficiently frequently, so that $\Delta t$ is very small, this term will be negligible.  In this circumstance,  $\hat{\sigma}^2$ is approximately
+
 $$
 \frac{1}{N-1}\sum_{i=1}^N y_i^2 = \frac{1}{N-1}\sum_{i=1}^N \frac{[\log S(t_i)-\log S(t_{i-1})]^2}{\Delta t}
 $$
 $$
 = \frac{N}{N-1}\times \frac{1}{T}\times \sum_{i=1}^N [\log S(t_i)-\log S(t_{i-1})]^2 \;.
 $$ {#eq-estimator_sig2_3}
+
 
 If we observe $S$ more and more frequently, letting $\Delta t \rightarrow 0$ and $N \rightarrow \infty$, the sum 
 $$\sum_{i=1}^N [\log S(t_i)-\log S(t_{i-1})]^2$$
@@ -117,12 +115,10 @@ $$ {#eq-sig_estimator4}
 
 for any constant $0<\lambda<1$.
 Here, $\hat{\sigma}^2_{i+1}$ denotes the estimate of the volatility from date $t_{i}$ to date $t_{i+1}$.  The estimate @eq-sig_estimator4 is a weighted average of the estimate $\hat{\sigma}^2_{i}$ for the previous time period and the most recently observed squared change $y_{i}^2$.  Following the same procedure, the next estimate will be
-$$
-\hat{\sigma}^2_{i+2} = (1-\lambda) y_{i+1}^2 + \lambda\hat{\sigma}^2_{i+1}
-$$
-$$
-= (1-\lambda) y_{i+1}^2 + \lambda(1-\lambda)  y_{i}^2 + \lambda^2\hat{\sigma}^2_{i}\;.
-$$
+\begin{align*}
+\hat{\sigma}^2_{i+2}& = (1-\lambda) y_{i+1}^2 + \lambda\hat{\sigma}^2_{i+1}\\
+&= (1-\lambda) y_{i+1}^2 + \lambda(1-\lambda)  y_{i}^2 + \lambda^2\hat{\sigma}^2_{i}\;.
+\end{align*}
 Likewise, the estimate at the following date will be
 $$\hat{\sigma}^2_{i+3} = (1-\lambda) y_{i+2}^2 +\lambda(1-\lambda) y_{i+1}^2 + \lambda^2(1-\lambda)^2  y_{i}^2 +\lambda^{3}\hat{\sigma}^2_{i}\; .$$
 This demonstrates the declining importance of the squared deviation $y_{i}^2$ for future estimates.  At each date, $y_{i}^2$ enters with a weight that is lower by a factor of $\lambda$, compared to the previous date. 
@@ -159,24 +155,18 @@ where $\lambda=c/(b+c)$,
 $\kappa = 1-b-c$, and $\theta=a/(1-b-c)$.  Hence, $\sigma_{i+1}^2$ is a weighted average with weights $\kappa$ and $1-\kappa$, of two parts, one being the constant $\theta$ and the other being itself a weighted average of $y_{i}^2$ and $\sigma^2_{i}$.  Whatever the variance might be at time $t_i$, the variance of $y_j$ at any date $t_j$ far into the future, computed without knowing the intervening $y_{i+1}, y_{i+2},\ldots$, will be approximately the constant $\theta$.  The constant $\theta$ is called the unconditional variance, \index{unconditional variance} whereas $\sigma_{i}^2$ is the conditional variance of $y_i$.  \index{conditional variance}
 
 To understand the unconditional variance, it is useful to consider the variance forecasting equation.  Specifically, we can calculate $E_{t_i} \left[\sigma_{i+n}^2\right]$, which is the estimate made at date $t_i$ of the variance of $y_{i+n}$; i.e, we estimate the variance without having observed $y_{i+1},\ldots,y_{i+n-1}$.  Note that by definition $E_{t_{i}}[y_{i+1}^2]=\sigma_{i+1}^2$, so @eq-garch10 implies
-$$
-E_{t_{i}}\left[\sigma_{i+2}^2\right] = \kappa\theta + (1-\kappa)\left[  (1-\lambda) E_{t_{i}}[y_{i+1}^2] + \lambda\sigma^2_{i+1}\right] 
-$$
-$$
-= \kappa\theta + (1-\kappa)\sigma^2_{i+1}\; .
-$$
+\begin{align*}
+E_{t_{i}}\left[\sigma_{i+2}^2\right] &= \kappa\theta + (1-\kappa)\left[  (1-\lambda) E_{t_{i}}[y_{i+1}^2] + \lambda\sigma^2_{i+1}\right] \\
+&= \kappa\theta + (1-\kappa)\sigma^2_{i+1}\; .
+\end{align*}
 Likewise,
 $$E_{t_{i+1}}\left[\sigma_{i+3}^2\right] = \kappa\theta + (1-\kappa)\sigma^2_{i+2}\; ,$$
 and taking the expectation at date $t_i$ of both sides of this yields
-$$
-E_{t_{i}}\left[\sigma_{i+3}^2\right] = E_{t_{i}}\left[E_{t_{i+1}}\left[\sigma_{i+3}^2\right]\right] =\kappa\theta + (1-\kappa)E_{t_{i}}\left[\sigma_{i+2}^2\right]
-$$
-$$
-=\kappa\theta + (1-\kappa)\left[\kappa\theta + (1-\kappa)\sigma^2_{i+1}\right]
-$$
-$$
-=\kappa\theta[1+(1-\kappa)] + (1-\kappa)^2\sigma^2_{i+1}\;.
-$$
+\begin{align*}
+E_{t_{i}}\left[\sigma_{i+3}^2\right] = E_{t_{i}}\left[E_{t_{i+1}}\left[\sigma_{i+3}^2\right]\right] &=\kappa\theta + (1-\kappa)E_{t_{i}}\left[\sigma_{i+2}^2\right]\\
+&=\kappa\theta + (1-\kappa)\left[\kappa\theta + (1-\kappa)\sigma^2_{i+1}\right]\\
+&=\kappa\theta[1+(1-\kappa)] + (1-\kappa)^2\sigma^2_{i+1}\;.
+\end{align*}
 This generalizes to
 $$E_{t_{i}}\left[\sigma_{i+n}^2\right] = \kappa\theta\left[1+(1-\kappa)+ \cdots (1-\kappa)^{n-2}\right] + (1-\kappa)^{n-1}\sigma^2_{i+1}\; .$$
 Thus, there is decay at rate $\kappa$ in the importance of the current volatility $\sigma^2_{i+1}$ for forecasting the future volatility.  Furthermore, as $n\rightarrow \infty$, the geometric series
@@ -236,6 +226,7 @@ Heston and Nandi [@HN] provide a fast method for computing these probabilities i
 
 The volatility is stochastic (random) in a GARCH model, but it is determined by the changes in the stock price.  In this section, in contrast, we will consider models in which the volatility depends on a second Brownian motion.  \index{stochastic volatility} The most popular model of this type is the model of Heston [@Heston].  \index{Heston model} In this model, we have, as usual, 
 
+
 $$
 \mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B_s\;,
 $$ {#eq-heston1}
@@ -246,6 +237,7 @@ $$$, where}
 dv(t) = \kappa \big[\theta-v(t)\big]\,\mathrm{d} t + \gamma \sqrt{v(t)}\,\mathrm{d} B_v\;,
 $$ {#eq-heston2}
 
+
 where $B_v$ is a Brownian motion under the risk-neutral measure having a constant correlation $\rho$ with the Brownian motion $B_s$.  In this equation, $\kappa$, $\theta$ and~$\gamma$ are positive constants.  Given the empirical fact that negative return shocks have a bigger impact on future volatility than do positive shocks, one would expect the correlation $\rho$ to be negative.
 
 The term $\kappa (\theta-v)$ will be positive when $v<\theta$ and negative when $v>\theta$ and hence $\sigma^2=v$ will tend to drift towards $\theta$, which, as in the GARCH model, is the long-run or unconditional mean of $\sigma^2$.  Thus, the volatility is said to mean revert. \index{mean reversion} The rate at which it drifts towards $\theta$ is obviously determined by the magnitude of $\kappa$, also as in the GARCH model.  
@@ -254,6 +246,7 @@ The specification @eq-heston2 implies that the volatility of $v$ approaches zero
 
 We could discretize @eq-heston12combined as:
 
+
 $$
 \log S(t_{i+1}) = \log S(t_i) + \left(r-q-\frac{1}{2}\sigma(t_i)^2\right)\,\Delta t + \sqrt{v(t_i)}\,\Delta B_s,
 $$ {#eq-heston3}
@@ -261,6 +254,7 @@ $$ {#eq-heston3}
 $$
 v(t_{i+1}) = v(t_i) + \kappa \big[\theta-v(t_i)\big]\,\Delta t + \gamma \sqrt{v(t_i)}\,\Delta B_v\;.
 $$ {#eq-heston4}
+
 
 
 However, even though in the continuous-time model @eq-heston12combined we always have $v(t) \geq 0$ and hence can define $\sigma(t)=\sqrt{v(t)}$, there is no guarantee that $v(t_{i+1})$ defined by @eq-heston4 will be nonnegative.  A simple remedy is to define $v(t_{i+1})$ as the larger of zero and the right-hand side of @eq-heston4; thus, we will simulate the Heston model as @eq-heston3 and^[There are better (but more complicated) ways to simulate the Heston model.  An excellent discussion of ways to simulate the volatility process can be found in Glasserman [@Glasserman].  Broadie and Kaya [@broadiekaya] present a method for simulating from the exact distribution of the asset price in the Heston model and related models.]
