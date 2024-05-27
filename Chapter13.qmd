@@ -7,7 +7,7 @@ We will begin by describing the basic Vasicek model.  The extended Vasicek model
 
 ## The Short Rate and Discount Bond Prices {#sec-s_vasicek1}
 
-An assumption of the Vasicek model and related models discussed in the next chapter is that there is an instantaneously risk-free rate.  Letting $r(s)$ denote this rate at date $s$, the meaning of this assumption, as discussed in @sec-s_continuouscompounding, is that there is an asset with price process
+An assumption of the Vasicek model and related models discussed in the next chapter is that there is an instantaneously risk-free rate.  Letting $r(s)$ denote this rate at date $s$, the meaning of this assumption, as discussed in @sec-c_basics, is that there is an asset with price process
 $$R(t) = \exp\left(\int_0^t r(s)\,\mathrm{d} s\right)\; .$$
 The instantaneous rate of return on this asset is
 $$\frac{\mathrm{d} R(t)}{R(t)} = r(t)\,\mathrm{d} t\; .$$
@@ -145,15 +145,15 @@ r(t_i) - r(t_{i-1}) = \left(1- \mathrm{e}^{-\!\kappa^* \Delta t}\right)\theta^* 
 \int_{t_{i-1}}^{t_i} \mathrm{e}^{-\!\kappa^* (t_i-a)} \,\mathrm{d} B^*(a)\; .
 \end{multline*}
 We can write this as
-$$r(t_i) - r(t_{i-1}) = a + b\,r(t_{i-1}) + \mathrm{var}epsilon$$
-where $\mathrm{var}epsilon$ is a normally distributed random variable, independent of $r(t_{i-1})$, with mean zero and variance
+$$r(t_i) - r(t_{i-1}) = a + b\,r(t_{i-1}) + \varepsilon$$
+where $\varepsilon$ is a normally distributed random variable, independent of $r(t_{i-1})$, with mean zero and variance
 $$\sigma^{*2} 
 \int_{t_{i-1}}^{t_i} \mathrm{e}^{-2\kappa^* (t_i-a)}\,\mathrm{d} a = \frac{\sigma^{*2}\left(1-\mathrm{e}^{-2\kappa^*\Delta t}\right)}{2\kappa^*}\; .$$
-We can estimate $a$, $b$ and the variance of $\mathrm{var}epsilon$ by linear regression and then obtain $\kappa^*$, $\theta^*$ and $\sigma^*$ from the equations
+We can estimate $a$, $b$ and the variance of $\varepsilon$ by linear regression and then obtain $\kappa^*$, $\theta^*$ and $\sigma^*$ from the equations
 \begin{align*}
 a& = \left(1- \mathrm{e}^{-\!\kappa^* \Delta t}\right)\theta^*\; ,\\
 b&= -\left(1- \mathrm{e}^{-\!\kappa^* \Delta t}\right)\; ,\\
-\text{var}(\mathrm{var}epsilon) &= \frac{\sigma^{*2}\left(1-\mathrm{e}^{-2\kappa^*\Delta t}\right)}{2\kappa^*}\;.
+\text{var}(\varepsilon) &= \frac{\sigma^{*2}\left(1-\mathrm{e}^{-2\kappa^*\Delta t}\right)}{2\kappa^*}\;.
 \end{align*}
 
 ## Hedging in the Vasicek Model {#sec-s_vasicekhedging}
@@ -436,7 +436,7 @@ The volatility $\sigma_{\text{avg}}$ is defined as $\sigma_{\text{avg}} = (u-T)\
 
 :::
 
-\mathrm{n}oindent As our notation indicates, the discount bond prices  appearing in these formulas  should be taken to be the \emph{market} prices of the bonds at the date the options are valued, rather than the \emph{model} prices.  Of course, if we have fit the model to the market prices of discount bonds, there is no distinction.    Using model prices that are different from market prices would be similar to inputting a stock price in the Black-Scholes formula obtained from a discounted-cash-flow analysis rather than using the market price of the stock.  This is not something that one would normally do.  
+\noindent As our notation indicates, the discount bond prices  appearing in these formulas  should be taken to be the \emph{market} prices of the bonds at the date the options are valued, rather than the \emph{model} prices.  Of course, if we have fit the model to the market prices of discount bonds, there is no distinction.    Using model prices that are different from market prices would be similar to inputting a stock price in the Black-Scholes formula obtained from a discounted-cash-flow analysis rather than using the market price of the stock.  This is not something that one would normally do.  
 
 Because the discount bond volatilities are the same in the continuous-time Ho-Lee model as in the basic Vasicek model with $\kappa=0$ and are the same in the Hull-White model as in the basic Vasicek model with $\kappa>0$, the formulas for the values of discount bond options are the same in the corresponding models.  These extensions of the basic Vasicek model permit one to match model bond prices to market bond prices, but they have no effect on the values of discount bond options, provided we remember to use the market prices in  @eq-vasicekdiscountcallput.
 
@@ -510,18 +510,21 @@ $$
 \begin{multline}
 \sum_{i=1}^N c\exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s-a(t_i-T)-b(t_i-T)r^*\right) \\+ \exp\left(-\int_T^{t_N} \phi(s)\,\mathrm{d} s-a(t_N-T)-b(t_N-T)r^*\right) = K\;. 
 \end{multline}
-$$ {#eq-e_holeeimplied}
+$$ {#eq-swaptions102}
 
 According to the model, if $\hat{r}(T)$ is lower than $r^*$, then the bond prices will be higher and the call option will be in the money; conversely, if $\hat{r}(T)$ is higher than $r^*$, then the bond prices will be lower and the call option will be out of the money.  
 
 For $i=1,\ldots,N$, define $K_i$ to be the model value of the discount bond price $P(T,t_i)$ when $\hat{r}(T)=r^*$.  In other words, define $K_i$ as 
 $$
 K_i = \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s-a(t_i-T)-b(t_i-T)r^*\right)\;.
-$$
+$$ {#eq-swaptions103}
+
 Note that equations @eq-swaptions102 and @eq-swaptions103 imply
 $$
 \sum_{i=1}^N cK_i + K_N = K\; .
-$$
+$$ {#eq-swaption100000}
+
+
 Consider for each $i$ ($i=1,\ldots,N$) a hypothetical call option maturing at~$T$ with the underlying for the option being the discount bond maturing at $t_i$.  Let $K_i$ be the exercise price of option $i$.  According to the model, the value of the underlying at date~$T$ for option~$i$ will be 
 $$P(T,t_i) = \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s-a(t_i-T)-b(t_i-T)\hat{r}(T)\right)\; .$$
 By the definition of $K_i$, therefore, option~$i$ will be in the money if and only if 
@@ -539,7 +542,8 @@ The same type of reasoning also allows us to value put options on coupon bonds.
 The only issue in implementing this method is that we need to compute the exercise prices $K_i$.  Of course, we define them by  @eq-swaptions103, given $r^*$.  To do this requires that we calculate the factor
 $$
 \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s\right),
-$$
+$$ {#eq-vasicekfactor100}
+
 by fitting the model to market bond prices, as discussed in @sec-s_vasicek_fitting.  We will explain this more explicitly in the next paragraph.  In order to apply equation~@eq-swaptions103, we need to compute $r^*$, which is given by equation~@eq-swaptions102.  We can solve~@eq-swaptions102 for $r^*$ by bisection or some other root-finding method.  Again, we need to know the factors @eq-vasicekfactor100
  in order to solve this equation.
 
@@ -557,10 +561,12 @@ If we divide the top equation by the bottom, then on the left-hand side we obtai
 which is the number we want.  Hence, we obtain by dividing the right-hand sides of the above equations:
 $$
 \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s\right) = \exp\left\{a(t_i)-a(T) + [b(t_i)-b(T)]r(0)\right\}\frac{P^{\text{mkt}}(0,t_i)}{P^{\text{mkt}}(0,T)}\;.
-$$
+$$ {#eq-swaptions104}
 
 
-## Captions and Floortions
+
+
+## Captions and Floortions {#sec-s_captions}
 
 In this section, we will consider options on caps and floors, which are sometimes called captions and floortions \index{caption} \index{floortion}respectively.  For specificity, we will consider a call option on a cap.
 A cap is a portfolio of caplets, and each caplet is a call option on a spot rate.  Therefore a call option on a cap is a call option on a portfolio of calls on spot rates and hence is a bet on (or insurance against) high spot rates.  
@@ -574,23 +580,27 @@ Consider the caplet with payment date $t_{i+1}$.  According to the valuation for
 
 $$
 \text{Caplet Value at Date $T$} = P(T,t_{i})N(-d_2) - (1+\bar{R}\Delta t)P(T,t_{i+1})N(-d_1)\;,
-$$
+$$ {#eq-captions1}
+
 where
 
 $$
 d_1 = \frac{\log\left((1+\bar{R}\Delta t)P(T,t_{i+1})\right) - \log P(T,t_{i})+\frac{1}{2}\sigma_{\text{avg}}^2(t_{i}-T)}{
 \sigma_{\text{avg}}\sqrt{t_{i}-T}}\;,
-$$
+$$ {#eq-captions2}
+
 $$
 d_2 = d_1 - \sigma_{\text{avg}}\sqrt{t_{i}-T}\;.
-$$
+$$ {#eq-captions3}
+
+
 
 Here $\sigma_{\text{avg}}$ denotes the average volatility of the forward price of the discount bond between the option valuation date $T$ and the option maturity date $t_{i}$.  This shows that the values of the caplets and hence the value of the cap depend on the discount bond prices at date~$T$, which, according to the model, depend on $\hat{r}(T)$.  One can use bisection or some other root-finding method again to find the value of $\hat{r}(T)$ such that, according to the model, the value of the cap will be $K$ at date~$T$.  Substituting this value of $\hat{r}(T)$ into the bond pricing formula @eq-extendedvasicekbondcombined and then substituting the bond prices $P(T,t_{i})$ and $P(T,t_{i+1})$ into @eq-captions13combined, we define $K_i$  as the caplet value in  @eq-captions1.
 
 
 
 
-\section{Yields and Yield Volatilities}
+## Yields and Yield Volatilities {#sec-s_HW_yields}
 
 We are denoting the price at date $t$ of a discount bond maturing at $u$, with remaining time to maturity of $\tau = u-t$, as $P(t,u)$.  However, as in @sec-s_yieldcurve, we will denote the corresponding yield as $y(t,\tau)$.  The yield is defined as \index{discount bond yield}
 $$y(t,\tau) = \frac{-\log P(t,u)}{\tau}\; .$$
@@ -608,38 +618,46 @@ In the continuous-time Ho-Lee model, this is $\sigma$ and in the  Hull-White mod
 
 
 
-\section{The General Hull-White Model}
+## The General Hull-White Model {#sec-s_generalHW}
 
 We will briefly discuss the general Hull-White model, in which
 $$
 \mathrm{d} r(t) = \theta(t)\,\mathrm{d} t -\kappa(t)r(t)\,\mathrm{d} t + \sigma(t)\,\mathrm{d} B(t)\;.
-$$
+$$ {#eq-hw600}
+
 By differentiating the following, one can see that the short rate $r$ in the general Hull-White model satisfies
 
 $$
 r(s) = \phi(s) + \hat{r}(s)\;,
-$$
+$$ {#eq-hw601}
+
 where
 $$
 \phi(s) =  \int_0^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\theta(y)\,\mathrm{d} y\;.
-$$
+$$ {#eq-phi101}
+
 and
 $$
 \hat{r}(s) = \exp\left(-\int_0^s\kappa(x)\,\mathrm{d} x\right)r(0)+\int_0^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\sigma(y)\,\mathrm{d} B(y)\;.
-$$
+$$ {#eq-rhat101}
+
+
 As before, discount bond prices are
 $$
 P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)E^R_t \left[ \exp\left(-\int_t^u \hat{r}(s)\,\mathrm{d} s\right)\right]\;.
-$$
+$$ {#eq-hw602}
+
 Moreover,  @eq-rhat101 implies, for $s>t$, 
 %$$
-$$\hat{r}(s) = \exp\left(-\int_t^s\kappa(x)\,\mathrm{d} x\right)\,\hat{r}(t)+\int_t^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\sigma(y)\,\mathrm{d} B(y)\;.
+$$ {#eq-rhat1001}
+\hat{r}(s) = \exp\left(-\int_t^s\kappa(x)\,\mathrm{d} x\right)\,\hat{r}(t)+\int_t^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\sigma(y)\,\mathrm{d} B(y)\;.
 $$
 Using this fact, the expectation in @eq-hw602 can be calculated as before as the expectation of the exponential of a normally distributed random variable, leading to the result
 
 $$
 P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s-a(t,u)-b(t,u)\hat{r}(t)\right)\;,
-$$
+$$ {#eq-hw603}
+
 where
 
 $$
@@ -662,14 +680,17 @@ $$
 $$
 $$
 =\exp\left(\int_0^t\kappa(x)\,\mathrm{d} x\right)\big(b(0,u)-b(0,t)\big)\;.
-$$
+$$ {#eq-hw2btu}
+
+
 Therefore, we can recover the functions $b(t,u)$ and  $a(t,u)$ from the functions $b(0,t)$, $\exp\left(\int_0^t\kappa(x)\,\mathrm{d} x\right)$, and $\sigma(t)$.
 
 \vfil\eject
 The returns of discount bonds satisfy
 $$
 \frac{\mathrm{d} P(t,u)}{P(t,u)} = r(t)\,\mathrm{d} t - \sigma(t) b(t,u)\,\mathrm{d} B(t)\;.
-$$
+$$ {#eq-extendedvasicekbondreturn2}
+
 Hence, hedge ratios, which depend on relative volatilities, are  determined by the function~$b$ as before.  Given the functions $\kappa$ and $\sigma$, the model can be calibrated to market discount bond prices by choosing the function $\phi$ exactly as discussed in @sec-s_vasicek_fitting.  
 
 The pricing of fixed-income derivatives discussed in @sec-{s_vasicek_discounts--\ref{s_captions} was based on  forward prices of discount bonds having non-random volatilities.  This is true also in the general Hull-White model.  Given dates $t<T<u$, the forward price at date $t$ of the discount bond maturing at date $u$, when the forward contract matures at $T$, is, as before, $F(t)=P(t,u)/P(t,T)$.  In the general Hull-White model, we have
@@ -680,7 +701,7 @@ The pricing of fixed-income derivatives discussed in @sec-{s_vasicek_discounts--
 \end{align*}
 Thus, the average volatility, from date 0 to date T, is 
 $$\sigma_{\text{avg}} = \big[b(0,u)-b(0,T)\big]\sqrt{\frac{1}{T}\int_0^T \sigma(t)^2\exp\left(2\int_0^t\kappa(x)\,\mathrm{d} x\right)\,\mathrm{d} t}\; .$$
-With this substitution,  the pricing of fixed-income derivatives is the same as in the basic Hull-White model discussed in @sec-{s_vasicek_discounts--\ref{s_captions}.
+With this substitution,  the pricing of fixed-income derivatives is the same as in the basic Hull-White model discussed in @sec-s_vasicek_discounts--@sec-s_captions.
 
 
 The advantage of the general Hull-White model is that it allows more flexibility in fitting the model to current market conditions.  This may (though there is certainly no guarantee) provide better pricing and hedging of interest-rate derivatives.  Hull and White suggest choosing the volatility function $\sigma$ to fit anticipated future volatilities of the short rate and choosing the mean-reversion function $\kappa$ to fit market cap/floor prices or yield volatilities.  
@@ -726,7 +747,7 @@ $$ \big[b(0,t_{i+1})-b(0,t_i)\big]\sqrt{\frac{1}{t_i}\int_0^{t_i} \sigma(t)^2\ex
 Notice that everything in this expression, except $b(0,t_{i+1})$, is
 determined by $\kappa_1,\ldots,\kappa_i$ and the $\sigma$ function.  Therefore, we can select the number $b(0,t_{i+1})$ to match the model volatility to the implied volatility for this caplet.  This defines $\kappa_{i+1}$ from @eq-generalhwrecursive.  Continuing in this way, we can successively define $\kappa_1, \kappa_2, \ldots.$
 
-\section{Calculations in VBA}
+## Calculations in VBA
 
 ### Discount Bond Options
 Rather than calculating $\sigma_{\text{avg}}$ from the volatility $\sigma$ of the short rate and the constant $\kappa$ or function $\kappa(t)$, we will treat $\sigma_{\text{avg}}$ as an input into the option pricing formulas.  This is necessary if one wants to use (i.e., invert) the following functions to imply $\sigma_{\text{avg}}$ from market prices and then used the implied $\sigma_{\text{avg}}$ to calibrate the model.
@@ -767,7 +788,8 @@ End Function
  We input the first reset date $t_0$, the time between payments $\Delta t$, the total number of payments $N$ and the cap rate $\bar{\mathcal{R}}$.  As in @sec-s_fixedincomederivatives_matlab, we input the price of the discount bond maturing at $t_0$ as \verb!P0!, and we input a vector \verb!P! containing the $N$ discount bond prices $P(0,t_1),\ldots,P(0,t_{N})$.  We will allow different volatilities for the different caplets.  The input \verb!sigavg! should have elements 1 through $N$, with \verb!sigavg(i)! being the average volatility of the forward price of the discount bond maturing at $t_i$, where the forward contract matures at $t_{i-1}$, and the average volatility is computed from date~0 to date $t_{i-1}$, according to the formulas in @sec-s_vasicek_discounts.  Specifically, \verb!sigavg(i)! should be $\sigma\,\Delta t$ for the continuous-time Ho-Lee model, and \verb!sigavg(i)! should be
  $$
  \frac{\sigma \mathrm{e}^{-\kappa t_{i-1}}\left(1- \mathrm{e}^{-\kappa \,\Delta t}\right) }{\kappa}\sqrt{\frac{\mathrm{e}^{2\kappa t_{i-1}}-1}{2\kappa t_{i-1}}}
- $$
+ $$ {#eq-vasicekvbacap}
+
  for the Hull-White model.  
 
 \addcontentsline{lof}{figure}{Vasicek Cap}
@@ -954,7 +976,7 @@ End Function
 ::: {#exr-nolabel}
  Create a function \verb!ContinuousHoLee_Cap! by modifying the function \verb!Vasicek_Cap! so that the average volatilities are computed as $\sigma\Delta t$.  In other words, input $\sigma$ rather than the vector $\sigma_{\text{avg}}$.  Write the function so that it looks up discount bond prices as in the previous exercise.
 :::
-::: {#exr-nolabel}
+::: {#exr-e_holeeimplied}
  Create a function \verb!ContinuousHoLee_ImpliedVol! using bisection that takes the same inputs as the previous function, except taking a cap price as input rather than $\sigma$, and which returns the volatility $\sigma$ that is consistent with the cap price.
 :::
 ::: {#exr-nolabel}
@@ -979,5 +1001,5 @@ End Function
  Create a VBA function \verb!HW_Receiver_Swaption! to value a receiver swaption in the basic Hull-White Model, looking up discount bond prices as in previous exercises.
 :::
 ::: {#exr-nolabel}
- Repeat Prob.~\ref{e_eicchorn}, assuming the basic Hull-White Model, for various values of $\sigma$ and $\kappa$.
+ Repeat @exr-e_eicchorn, assuming the basic Hull-White Model, for various values of $\sigma$ and $\kappa$.
 :::

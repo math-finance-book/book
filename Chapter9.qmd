@@ -7,10 +7,10 @@ This chapter is a continuation of @sec-c_introcomputation, introducing somewhat 
 A derivative is said to be path dependent \index{path-dependent option} if its value depends on the path of the underlying asset price rather than just on the  price at the time of exercise.  Examples of path-dependent options are lookbacks, barrier options, and Asians.
 To value a path-dependent option by Monte Carlo, we need to simulate an approximate path of the stock price.  We do this by considering time periods of length $\Delta t = T/N$ for some integer $N$.  Under the risk-neutral measure, the logarithm of the stock price changes over such a time period by
 $$
-\Delta \log S = \mathrm{n}u\,\Delta t + \sigma\sqrt{\Delta t}\,z\;,
+\Delta \log S = \nu\,\Delta t + \sigma\sqrt{\Delta t}\,z\;,
 $$ {#eq-pathdependent}
 
-where $\mathrm{n}u = r-q-\sigma^2/2$ and $z$ is a standard normal.  Given that there are~$N$ time periods of length $\Delta t$, we need to generate $N$ standard normals to generate a stock price path.  If we generate $M$ paths to obtain a sample of $M$ option values, then we will need to generate $MN$ standard normals.  
+where $\nu = r-q-\sigma^2/2$ and $z$ is a standard normal.  Given that there are~$N$ time periods of length $\Delta t$, we need to generate $N$ standard normals to generate a stock price path.  If we generate $M$ paths to obtain a sample of $M$ option values, then we will need to generate $MN$ standard normals.  
 
 
 Consider for example a floating-strike lookback call.  \index{lookback option} The formula for this option given in @sec-s_lookbacks assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price.  In practice, the minimum will be computed by recording the price at a discrete number of dates.  We can value the discretely sampled lookback using Monte-Carlo by choosing $\Delta t$ to be the interval of time (e.g., a day or week) at which the price is recorded.  For example, if the contract calls for weekly observation, we will attain maximum precision by setting $N$ to be the number of weeks before the option matures.  
@@ -29,29 +29,29 @@ Given the period length $\Delta t$, we want to choose the up and down parameters
 As discussed in @sec-s_binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
 Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s_binomialparameters,
 \begin{align*}
-\log u_i&=\sqrt{\sigma_i^2\Delta t + \mathrm{n}u_i^2(\Delta t)^2}\; ,\\
-p_i &= \frac{1}{2}+\frac{\mathrm{n}u_i\Delta t}{2\log u_i}\;.
+\log u_i&=\sqrt{\sigma_i^2\Delta t + \nu_i^2(\Delta t)^2}\; ,\\
+p_i &= \frac{1}{2}+\frac{\nu_i\Delta t}{2\log u_i}\;.
 \end{align*}
-where $\mathrm{n}u_i=r-q_i-\sigma_i^2/2$.
+where $\nu_i=r-q_i-\sigma_i^2/2$.
 In terms of the notation $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$, the probability of the up state for stock 1 is $p_1=p_{uu}+p_{ud}$ and the probability of the up state for stock 2 is $p_2=p_{uu}+p_{du}$.  Therefore,
 
 
 $$
-p_{uu}+p_{ud} = \frac{1}{2}+\frac{\mathrm{n}u_1\Delta t}{2\log u_1}\;,
+p_{uu}+p_{ud} = \frac{1}{2}+\frac{\nu_1\Delta t}{2\log u_1}\;,
 $$ {#eq-prob1}
 
 $$
-p_{uu}+p_{du} = \frac{1}{2}+\frac{\mathrm{n}u_2\Delta t}{2\log u_2}\;.
+p_{uu}+p_{du} = \frac{1}{2}+\frac{\nu_2\Delta t}{2\log u_2}\;.
 $$ {#eq-prob2}
 
 
 
 In the continuous time model, over a discrete time period $\Delta t$, the covariance of $\Delta \log S_1$ and $\Delta \log S_2$ is $\rho\sigma_1\sigma_2\Delta t$.  In the binomial model, with $d_i=1/u_i$, we have
-$$E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\; .$$  Given that $E[\Delta\log S_i] =\mathrm{n}u_i\Delta t$, this implies a covariance of
-$$(p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \mathrm{n}u_1\mathrm{n}u_2(\Delta t)^2\; .$$
+$$E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\; .$$  Given that $E[\Delta\log S_i] =\nu_i\Delta t$, this implies a covariance of
+$$(p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \nu_1\nu_2(\Delta t)^2\; .$$
 Matching the covariance in the binomial model to the covariance in the continuous-time model therefore implies
 $$
-p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \mathrm{n}u_1\mathrm{n}u_2(\Delta t)^2}{\log u_1\log u_2}\;.
+p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \nu_1\nu_2(\Delta t)^2}{\log u_1\log u_2}\;.
 $$ {#eq-prob3}
 
 
@@ -78,20 +78,20 @@ $$Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\; .$$
 The random variable $Z$ is also a standard normal, and the correlation between $Z_1$ and $Z$ is~$\rho$.  
 Thus, we can simulate the changes in the logarithms of two correlated asset prices as
 \begin{align*}
-\Delta \log S_1 &= \mathrm{n}u_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,\\
-\Delta \log S_2 &= \mathrm{n}u_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
+\Delta \log S_1 &= \nu_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,\\
+\Delta \log S_2 &= \nu_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
 \end{align*}
-where $\mathrm{n}u_i = r-q_1-\sigma_i^2/2$ and the $Z_i$ are independent standard normals.  
+where $\nu_i = r-q_1-\sigma_i^2/2$ and the $Z_i$ are independent standard normals.  
 
 To generalize this idea to more than two assets, we introduce some additional notation.  The simulation for the case of two assets can be written as
 
 
 $$
-\Delta \log S_1 = \mathrm{n}u_1\Delta t + a_{11}\sqrt{\Delta t}Z_1 + a_{12}\sqrt{\Delta t}Z_2\;,
+\Delta \log S_1 = \nu_1\Delta t + a_{11}\sqrt{\Delta t}Z_1 + a_{12}\sqrt{\Delta t}Z_2\;,
 $$ {#eq-mc_twoa}
 
 $$
-\Delta \log S_2 = \mathrm{n}u_2\Delta t + a_{21}\sqrt{\Delta t}Z_1 + a_{22}\sqrt{\Delta t}Z_2\;,
+\Delta \log S_2 = \nu_2\Delta t + a_{21}\sqrt{\Delta t}Z_1 + a_{22}\sqrt{\Delta t}Z_2\;,
 $$ {#eq-mc_twob}
 
 
@@ -133,7 +133,7 @@ We can use the Cholesky decomposition to perform Monte-Carlo valuation of a bask
 $$\max\left(0,\;\sum_{i=1}^L w_iS_i(T)-K\right)\; ,$$
 where $L$ is the number of assets in the basket (portfolio) and $w_i$ is the weight of the $i$--th asset in the basket.
 The logarithm of the $i$--th asset price at maturity is simulated as
-$$\log S_i(T) = \log S_i(0) +\mathrm{n}u_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,$$
+$$\log S_i(T) = \log S_i(0) +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,$$
 where the $Z_j$ are independent standard normals.  Given the simulated values of the $\log S_i(T)$, the value at maturity of the basket option is readily computed.  The estimate of the date--0 value is then computed as the discounted average of the simulated values at maturity.  
 
 
@@ -159,7 +159,7 @@ We will illustrate this method for the floating-strike lookback call in @sec-s_m
 
 ## Control Variates in Monte Carlo {#sec-s_controlvariates}
 \index{control variate}
-Another approach to increasing the efficiency of the Monte Carlo method is to adjust the estimated mean (option value) based on the known mean of another related variable.  We can explain this in terms of linear regression in statistics.  Suppose we have a random sample $\{x_1,\ldots,x_M\}$ of a variable $x$ with unknown mean $\mu$, and suppose we have a corresponding sample $\{y_1,\ldots,y_M\}$ of another variable $y$ with known mean $\phi$.  Then an efficient estimate of $\mu$ is $\hat{\mu} = \bar{x} + \hat{\beta} (\phi-\bar{y})$, where $\bar{x}$ and $\bar{y}$ denote the sample means of $x$ and $y$, and where $\hat{\beta}$ is the coefficient of $y$ in the linear regression of $x$ on $y$ (i.e., the estimate of $\beta$ in the linear model $x = \alpha +\beta y + \mathrm{var}epsilon$).  The standard Monte Carlo method, which we have described thus far, simply estimates the mean of $x$ as~$\bar{x}$.  The control variate method adjusts the estimate by adding $\hat{\beta} (\phi-\bar{y})$.  To understand this correction, assume for example that the true $\beta$ is positive.  If the random sample is such that $\bar{y}<\phi$, then it must be that small values of $y$ were over-represented in the sample.  Since $x$ and $y$ tend to move up and down together (this is the meaning of a positive $\beta$) it is likely that small values of~$x$ were also over-represented in the sample.  Therefore, one should adjust the sample mean of $x$ upwards in order to estimate $\mu$.  The best adjustment will take into account the extent to which small values of $y$ were over-represented (i.e., the difference between $\bar{y}$ and $\phi$) and the strength of the relation between $x$ and $y$ (which the estimate $\hat{\beta}$ represents).  The efficient correction of this sort is also the simplest:  just add $\hat{\beta}(\phi-\bar{y})$ to $\bar{x}$.  In practice, the estimation of $\hat{\beta}$ may be omitted and one may simply take $\hat{\beta}=1$, if the relationship between $x$ and~$y$ can be assumed to be one-for-one.  If $\beta$ is to be estimated, the estimate (by ordinary least squares) is
+Another approach to increasing the efficiency of the Monte Carlo method is to adjust the estimated mean (option value) based on the known mean of another related variable.  We can explain this in terms of linear regression in statistics.  Suppose we have a random sample $\{x_1,\ldots,x_M\}$ of a variable $x$ with unknown mean $\mu$, and suppose we have a corresponding sample $\{y_1,\ldots,y_M\}$ of another variable $y$ with known mean $\phi$.  Then an efficient estimate of $\mu$ is $\hat{\mu} = \bar{x} + \hat{\beta} (\phi-\bar{y})$, where $\bar{x}$ and $\bar{y}$ denote the sample means of $x$ and $y$, and where $\hat{\beta}$ is the coefficient of $y$ in the linear regression of $x$ on $y$ (i.e., the estimate of $\beta$ in the linear model $x = \alpha +\beta y + \varepsilon$).  The standard Monte Carlo method, which we have described thus far, simply estimates the mean of $x$ as~$\bar{x}$.  The control variate method adjusts the estimate by adding $\hat{\beta} (\phi-\bar{y})$.  To understand this correction, assume for example that the true $\beta$ is positive.  If the random sample is such that $\bar{y}<\phi$, then it must be that small values of $y$ were over-represented in the sample.  Since $x$ and $y$ tend to move up and down together (this is the meaning of a positive $\beta$) it is likely that small values of~$x$ were also over-represented in the sample.  Therefore, one should adjust the sample mean of $x$ upwards in order to estimate $\mu$.  The best adjustment will take into account the extent to which small values of $y$ were over-represented (i.e., the difference between $\bar{y}$ and $\phi$) and the strength of the relation between $x$ and $y$ (which the estimate $\hat{\beta}$ represents).  The efficient correction of this sort is also the simplest:  just add $\hat{\beta}(\phi-\bar{y})$ to $\bar{x}$.  In practice, the estimation of $\hat{\beta}$ may be omitted and one may simply take $\hat{\beta}=1$, if the relationship between $x$ and~$y$ can be assumed to be one-for-one.  If $\beta$ is to be estimated, the estimate (by ordinary least squares) is
 $$\hat{\beta} = \frac{\sum_{i=1}^M x_iy_i - M\bar{x}\bar{y}}{\sum_{i=1}^M y_i^2 - M\bar{y}^2}\; .$$
 In general, the correction term $\hat{\beta}(\phi-\bar{y})$ will have a nonzero mean, which introduces a bias in the estimate of $\mu$.  To eliminate the bias, one can compute~$\hat{\beta}$ from a pre-sample of $\{x,y\}$ values.  
 
@@ -219,7 +219,7 @@ y_1 = f(x_1) &= f(0) + f'(0)x_1 + \text{higher order terms} \\
 & = f(0) + 2f'(0)x_2 + \text{higher order terms}\;,\\
 y_2 = f(x_2) &= f(0) + f'(0)x_2 + \text{higher order terms}\;.
 \end{align*}
-\mathrm{n}oindent
+\noindent
 This implies
 $$2y_2-y_1 = f(0) + \text{difference of higher order terms}\;.$$
 Having eliminated the first-order term, one can hope to obtain a closer approximation to $f(0)$.
@@ -391,7 +391,7 @@ End Function
 
 ### Monte Carlo Valuation of European Basket Options
 
-We input \verb!S! as the vector of initial asset prices, \verb!q! as the vector of dividend yields, \verb!cov! as the covariance matrix, \verb!w! as the vector of weights defining the basket option, and \verb!L! as the number of assets in the basket.  The following function can also be used to value a spread option, by inputting \verb!L! $=2$ and \verb!w! = $[1, -1]$.
+We input \verb!S! as the vector of initial asset prices, \verb!q! as the vector of dividend yields, \verb!cov! as the covariance matrix, \verb!w! as the vector of weights defining the basket option, and \verb!L! as the number of assets in the basket.  The following function can also be used to value a spread option, by inputting \verb!L! $=2$ and \verb!w! =$[1, -1]$.
 
 \addcontentsline{lof}{figure}{European Basket Call MC}
 \begin{verbatim}
@@ -447,9 +447,9 @@ End Function
 ### Monte Carlo Valuation with an Antithetic Variate
 
 We will illustrate antithetic variates by modifying our previous valuation of a floating strike call.  We denote $\log S$ by \verb!LogS(1)! and $\log S^*$ by \verb!LogS(2)!.  We simulate 
-$$\Delta \,\text{LogS(1)} = \mathrm{n}u\,\Delta t + \sigma \Delta B$$
+$$\Delta \,\text{LogS(1)} = \nu\,\Delta t + \sigma \Delta B$$
 and
-$$\Delta \,\text{LogS(2)} = \mathrm{n}u\,\Delta t - \sigma \Delta B\; .$$
+$$\Delta \,\text{LogS(2)} = \nu\,\Delta t - \sigma \Delta B\; .$$
 We compute the minimums \verb!LogSMin(1)! and \verb!LogSMin(2)! of the logarithms of the two stock prices for each simulated path,
 and compute at the end of each simulated path the average call value
 $$0.5 \times \max\left(0,\mathrm{e}^{\text{LogS(1)}} - \mathrm{e}^{\text{LogSMin(1)}}\right) + 0.5 \times \max\left(0,\mathrm{e}^{\text{LogS(2)}} - \mathrm{e}^{\text{LogSMin(2)}}\right)\; .$$
@@ -640,7 +640,7 @@ American_Put_Binomial_BS = PutV(0)
 End Function
 \end{verbatim}
 
-\mathrm{n}oindent Now we create a program that uses Richardson extrapolation from a binomial model with $N$ periods and a binomial model with $N/2$ periods to estimate the value from a binomial model with an infinite number of periods.  We use the previous program as our binomial model.
+\noindent Now we create a program that uses Richardson extrapolation from a binomial model with $N$ periods and a binomial model with $N/2$ periods to estimate the value from a binomial model with an infinite number of periods.  We use the previous program as our binomial model.
 
 \addcontentsline{lof}{figure}{American Put Binomial BS RE}
 \begin{verbatim}
@@ -687,17 +687,17 @@ and
 for various values of $N$.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, and $T$.  To assess the quality of the estimates, provide also the estimate given by the function \verb!American_Put_Binomial! with a large value of $N$ (say $N = 1000$).  :::
 
 ::: {#exr-nolabel}
- Estimate the value of option (c) in Prob.~\ref{e_averagehedge} using the function 
+ Estimate the value of option (c) in @exr-e_averagehedge using the function 
 \begin{center}
 \verb!Average_Price_Call_MC!.
 \end{center}
-Complete the simulations in Prob.~\ref{e_averagehedge2} by including the cost of the options for hedge (c).:::
+Complete the simulations in @exr-e_averagehedge2 by including the cost of the options for hedge (c).:::
 
 ::: {#exr-e_basketbinomial}
   Create a VBA function \verb!European_Basket_Call_Binomial! to value a basket option on two assets. :::
 
 ::: {#exr-nolabel}
- Create a VBA function \verb!European_Basket_Call_Binomial_RE! that calls the function from Prob.~\ref{e_basketbinomial} and uses Richardson extrapolation to estimate the value of a basket call in a binomial model with $N=\infty$.  :::
+ Create a VBA function \verb!European_Basket_Call_Binomial_RE! that calls the function from @exr-e_basketbinomial and uses Richardson extrapolation to estimate the value of a basket call in a binomial model with $N=\infty$.  :::
 
 ::: {#exr-nolabel}
  Create a VBA function \verb!European_Basket_Call_MC_AV! that uses Monte Carlo with an antithetic variate to value a basket call option. Create an Excel worksheet to compare the standard errors of the estimates from the functions \verb!European_Basket_Call_MC! and \verb!European_Basket_Call_MC_AV! for a call on a basket of three assets.  Allow the user to input $S$, $K$, $r$, $\cov$, $q$, $w$, $T$, and~$M$.  Recall that $S$, $\cov$, $q$ and $w$ are arrays.
@@ -717,14 +717,14 @@ Create an Excel worksheet to compare the estimates of the value of a basket call
 3. a call on the maximum of the two asset prices
 
 
-Assume the two assets have the same initial price $S$ and the options are all at the money at the beginning of the quarter.  Allow the user to input $S$, $r$, $\sigma_1$, $\sigma_2$, $\rho$, $q_1$, and $q_2$.  Compare the quality of the hedges as in Prob.~\ref{e_standardknockout}.
+Assume the two assets have the same initial price $S$ and the options are all at the money at the beginning of the quarter.  Allow the user to input $S$, $r$, $\sigma_1$, $\sigma_2$, $\rho$, $q_1$, and $q_2$.  Compare the quality of the hedges as in @exr-e_standardknockout.
 :::
 
 ::: {#exr-nolabel}
- Compute the prices of the options in the previous exercise (using a binomial model or Monte Carlo for the basket option).  Compare the hedges including the costs of the options as in Prob.~\ref{e_standardknockout2}. :::
+ Compute the prices of the options in the previous exercise (using a binomial model or Monte Carlo for the basket option).  Compare the hedges including the costs of the options as in @exr-e_standardknockout2. :::
 
 ::: {#exr-nolabel}
- Create a VBA function \verb!American_Spread_Put_Binomial_RE! that calls \verb!American_Spread_Put_Binomial! and uses Richardson extrapolation to estimate the value of an American spread put for $N=\infty$.  Create an Excel spreadsheet to compare the estimates of the functions as in Prob.~\ref{e_richextrap2}.
+ Create a VBA function \verb!American_Spread_Put_Binomial_RE! that calls \verb!American_Spread_Put_Binomial! and uses Richardson extrapolation to estimate the value of an American spread put for $N=\infty$.  Create an Excel spreadsheet to compare the estimates of the functions as in @exr-e_richextrap2.
 :::
 
 ::: {#exr-e_knockoutmc}

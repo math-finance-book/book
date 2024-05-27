@@ -46,18 +46,14 @@ $$ {#eq-S_i}
 Actually, we will view a caplet as an option on a forward contract and apply Black's formula.  To do this, we need to know the forward price of the asset with price $S_i(t)$ for a contract maturing at $t_{i+1}$.  We denote this forward price by $F_i(t)$.  The synthetic forward argument presented in @sec-s_merton shows that for any non-dividend paying asset with price $S$, the forward price for a contract maturing at $T$ is $S(t)/P(t,T)$.  So, $F_i$ is given by
 
 $$
-F_i(t) = \begin{cases} \frac{P(t,t_i)}{P(t,t_{i+1})}-1  \text{if } t < t_{i}\; ,
+F_i(t) = \begin{cases} \frac{P(t,t_i)}{P(t,t_{i+1})}-1 & \text{if } t < t_{i}\; ,\\
+\mathcal{R}_i\,\varDelta t & \text{if }  t_{i} \leq t \leq t_{i+1}\;. \end{cases}
 $$
-$$
-\mathcal{R}_i\,\Delta t  \text{if }  t_{i} \leq t \leq t_{i+1}\;. \end{cases}
-$$
-$$
-= \begin{cases}\mathcal{R}_i(t)\,\Delta t  \text{if } t < t_{i}\; ,
-$$
-$$
-\mathcal{R}_i\,\Delta t  \text{if }  t_{i} \leq t \leq t_{i+1}\;, \end{cases}
-$$ {#eq-F_i}
 
+$$
+= \begin{cases}\mathcal{R}_i(t)\,\Delta t & \text{if } t < t_{i}\; ,\\
+\mathcal{R}_i\,\Delta t & \text{if }  t_{i} \leq t \leq t_{i+1}\;, \end{cases}
+$$ {#eq-F_i}
 
 where $\mathcal{R}_i(t)$ is the forward rate defined in @eq-forward2.  Thus, the asset with price $S_i(t)$ pays the spot rate at date $t_i$ times the period length at date $t_{i+1}$, and the forward price of this asset is the forward rate times the period length.
 
@@ -182,10 +178,10 @@ $$
 \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)\; + \;\text{Value of Payer Swaption}\\ = 
 P(t,t_0)- P(t,t_N) \;+ \;\text{Value of Receiver Swaption}.
 \end{multline}
-$$ {#eq-e_eicchorn}
+$$ {#eq-swaptionparity}
 
 
-## A Comment on Consistency
+## A Comment on Consistency {#sec-s_consistency}
 It is well known that it is inconsistent to assume both that the forward rates $\mathcal{R}_i(t)$ and 
 the forward swap rate $\mathcal{R}(t)$ have constant volatilities.  We can obtain some intuition for this as follows.  Recall that
 $$\mathcal{R}_i(t)\,\Delta t = \frac{P(t,t_i)-P(t,t_{i+1})}{P(t,t_{i+1})}\; ,$$
@@ -200,7 +196,7 @@ $$w_i(t) = \frac{P(t,t_{i+1})}{\sum_{i=0}^{N-1}P(t,t_{i+1})}\; .$$
 Therefore, the forward swap rate is a weighted average of the forward rates.  A sum (or average) of lognormal variables is not lognormal, so if the forward rate has a constant volatility, then the forward swap rate will not (and vice versa), absent very peculiar assumptions about the weights $w_i(t)$.
 This means that one should not really simultaneously use Black's formula for valuing caps (or floors) and Margrabe's formula for valuing swaptions (though there is evidence that the error introduced by doing so may be small).  In the following chapters, we will consider other models that do not suffer from this type of inconsistency.
 
-\section{Caplets as Puts on Discount Bonds}
+## Caplets as Puts on Discount Bonds {#sec-s_caps2}
 Previously, we considered a caplet \index{caplet} as a call option on the forward rate and thus a bet on higher interest rates.  This is equivalent to a bet on lower bond prices, and we will now show that a caplet with payment date $t_{i+1}$ is equivalent to $1+\bar{\mathcal{R}}\,\Delta t$ put options on the $t_{i+1}$--maturity discount bond.  The put options mature at the reset date $t_i$ of the caplet and have strike equal to $1/(1+ \bar{\mathcal{R}}\,\Delta t)$.  To see this equivalence, note that the value of $1+\bar{\mathcal{R}}\,\Delta t$ such options at their maturity date~$t_i$~is
 \begin{multline*}
 \big[1+\bar{\mathcal{R}}\,\Delta t\big] \max\left(0,\frac{1}{1+ \bar{\mathcal{R}}\,\Delta t}-P(t_i,t_{i+1})\right) \\ \begin{array}{l}
@@ -214,7 +210,7 @@ This is the value  at date $t_i$ of the caplet with payment date $t_{i+1}$ shown
 Similarly, a floorlet \index{floorlet} with payment date $t_{i+1}$ is equivalent to $1+\bar{\mathcal{R}}\,\Delta t$ call options on the $t_{i+1}$--maturity discount bond, with the call options maturing at date $t_i$ and having strike equal to $1/(1+ \bar{\mathcal{R}}\,\Delta t)$.  
 In the following chapters, we will describe models for valuing bond options.  These models will also be applied to price caps, as portfolios of put options on discount bonds, and to price floors, as portfolios of calls.  \index{discount bond option}
 
-\section{Swaptions as Options on Coupon Bonds}
+## Swaptions as Options on Coupon Bonds {#sec-s_swaptionscouponbondoptions}
 
 As noted previously, the value at date $T$ of the payer swaption, if exercised, is
 $$P(T,t_0)-P(T,t_N) - \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)\; .$$
@@ -224,7 +220,7 @@ $Z(T) = \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, the value of the fixe
 Typically, $t_0=T$ (the swap starts at the swaption maturity), in which case $P(T,t_0)=1$ and the payer (receiver) swaption is a standard put (call) option on the coupon bond, with exercise price equal to 1.  The models developed in later chapters for valuing options on coupon bonds can therefore also be applied to value swaptions. 
 
 
-\section{Calculations in VBA}
+## Calculations in VBA {#sec-s_fixedincomederivatives_matlab}
 
 ### Valuing Caps with Black's Formula
 
@@ -232,7 +228,8 @@ We will compute the value of each caplet with the \verb!Black_Call! function.
 In the \verb!Black_Call! function, we input the forward price for the caplet with reset date $t_i$ as
 $$
 F_i(0) = \mathcal{R}_i(0)\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
-$$
+$$ {#eq-capletforwardprice}
+
 as given in equations @eq-forward2 and @eq-F_i.  The exercise price of each caplet is $K=\bar{\mathcal{R}}\,\Delta t$.  We also need to input the discounting factor $P(0,t_{i+1})$.
 The discount bond prices $P(0,t_1)$, \ldots, $P(0, t_N)$ are input as a vector \verb!P!.  The discount bond price $P(0,t_0)$ is input as \verb!P0!.^[The reason for separating the bond maturing at $t_0$ is that vectors input as arrays from Excel worksheets are automatically indexed beginning with the index 1.  To keep the indexing consistent with our notation, we want the first element of the input vector to be $P(0,t_1)$, the second element to be $P(0,t_2)$, etc.  This consistency is convenient, though obviously not essential.]  We will assume the same volatility for each forward rate.
 
@@ -297,7 +294,7 @@ End Function
 ## Exercises
 
 
-::: {#exr-nolabel}
+::: {#exr-exercise121}
   Modify the function \verb!MarketModel_Cap! so that rather than taking \verb!P0! and the vector \verb!P! of discount bond prices as inputs, it looks up discount bond prices from a function \verb!DiscountBondPrice! that returns a discount bond price for any maturity.  For example, \verb!DiscountBondPrice! might be based on a cubic spline fit to the yield curve as discussed in @sec-s_yieldcurve.  To test the new function \verb!MarketModel_Cap!, you will need to create a test function \verb!DiscountBondPrice!.  For example, you could use the following, which corresponds to a rather steeply increasing yield curve, especially at the short end.
 \addcontentsline{lof}{figure}{DiscountBondPrice}
 \begin{verbatim}
@@ -310,7 +307,7 @@ End Function
  Create a function \verb!MarketModel_Cap_ImpliedVol! that uses bisection to find the forward rate volatility (assume the same volatility for each forward rate) that equates the cap price given by \verb!MarketModel_Cap! to a market cap price.  The function should take the same inputs as \verb!MarketModel_Cap! except that the forward rate volatility should be replaced by the market cap price.
 :::
 ::: {#exr-nolabel}
- Repeat Prob.~\ref{exercise121} for the function \verb!MarketModel_Payer_Swaption!.
+ Repeat @exr-exercise121 for the function \verb!MarketModel_Payer_Swaption!.
 :::
 ::: {#exr-nolabel}
  Create a function \verb!MarketModel_Payer_Swaption_ImpliedVol! that uses bisection to find the forward swap rate volatility that equates the swaption price given by \verb!MarketModel_Payer_Swaption! to a market swaption price.  The function should take the same inputs as \verb!MarketModel_Payer_Swaption! except that the forward swap rate volatility should be replaced by the market swaption price.
@@ -321,7 +318,7 @@ End Function
 ::: {#exr-nolabel}
  Create a VBA function \verb!MarketModel_Receiver_Swaption! to value a receiver swaption, assuming the forward swap rate has a constant volatility.  Write the function so that it looks up discount bond prices from the \verb!DiscountBondPrice! function.
 :::
-::: {#exr-nolabel}
+::: {#exr-e_eicchorn}
   The following exercise is motivated by an example presented in one of my classes by David Eichhorn of NISA Investment Advisors.
 
 
@@ -333,7 +330,7 @@ Calculate the forward swap rate for a 10-year swap with semiannual cash flows be
 
 
 \underline{Commentary}
-\mathrm{n}ext 
+\next 
 A collar is an alternative to a forward contract.  With standard options, as mentioned in @sec-s_fundamentalconcepts, a collar consists of a long call and short put (or the reverse).  If the strike of each equals the forward price, then the collar is equivalent to a  forward and will have zero cost---by put-call parity, \index{put-call parity} both options have the same price, so the purchase of the call can be financed by selling the put.  One can also construct a zero-cost collar\index{collar}\index{zero-cost collar} with the call and put having different strikes.
 
 A swaption collar \index{collar!swaption} is an alternative to a forward swap contract.  \index{forward swap} For example, consider a long receiver swaption with the underlying swap rate being $\bar{\mathcal{R}}_r$ and a short payer swaption with the underlying swap rate being $\bar{\mathcal{R}}_p > \bar{\mathcal{R}}_r$, with the swaptions having the same time to maturity $T$.  If the market swap rate $\mathcal{R}(T)$ at date $T$ is  below $\bar{\mathcal{R}}_r$ then the receiver swaption will be in the money and will be exercised---one would rather receive  $\bar{\mathcal{R}}_r$ than $\mathcal{R}(T)$ in this circumstance.  Likewise, if $\mathcal{R}(T) > \bar{\mathcal{R}}_p$ then the payer swaption will be exercised---one would rather pay $\bar{\mathcal{R}}_p$ than $\mathcal{R}(T)$ in this circumstance.  When $\bar{\mathcal{R}}_p >\mathcal{R}(T)> \bar{\mathcal{R}}_r$, neither swaption is in the money.  Thus, we have the following for the investor who is long the receiver swaption and short the payer swaption:
@@ -347,5 +344,5 @@ A swaption collar \index{collar!swaption} is an alternative to a forward swap co
 Note that one can always pay floating just by borrowing short term; it is receiving fixed that is important here.  In the second case above, the investor can engage in a swap at date $T$  and receive the market swap rate $\mathcal{R}(T)$.  Thus, the collar guarantees that he will receive at least $\bar{\mathcal{R}}_r$ and will receive no more than $\bar{\mathcal{R}}_p$, whatever might be the market swap rate at date $T$.
 
 An institution such as a pension fund can use a receiver swap to help hedge its fixed-rate liabilities.  As an alternative, it can use a collar as just described.  The difference is that a forward receiver swap would guarantee a fixed rate to be received, whereas the collar leaves some residual risk---it guarantees only that the fixed rate will be between $\bar{\mathcal{R}}_r$ and $\bar{\mathcal{R}}_p$.
-This risk may appear attractive.  In Prob.~\ref{e_eicchorn}, the lower rate $\bar{\mathcal{R}}_r$ is the market swap rate, and the higher rate $\bar{\mathcal{R}}_p$ is significantly higher; thus, it may appear that the worst-case scenario is the same as what one can get in the market with a swap and the best case is significantly better.  However, this is an illusion, because the appropriate comparison is with a forward swap (starting at the maturity of the swaptions) and the forward swap rate is substantially higher than the spot swap rate (due to the yield curve being steeply upward sloping).  This illusion may create a good marketing opportunity for sellers of collars.  
+This risk may appear attractive.  In @exr-e_eicchorn, the lower rate $\bar{\mathcal{R}}_r$ is the market swap rate, and the higher rate $\bar{\mathcal{R}}_p$ is significantly higher; thus, it may appear that the worst-case scenario is the same as what one can get in the market with a swap and the best case is significantly better.  However, this is an illusion, because the appropriate comparison is with a forward swap (starting at the maturity of the swaptions) and the forward swap rate is substantially higher than the spot swap rate (due to the yield curve being steeply upward sloping).  This illusion may create a good marketing opportunity for sellers of collars.  
 :::
