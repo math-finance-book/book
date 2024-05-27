@@ -1,0 +1,390 @@
+## Miscellaneous Facts about Continuous-Time Models
+
+## Girsanov's Theorem {#sec-a_girsanov}
+In @sec-s_girsanov, we were able to compute the expected return of an asset under different numeraires directly, by using Ito's formula and the fact that the ratio of a non-dividend-paying asset price to the numeraire asset price is a martingale under the measure associated with the numeraire.  In other cases (e.g., Heston's stochastic volatility model and Vasicek's model) the drift of a process could not be computed directly when we changed numeraires, because the process (volatility in Heston's model and the short rate in Vasicek's model) was not an asset price.  In general, the change in the drift of a process when we change numeraires (or, more generally, change probability measures) is given by Girsanov's theorem. \index{Girsanov's theorem}
+
+An heuristic explanation of Girsanov's theorem is as follows.  Let
+$\lambda$ be a constant, and let $B$ be a Brownian motion under a probability measure that we will denote by $\text{prob}$.  Let $B^*(t)=B(t)+\lambda t$; i.e., $\mathrm{d} B^* = \mathrm{d} B + \lambda\,\mathrm{d} t$.  
+Girsanov's theorem shows how to change the probability measure so that the drift of $B^*$ is zero,
+i.e., how to change the probability measure to make $B^*$ a martingale and hence (by Levy's theorem) a Brownian motion.
+
+Consider discrete time periods of length $\Delta t$ and  approximate $B$ by a binomial process that steps up or down by $\sqrt{\Delta t}$ in each time period, with up and down being equally likely.  This approximation implies that the changes $\Delta B$ of the binomial process have mean equal to zero and variance equal to $\Delta t$, just as for a true Brownian motion.
+We have $\Delta B^*=\lambda\,\Delta t\pm\sqrt{\Delta t}$.  If we change the probability of the up move to $(1-\lambda\sqrt{\Delta t})/2$ and the probability of the down move to $(1+\lambda\sqrt{\Delta t})/2$, then the expected change in $B^*$ will be
+$$\left(\frac{1-\lambda\sqrt{\Delta t}}{2}\right)\left(\lambda\,\Delta t+\sqrt{\Delta t}\right)+
+\left(\frac{1+\lambda\sqrt{\Delta t}}{2}\right)
+\left(\lambda\,\Delta t-\sqrt{\Delta t}\right) = 0\; .$$
+Therefore, $B^*$ is a martingale under these revised probabilities.  
+
+Changing the probabilities of each  branch of the binomial tree in this way implies that the probability of a path through the tree is changed as follows.  The probability of a path is the product of the probabilities of the branches, so,
+letting $\text{prob}^*$ denote the revised probabilities, we have
+\begin{multline*}
+\frac{\text{prob}^*(\text{path through time } t)}{\text{prob}\,(\text{path through time } t)}\\=
+\frac{\text{prob}^*(\text{path through time } t\!-\!\Delta t)}{\text{prob}\,(\text{path through time } t\!-\!\Delta t)} \times
+\frac{\text{prob}^*(\text{branch at } t)}{\text{prob}\,(\text{branch at } t)}\; .
+\end{multline*}
+Note that our definitions imply
+\begin{align*}
+\frac{\text{prob}^*(\text{up branch at } t)}{\text{prob}\,(\text{up branch at } t)}&=\frac{\frac{1}{2}\left(1-\lambda\sqrt{\Delta t}\right)}{1/2} =1-\lambda\,\Delta B(t)\;,
+\frac{\text{prob}^*(\text{down branch at } t)}{\text{prob}\,(\text{down branch at } t)}&=\frac{\frac{1}{2}\left(1+\lambda\sqrt{\Delta t}\right)}{1/2} =1-\lambda\,\Delta B(t)\;.
+\end{align*}
+Therefore,
+\begin{multline*}
+\frac{\text{prob}^*(\text{path through time } t)}{\text{prob}\,(\text{path through time } t)}\\=
+\frac{\text{prob}^*(\text{path through time } t\!-\!\Delta t)}{\text{prob}\,(\text{path through time } t\!-\!\Delta t)} \times
+\big(1-\lambda\,\Delta B(t)\big)\; .
+\end{multline*}
+If we let $Y(t)$ denote the ratio of path probabilities through time $t$, this shows that the percent change in $Y$ at time $t$ is $-\lambda\,\Delta B(t)$,
+i.e.,
+$$Y(t) = Y(t-\Delta t) \times
+\big(1-\lambda\,\Delta B(t)\big) \Longrightarrow \frac{ Y(t)- Y(t-\Delta t)}{Y(t-\Delta t)}=-\lambda\,\Delta B(t)\; .$$  A continuous-time formulation of this equation is
+$$\frac{\mathrm{d} Y(t)}{Y(t)} = -\lambda\,\mathrm{d} B(t)\; .$$  This equation implies that $Y$ is a geometric Brownian motion with explicit solution (given that the ratio of path probabilities at date 0 is $Y(0)=1$) 
+$$
+Y(t)=\exp\left(-\lambda^2 t/2 - \lambda B(t)\right)\;.
+$$ {#eq-girsanov}
+ 
+
+The above heuristic argument suggests that the process @eq-girsanov
+defines a ratio of path probabilities, $\text{prob}^*$ to $\text{prob}$, such that $B^*$ is a martingale
+under $\text{prob}^*$.  
+Because $B^*$ is continuous and its quadratic
+variation through each date~$t$ is equal to~$t$ (because the addition
+of $\lambda t$ to $B$ does not alter the quadratic variation of $B$),
+Levy's theorem implies that $B^*$ 
+must in fact be a Brownian motion relative to the measure $\text{prob}^*$.
+This is the content of
+Girsanov's theorem.  In the formal statement, there is no reference
+to ratios of path probabilities, because individual paths actually
+have zero probability under either $\text{prob}$ or $\text{prob}^*$.  Instead, the theorem states
+that $B^*$ is converted to a Brownian motion by multiplying the probability
+of any event (set of paths) by the conditional expectation of $Y$, given the event.
+
+There is no need to assume $\lambda$ is a constant, provided 
+the random process~$\lambda$ is 
+sufficiently regular that the general form of @eq-girsanov,
+i.e.,
+$$
+Y(t) \equiv \exp \left\{ -\frac{ 1}{2}\int_0^t \lambda^2(u)\,du - \int _0^t
+\lambda(u)\,\mathrm{d} B(u) \right\}, 
+$$ {#eq-girsanov2}
+ 
+is a martingale.^[The process @eq-girsanov2 is an Ito process with zero drift.  A sufficient condition for it to  be a
+martingale is that 
+$$E \left[ \exp \left\{ \frac{ 1]{2}\int _0^T \lambda^2(u)\,du \right\} \right]
+< \infty\; .$$
+This is called Novikov's condition.  \index{Novikov's condition}See, e.g., Karatzas
+and Shreve [@KS].}
+
+
+::: {.callout-tip}
+## 
+**Girsanov's Theorem:**\quad
+Let $B$ be a Brownian motion on a time horizon $[0,T]$ and let $\lambda$ be a stochastic process such that
+$Y$ defined by @eq-girsanov2 is a martingale.
+Define
+$$
+B^*(t)=B(t)+\int_0^t \lambda(u)\,du,
+$$ {#eq-girsanov101}
+
+and define a new probability measure $\text{prob}^*$ by setting $\text{prob}^*(A)=0$ for each event $A$ such that $\text{prob}(A)=0$, and by defining
+$$
+\text{prob}^*(A) = E \big[ Y(T) | A \big]\times \text{prob}(A)
+$$ {#eq-girsanov102}
+
+for each event $A$ such that $\text{prob}(A)>0$.
+Then $B^*$ is a Brownian motion on the time horizon $[0,T]$ relative to $\text{prob}^*$.
+
+:::
+
+
+The definition of $\text{prob}^*$ in the boxed statement emphasizes the ratio of probabilities aspect.  It is equivalent to the definition
+$$
+\text{prob}^*(A) =  E\left[1_AY(T)\right]
+$$ {#eq-girsanov104}
+
+for each event $A$.  Thus, it is consistent with the definition @eq-probSnumeraire of the probability of an event $A$ when we use a non-dividend-paying asset price $S$ as the numeraire.  The relation between the two is that the ratio of path probabilities $Y(T)$ equals $\phi(T)S(T)/S(0)$, where $\phi(T)$ denotes the random state price at date $T$.
+
+Note also that for any random variable $X$ (for which the mean exists) the mean of $X$ under $\text{prob}^*$, which we denote by $E^*[X]$, is given by
+$$
+E^*[X] = E[Y(T)X]\;.
+$$ {#eq-girsanov105}
+
+
+In some cases we may be given (perhaps by equilibrium arguments) the random variable~$Y$ defining the change of measure, and we wish to compute the change in the drift of a Brownian motion (in order to compute, for example, the drift of a volatility or an interest rate).  Thus, we need to reverse the above process, in which we started with the change of drift $\lambda$ and computed~$Y$.  This is straightforward.  Given $Y(T)$, define $Y(t) = E_t[Y(T)]$, i.e., the expectation of $Y(T)$ under the original measure, given information at date~$t$.  Equation @eq-girsanov2 shows that
+$$\frac{\mathrm{d} Y}{Y} = -\lambda\,\mathrm{d} B\; .$$
+Therefore, 
+$$-(\mathrm{d} B)\left(\frac{\mathrm{d} Y}{Y}\right) = \lambda\,\mathrm{d} t\; .$$
+It follows that the definition
+$$\mathrm{d} B^* = \mathrm{d} B - (\mathrm{d} B)\left(\frac{\mathrm{d} Y}{Y}\right)$$
+gives us a Brownian motion $B^*$ relative to the measure $\text{prob}^*$.  In other words, the drift of~$B$ under the measure $\text{prob}^*$ is $(\mathrm{d} B)(\mathrm{d} Y)/Y$.
+
+### Distribution of the Minimum of a Geometric Brownian Motion {#sec-a_minimum}
+
+Here we will give an explanation of formulas used in @sec-c_exotics  for valuing barrier and lookback options.  From a mathematical point of view, our discussion will be decidedly informal.
+
+Consider an asset price $S$ satisfying
+$$ 
+\mathrm{d}\log S = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,$$
+for constants $\mu$ and $\sigma$, where $B$ is a Brownian motion.  Consider constants $K \geq L$ with $L< \log S(0)$.  Define $z = \min_{0 \leq t \leq T} S(t)$.  Define
+$$x = \begin{cases} 1 & \text{if $S(T)> K$ and $z> L$}\;,\\
+0 & \text{otherwise\;.} \end{cases}$$
+To price a down-and-out call, we need to compute $\text{prob}(x=1)$.
+As in @sec-s_barriers, define
+$$y = \begin{cases} 1 & \text{if $S(T)> K$ and $z \leq L$}\;,\\
+0 & \text{otherwise\;.} \end{cases}$$
+The event $S(T)>K$ is the union of the disjoint events $x=1$ and $y=1$, so we have
+\begin{align*}
+\text{prob}(x=1) &= \text{prob}(S(T)>K) - \text{ prob}(y=1)\\
+&= \mathrm{N}(d) - \text{prob}(y=1)\;,
+\end{align*}
+where
+$$
+d = \frac{\log \left(\frac{S(0)}{K}\right)+ \mu T}{\sigma\sqrt{T}}\;.
+$$ {#eq-appendixc100}
+
+Thus, the remaining task is to compute $\text{prob}(y=1)$.
+
+To price lookback options, it is necessary to know the cumulative distribution function of $z$, i.e., we need to know $\text{prob}(z \leq L)$ for arbitrary $L$.  
+The event $z \leq L$ is the union of the disjoint events $S(T) \leq L$ and $y=1$, where we specialize to the case $K=L$ in the definition of $y$.  Thus,
+\begin{align*}
+\text{prob}(z \leq L) &= \text{prob}(S(T)\leq L) + \text{prob}(y=1)\\
+&= \mathrm{N}(-d) + \text{ prob}(y=1)\;,
+\end{align*}
+where again we take $K = L$ in the definition of $d$.  Thus, for pricing lookbacks also, the key task is to compute $\text{prob}(y=1)$.
+
+
+Assume first that $\mu=0$, so $\log S$ is a Brownian motion with zero drift.  We want to compute the probability of the paths of $\log S$ that dip below $\log L$ and end above $\log K$.  Each such path has a twin defined by reflecting the path (as in a mirror image) through the horizontal line $x(t)=\log L$ after the first time $\log S$ hits $\log L$.  The original path increases by at least $\log K - \log L$ after hitting $\log L$ (otherwise, it could not end above $\log K$).  So, the twin decreases by at least $\log K - \log L$ after hitting $\log L$.  This means that it ends below $2\log L - \log K$.  Moreover, each path ending below $2\log L - \log K$ is the twin in this sense of a path hitting  $\log L$ and then ending above $\log K$.  Because $\log S$ has no drift, the twins are equally likely.  Therefore, when $\mu=0$,
+\begin{align*}
+\text{prob}(y=1) &= \text{prob}\big(\log S(T) \leq 2\log L - \log K\big)\\
+&= \text{prob}\left(\frac{B(T)}{\sqrt{T}} \leq \frac{2 \log L - \log K - \log S(0)-\mu T}{\sigma\sqrt{T}}\right)\\
+&= \mathrm{N}(d^*)\;,
+\end{align*}
+where
+$$
+d^* = \frac{\log \left(\frac{L^2}{KS(0)}\right) }{\sigma\sqrt{T}}\;.
+$$ {#eq-appendixc101}
+
+
+Now consider the case $\mu \neq 0$, the case in which we are really interested.  By Girsanov's theorem, the process $B^*$ defined by $B^*(0)=0$ and 
+$$\mathrm{d} B^* = \mathrm{d} B + \frac{\mu}{\sigma}\,\mathrm{d} t$$
+is a Brownian motion under the measure $\text{prob}^*$ defined by @eq-girsanov and @eq-girsanov102, where we take $\lambda = \mu/\sigma$ in the definition of $Y(T)$.  The purpose of this definition is that we have
+$$\mathrm{d}\log S = \mu\,\mathrm{d} t + \sigma\left(\mathrm{d} B^* - \frac{\mu}{\sigma}\,\mathrm{d} t\right) = \sigma\,\mathrm{d} B^*\; .$$
+Letting $E$ denote expectation relative to the measure under which $B$ is a Brownian motion and $E^*$ denote expectation relative to $\text{prob}^*$, we have from @eq-girsanov105  that
+
+$$
+\text{prob}(y=1) =E[y] = E \left[Y(T)\frac{y}{Y(T)}\right]
+$$
+$$
+= E^*\left[\frac{y}{Y(T)}\right]
+$$
+$$
+= E^*\left[\exp\left(\frac{1}{2}\lambda^2T + \lambda B(T)\right)y\right]
+$$
+$$
+= E^*\left[\exp\left(\frac{1}{2}\lambda^2T + \lambda [B^*(T)-\lambda T]\right)y\right]
+$$
+$$
+=E^*\left[\exp\left(-\frac{1}{2}\lambda^2T + \lambda B^*(T)\right)y\right]\;.
+$$ {#eq-appendixc1}
+
+
+
+Because $\log S$ has no drift under $\text{prob}^*$, the twin paths described before are equally likely under $\text{prob}^*$.  However, the reflection leads to low values of $\log S(T)$ and hence to low values of $B^*(T)$ rather than high values, and we must compensate for this in @eq-appendixc1.  Specifically, for a path of $\log S$ that ends above $\log K$, we have
+$$
+B^*(T) = \frac{\log K - \log S(0) + \varepsilon}{\sigma}
+$$ {#eq-reflectedpath1}
+
+for some $\varepsilon>0$ and the reflection of this path has
+$$
+B^*(T) = \frac{2\log L - \log K - \log S(0) - \varepsilon}{\sigma}
+$$ {#eq-reflectedpath2}
+
+for the same $\varepsilon$.  Therefore, to use the reflected path, we compute 
+$$\varepsilon = 2\log L - \log K - \log S(0) - \sigma B^*(T)$$
+from @eq-reflectedpath2 and substitute this into the right-hand side of @eq-reflectedpath1 to obtain
+\begin{multline*}
+\frac{\log K - \log S(0) + 2\log L - \log K - \log S(0) - \sigma B^*(T)}{\sigma} \\= \frac{2\log L - 2\log S(0)}{\sigma} - B^*(T)
+\end{multline*}
+as the value that should replace $B^*(T)$ in  @eq-appendixc1 when we use the reflected paths.  As in the case $\mu=0$, using the reflected paths means replacing the random variable $y$ with $y'$ defined as
+$$y' = \begin{cases} 1 & \text{if $\log S(T)\leq 2 \log L - \log K$}\;,\\
+0 & \text{otherwise\;.} \end{cases}$$
+Substituting into  @eq-appendixc1 and employing some algebra gives us
+
+$$
+\text{prob}(y=1) = E^*\left[\exp\left(-\frac{1}{2}\lambda^2T + \lambda\left[\frac{2\log L - 2\log S(0)}{\sigma} - B^*(T)\right]\right)y'\right]
+$$
+$$
+= \left(\frac{L}{S(0)}\right)^{2\mu/\sigma^2}E^*\left[\exp\left(-\frac{1}{2}\lambda^2T - \lambda [B(T)+\lambda T]\right)y'\right]
+$$
+$$
+=\left(\frac{L}{S(0)}\right)^{2\mu/\sigma^2}E^*\left[\exp\left(-\frac{3}{2}\lambda^2T - \lambda B(T)\right)y'\right]
+$$
+$$
+= \left(\frac{L}{S(0)}\right)^{2\mu/\sigma^2}E\left[\exp\left(-2\lambda^2T - 2\lambda B(T)\right)y'\right]\;,
+$$ {#eq-appendixc200}
+
+
+where for the last equality we used  @eq-girsanov105 again.
+
+Now we will define another change of measure.  Set $\delta = 2\lambda$, 
+$$Z(T) = \exp\left(-\delta^2 T/2 - \delta B(T)\right)$$ 
+and $\text{prob}^{**}(A) = E[1_A Z(T)]$ for each event $A$.    From the definition of $\delta$ and  @eq-girsanov105 we have
+
+$$
+E\left[\exp\left(-2\lambda^2T - 2\lambda B(T)\right)y'\right] = E\left[\exp\left(-\frac{1}{2}\delta^2T - \delta B(T)\right)y'\right] 
+$$
+$$
+ = E^{**}[y'] 
+$$
+$$
+= \text{prob}^{**}(y'=1)\;.
+$$ {#eq-appendixc201}
+
+
+Moreover, Girsanov's theorem states that $\mathrm{d} B^{**} = \mathrm{d} B + \delta\,\mathrm{d} t$ defines a Brownian motion $B^{**}$ under the measure $\text{prob}^{**}$.  The event $y'=1$ is equivalent to
+
+$$
+\log S(0) + \mu T + \sigma B(T) \leq  \log \left(\frac{L^2}{K}\right) 
+$$
+$$
+\Longleftrightarrow \log S(0) + \mu T + \sigma [B^{**}(T) - \delta T] \leq \log \left(\frac{L^2}{K}\right) 
+$$
+$$
+\Longleftrightarrow \log S(0) - \mu T + \sigma B^{**}(T) \leq \log \left(\frac{L^2}{K}\right) 
+$$
+$$
+\Longleftrightarrow \frac{B^{**}(T)}{\sqrt{T}} \leq d'\;,
+$$ {#eq-appendixc202}
+
+
+where we define
+$$
+d' = \frac{\log \left(\frac{L^2}{KS(0)}\right) + \mu T }{\sigma\sqrt{T}}\;.
+$$ {#eq-appendixc103}
+
+Combining @eq-appendixc200, @eq-appendixc201 and @eq-appendixc202 yields
+$$\text{prob}(y=1) = \left(\frac{L}{S(0)}\right)^{2\mu/\sigma^2}\mathrm{N}(d')\; .$$
+Summarizing, we have
+
+::: {.callout-tip}
+## 
+Assume $\mathrm{d}\log S = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B$ where $B$ is a Brownian motion.  Define $z = \min_{0 \leq t \leq T} S(t)$.  For $K \geq L$ and $L \leq \log S(0)$,  
+
+
+1. The probability that $S(T)>K$ and $z > L$ is 
+$$\mathrm{N}(d) - \left(\frac{L}{S(0)}\right)^{2\mu/\sigma^2}\mathrm{N}(d')\; ,$$
+where $d$ is defined in @eq-appendixc100 and $d'$ is defined in @eq-appendixc103.
+2. The probability that $z \leq L$ is
+$$\mathrm{N}(-d) + \left(\frac{L}{S(0)}\right)^{2\mu/\sigma^2}\mathrm{N}(d')\; ,$$
+where $d$ is defined in @eq-appendixc100 and $d'$ is defined in @eq-appendixc103, substituting $K=L$ in both.
+
+
+
+:::
+
+
+## Bessel Squared Processes and the CIR Model {#sec-a_bessel}
+
+This section will present additional results regarding the CIR \index{CIR model}\index{square-root process}square-root short rate process discussed in @sec-s_cir.  The ideas described here are one way (though not the only way) to derive the CIR discount bond option pricing formula.  We begin with the following simpler process
+$$
+\mathrm{d} x(t) = \delta\,\mathrm{d} t + 2 \sqrt{x(t)}\,\mathrm{d} Z
+$$ {#eq-besq}
+
+for a Brownian motion $Z$ and constant $\delta>0$.  This is called a Bessel-squared \index{Bessel-squared process}process with parameter $\delta$.    The parameter $\delta$ determines whether
+$x$ can ever reach zero.  If $\delta \geq 2$, then with probability
+one, $x(t)$ is strictly positive for all~$t$; whereas, if $\delta < 2$, then
+with positive probability, $x$ will sometimes hit zero (but will
+never go negative). 
+
+In the particular (rare)
+case that $\delta$ is an integer, the squared length of a
+$\delta$-dimensional vector of independent Brownian motions is a
+process $x$ satisfying~@eq-besq.  To see this, let $B_1, \ldots, B_\delta$ be independent Brownian motions starting at given values $b_i$; i.e., $B_i(0) = b_i$.  Define $x(t) = \sum_{i=1}^\delta B_i(t)^2$.  Then Ito's formula gives us
+\begin{align*}
+\mathrm{d} x(t) &= \sum_{i=1}^\delta 2B_i(t)\,\mathrm{d} B_i(t) + \sum_{i=1}^\delta \mathrm{d} t\\
+&= \delta\,\mathrm{d} t + 2 \sqrt{x(t)}\sum_{i=1}^\delta \frac{B_i(t)}{\sqrt{x(t)}}\,\mathrm{d} B_i(t).
+\end{align*}
+The process $Z$ defined by $Z(0)=0$ and
+$$\mathrm{d} Z = \sum_{i=1}^\delta \frac{B_i(t)}{\sqrt{x(t)}}\,\mathrm{d} B_i(t)$$
+is a Brownian motion (because it is a continuous martingale with $(\mathrm{d} Z)^2=\mathrm{d} t$); thus, we obtain  @eq-besq.  
+
+Continuing to assume that $\delta$ is an integer and that $x(t) = \sum_{i=1}^\delta B_i(t)^2$, note that, for any $t$, the random variables $\xi_i$ defined as  $\xi_i = [B_i(t)-B_i(0)]/\sqrt{t}$ are independent  standard normals, and we have
+\begin{align*}
+x(t) &= \sum_{i=1}^\delta \big[b_i + B_i(t)-B_i(0)\big]^2\\
+&= t\times \sum_{i=1}^\delta \left(\frac{b_i}{\sqrt{t}} + \xi_i\right)^2.
+\end{align*}
+A random variable of the form 
+$\sum_{i=1}^\delta \left(\gamma_i + \xi_i\right)^2$, where the $\gamma_i$ are constants and the $\xi_i$ are independent standard normals, is said to have a non-central chi-square distribution \index{chi-square distribution}with $\delta$ degrees of freedom and noncentrality parameter $\sum_{i=1}^\delta \gamma_i^2$.  Thus, $x(t)$ is equal to $t$ times a non-central chi-square random variable with $\delta$ degrees of freedom and noncentrality parameter 
+$$\sum_{i=1}^\delta \frac{b_i^2}{t} = \frac{x(0)}{t}\; .$$
+The noncentral chi-square distribution can be defined for a non-integer degrees of freedom also, and a process $x$ satisfying @eq-besq for a non-integer $\delta$ has the same relation to it, namely, 
+
+::: {.callout-tip}
+## 
+
+If $x$ satisfies @eq-besq, then for any $t$ and $\alpha>0$, the probability that $x(t)  \leq \alpha$ is equal to the probability that $z \leq \alpha/t$, where $z$ is a random variable with a non-central chi-square distribution with $\delta$ degrees of freedom  and noncentrality parameter $x(0)/t$.
+:::
+
+
+Now consider the CIR process @eq-cir.  Define $\delta = 4 \kappa
+\theta/ \sigma^2$ and define $x$ by  @eq-besq, with $x(0)= r(0)$.  Set^[I learned this transformation from unpublished lecture notes of Hans Buehlmann.]
+$$h(t)=\frac{ \sigma^2}{4 \kappa} \left( \mathrm{e}^{\kappa t}-1 \right)\; ,$$
+and
+$$r(t) = \mathrm{e}^{-\kappa t}x(h(t))\; .$$
+Then  it can be shown^[The key to this calculation is the fact that if $Z$ is a Brownian motion and $h$ is a continuously differentiable function with $h'(s)>0$ for all $s>0$ then $B$ defined by $$B(t) = \int_0^t \frac{1]{\sqrt{h'(s)}}\,\mathrm{d} Z_{h(s)}$$
+is a Brownian motion also.}
+that $r$ satisfies the CIR equation @eq-cir, namely
+$$
+\mathrm{d} r = \kappa(\theta-r)\,\mathrm{d} t + \sigma\sqrt{r}\,\mathrm{d} B
+$$ {#eq-cir17}
+
+for a Brownian motion $B$.  For any $t$ and $\alpha>0$, the probability that $r(t) \leq \alpha$ is equal to the probability that $x(h(t)) \leq \mathrm{e}^{\kappa t}\alpha$.  In view of the previous boxed statement, this implies:  
+
+::: {.callout-tip}
+## 
+If $r$ satisfies the CIR equation @eq-cir17 where $\kappa$, $\theta$ and $\sigma$ are positive constants, then, for any $t>0$ and any $\alpha$, the probability that $r(t) \leq \alpha$ is the probability that $z\leq \mathrm{e}^{\kappa t}\alpha/h(t)$, where~$z$ is a random variable with a non-central chi-square distribution with  $\delta = 4 \kappa
+\theta/ \sigma^2$ degrees of freedom and noncentrality parameter $r(0)/h(t)$.
+:::
+
+
+To derive the discount bond option pricing formula for the CIR model, we need to know the distribution of $r(T)$ when the parameters $\kappa$ and $\theta$ are time-dependent.  Let $w$ denote either $u$ (the maturity of the underlying) or $T$ (the maturity of the option).  Using the discount bond maturing at $w$ as the numeraire, we repeat here  @eq-cirru, dropping now the hat on $\hat{r}$:
+$$
+\mathrm{d} r(t)= \kappa^*(t)[\theta^*(t)-r(t)]\,\mathrm{d} t +\sigma \sqrt{r(t)}\,\mathrm{d} B^*(t)\;,
+$$ {#eq-cirstar}
+
+where
+$$
+\kappa^*(t) = \kappa + \sigma^2b(w-t) \qquad \text{and} \qquad \theta^*(t) = \frac{\kappa\theta}{\kappa^*(t)}\; .$$
+Because $\kappa^*(t)\theta^*(t) = \kappa\theta$, we again define $\delta = 4 \kappa
+\theta/ \sigma^2$ but now set
+$$h^*(t) = \frac{ \sigma^2}{4}\int_0^t \exp\left(
+\int _0^s \kappa^*(y)\,\mathrm{d} y \right) \,\mathrm{d} s$$
+and
+$$r(t) = \exp\left(-\int_0^t \kappa^*(s)\,\mathrm{d} s\right)x(h^*(t))\; .$$
+Then it can be shown that $r$ satisfies @eq-cirstar for a Brownian motion $B^*$.  Thus, as in the previous paragraphs, the probability that $r(T) \leq \alpha$, where $r$ satisfies @eq-cirstar, is the probability that
+$$z \leq \frac{\exp\left(\int_0^T \kappa^*(s)\,\mathrm{d} s\right)\alpha}{h^*(T)}\; ,$$
+where $z$ has a non-central chi-square distribution with $\delta$ degrees of freedom and noncentrality parameter $r(0)/h^*(T)$.
+
+Straightforward  calculations, using in particular the fact that $b(\tau) = a'(\tau)/(\kappa\theta)$ and 
+$$\int \frac{\mathrm{e}^{\gamma t}}{c(t)^2}\,\mathrm{d} t = -\frac{1}{(\kappa+\gamma)\gamma} \int \frac{\mathrm{d}}{\mathrm{d} t}\left(\frac{1}{c(t)}\right)\,\mathrm{d} t = -\frac{1}{(\kappa+\gamma)\gamma c(t)}$$
+give us:
+$$\exp\left(\int_0^T \kappa^*(s)\,\mathrm{d} s\right) = \frac{\mathrm{e}^{-\gamma T}c(w)^2}{c(w-T)^2}$$
+and
+$$h^*(T) =\frac{\sigma^2\mathrm{e}^{-\gamma w}c(w)}{4(\kappa + \gamma)\gamma}\left[\frac{c(w)}{c(w-T)}-1\right]\; ,$$
+where $\gamma$ and $c$ are defined in @eq-cirbondcombined.  This simplifies somewhat in the case $w=T$ because $c(0) = 2\gamma$.  Thus, the probabilities in the CIR option pricing formula @eq-ciroptionprice, which are the probabilities of the event shown in @eq-ciroptionprice2, are as follows:
+
+
+- $\text{prob}^u\big(P(T,u)>K\big)$ is the probability that 
+$$z \leq -\frac{\mu_u}{\lambda_u}\left(\frac{\int_T^u \phi(s)\,\mathrm{d} s+a(u-T)+\log K}{b(u-T)}\right)\; ,$$
+where $z$ has a non-central chi-square distribution with $4\kappa\theta/\sigma^2$ degrees of freedom and noncentrality parameter $r(0)/\lambda_u$, and
+\begin{align*}
+\mu_u & = \frac{\mathrm{e}^{-\gamma T}c(u)^2}{c(u-T)^2}\; ,\\
+\lambda_u & = \frac{\sigma^2\mathrm{e}^{-\gamma u}c(u)}{4(\kappa + \gamma)\gamma}\left[\frac{c(u)}{c(u-T)}-1\right]\;.
+\end{align*}
+- $\text{prob}^T\big(P(T,u)>K\big)$ is the probability that 
+$$z \leq -\frac{\mu_T}{\lambda_T}\left(\frac{\int_T^u \phi(s)\,\mathrm{d} s+a(u-T)+\log K}{b(u-T)}\right)\; ,$$
+where $z$ has a non-central chi-square distribution with $4\kappa\theta/\sigma^2$ degrees of freedom and noncentrality parameter $r(0)/\lambda_T$, and
+\begin{align*}
+\mu_T & = \frac{\mathrm{e}^{-\gamma T}c(T)^2}{4\gamma^2}\; ,\\
+\lambda_T & = \frac{\sigma^2\mathrm{e}^{-\gamma T}c(T)}{4(\kappa + \gamma)\gamma}\left[\frac{c(T)}{2\gamma}-1\right]\;.
+\end{align*}
+
+
