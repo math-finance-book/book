@@ -82,7 +82,7 @@ $$
 \frac{1}{N-1}\sum_{i=1}^N y_i^2 - \frac{N\bar{y}^2}{N-1}\;.
 $$ {#eq-estimator_sig2}
 
-From the definition @eq-volyi of $y_i$ and equation @eq-volrbar, we have
+From the @eq-volyi of $y_i$ and @eq-volrbar, we have
 $$\bar{y} =  \frac{\sqrt{\Delta t}}{T}[\log S(T)-\log S(0)]\; .$$
 Hence, the second term in @eq-estimator_sig2 is
 $$ \frac{N}{N-1}\left(\frac{\Delta t}{T^2}\right)[\log S(T)-\log S(0)]^2\; .$$
@@ -122,7 +122,7 @@ Here, $\hat{\sigma}^2_{i+1}$ denotes the estimate of the volatility from date $t
 Likewise, the estimate at the following date will be
 $$\hat{\sigma}^2_{i+3} = (1-\lambda) y_{i+2}^2 +\lambda(1-\lambda) y_{i+1}^2 + \lambda^2(1-\lambda)^2  y_{i}^2 +\lambda^{3}\hat{\sigma}^2_{i}\; .$$
 This demonstrates the declining importance of the squared deviation $y_{i}^2$ for future estimates.  At each date, $y_{i}^2$ enters with a weight that is lower by a factor of $\lambda$, compared to the previous date. 
-If $\lambda$ is small, the decay in the importance of each squared deviation will be fast.  In fact, the formula @eq-sig_estimator4 shows that, if $\lambda$ is close to zero, the estimate $\hat{\sigma}_{i+1}^2$ is approximately equal to the squared deviation $y_i^2$---previous squared deviations are relatively unimportant.  On the other hand, if $\lambda$ is close to one, the decay will be slow; i.e., the importance of $y_i^2$ for the estimate $\hat{\sigma}^2_{i+2}$ will be nearly the same as for $\hat{\sigma}^2_{i+1}$, and nearly the same for $\hat{\sigma}^2_{i+3}$ as for $\hat{\sigma}^2_{i+2}$, etc.   This will lead to a smooth (slowly varying) volatility estimate.  The slowly varying nature of the estimate in this case is also clear from @eq-sig_estimator4, because it shows that if $\lambda$ is close to one, then $\hat{\sigma}^2_{i+1}$ will be approximately the same as $\hat{\sigma}^2_{i}$.
+If $\lambda$ is small, the decay in the importance of each squared deviation will be fast.  In fact, the @eq-sig_estimator4 shows that, if $\lambda$ is close to zero, the estimate $\hat{\sigma}_{i+1}^2$ is approximately equal to the squared deviation $y_i^2$---previous squared deviations are relatively unimportant.  On the other hand, if $\lambda$ is close to one, the decay will be slow; i.e., the importance of $y_i^2$ for the estimate $\hat{\sigma}^2_{i+2}$ will be nearly the same as for $\hat{\sigma}^2_{i+1}$, and nearly the same for $\hat{\sigma}^2_{i+3}$ as for $\hat{\sigma}^2_{i+2}$, etc.   This will lead to a smooth (slowly varying) volatility estimate.  The slowly varying nature of the estimate in this case is also clear from @eq-sig_estimator4, because it shows that if $\lambda$ is close to one, then $\hat{\sigma}^2_{i+1}$ will be approximately the same as $\hat{\sigma}^2_{i}$.
 
 This method can also be used to estimate covariances, simply by replacing the squared deviations $y_i^2$ by the product of deviations for two different assets.  And, of course, given covariance and variance estimates, we can construct estimates of correlations.  To ensure that an estimated correlation is between $-1$ and $+1$, we will need to use the same $\lambda$ to estimate each of the variances and the covariance.  This is the method used by RiskMetrics.^[See Mina and Xiao [@MX], available online at \emph{www.riskmetrics.com].} \index{RiskMetrics}
 
@@ -231,9 +231,9 @@ $$
 \mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B_s\;,
 $$ {#eq-heston1}
 
-where $B_s$ is a Brownian motion under the risk-neutral measure but now $\sigma$ is not a constant but instead evolves as $\sigma(t) = \sqrt{v(t)
-$$$, where}
+where $B_s$ is a Brownian motion under the risk-neutral measure but now $\sigma$ is not a constant but instead evolves as $\sigma(t) = \sqrt{v(t)}$ where
 
+$$
 dv(t) = \kappa \big[\theta-v(t)\big]\,\mathrm{d} t + \gamma \sqrt{v(t)}\,\mathrm{d} B_v\;,
 $$ {#eq-heston2}
 
@@ -244,7 +244,7 @@ The term $\kappa (\theta-v)$ will be positive when $v<\theta$ and negative when 
 
 The specification @eq-heston2 implies that the volatility of $v$ approaches zero whenever $v$ approaches zero.      In this circumstance, one might expect the drift towards $\theta$ to dominate the volatility and keep $v$ nonnegative, and this is indeed the case; thus, the definition $\sigma(t) = \sqrt{v(t)}$ is possible.  Moreover, the parameter $\gamma$ plays a role here that is similar to the role of $1-\lambda$ in the GARCH model---the variance of the variance in the GARCH model @eq-garch10 depends on the weight $1-\lambda$ placed on the scaled return $y_i$, just as the variance of the variance in the stochastic volatility model @eq-heston2 depends on the weight $\gamma$ placed on  $\mathrm{d} B_v$.
 
-We could discretize @eq-heston12combined as:
+We could discretize @eq-heston1 - @eq-heston2 as:
 
 
 $$
@@ -257,7 +257,7 @@ $$ {#eq-heston4}
 
 
 
-However, even though in the continuous-time model @eq-heston12combined we always have $v(t) \geq 0$ and hence can define $\sigma(t)=\sqrt{v(t)}$, there is no guarantee that $v(t_{i+1})$ defined by @eq-heston4 will be nonnegative.  A simple remedy is to define $v(t_{i+1})$ as the larger of zero and the right-hand side of @eq-heston4; thus, we will simulate the Heston model as @eq-heston3 and^[There are better (but more complicated) ways to simulate the Heston model.  An excellent discussion of ways to simulate the volatility process can be found in Glasserman [@Glasserman].  Broadie and Kaya [@broadiekaya] present a method for simulating from the exact distribution of the asset price in the Heston model and related models.]
+However, even though in the continuous-time model @eq-heston1 - @eq-heston2 we always have $v(t) \geq 0$ and hence can define $\sigma(t)=\sqrt{v(t)}$, there is no guarantee that $v(t_{i+1})$ defined by @eq-heston4 will be nonnegative.  A simple remedy is to define $v(t_{i+1})$ as the larger of zero and the right-hand side of @eq-heston4; thus, we will simulate the Heston model as @eq-heston3 and^[There are better (but more complicated) ways to simulate the Heston model.  An excellent discussion of ways to simulate the volatility process can be found in Glasserman [@Glasserman].  Broadie and Kaya [@broadiekaya] present a method for simulating from the exact distribution of the asset price in the Heston model and related models.]
 $$
 v(t_{i+1}) = \max\left\{0,v(t_i) + \kappa \big[\theta-v(t_i)\big]\,\Delta t + \gamma \sqrt{v(t_i)}\,\Delta B_v\right\}\;.
 $$ {#eq-heston41}

@@ -71,7 +71,7 @@ $$ {#eq-pdegamma}
 
 The obvious estimate of $\partial C/\partial t$, which is analogous to the estimate of $\partial C/\partial X$, is
 $$\frac{C_{\text{right}}-C_{\text{left}}}{2\Delta t}\; .$$
-This is \emph{not} the estimate we are going to use.  The reason is that we want to solve for the call values on the grid in much the same way that we solved the binomial model---starting at the end and working backwards.  If we use the above estimate of the time derivative, then at each point $(t_i,x_j)$, equation @eq-3 will link the call values at times $t_{i-1}$, $t_i$ and $t_{i+1}$.  This would substantially complicate the backing up process.  However, in a sense, it is the right estimate, and the Crank-Nicolson method to be discussed below uses a similar idea.
+This is \emph{not} the estimate we are going to use.  The reason is that we want to solve for the call values on the grid in much the same way that we solved the binomial model---starting at the end and working backwards.  If we use the above estimate of the time derivative, then at each point $(t_i,x_j)$, @eq-3 will link the call values at times $t_{i-1}$, $t_i$ and $t_{i+1}$.  This would substantially complicate the backing up process.  However, in a sense, it is the right estimate, and the Crank-Nicolson method to be discussed below uses a similar idea.
 
 The other two choices for estimating $\partial C/\partial t$ are analogous to the other two choices for estimating $\partial C/\partial X$.  We can use either
 
@@ -280,7 +280,7 @@ z_L
 \end{pmatrix}$$
 where we are denoting the derivative values to be determined at date $t_i$ across the $L$ ($=2M+1$) space nodes as $C_1, \ldots, C_L$.  The coefficients $a_i$ are defined in  @eq-crank3.  The numbers $z_2, \ldots, z_{L-1}$ are the right-hand sides of  @eq-crank3 and are determined by the coefficients $a_i$ and the derivative values $y_1, \ldots, y_{L}$ at date $t_{i+1}$.  The system of equations that must be solved to implement the implicit method is of this same form.
 
-The first equation in this array (equation @eq-crank4aa) can be written as
+The first equation in this array (@eq-crank4aa) can be written as
 
 $$
 C_1 = u_1 + b_1C_2\;,
@@ -292,7 +292,7 @@ C_{j-1} = u_{j-1} + b_{j-1}C_{j}
 $$ {#eq-crank101}
 
 for some coefficients $u_{j-1}$ and $b_{j-1}$ to be determined.  
-The $j$--th equation ($j = 2, \ldots, L-1$) in the array (equation @eq-crank3)  is 
+The $j$--th equation ($j = 2, \ldots, L-1$) in the array (@eq-crank3)  is 
 $$-a_3C_{j-1}+a_1C_j-a_2C_{j+1} = z_j\; .$$
 Supposing @eq-crank101 holds and using it to substitute for $C_{j-1}$, we have
 $$-a_3\left(u_{j-1} + b_{j-1}C_{j}\right) +a_1C_j-a_2C_{j+1} = z_j \quad\Longleftrightarrow\quad C_{j} = u_{j} + b_{j}C_{j+1}\; ,$$
@@ -303,10 +303,10 @@ b_j &= \frac{a_2}{a_1-a_3b_{j-1}}\;.
 \end{align*}
 This establishes that @eq-crank101 holds for each $j = 2, \ldots, L$.
 
-The last equation in the array (equation @eq-crank4bb) is 
+The last equation in the array (@eq-crank4bb) is 
 $$
 C_L = z_L + b_LC_{L-1}\; .
-$$
+$$ {#eq-crankC_L}
 Our induction argument gives us
 $$C_{L-1} = u_{L-1} + b_{L-1}C_{L}\; ,$$
 and when we combine these we have two equations in two unknowns and can solve for $C_L$ as
@@ -347,7 +347,7 @@ End Function
 
 ### Crank-Nicolson for European Options
 
-We will demonstrate the Crank-Nicolson method by valuing a European call.  Any other path-independent European derivative is valued in the same way, by appropriately redefining the value of the derivative at the final date and redefining the constants $z_1$ and $z_L$ in the boundary conditions @eq-crank4aabbcombined at the bottom and top of the grid.  
+We will demonstrate the Crank-Nicolson method by valuing a European call.  Any other path-independent European derivative is valued in the same way, by appropriately redefining the value of the derivative at the final date and redefining the constants $z_1$ and $z_L$ in the boundary conditions @eq-crank4aa - @eq-crank4bb at the bottom and top of the grid.  
 
 As elsewhere in this chapter, $N$ denotes the number of time periods, and $2M+1$ will be the number of $x$ values on the grid.  We use the symbol $D$ to denote the distance of the top (or bottom) of the grid from $\log S(0)$.  In other words, $D = x_M-x_0$.  A reasonable value for $D$ would be three standard deviations for $\log S$, which would mean $D = |\nu|T +3 \sigma\sqrt{T}$. For example, for a one-year option on a stock with a volatility of 30\%, it should suffice to input $D=1$.  
 
@@ -489,7 +489,7 @@ Create a VBA function \verb!European_Call_Explicit! that uses the explicit metho
 
 ::: {#exr-nolabel}
 
-Write the system of equations @eq-implicit for the implicit method, together with boundary conditions of the form @eq-crank4aabbcombined as a matrix system and solve for $u_j$ and $b_j$ in @eq-crank101combined, as in the subsection that defines the function \verb!CrankNicolson!.
+Write the system of equations @eq-implicit for the implicit method, together with boundary conditions of the form @eq-crank4aa - @eq-crank4bb as a matrix system and solve for $u_j$ and $b_j$ in @eq-crank101 - @eq-crankC_L, as in the subsection that defines the function \verb!CrankNicolson!.
 :::
 
 ::: {#exr-nolabel}

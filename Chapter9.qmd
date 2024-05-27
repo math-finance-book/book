@@ -56,7 +56,7 @@ $$ {#eq-prob3}
 
 
 
-We can solve the system @eq-prob13combined, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a VBA function for valuing an American spread call option are given in @sec-s_montecarlo_matlab.  This function operates much like the binomial valuation of American options described in @sec-c_introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
+We can solve the system @eq-prob1 - @eq-prob3, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a VBA function for valuing an American spread call option are given in @sec-s_montecarlo_matlab.  This function operates much like the binomial valuation of American options described in @sec-c_introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
 The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.  
 
 Likewise, in an $N$--period model for a basket option written on three assets, there are $(n+1)^3$ combinations of nodes to be considered at date $n$; if there are five assets, there are $(n+1)^5$ combinations, etc.  Thus, the computation time required increases exponentially with the number of assets.  This can be a serious problem.  For example, with five assets and $N=99$, we would have $100^5$ (10 billion) combinations.  As this suggests, problems with multiple assets quickly become intractable in a binomial framework.  This is called the curse of dimensionality. \index{curse of dimensionality}
@@ -120,7 +120,7 @@ $$ {#eq-a3}
 
 These three equations in the four coefficients $a_{ij}$ leave one degree of freedom.  We choose to take $a_{12}=0$ and then solve for the other three.
 
-In matrix notation, the system @eq-a13combined plus the condition $a_{12}=0$ can be written as the equation
+In matrix notation, the system @eq-a1 - @eq-a3 plus the condition $a_{12}=0$ can be written as the equation
 $$\begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}\begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}^\top = \begin{pmatrix}\sigma_1^2 & \rho\sigma_1\sigma_2 \\\rho\sigma_1\sigma_2 & \sigma_2^2\end{pmatrix}\; ,$$
 where $^\top$ denotes the matrix transpose.  The matrix on the right hand side is the covariance matrix \index{covariance matrix} of the continuously-compounded annual returns (changes in log asset prices).  Choosing the $a_{ij}$ so that the lower triangular matrix \index{lower triangular matrix}
 $$A \equiv \begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}$$
@@ -129,7 +129,7 @@ $$AA^\top = \text{covariance matrix}$$
 is called the \index{Cholesky decomposition}
 the Cholesky decomposition of the covariance matrix.  Given any number $L$ of assets, provided none of the assets is redundant (perfectly correlated with a portfolio of the  others), the Cholesky decomposition of the $L\times L$ covariance matrix always exists. An algorithm for computing the Cholesky decomposition is given in @sec-s_montecarlo_matlab. 
 
-We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoabcombined.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in @sec-s_mc_europeans.  The value of a basket call option at its maturity $T$ is 
+We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoa - @eq-mc_twob.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in @sec-s_mc_europeans.  The value of a basket call option at its maturity $T$ is 
 $$\max\left(0,\;\sum_{i=1}^L w_iS_i(T)-K\right)\; ,$$
 where $L$ is the number of assets in the basket (portfolio) and $w_i$ is the weight of the $i$--th asset in the basket.
 The logarithm of the $i$--th asset price at maturity is simulated as
@@ -178,7 +178,7 @@ In terms of the discussion above, the random variable  the mean of which we want
 $$x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\; .$$
 A random variable $y$ that will be closely correlated to $x$ is
 $$y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S(t_i)/N} - K^*,0\right)\; .$$
-The mean $\phi$ of $y$ under the risk-neutral measure is given in the pricing formula @eq-disc_geom_avg_call. 
+The mean $\phi$ of $y$ under the risk-neutral measure is given in the pricing @eq-disc_geom_avg_call. 
 We can use the sample mean of $y$ and its known mean $\phi$ to adjust the sample mean of $x$ as an estimator of the value of the average-price call.  Generally, the estimated adjustment coefficient $\hat{\beta}$ will be quite close to 1.  
 
 ## Accelerating Binomial Convergence
@@ -684,20 +684,24 @@ and
 \begin{center}
 \verb!American_Put_Binomial_BS_RE!
 \end{center}
-for various values of $N$.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, and $T$.  To assess the quality of the estimates, provide also the estimate given by the function \verb!American_Put_Binomial! with a large value of $N$ (say $N = 1000$).  :::
+for various values of $N$.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, and $T$.  To assess the quality of the estimates, provide also the estimate given by the function \verb!American_Put_Binomial! with a large value of $N$ (say $N = 1000$).  
+:::
 
 ::: {#exr-nolabel}
  Estimate the value of option (c) in @exr-e_averagehedge using the function 
 \begin{center}
 \verb!Average_Price_Call_MC!.
 \end{center}
-Complete the simulations in @exr-e_averagehedge2 by including the cost of the options for hedge (c).:::
+Complete the simulations in @exr-e_averagehedge2 by including the cost of the options for hedge (c).
+:::
 
 ::: {#exr-e_basketbinomial}
-  Create a VBA function \verb!European_Basket_Call_Binomial! to value a basket option on two assets. :::
+  Create a VBA function \verb!European_Basket_Call_Binomial! to value a basket option on two assets. 
+::: 
 
 ::: {#exr-nolabel}
- Create a VBA function \verb!European_Basket_Call_Binomial_RE! that calls the function from @exr-e_basketbinomial and uses Richardson extrapolation to estimate the value of a basket call in a binomial model with $N=\infty$.  :::
+ Create a VBA function \verb!European_Basket_Call_Binomial_RE! that calls the function from @exr-e_basketbinomial and uses Richardson extrapolation to estimate the value of a basket call in a binomial model with $N=\infty$.  
+ :::
 
 ::: {#exr-nolabel}
  Create a VBA function \verb!European_Basket_Call_MC_AV! that uses Monte Carlo with an antithetic variate to value a basket call option. Create an Excel worksheet to compare the standard errors of the estimates from the functions \verb!European_Basket_Call_MC! and \verb!European_Basket_Call_MC_AV! for a call on a basket of three assets.  Allow the user to input $S$, $K$, $r$, $\cov$, $q$, $w$, $T$, and~$M$.  Recall that $S$, $\cov$, $q$ and $w$ are arrays.
@@ -705,7 +709,8 @@ Complete the simulations in @exr-e_averagehedge2 by including the cost of the op
 
 ::: {#exr-e_richextrap2}
 
-Create an Excel worksheet to compare the estimates of the value of a basket call on two assets given by the binomial model (with and without Richardson extrapolation) and Monte Carlo (with and without an antithetic variate) for various values of $N$ and $M$.  To assess the quality of the estimates, provide also the estimate given by the binomial model without Richardson extrapolation with $N=100$.  :::
+Create an Excel worksheet to compare the estimates of the value of a basket call on two assets given by the binomial model (with and without Richardson extrapolation) and Monte Carlo (with and without an antithetic variate) for various values of $N$ and $M$.  To assess the quality of the estimates, provide also the estimate given by the binomial model without Richardson extrapolation with $N=100$.  
+:::
 
 ::: {#exr-nolabel}
  Suppose you must purchase 100 units of each of two assets at the end of the quarter ($T=0.25$).  You want to hedge the cost at the beginning of the quarter.  Use simulation in an Excel worksheet to compare the quality of the following hedges (assuming 100 contracts for each option in (a) and 200 contracts in (b) and (c)):
@@ -721,7 +726,8 @@ Assume the two assets have the same initial price $S$ and the options are all at
 :::
 
 ::: {#exr-nolabel}
- Compute the prices of the options in the previous exercise (using a binomial model or Monte Carlo for the basket option).  Compare the hedges including the costs of the options as in @exr-e_standardknockout2. :::
+ Compute the prices of the options in the previous exercise (using a binomial model or Monte Carlo for the basket option).  Compare the hedges including the costs of the options as in @exr-e_standardknockout2. 
+ :::
 
 ::: {#exr-nolabel}
  Create a VBA function \verb!American_Spread_Put_Binomial_RE! that calls \verb!American_Spread_Put_Binomial! and uses Richardson extrapolation to estimate the value of an American spread put for $N=\infty$.  Create an Excel spreadsheet to compare the estimates of the functions as in @exr-e_richextrap2.
