@@ -11,7 +11,7 @@ In the first section, we introduce a fundamental construct: the yield curve, by 
 
 Given prices of discount (zero-coupon) bonds of all maturities, any coupon paying bond can be priced as a portfolio of discount bonds.  The relationship between time to maturity and the price of the corresponding discount bond with \$1 face value is sometimes called the discount function.  An equivalent concept is the yield curve, \index{yield curve}which is the relationship between time to maturity and the yield of the corresponding discount bond.  Yields can be quoted according to different compounding conventions (semi-annual being the most common), but we will continue to use continuous compounding.^[The relationship between the annually compounded rate $y_a$, the semi-annually compounded rate $y_s$ and the continuously compounded rate $y_c$ is  $\mathrm{e]^{y_c} = 1+y_a = (1+y_s/2)^2$.}
 With this convention, the yield of a zero-coupon bond \index{discount bond yield} with  \$1 face value having $\tau$ years to maturity and price $P$ is defined to be the rate $y$ such that
-$P = \mathrm{e}^{-y\tau}$.  Denoting this yield $y$ at maturity $\tau$ by $y(\tau)$, the yield curve is the collection of yields $\{y(\tau)| \tau>0\}$, conventionally plotted with maturity~$\tau$ on the horizontal axis and the yields $y(\tau)$ on the vertical.  Usually (but certainly not always) this is an upward sloping curve, meaning that rates at longer maturities are higher than rates at shorter maturities.  
+$P = \mathrm{e}^{-y\tau}$.  Denoting this yield $y$ at maturity $\tau$ by $y(\tau)$, the yield curve is the collection of yields $\{y(\tau)| \tau>0\}$, conventionally plotted with maturity $\tau$ on the horizontal axis and the yields $y(\tau)$ on the vertical.  Usually (but certainly not always) this is an upward sloping curve, meaning that rates at longer maturities are higher than rates at shorter maturities.  
 
 Some amount of estimation is necessary to compute the yield curve.  We would like to know yields at arbitrary maturities, but there are not enough actively traded zero-coupon bonds to provide this information.  Thus, we have to fill in the missing maturities.  We may also use coupon-paying bonds (or swap rates, as we will discuss later) to estimate the yields.
 
@@ -46,14 +46,14 @@ $$
 \text{Equality of first derivatives:} & \quad &3a_0 \tau_1^2 + 2b_0 \tau_1 + c_0  &= &c_1\; ,\\
 \text{Equality of second derivatives:} & \quad &6a_0 \tau_1 + 2b_0  &= &2b_1\;.
 \end{array}$$
-Thus, given the coefficients $a_0, b_0, c_0, d_0$, the only free coefficient for the second polynomial is~$a_1$.  Likewise, at the second knot point $\tau_2$, we want the adjacent polynomials to agree with regard to:
+Thus, given the coefficients $a_0, b_0, c_0, d_0$, the only free coefficient for the second polynomial is $a_1$.  Likewise, at the second knot point $\tau_2$, we want the adjacent polynomials to agree with regard to:
 $$
 \begin{array}{llrcl}
 \text{Yields:} &\quad &a_1 (\tau_2-\tau_1)^3 + b_1(\tau_2- \tau_1)^2 + c_1 (\tau_2-\tau_1) + d_1 &= &d_2\; ,\\
 \text{First derivatives:} & \quad &3a_1 (\tau_2-\tau_1)^2 + 2b_1(\tau_2- \tau_1) + c_1  &= &c_2\; ,\\
 \text{Second derivatives:} & \quad &6a_1 (\tau_2-\tau_1) + 2b_1  &= &2b_2\;.
 \end{array}$$
-Thus, the only free coefficient for the third polynomial is~$a_2$.
+Thus, the only free coefficient for the third polynomial is $a_2$.
 Continuing in this way, we see that the cubic spline is defined by the knot points and the coefficients $a_0$, $b_0$, $c_0$, $d_0$, $a_1$, $a_2$, \ldots, $a_n$.  One wants to choose the knot points (hopefully, not too many) and these coefficients so that the relations @eq-yieldcurve1 hold as closely as possible in some sense.  For more on this subject, a good reference is James and Webber [@JW].
 
 ## LIBOR
@@ -86,7 +86,7 @@ $$
 P(t,t_0) - P(t,t_N) - \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(t,t_i)\;.
 $$ {#eq-swapvalue100}
 
-To see this, note that $P(t,t_0)$ is the cost at date~$t$ of receiving \$1 at $t_0$.  This \$1 can be invested at $t_0$ at the rate $\mathcal{R}_0$ and the amount $\mathcal{R}_0 \,\Delta t$ withdrawn at $t_1$ with the \$1 principal  rolled over at the new rate $\mathcal{R}_1$.  Continuing in this way, one obtains the cash flow $\mathcal{R}_i\,\Delta t$ at each payment date $t_{i+1}$ and the recovery of the \$1 principal at date $t_N$.  The value of the \$1 principal at date $t_N$ is negated in expression @eq-swapvalue100 by the term 
+To see this, note that $P(t,t_0)$ is the cost at date $t$ of receiving \$1 at $t_0$.  This \$1 can be invested at $t_0$ at the rate $\mathcal{R}_0$ and the amount $\mathcal{R}_0 \,\Delta t$ withdrawn at $t_1$ with the \$1 principal  rolled over at the new rate $\mathcal{R}_1$.  Continuing in this way, one obtains the cash flow $\mathcal{R}_i\,\Delta t$ at each payment date $t_{i+1}$ and the recovery of the \$1 principal at date $t_N$.  The value of the \$1 principal at date $t_N$ is negated in expression @eq-swapvalue100 by the term 
 $-P(t,t_N)$.  Thus, $P(t,t_0)-P(t,t_N)$ is the value of the floating rate payments on the notional principal.  On the other hand, $\bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(t,t_i)$ is the value of the fixed-rate payments.  Therefore, expression @eq-swapvalue100 is the difference in the values of the floating and fixed-rate legs. \index{fixed-rate leg} \index{floating-rate leg}
 
 As with a forward price, the swap rate is usually set so that the value of the swap is zero at initiation.  A swap initiated at date $t \leq t_0$ has zero value at initiation if the fixed rate $\bar{\mathcal{R}}$ equates the expression @eq-swapvalue100 to zero.  This means that $\bar{\mathcal{R}}=\mathcal{R}(t)$, where $\mathcal{R}(t)$ is defined by
@@ -107,7 +107,7 @@ Consider for example a collection of nineteen swaps at date~0 with semi-annual p
 
 ## Yield to Maturity, Duration, and Convexity {#sec-s_duration}
 
-Consider a bond with cash flows $C_1, \ldots, C_N$ at dates $u_1 < \cdots < u_N$ and price~$P$ at date $t$, where $t< u_1$.  Write $\tau_j = u_j-t$ as the time remaining until the $j$--th cash flow is paid.  The (continuously compounded) yield to maturity \index{yield to maturity} of the bond at date $t$ is defined to be the rate $\mathbf{y}$ such that
+Consider a bond with cash flows $C_1, \ldots, C_N$ at dates $u_1 < \cdots < u_N$ and price $P$ at date $t$, where $t< u_1$.  Write $\tau_j = u_j-t$ as the time remaining until the $j$--th cash flow is paid.  The (continuously compounded) yield to maturity \index{yield to maturity} of the bond at date $t$ is defined to be the rate $\mathbf{y}$ such that
 $$
 P = \sum_{j=1}^N \mathrm{e}^{-\mathbf{y}\tau_j}C_j\;.
 $$ {#eq-yieldtomaturity}
@@ -119,7 +119,7 @@ or, equivalently,
 $$\frac{\mathrm{d} P}{P} = -\sum_{j=1}^N \frac{\mathrm{e}^{-\mathbf{y}\tau_j}C_j}{P}\tau_j\, \mathrm{d} \mathbf{y}\; .$$
 The factor 
 $$\sum_{j=1}^N \frac{\mathrm{e}^{-\mathbf{y}\tau_j}C_j}{P}\tau_j$$
-is called the Macaulay duration \index{Macaulay duration} of the bond, and we will simplify this to duration.  \index{duration} It is a weighted average of the times to maturity $\tau_j$ of the cash flows, the weight on each time~$\tau_j$ being the fraction of the bond value that the cash flow constitutes (using the same rate $\mathbf{y}$ to discount all of the cash flows).   Thus, we have
+is called the Macaulay duration \index{Macaulay duration} of the bond, and we will simplify this to duration.  \index{duration} It is a weighted average of the times to maturity $\tau_j$ of the cash flows, the weight on each time $\tau_j$ being the fraction of the bond value that the cash flow constitutes (using the same rate $\mathbf{y}$ to discount all of the cash flows).   Thus, we have
 $$
 \frac{\mathrm{d} P}{P} = - \text{Duration} \times \,\mathrm{d} \mathbf{y}\;.
 $$ {#eq-durationreturn}
@@ -152,7 +152,7 @@ $$ {#eq-newduration100}
 
 This new definition of duration differs from the previous by using the yields of discount bonds to define the fraction of the bond value that each cash flow contributes, rather than the yield to maturity.  If the changes in the yields of discount bonds are equal, then we say that there has been a parallel shift in the yield curve---it has moved up or down with the new curve being at each point the same distance from the old.  Our previous discussion shows that duration hedging works if we use the new @eq-newduration100 of duration and if the yield curve shifts in a parallel fashion.  Of course, parallel shifts in the yield curve are not the only, or even most common, types of shifts.  In the next two sections, we discuss hedging against more general types of shifts in the yield curve.
 
-Something very similar to duration hedging works if we can continuously rebalance the hedge and there is only a single factor determining the yield curve (meaning a single Brownian motion driving all yields).  To understand this, we must first note that  the expressions given in this section for $\mathrm{d} P$ are not the Ito differential, which explains how the bond price evolves over time and would include a second-derivative term.  For example, in @eq-durationreturn we are simply asking how different the price would be if the yield to maturity had been different at a given point in time.  To define the Ito differential, let now $\mathbf{y}(t)$ denote the yield to maturity of the bond at date~$t$.   Equation @eq-yieldtomaturity can be restated as
+Something very similar to duration hedging works if we can continuously rebalance the hedge and there is only a single factor determining the yield curve (meaning a single Brownian motion driving all yields).  To understand this, we must first note that  the expressions given in this section for $\mathrm{d} P$ are not the Ito differential, which explains how the bond price evolves over time and would include a second-derivative term.  For example, in @eq-durationreturn we are simply asking how different the price would be if the yield to maturity had been different at a given point in time.  To define the Ito differential, let now $\mathbf{y}(t)$ denote the yield to maturity of the bond at date $t$.   Equation @eq-yieldtomaturity can be restated as
 $$
 P(t) = f(t,\mathbf{y}(t)) = \sum_{j=1}^N \mathrm{e}^{\mathbf{y}(t)(u_j-t)}C_j\;.
 $$ {#eq-yieldtomaturityt}
@@ -171,10 +171,10 @@ $$\frac{\mathrm{d} P}{P} = \frac{1}{P}\left(\frac{\partial f}{\partial t}  + \fr
 
 This section will describe a popular statistical method for determining the factors that have the most impact on the yield curve.  We consider yields at fixed maturities $\tau_1, \ldots, \tau_N$, the yield for maturity $\tau_j$ at date $t$ being denoted $y(t,\tau_j)$.  We assume that we have a sample of past yields at dates $t_0, \ldots, t_M$ at equally spaced dates.  Thus, $t_i-t_{i-1} = \Delta t$  for some $\Delta t$ and each $i$.  We compute the changes in yields:
 $$\Delta_{ij} = y(t_i, \tau_j) - y(t_{i-1}, \tau_j)\; .$$
-Thus we are looking at the changes in the yield curve over time periods of length $\Delta t$, focusing on $N$ points on the yield curve defined by the maturities~$\tau_j$.  Let $V$ denote the sample covariance matrix \index{covariance matrix} of the changes in  yields: 
+Thus we are looking at the changes in the yield curve over time periods of length $\Delta t$, focusing on $N$ points on the yield curve defined by the maturities $\tau_j$.  Let $V$ denote the sample covariance matrix \index{covariance matrix} of the changes in  yields: 
  the element in row $j$ and column $k$ of $V$ is the sample covariance of the changes in yields at maturities $\tau_j$ and $\tau_k$; thus, the diagonal elements are the sample variances.^[The sample covariance matrix $V$  is an estimate of the  unconditional covariances.  It is a common finding that variances and covariances change over time.  Thus,  we could (and probably should) use methods such as those described in @sec-c_stochasticvolatility] to estimate the covariance matrix.  The following applies equally well to other estimates $V$ of the covariance matrix.  
 
-The method of principal components \index{principal components} is to compute the eigenvectors and eigenvalues of the estimated covariance matrix~$V$.  An eigenvector \index{eigenvector} is a vector~$x$ for which there corresponds a number $\lambda$ such that $Vx = \lambda x$.  The number $\lambda$ is called the eigenvalue \index{eigenvalue} corresponding to the eigenvector $x$.  Given the $N \times N$ symmetric matrix $V$, we can construct an $N\times N$ matrix $C$ whose columns are eigenvectors of $V$ and an $N \times N$ diagonal matrix $D$ containing the eigenvalues of $V$ on the diagonal.  The eigenvectors can be normalized to have unit length and to be mutually orthogonal, which means that the matrix~$C$ of eigenvectors has the property that $C^{-1} = C^\top$, where $C^{-1}$ denotes the inverse of $C$ and $C^\top$ its transpose.  The property $Vx = \lambda x$ for the columns~$x$ of $C$ implies that $VC= CD$.  Hence $C^\top VC = C^\top CD = D$.
+The method of principal components \index{principal components} is to compute the eigenvectors and eigenvalues of the estimated covariance matrix $V$.  An eigenvector \index{eigenvector} is a vector $x$ for which there corresponds a number $\lambda$ such that $Vx = \lambda x$.  The number $\lambda$ is called the eigenvalue \index{eigenvalue} corresponding to the eigenvector $x$.  Given the $N \times N$ symmetric matrix $V$, we can construct an $N\times N$ matrix $C$ whose columns are eigenvectors of $V$ and an $N \times N$ diagonal matrix $D$ containing the eigenvalues of $V$ on the diagonal.  The eigenvectors can be normalized to have unit length and to be mutually orthogonal, which means that the matrix $C$ of eigenvectors has the property that $C^{-1} = C^\top$, where $C^{-1}$ denotes the inverse of $C$ and $C^\top$ its transpose.  The property $Vx = \lambda x$ for the columns $x$ of $C$ implies that $VC= CD$.  Hence $C^\top VC = C^\top CD = D$.
 
 This can be understood as a factor model \index{factor model} for the changes in yields, where there are as many factors as maturities.  At date $t_i$, the vector of factor realizations $z_{ij}$ is computed as
 $$

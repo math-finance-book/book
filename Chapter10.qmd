@@ -32,7 +32,7 @@ $$
 rC = \frac{\partial C}{\partial t}+ \nu\frac{\partial C}{\partial X}+ \frac{1}{2}\sigma^2\frac{\partial^2 C}{\partial X^2}\;.
 $$ {#eq-3}
 
-This equation is the fundamental pde.  It is an equation that we want to solve for the function~$C$.  Every derivative written on $S$ satisfies this same equation.  Different derivatives have different values because of boundary conditions.  The boundary conditions are the intrinsic value at maturity, optimality conditions for early exercise, barriers and the like.
+This equation is the fundamental pde.  It is an equation that we want to solve for the function $C$.  Every derivative written on $S$ satisfies this same equation.  Different derivatives have different values because of boundary conditions.  The boundary conditions are the intrinsic value at maturity, optimality conditions for early exercise, barriers and the like.
 
 To translate the terms in @eq-3 into more familiar ones, notice that, because $S=\mathrm{e}^X$, we have
 $$\frac{\partial S}{\partial X}=\mathrm{e}^X=S\; .$$  Therefore, by the chain rule of calculus,
@@ -53,7 +53,7 @@ To numerically solve the fundamental pde, we consider a discrete grid on the $(t
 
 For specificity, we will consider a call option, though the discussion in this section applies to any derivative.  We will compute a value for the call at each of the points on the grid.  Then we return the value of the call at the point $(t_0,x_0)$.  
 
-Consider a point $(t_i, x_j)$.  We could denote the estimated value of the call at this point by $C_{ij}$ but for now we will just use the symbol $C$.  Think of $t$ being on the horizontal axis and $x$ on the vertical axis.  There are four points that can be reached from $(t_i,x_j)$ by one step (an increase or decrease) in either~$t$ or $x$.  Let's denote the estimated call value at $(t_i, x_j+\Delta x)$ as $C_{\text{up}}$, the value at $(t_i,x_j-\Delta x)$ as $C_{\text{down}}$, the value at $(t_i+\Delta t, x_j)$ as $C_{\text{right}}$ and the value at $(t_i-\Delta t,x_j)$ as $C_{\text{left}}$.
+Consider a point $(t_i, x_j)$.  We could denote the estimated value of the call at this point by $C_{ij}$ but for now we will just use the symbol $C$.  Think of $t$ being on the horizontal axis and $x$ on the vertical axis.  There are four points that can be reached from $(t_i,x_j)$ by one step (an increase or decrease) in either $t$ or $x$.  Let's denote the estimated call value at $(t_i, x_j+\Delta x)$ as $C_{\text{up}}$, the value at $(t_i,x_j-\Delta x)$ as $C_{\text{down}}$, the value at $(t_i+\Delta t, x_j)$ as $C_{\text{right}}$ and the value at $(t_i-\Delta t,x_j)$ as $C_{\text{left}}$.
 
 We want to force  @eq-3 to hold on the grid.  To estimate $\partial C/\partial X$ and $\partial^2 C/\partial X^2$, we make exactly the same calculations we made to estimate deltas and gammas in a binomial model.  At the point $(t_i,x_j)$, we estimate
 
@@ -230,7 +230,7 @@ For barrier options, the boundary information @eq-cn_boundary can be replaced by
 
 ### Crank-Nicolson
 
-We will create a program that solves a system of equations of the form @eq-crank3, @eq-crank4a and @eq-crank4b.  We input the vector $a$ of coefficients, a vector $y$ of dimension $2M+1$ containing the estimated values of the derivative at any date $t_{i+1}$, an integer $L$ from which $M$ is defined as $M=(L-1)/2$ (i.e., $L=2M+1$).  The function will return the vector of values at date~$t_i$.  
+We will create a program that solves a system of equations of the form @eq-crank3, @eq-crank4a and @eq-crank4b.  We input the vector $a$ of coefficients, a vector $y$ of dimension $2M+1$ containing the estimated values of the derivative at any date $t_{i+1}$, an integer $L$ from which $M$ is defined as $M=(L-1)/2$ (i.e., $L=2M+1$).  The function will return the vector of values at date $t_i$.  
 
 We will write the boundary conditions @eq-crank4a and @eq-crank4b, respectively, in the more general forms
 
@@ -419,7 +419,7 @@ End Function
 
 To price a down-and-out (or up-and-out option), we put the bottom (or top) of the grid at the boundary.  The boundary condition that we use is that the value at the boundary is zero.   We will consider the example of a down-and-out call option.  In this case, the boundary condition at the bottom of the grid is @eq-crank4aa with $z_1=0$ and $b_1 = 0$.  The boundary condition at the top is the same as for an ordinary call.  We can easily handle a rebate paid when the option is knocked out by inputting the value of the rebate as $z_1$.  
 
-The main new issue that we encounter in valuing barriers is locating the boundary of the grid at the barrier.  For the down-and-out, we will input the value of the stock price at which the option is knocked out as \verb!Bar!.  We want the bottom of the grid to lie at the natural logarithm of this number.  This will influence our choice of the space step $\Delta x$, because we want to have an integer number of steps between the bottom of the grid and $\log S(0)$.  We assume that the value $M$ input by the user represents the desired number of space steps above $\log S(0)$.  We start with $\Delta x=D/M$ as an initial estimate of the size of the space step.  We then decrease it, if necessary, to ensure that the distance between \verb!Bar! and $\log S(0)$ is an integer multiple of $\Delta x$.  We then increase~$M$, if necessary, to ensure that the top of the grid will still be at or above $D+\log S(0)$.  Finally, we define the top of the grid to be at $\log S(0) +M \cdot \Delta x$.  
+The main new issue that we encounter in valuing barriers is locating the boundary of the grid at the barrier.  For the down-and-out, we will input the value of the stock price at which the option is knocked out as \verb!Bar!.  We want the bottom of the grid to lie at the natural logarithm of this number.  This will influence our choice of the space step $\Delta x$, because we want to have an integer number of steps between the bottom of the grid and $\log S(0)$.  We assume that the value $M$ input by the user represents the desired number of space steps above $\log S(0)$.  We start with $\Delta x=D/M$ as an initial estimate of the size of the space step.  We then decrease it, if necessary, to ensure that the distance between \verb!Bar! and $\log S(0)$ is an integer multiple of $\Delta x$.  We then increase $M$, if necessary, to ensure that the top of the grid will still be at or above $D+\log S(0)$.  Finally, we define the top of the grid to be at $\log S(0) +M \cdot \Delta x$.  
 
 \addcontentsline{lof}{figure}{Down And Out Call CN}
 \begin{verbatim}

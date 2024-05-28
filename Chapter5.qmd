@@ -25,7 +25,7 @@ $$
 \sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^{M} x_i^2-M\bar{x}^2\right)}\;.
 $$ {#eq-standarderror}
  \index{standard error}
-Recall that $\bar{x}$ plus or minus 1.96 standard errors is a 95\% confidence interval for~$\mu$ when the $x_i$ are normally distributed.
+Recall that $\bar{x}$ plus or minus 1.96 standard errors is a 95\% confidence interval for $\mu$ when the $x_i$ are normally distributed.
 In the context of European option valuation, the expression @eq-standarderror gives the  standard error of the estimated option value at maturity, and multiplication of @eq-standarderror by $\mathrm{e}^{-rT}$ gives the standard error of the estimated date--0 option value.
 
 To obtain an estimate with an acceptably small standard error may require a large sample size and hence a relatively large amount of computation time.  The complexities of Monte Carlo methods arise from trying to reduce the required sample size.  In @sec-c_montecarlo, we will describe two such methods (antithetic variates and control variates).   For those who want to engage in a more detailed study of Monte Carlo methods, the book of Glasserman [@Glasserman] is highly recommended.  J\"ackel [@Jackel] is useful for more advanced readers, and Clewlow and Strickland [@CS] and  Brandimarte [@Brandimarte] are useful references that include computer code.
@@ -70,7 +70,7 @@ In the binomial model, we assume that if the stock price is $S$ at the beginning
 \end{picture}
 \end{center}
 
-A tree constructed like this is recombining in \index{recombining tree} the sense that the stock price after an up-down sequence is the same as after a down-up sequence.  This is very important for reducing the computation time.  For example, the number of nodes at the final date is $N+1$ in a recombining tree, where~$N$ is the number of periods, but it is $2^N$ for a non-recombining (sometimes called bushy) tree.  Hence, the computation time will increase linearly with~$N$ for a recombining tree but exponentially with $N$ for a non-recombining tree.  Unfortunately, this computational savings is generally not possible for path-dependent options, because the number of distinct paths through a tree (whether recombining or not) is again $2^N$.
+A tree constructed like this is recombining in \index{recombining tree} the sense that the stock price after an up-down sequence is the same as after a down-up sequence.  This is very important for reducing the computation time.  For example, the number of nodes at the final date is $N+1$ in a recombining tree, where $N$ is the number of periods, but it is $2^N$ for a non-recombining (sometimes called bushy) tree.  Hence, the computation time will increase linearly with $N$ for a recombining tree but exponentially with $N$ for a non-recombining tree.  Unfortunately, this computational savings is generally not possible for path-dependent options, because the number of distinct paths through a tree (whether recombining or not) is again $2^N$.
 
  
 The value of a European derivative is of course the discounted expectation of its value at maturity, discounting at the risk-free rate and taking the expectation under the risk-neutral measure.  The binomial tree allows us to approximate the expectation very easily.  We simply sum over the nodes of the tree at the option maturity and weight each node by its binomial probability.  In an $N$-period model, the probability of the top node is $p^N$, since the stock must go up each time to reach the top node.  There are $N$ paths reaching the second node from the top (since the period of the single down move could be any one of the $N$ periods) and each such path has probability $p^{N-1}(1-p)$; therefore, the probability of reaching the second node from the top is $Np^{N-1}(1-p)$.  More generally, the probability of going up $i$ times and down $N-i$ times is
@@ -131,7 +131,7 @@ Early exercise \index{early exercise} features are very simple to handle in a bi
 \end{picture}
 \end{center}
 
-Early exercise is more important for puts than for calls (as discussed in @sec-s_fundamentalconcepts, an American call on a non-dividend-paying stock should not be exercised early) so we will change our symbol for the option value from $C$ to~$P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
+Early exercise is more important for puts than for calls (as discussed in @sec-s_fundamentalconcepts, an American call on a non-dividend-paying stock should not be exercised early) so we will change our symbol for the option value from $C$ to $P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
 $$
 P(i) = \max\left(0,K-u^{i}d^{N-i}S\right)\;,
 $$ {#eq-binomial003}
@@ -239,13 +239,13 @@ $$ {#eq-trig2}
 To estimate Greeks in any valuation model, one can run the valuation program twice, for two different parameter values, and then estimate the Greek as the difference in value divided by the difference in parameters.   For example, to estimate vega when the volatility of the underlying is $\sigma$, we could estimate the derivative value for a volatility of $0.99\sigma$ and for a volatility of $1.01\sigma$.  Denoting the former derivative value by $C_d$ and the latter by $C_u$, the vega can be estimated by 
 $$\frac{C_u-C_d}{1.01\sigma-0.99\sigma} = \frac{C_u-C_d}{0.02\sigma}\; .$$  We can in principle obtain a more precise estimate of the derivative by making a smaller change in the parameter (e.g., using $0.999\sigma$ and $1.001\sigma$) but computer round-off errors limit how small a parameter change one should take in practice.  
 
-To estimate the gamma when the price of the underlying is $S$, we need to estimate the derivative value at two other prices for the underlying, which we will call $S_u$ and $S_d$, with  $S_u>S>S_d$.  As just explained, the estimate of the delta (which we continue to denote by~$\delta$) would be
+To estimate the gamma when the price of the underlying is $S$, we need to estimate the derivative value at two other prices for the underlying, which we will call $S_u$ and $S_d$, with  $S_u>S>S_d$.  As just explained, the estimate of the delta (which we continue to denote by $\delta$) would be
 $$
 \delta = \frac{C_u-C_d}{S_u-S_d}\;,
 $$ {#eq-binomialdelta100}
 
-where $C_u$ denotes the derivative value when the underlying is equal to $S_u$ and~$C_d$ denotes the derivative value when the underlying is equal to $S_d$.
-Letting~$C$ denote the derivative value when the underlying is equal to $S$, two other obvious estimates of the delta are
+where $C_u$ denotes the derivative value when the underlying is equal to $S_u$ and $C_d$ denotes the derivative value when the underlying is equal to $S_d$.
+Letting $C$ denote the derivative value when the underlying is equal to $S$, two other obvious estimates of the delta are
 $$\delta_u = \frac{C_u-C}{S_u-S} \qquad \text{and} \qquad \delta_d = \frac{C-C_d}{S-S_d}\; .$$
 The first of these should be understood as an estimate of the delta when the price of the underlying is at the midpoint of $S_u$ and $S$, and the second is an estimate of the delta when the price of the underlying is at the midpoint of $S_d$ and $S$.  The distance between these midpoints is 
 $$\frac{S_u+S}{2} - \frac{S_d+S}{2} = \frac{S_u-S_d}{2}\; ,$$ so we obtain an estimate of $\Gamma$ (the derivative of $\delta$) as
@@ -276,7 +276,7 @@ Now consider the tree starting two periods from the initial date.  At the middle
 \put(11.5,12){$u^3S$}
 \end{picture}
 \end{center}
-Hence, the derivative price calculated at the middle node will be the price we are trying to estimate.  The derivative price at the top node will be the value of a derivative of maturity~$T$ when the initial price of the underlying is $u^2S$.  Similarly, the derivative price at the bottom node will be the value of a derivative of maturity $T$ when the initial price of the underlying is $d^2S$.  Thus, when we back up in the tree to this date, we will have all of the information we need to return an estimate of the derivative value and to return estimates of the delta and gamma, taking $S_u=u^2S$ and $S_d = d^2S$ in equations  @eq-binomialdelta100 and @eq-binomialgamma100.  We are not interested in the tree to the left of what is shown above.
+Hence, the derivative price calculated at the middle node will be the price we are trying to estimate.  The derivative price at the top node will be the value of a derivative of maturity $T$ when the initial price of the underlying is $u^2S$.  Similarly, the derivative price at the bottom node will be the value of a derivative of maturity $T$ when the initial price of the underlying is $d^2S$.  Thus, when we back up in the tree to this date, we will have all of the information we need to return an estimate of the derivative value and to return estimates of the delta and gamma, taking $S_u=u^2S$ and $S_d = d^2S$ in equations  @eq-binomialdelta100 and @eq-binomialgamma100.  We are not interested in the tree to the left of what is shown above.
 
 ## Monte Carlo Greeks I: Difference Ratios {#sec-s_montecarlogreeks1}
 
@@ -410,7 +410,7 @@ To compute pathwise estimates in other models and for other Greeks, we need the 
 ### Monte Carlo Valuation of a European Call
 We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions.  We will also estimate the delta by each of the methods described in @sec-s_montecarlogreeks1 and~\ref{s_montecarlogreeks2}.  Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates.
 
-In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process.  To estimate the option delta as a difference ratio $(C_u-C_d)/(S_u-S_d)$, we use the perturbations $S_u = 1.01S$ and $S_d = 0.99S$.  The inputs are the same as for the Black-Scholes formula plus the sample size~$M$ (the number of stock prices to be simulated).
+In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process.  To estimate the option delta as a difference ratio $(C_u-C_d)/(S_u-S_d)$, we use the perturbations $S_u = 1.01S$ and $S_d = 0.99S$.  The inputs are the same as for the Black-Scholes formula plus the sample size $M$ (the number of stock prices to be simulated).
 
 \addcontentsline{lof}{figure}{European Call MC}
 \begin{verbatim}
@@ -460,7 +460,7 @@ End Function
 
 For another example of Monte Carlo, we will value a European call option and estimate its standard error in a GARCH model.  The underlying asset price is simulated as in @sec-s_garch.  After each path of the underlying is simulated, we compute the date--T value of the option.  We sum these as the simulations proceed in order to compute the average value.  We also sum the squared date--~T option values in order to compute the standard error of the estimate of the date--0 option value.
 
-In addition to the inputs in the previous function, we input  the number $N$ of time periods in the interval $[0,T]$---implying a GARCH model for returns over time intervals of length $\Delta t = T/N$ under the risk-neutral measure---and the GARCH parameters $\kappa$, $\theta$, and~$\lambda$. To value a different type of European derivative, we would simply modify the statement 
+In addition to the inputs in the previous function, we input  the number $N$ of time periods in the interval $[0,T]$---implying a GARCH model for returns over time intervals of length $\Delta t = T/N$ under the risk-neutral measure---and the GARCH parameters $\kappa$, $\theta$, and $\lambda$. To value a different type of European derivative, we would simply modify the statement 
 \begin{center}
 \verb!CallV = Application.Max(0,Exp(LogS)-K)!.
  \end{center}
@@ -605,7 +605,7 @@ For j = 1 To N
 Next j
 \end{verbatim}
 
-Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.  Since we are backing up in the tree, we step backwards from $i=N-1$ to $i=0$.  At each date we start by defining the stock price at the bottom node.  At date $i$ there have been~$i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date~$i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date 0, we return the put value $P(0)$, the value at the bottom node, which is the only node at date~0.
+Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.  Since we are backing up in the tree, we step backwards from $i=N-1$ to $i=0$.  At each date we start by defining the stock price at the bottom node.  At date $i$ there have been $i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date $i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date 0, we return the put value $P(0)$, the value at the bottom node, which is the only node at date~0.
 
 
 \begin{verbatim}
@@ -698,6 +698,6 @@ End Function
  Modify the VBA function in the previous exercise to also return the estimated delta of the option and the standard error of the delta.
 :::
 ::: {#exr-nolabel}
- Repeat @exr-e_GARCHimpliedvols using the Heston model (the function developed in @exr-e_Hestoncall) to compute the call option prices, allowing the user to input $\gamma$ and~$\rho$ (instead of $\lambda$).  
+ Repeat @exr-e_GARCHimpliedvols using the Heston model (the function developed in @exr-e_Hestoncall) to compute the call option prices, allowing the user to input $\gamma$ and $\rho$ (instead of $\lambda$).  
 :::
 
