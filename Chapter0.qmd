@@ -12,7 +12,12 @@ Here is a snapshot of market statistics regarding call options on Apple stock (A
 import pandas as pd
 import yfinance as yf
 from datetime import datetime
-now = datetime.today().strftime('%a %d %b %Y, %I:%M%p')
+import pytz
+from datetime import datetime
+
+est = pytz.timezone('US/Eastern')
+fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+now = datetime.today().astimezone(est).strftime(fmt)
 
 ticker = "AAPL"          # ticker to pull
 kind = "call"           # call or put
@@ -34,7 +39,7 @@ df = (
 )
 
 df.lastTradeDate = df.lastTradeDate.map(
-    lambda x: x.strftime('%a %d %b %Y, %I:%M%p')
+    lambda x: x.astimezone(est).strftime(fmt)
 )
 
 # Formatting
