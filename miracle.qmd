@@ -1,0 +1,528 @@
+
+
+# Time Value of Money
+
+If an investment account earns a steady rate of return and funds are not withdrawn from the account, then the account balance will grow exponentially.  This is sometimes called the "miracle of compound interest."  @fig-miracle-exponential shows the growth of an investment account earning 8% per year, which is what the U.S. stock market earned in real terms over the thirty year period 1992-2021.  Each dollar grows to roughly $10 over a 30 year period at an 8% annual return.  The exponential nature of the growth can be seen from the figure.  Hover your cursor over the plot to see the exact values.
+
+```{python}
+#| label: fig-miracle-exponential
+#| fig-cap: "Growth of an investment account at different rates of return."
+
+import plotly.graph_objects as go
+import numpy as np
+
+trace1= go.Scatter(
+    x=np.arange(31), 
+    y=1.08**np.arange(31),
+    mode="lines",
+    name="8%"
+)
+
+trace2 = go.Scatter(
+    x=np.arange(31), 
+    y=1.04**np.arange(31),
+    mode="lines",
+    name="4%"
+)
+
+fig = go.Figure()
+fig.add_trace(trace1)
+fig.add_trace(trace2)
+string = "year %{x}<br>balance = $%{y:.2f}"
+fig.update_traces(hovertemplate=string)
+fig.update_layout(
+    template="none",
+    xaxis_title="Year",
+    yaxis_title="Account Balance",
+    yaxis_tickprefix="$", 
+    yaxis_tickformat=",.0f",
+    legend=dict(
+        yanchor="top", 
+        y=0.99, 
+        xanchor="left", 
+        x=0.01
+        )
+)
+fig.show()
+```
+
+Investments grow exponentially because they earn returns each year not just on the starting balance but also on all prior returns.  Exponential growth is much better than linear growth.  By "linear growth," we mean that doubling the investment period would double the account growth.  Exponential is much better than that.  As can be seen from the figure, $1 would grow to slightly more than $3 in 15 years at 8% per year, so the growth in value is slightly more than $2.  Doubling the investment horizon to 30 years increases the growth to $9 (from $1 to $10), so the growth in value is more than four times larger when the horizon doubles, with an 8% return.   Because of exponential growth, it is incredibly important to invest early and to refrain from borrowing whenever possible (unless the borrowing finances the purchase of long-term assets).
+
+Exponential growth also means that the rate of return one earns is extremely important.  For example, one might think that earning 8% is twice as good as earning 4%, but that is an understatement.  Over a 30 year period, earning 8% is more than four times as good as earning 4%---a dollar grows by $9 to $10 over 30 years at 8%, but it grows by less than $2.25 at 4%.
+
+The values in @fig-miracle-exponential are calculated from the following logic.  $1 invested for 1 year at 8% grows to $1.08.  After another year at 8%, we have 
+\begin{align*}
+1.08 + (1.08 \times 0.08) &= (1.08 \times 1) + (1.08 \times 0.08)\\ &  = 1.08 \times 1.08 \\ &= 1.08^2
+\end{align*}
+Continuing with this logic, we can see that after $n$ years, we have $1.08^n$.  Thus, the number of years is the exponent of the factor 1.08, which is the definition of exponential growth.
+
+As remarked above, the exponential growth is due to earning returns on top of returns or "interest on interest."  After two years at 8%, we have
+$$1.08^2 = 1 + 0.08 + 0.08 + (0.08\times 0.08).$$  
+Linear growth would be just adding up the returns $0.08 + 0.08$.  Exponential growth is due to the "interest on interest" term $0.08 \times 0.08.$  This is a small number when there are only two years, but these terms add up to a very large number over many years.  They are responsible for the growth in the investment account quadrupling (from $2.17 to $9.06) when the investment horizon is doubled (from 15 to 30 years) with 8% returns.
+
+## Future values and present values
+
+We call $1.08^n$ the future value of $1 for an $n$-year horizon and 8\% returns.  More generally, the future value of $1 for an $n$-year horizon is $(1+r)^n$, where $r$ is the rate of return (0.08 in our example).  The future value $(1+r)^n$ is what \\$1 grows to in $n$ years when the rate of return is $r$.  
+
+We also call $1 the present value of $(1+r)^n$.  It is how much you need to invest to reach $(1+r)^n$ in $n$ years when the rate of return is $r$.  More generally, [$x$ is the present value of $y$]{style="color: Tomato;"}, and [$y$ is the future value of $x$]{style="color: Tomato;"} when $x$ and $y$ are related as 
+$$y=x(1+r)^n,$$ 
+because $x$ will grow to $y$ in $n$ years when the rate of return is $r$.  
+
+We compute the future value $y$ from the present value $x$ by mutliplying $x$ by $(1+r)^n$, so we call $(1+r)^n$ the [future value factor]{style="color: Tomato;"}.  Because the relation $y=x(1+r)^n$ is equivalent to 
+$$x = \frac{y}{(1+r)^n},$$
+we can also compute the present value $x$ from the future value $y$ by dividing by $(1+r)^n$ or, equivalently, by multiplying by $1/(1+r)^n$.  Consequently, we call $1/(1+r)^n$ the [present value factor]{style="color: Tomato;"} (or discount factor).  The operation of multiplying by the present value factor is called discounting, and the operation of multiplying by the future value factor is called compounding.  We also call the rate of return $r$ the discount rate.
+
+The values in  @fig-miracle-exponential are future value factors at 4% and 8%, for various $n$.   @fig-miracle-pvfactors presents the analogous present value factors.  Present value factors are smaller the further out in the future we look, and they are smaller when the discount rate is larger.
+
+```{python}
+#| label: fig-miracle-pvfactors
+#| fig-cap: "Present value factors at different discount rates."
+
+import plotly.graph_objects as go
+import numpy as np
+
+trace1= go.Scatter(
+    x=np.arange(31), 
+    y=1.08**(-np.arange(31)),
+    mode="lines",
+    name="8%"
+)
+trace2 = go.Scatter(
+    x=np.arange(31), 
+    y=1.04**(-np.arange(31)),
+    mode="lines",
+    name="4%"
+)
+fig = go.Figure()
+fig.add_trace(trace1)
+fig.add_trace(trace2)
+string = "year %{x}<br>PV factor = %{y:.1%}"
+fig.update_traces(hovertemplate=string)
+fig.update_layout(
+    template="none",
+    xaxis_title="Year",
+    yaxis_title="PV Factor",
+    yaxis_tickformat=".0%",
+    legend=dict(
+        yanchor="top", 
+        y=0.99, 
+        xanchor="right", 
+        x=0.99
+        )
+)
+fig.show()
+```
+
+
+## Multiple cash flows
+
+Suppose we have some money $x_0$ to invest today, will have a possibly different amount $x_1$ to invest in one year, an amount $x_2$ to invest two years from now and so on for $m$ years, and we have an investment horizon of $n\ge m$ years.  How much will we have in $n$ years if we earn a return $r$ each year?  In other words, what is the total future value of the sequence of investments $x_0, \ldots, x_m$?
+
+We can answer this question by treating our investment account as $m+1$ hypothetical separate accounts.  In the first account, we deposit $x_0$ today and it grows for $n$ years to $x_0(1+r)^n$.  In the second account, we deposit $x_1$ in one year and it grows for $n-1$ years to $x_1(1+r)^{n-1}$.  We can continue this through year $m$, and at the end of $n$ years, we can hypothetically consolidate the various accounts, producing a total future value of
+$$x_0(1+r)^n + x_1(1+r)^{n-1} + x_2(1+r)^{n-2} + \cdots + 
+x_m(1+r)^{n-m}.$$
+
+
+Now, consider the opposite question.  Suppose we want to spend some amount $y_1$ in one year, a possibly different amount $y_2$ in two years, and continuing for $m$ years.  If we want to finance all of these expenditures from a current investment account, how much do we need to have in the account now, assuming we always earn a return $r$ on the remaining balance?  The answer is that we need to have the total present value of the future values $y_1, y_2, \ldots, y_m$; that is, we need
+$$\frac{y_1}{1+r} + \frac{y_2}{(1+r)^2} + \cdots + \frac{y_m}{(1+r)^m}.$$
+
+
+Our examples here involved only positive cash flows, but it is also possible to compute total future values or total present values in this way when some cash flows are positive and some are negative.  In this case, the total present value is usually called the [net present value or NPV]{style="color: Tomato;"}, being the present value of the positive cash flows net of the present value of the negative cash flows.  @fig-miracle-npv illustrates net present value calculations.
+
+::: {#fig-miracle-npv} 
+<iframe width="780" height="400" src="https://learn-investments.rice-business.org/borrowing-saving/_npv"></iframe>
+
+The net present value is the sum of the present values of the cash flows, and the present value of each cash flow is the cash flow multiplied by the present value factor.  The light blue cells are editable.
+:::
+
+An easy way to calculate net present values is to use Excel's or numpy-financial's npv function.  These work a bit differently.  The Excel function assumes the first cash flow in the sequence is one period away, so any initial (date 0) cash flow should be added in separately.  On the other hand, the npv function in numpy-financial assumes the first cash flow is at date 0.  See @sec-miracle-python for an example.
+An easy way to calculate future values of sequences of cash flows is to first calculate the present value using the npv function and then multiply by the future value factor $(1+r)^n$.
+
+## Perpetuities and annuities
+
+An annuity is a level sequence of cash flows that extends for a finite period of time.  A perpetuity is a level sequence of cash flows that extends forever.  Annuities are encountered frequently, for example, in mortgage or other loan payments.  Perpetuities are used when valuing companies.  The value of the stock of a company comes from the cash the company pays to shareholders, and there is no definite time at which these cash flows will end, so it is common to model them as perpetual. 
+
+Let's start with perpetuities.  Suppose we want to spend \$100 in one year, another \$100 in two years, and so on forever.  How much do we need to have in an investment account today to finance all of these expenditures, if the account always earns 10\% per year?  The answer is \$1,000, because the 10\% return in a year on a \$1,000 investment will be \$100, which we can spend without depleting our capital.  Hence, we can earn and spend \$100 per year forever.  More generally, [the present value of a cash flow of any amount $y$ per year at a rate of return of $r$ per year is $y/r$]{style="color: Tomato;"}, because an investment of $y/r$ will earn $y/r \times r = y$ each year.  
+
+
+
+::: callout-note
+
+# Perpetuities and geometric series
+
+An alternative calculation of the present value of a perpetuity is to add up the infinite sequence of discounted cash flows as
+$$\frac{y}{1+r} + \frac{y}{(1+r)^2} + \frac{y}{(1+r)^3} + \cdots$$
+This is a geometric series, with each term being smaller than the previous term by a factor of $1/(1+r)$.  By a standard formula, the sum is 
+$$\frac{y/(1+r)}{1- 1/(1+r)} = \frac{y}{r}.$$
+:::
+
+
+Now consider an annuity of $y$ per year for $n$ years.  The present value is
+$$\frac{y}{1+r} + \frac{y}{(1+r)^2}  + \cdots + \frac{y}{(1+r)^n}$$
+This can be calculated in terms of what we call the [annuity factor]{style="color: Tomato;"}:
+$$ \text{AF} = \frac{1}{r} \left(1-\frac{1}{(1+r)^n}\right).$$
+The present value of the annuity is
+$$ y \times \text{AF}.$$
+
+::: callout-note
+
+# Deriving the annuity formula
+
+To derive the formula for the present value of an annuity, observe that an annuity is the difference of two perpetuities: a perpetuity that starts in a year and another perpetuity that starts in $n+1$ years.  So, the present value is the difference of two present values: the present value $y/r$ of the first perpetuity minus the present value of the second perpetuity.  The present value of the second perpetuity as of year $n$ (one year before it begins) is $y/r$ and that value discounted to today is 
+$$\frac{1}{(1+r)^n} \times \frac{y}{r}.$$
+Hence, the present value of the annuity is
+$$\frac{y}{r} - \frac{1}{(1+r)^n} \times \frac{y}{r} = \frac{y}{r} \left(1-\frac{1}{(1+r)^n}\right) = y \times \text{AF}.$$
+:::
+
+When valuing a company, we often model the cash flows to shareholders as being perpetual and growing over time.  So, we need a version of the perpetuity formula that can accomodate growing cash flows.  [The present value of an infinite sequence of cash flows that begins with $y$ in a year and then grows at a constant rate of $g$ per year forever, when the discount rate is $r>g$, is $y/(r-g)$]{style="color:tomato"}.  For example, the present value of getting \$100 in one year, $1.03 \times \text{\$}100 = \text{\$}103$ in two years, $(1.03)^2 \times \text{\$}100$ in three years, continuing forever, when the discount rate is 10\% is $\text{\$}100/(0.10 - 0.03)= \text{\$1,428.57}$.  This is the correct amount because the return in one year will be \$142.86, from which one can spend \$100 and reinvest \$42.86, producing an account balance that is 3\% higher than at the start.  This reinvestment of the extra return can continue forever, resulting in an account that grows perpetually at 3\% and which finances cash flows that grow at 3\%.  We could also compute the present value by computing the infinite sum
+$$\frac{y}{1+r} + \frac{(1+g)y}{(1+r)^2} + \frac{(1+g)^2y}{(1+r)^3} + \cdots$$
+using the same formula as in 
+If $g \ge r$, meaning that growth in the cash flows is so fast that it offsets or more than offsets the discounting, then the terms in this series are constant or rising, so the present value is infinite.  
+
+## Monthly rates, etc.
+
+We frequently encounter rates of return, including interest rates, at frequencies other than a year, for example, when calculating monthly mortgage payments.  There are two ways of relating monthly rates to annual rates.  One is to compound monthly rates, which includes 'interest on interest' as we have discussed before.  The other way is to multiply by 12, which would be linear rather than exponential growth.
+
+First we address compounding.  If we earn interest or some other return monthly at rate $r_m$, then the rate of return per year is $(1+r_m)^{12}-1$.  For example, if we earn 1\% per month, then in one year, each dollar invested will grow to $1.01^{12} = 1.1268$ dollars, which is a rate of return of 12.68\%.
+
+We can reverse this calculation to compute a monthly rate given an annual rate $r_a$.  The formula for the monthly rate is
+$$r_m = (1+r_a)^{1/12} - 1.$$
+For example, if we plug in $r_a = 0.1268$, we'll get $r_m = 0.01$ (up to rounding error).  
+
+This is a logical way to define monthly rates from annual rates, but it is not the way a bank does it when you take out a loan.  If a bank says that the annual rate is 12.68%, then it will charge you
+$$\frac{0.1268}{12} = 0.0106.$$
+So, the bank will charge you 1.06% monthly.  Obviously, this works in the bank's favor, relative to the calculation based on compounding.
+
+Returning to the compounding calculation, we could also compound at frequencies other than a month or a year.  If we compound daily at a daily rate of $r_d$, then the corresponding annual rate is
+$$r_a = (1+r_d)^{365} - 1.$$
+The annual rate achieved by compounding is higher the more frequently a bank compounds.  Continuing with our previous example of 12%, with monthly compounding we have
+$$r_a = \left(1 + \frac{0.12}{12}\right)^{12} - 1 = 0.1268$$
+as observed before,
+and with daily compounding we have
+$$r_a = \left(1 + \frac{0.12}{365}\right)^{365} - 1 = 0.12747.$$
+Thus, increasing the compounding frequency increases the corresponding annual rate. 
+
+::: callout-note
+# Continuously compounded returns
+
+ We could consider even more frequent compounding.  In the limit, as compounding becomes continuous, we can invoke a result from mathematical analysis to obtain
+$$\lim_{n \rightarrow \infty}  \left(1 + \frac{0.12}{n}\right)^{n} - 1  = e^{0.12} - 1 = 0.12750,$$
+where $e$ is the natural exponential $2.718\ldots$.  More generally, [continuous compounding]{style="color: Tomato"} at rate $z$ means that \$1 grows to $e^z$ dollars in a year.  For any return $r$, there is an equivalent [continuously compounded return]{style="color: Tomato"} given by $\log (1+r)$ where $\log$ denotes the natural logarithm function.  To see this, let $z=\log (1+r)$.  With continuous compounding at rate $z$, \$1 grows to $e^z = e^{\log (1+r)} = 1+r$.  Thus, continuous compounding at rate $\log (1+r)$ is the same as earning $r$.  Obviously, continuous compounding is never encountered in practice, but it is a useful "as if" device for some calculations.
+
+:::
+
+## Loan payments {#sec-miracle-loans}
+
+The payments on a loan are determined by the fact that the present value of the payments equals the amount borrowed (the loan principal).  If the loan has level payments $P$, then the loan principal $L$ satisfies
+$$L = P \times \text{AF} = \frac{P}{r}\left(1-\frac{1}{(1+r)^n}\right)\,.$$
+From this equation, we can calculate any of the loan parameters in terms of the others.  Thus, we can answer any of the following questions:
+
+1.  ($P$) I know how much I want to borrow, what the term of the loan will be, and what the rate will be.  What will my payments be?
+2.  ($L$) I know what the term of the loan will be and what the rate will be, and I know the payment that I can afford.  How much can I borrow?
+3.  ($r$) I know what the term of the loan will be, how much I want to borrow, and how much I can afford to pay.  What rate do I need to get?
+
+These are standard questions, and their answers -- which are obtained by solving the above equation -- are provided by online financial calculators and by the Excel and numpy-financial functions pmt, pv, and rate. See @sec-miracle-python.  For loans with monthly payments, we need to input the number of months as the number of periods and the monthly rate as the rate.  For example, for a 30-year mortgage at a rate of 6\%, we would input $30 \times 12$ as the number of periods and $0.06/12$ as the rate.
+
+Sometimes a loan will have a balloon payment, meaning an extra payment at the end to make up for the periodic payments being too small.  The amount of any balloon $B$ is determined by the equation
+$$L = P \times \text{AF} + \frac{B}{(1+r)^n}\,.$$
+This again reflects the fact that the present value of all payments equals the principal.  The amount of a balloon payment can be calculated from the Excel and numpy-financial function fv.  
+
+Each payment on a loan pays the interest that has accrued during the previous period plus something towards principal.  As the principal is paid down, the interest decreases, so the payment towards principal increases.  Tracking the principal over time is called creating an amortization schedule.  Let's create such a schedule.  By doing so, we will also see why the present value of the payments equals the principal.  
+
+Let $L_i$ denote the loan balance after any payment at date $i$, for $i=0, \ldots, n$.  The initial balance (at date 0) is the principal.  Let $r$ denote the periodic interest rate, so $r$ is a monthly rate for a loan with monthly payments.  The balance prior to the first payment is $(1+r)L_0$, and the balance after the payment is $L_1 = (1+r)L_0 - P$.  The balance just before the second payment is $(1+r)L_1$, and the balance after the payment is 
+$$L_2 = (1+r)L_1 - P = (1+r)^2L_0 - (1+r)P - P\,.$$  Notice that this is the future value, as of date 2, of the loan principal minus the future value of all payments made through date 2.  This logic continues at each date: the balance is always the future value of the principal minus the future value of all payments.  
+
+Each payment goes partly towards interest and partly towards principal.  At date $i$, the interest accrued during the period preceding the payment is $rL_{i-1}$, so $P-rL_{i-1}$ is paid towards principal.  @fig-miracle-amortization shows the amortization schedule for a loan and the contribution of each payment towards principal.
+
+The amount owed on a loan after the last payment is zero, so at that point in time, the future value of the original loan principal equals the future value of all of the loan payments.  Discounting both future values by $1/(1+r)^n$, we see also that the present value, as of date 0, of the original loan principal equals the present value of all of the loan payments.  The present value at date 0 of the principal is just the principal, because it is received at date 0.  Hence, the loan principal equals the present value of all payments, as we have said before. 
+
+::: {#fig-miracle-amortization} 
+<iframe width="780" height="700" src="https://learn-investments.rice-business.org/borrowing-saving/_amortization-schedule"></iframe>
+
+A loan payment is calculated for the parameters set by the sliders for either monthly or annual payments.  The figure on the left shows the division of each payment between principal and interest.  The figure on the right is the amortization schedule, showing the remaining balance on the loan just before each payment.
+:::
+
+
+## Inflation and real returns
+
+In the decade 1971--1980, the U.S. stock market returned an average of 9.2% per year.  A dollar invested at the first of January in 1971 would have grown to $2.40 by the end of December in 1980.  As decades go, this is quite far from the worst for the U.S. stock market.^[Of the nine decades, 1931-1940, ..., 2011-2020, it ranks fifth.]  However, the 1970's were a time of high inflation.  What was the market performance in real terms?  To be more precise, if we had invested $1 at the begining of January, 1971, by how much would our real buying power have grown by the end of December, 1980?  In other words, what was our return in constant dollars?  We will see here how to answer these questions.
+
+The term "inflation rate" means the percentage change in a price index.  In the U.S., the standard price index used for this calculation is the Consumer Price Index -- All Urban calculated by the Bureau of Labor Statistics.  It represents the cost of a basket of goods sampled in 87 urban areas across the U.S.  To have 7% inflation in a year means that the basket of goods costs 7% more at the end of the year than at the beginning, or in other words that
+$$\frac{\text{CPI at end of year}}{\text{CPI at beginning of year}} = 1.07.$$
+
+Consider an item that costs $100 today.  Suppose there is 7\% inflation in the coming year, and the item costs $107 at the end of the year.  Suppose also that our portfolio earns 10\% in the year.  To calculate our real return, consider each $100 that we have at the start of the year.  Each $100 could buy one item.  In a year's time, the $100 grows to $110, and the item costs $107, so we could buy one and have $3 left over, which would buy 3/107 units.  This 3/107 is the growth in our buying power relative to the start of the year, so our [real return]{style="color: Tomato"} is 3/107.  
+
+We can express the calculation in the previous paragraph in more generality as
+$$\text{real return} = \frac{\text{nominal return} - \text{inflation rate}}{1 + \text{inflation rate}},$$
+where the nominal return is the return before adjustment for inflation (10% in our example) and all returns and rates are in decimal form.  We also call the real return the [return in constant dollars]{style="color: Tomato"}.
+
+We can compound real returns the same way we compounded returns earlier.  Let $r$ denote the real return, $i$ denote the inflation rate, and $z$ denote the nominal return (all in decimal form).  Adding 1 to both sides of the equation for the real return gives
+$$1+r = \frac{z-i}{1+i} + 1 = \frac{1+z}{1+i}.$$
+To calculate what $1 grows to in constant dollars over a period of $n$ years, we calculate 
+$$(1+r_1)(1+r_2) \cdots (1+r_n)$$ where the $r_i$ are the real returns.  By the above formula,
+$$(1+r_1) \cdots (1+r_n) = \frac{(1+z_1) \cdots (1+z_n)}{(1+i_1) \cdots (1+i_n)}.$$
+The numerator on the right hand side is what $1 grows to in nominal dollars.  The denominator is the growth in the price index.  To be specific, the denominator is
+$$\frac{\text{CPI at end of year $n$}}{\text{CPI at beginning of year 1}}.$$
+Thus, the real return over a period of years equals the nominal return over the period with the growth in the CPI divided out.
+
+To come back to our example -- over the decade 1971--1980, \$1 invested in the U.S. stock market grew to \$2.40 in nominal terms, as stated earlier.  However, the CPI at the end of the decade was 2.3 times its value at the beginning of the decade.  In other words, compounded inflation $(1+i_1) \cdots (1+i_n)$ over the decade was 2.3.  So, the dollar grew to only 2.40 / 2.30 = 1.04 dollars in real terms, meaning that the total real return over the decade was only 4%.  So, it was a middling decade in nominal terms and a very poor decade in real terms.
+
+## Geometric average returns
+
+The actual returns of the U.S. market over the decade 1971--1980 were
+
+* 1971 = 16.17\%
+* 1972 = 16.89\%
+* 1973 = --19.25\%
+* 1974 = --27.75\%
+* 1975 = 38.24%
+* 1976 = 26.99%
+* 1977 = --3.14%
+* 1978 = 8.21%
+* 1979 = 23.47%
+* 1980 = 33.37%
+
+The average of these ten numbers is 11.32%.  So, why did we say in the previous section that the market averaged 9.2% in the decade?  The reason is that, if we had been invested throughout the decade, our return would have been exactly the same as if we earned 9.2\% each year; that is,
+$$(1+r_{\text{1971}}) \cdots (1+r_{\text{1980}}) = 2.40 = 1.092^{10}.$$
+However, we should be more precise in our language.  The correct thing to say is that the [geometric average]{style="color: Tomato"} return in the decade was 9.2%.  The general definition of the geometric average of a sequence of returns $r_1, \ldots, r_n$ is that it is the number $r$ such that
+$$(1+r)^n = (1+r_1) \cdots (1+r_n).$$
+In other words, $1 grows to the same amount in an account that earns the returns $r_1, \ldots, r_n$ as it does when earning $r$ each period. 
+When there is a risk of confusion, we will call the usual average (0.1132 for 1971--1980) the [arithmetic average]{style="color: Tomato"} return.  Both averages have their uses, as we will see in subsequent chapters.
+
+If there is any variability in the returns from period to period, then the geometric average is smaller than the arithmetic average, and the difference between the two is larger when returns are more variable.  The substantial variability in the 1970's produced the more than 2\% difference between the two for that decade.  
+
+An even more extreme example is Tesla (TSLA), which fell by roughly 50% between November 2021 and May 2022 and then gained roughly 50\% between May 2022 and August 2022.^[Tesla fell by 49% between November 4, 2021 and May 24, 2021 and gained 48% between May 24, 2022 and August 15, 2022.]  Were Tesla shareholders back to even?  No, each \$100 of Tesla stock fell to \$50 and then gained 50\% on $50 to get back only to $75, for an overall 25\% loss.  The arithmetic average of 0 in this case substantially overstates the actual experience of Tesla shareholders.  The geometric average over these two periods is $\sqrt{(1-0.5)(1+0.5)} - 1 = -0.134$.  This reflects the fact that if you lose 13.4\% twice in a row, then you have lost 25\%.
+
+::: callout-note
+## Geometric average and continuously compounded returns
+
+The term "geometric average" is not unique to finance, but it is used a little differently in finance than elsewhere.  Using the term in its non-finance meaning, the relationship
+ $$(1+r)^n = (1+r_1) \cdots (1+r_n)$$
+ would be described by saying that $1+r$ is the geometric average of the $1+r_1, \ldots, 1+r_n$.
+This is a little cumbersome to say, so in finance we simply say that $r$ is the geometric average of the $r_i$.  To see in what sense this relationship represents an average, take the natural logarithm of both sides.  This produces
+$$n \log (1+r) = \log (1+r_1) + \cdots \log (1+r_n)$$
+or, equivalently,
+$$\log (1+r) = \frac{\log (1+r_1) + \cdots + \log (1+r_n)}{n}.$$
+Thus, "geometric average" means "average in logs."  As discussed earlier, these logarithms of one-plus-returns are called continuously compounded returns, so  "geometric average" means a normal (arithmetic) average for continuously compounded returns.  
+:::
+
+## Retirement planning {#sec-miracle-retirement}
+
+Let's put some things together to address an important problem: planning for retirement.  We may already have some funds in an investment account, and we plan to make additional deposits monthly.  At some point, we'll start making withdrawals monthly.  All the while,  the funds in the account earn some rate of return.  For simplicity, let's assume that the return is the same each month.  We'll look at simulating random returns in the next section.  We'll also ignore taxes here, deferring that discussion to a later chapter. 
+
+The balance in the account at any point in time will be the future value, as of that date, of the initial balance plus the future value of all deposits minus the future value of all withdrawals.  This follows from the same reasoning that we used for loans and amortization schedules.  We can do everything in today's dollars by using a real rate of return and inputting deposits and withdrawals in today's dollars. 
+
+To specify the various deposits, it is convenient to specify the first deposit and then assume that the deposits will grow at a constant real rate.  We can do the same for the withdrawals, but to make things even simpler we'll assume here that the withdrawls are the same each month.  Letting $D$ denote the first deposit, the deposits will be
+$$D, (1+g)D, (1+g)^2D, \ldots$$
+for a real monthly growth rate $g$.
+As discussed before, an easy way to calculate the future values of the deposits and withdrawals is to first compute  present values using the Excel or numpy-financial npv function and to then multiply by the future value factor.  This is demonstrated in @sec-miracle-python.  @fig-miracle-retirement illustrates the calculations.
+
+::: {#fig-miracle-retirement} 
+<iframe width="780" height="700" src="https://learn-investments.rice-business.org/borrowing-saving/_retirement-planning"></iframe>
+
+The figure tracks a retirement account balance in which deposits (savings) are made at the end of each month for a specified number of years.  Withdrawals are then made at the beginning of each month for a specified number of years.  All inputs should be specified in real terms (in today's dollars).  The monthly deposit growth rate is $g = (1+g_a)^{1/12}-1$, where $g_a$ is the annual savings growth rate specified by the slider.  The calculations are explained in more detail in @sec-miracle-python.
+:::
+
+
+## Retirement planning simulation
+
+One sometimes encounters the view that there is little risk in long-run investing, for example, in the stock market.   Whether this is true depends on how we define "risk."  If we define it as the probability of losing money, then there indeed seems to be little risk in the stock market in the long run.  For example, there has not been a 20-year period in the U.S. stock market since at least the 1920s in which the market has gone down from the beginning to the end of the period.  However, if we define "risk" as uncertainty about the outcome -- as we will do in this book -- then there is substantial risk in long-run investing, as we will see.  
+
+The view that there is little risk in the long run is sometimes based on the argument that the law of averages will hold in the long run.  This is a mistaken argument.
+The law of averages dictates the average outcome of a gamble that is repeated many times, but it does not dictate the cumulative gain or loss of a gambler.  Consider a good blackjack player who plays at roughly even odds with the house.  After a long night of playing, her average gain per hand will probably be close to zero, but she might have a lot of chips in front of her or she may have lost a lot.  Her cumulative gain or loss is of course her average gain or loss *multiplied by the number of gambles*, and with a large number of gambles an average near zero can still correspond to a very large cumulative gain or loss.^[The wealth of someone playing a fair game is called a "random walk" -- it steps up or down randomly depending on the outcome of the game.  There is a theorem in probability theory that a random walk walks everywhere.  For example, if two people flip a fair coin for $1, then, with probability one, if they play long enough, one person will eventually be $1 million ahead.  Furthermore, if they continue to play long enough, then the other player will eventually be $1 million ahead.  And, we can replace $1 million by $1 billion or any other number.  Of course, "play long enough" can mean to play very long indeed.]
+
+The stock market offers better than even odds, so one expects to win on average, but how much one will win is very uncertain.  We can investigate this by simulating the retirement plan of the previous section, drawing a random return each month from a normal distribution with some mean and variance.  @sec-miracle-python explains how to perform this simulation in python.  @fig-miracle-retirement-sim presents the results.  An important fact is that accumulations from compounding random returns are positively skewed, so the mean of the distribution of final wealth is higher than the median.  The median answers the question "what do I have a 50% chance of achieving?", so it is probably the statistic on which we should be focused.  
+
+
+::: {#fig-miracle-retirement-sim} 
+<iframe width="780" height="1000" src="https://learn-investments.rice-business.org/borrowing-saving/_retirement-planning-sim"></iframe>
+
+A retirement account is tracked assuming monthly deposits and withdrawals as in @sec-miracle-retirement, except that the monthly returns are randomly generated from a normal distribution. The monthly mean return is taken to be the annual mean divided by 12, and the monthly standard deviation is taken to be the annual standard deviation divided by the square root of 12, where the annual mean and standard deviation are specified by the sliders. 5,000 possible lifetimes are simulated, and the distribution of the 5,000 ending balances is described in the table. The figure on the left in the second row is a box plot of the ending balances, and the figure on the right displays the percentiles of the ending balance distribution, supplementing the information in the table.
+:::
+
+
+## Internal rate of return
+
+A common situation is that funds have been deposited at different dates into an investment account and/or withdrawals have been made at different dates, and we want to calculate the overall rate of return of the investments.  Companies do this calculation on a prospective basis when they evaluate an investment project to obtain an overall projected rate of return.  We can pose the question as follows: what constant rate of return would have enabled the deposits to finance the withdrawals?
+
+We know from previous sections that the deposits can finance the withdrawals at a constant rate of return if and only if the present value of the deposits is as much or more than the present value of the withdrawals.  Treating the deposits as negative cash flows and the withdrawals as positive cash flows, this is equivalent to the NPV being less than or equal to zero.  So, the answer to the question posed in the previous paragraph is the rate of return that makes the NPV equal to zero.  This rate of return is called the [internal rate of return or IRR]{style="color: tomato"}.  It can be calculated with the Excel or numpy-financial irr function.  @fig-miracle-irr illustrates the calculation.  
+
+Complications can arise for some sequences of cash flows, though this is relatively rare in practice.  In some cases there may be multiple rates of return for which the NPV is zero or there may be no rate of return for which the NPV is zero.  This complication never arises if the sequence of cash flows changes sign only once.
+
+
+::: {#fig-miracle-irr} 
+<iframe width="780" height="1000" src="https://learn-investments.rice-business.org/borrowing-saving/_irr"></iframe>
+
+The table on the right illustrates the NPV calculation as in @fig-miracle-npv, using the internal rate of return as the discount rate.  In this case, the NPV is zero.  The figure plots the NPV as a function of the discount rate.  The IRR is the rate at which the NPV curve crosses zero.  The light blue cells are editable.
+:::
+
+::: callout-note
+# IRR and polynomial equations
+
+Let $c_0, c_1, \ldots, c_n$ denote cash flows, let $r$ denote a discount rate.  The NPV is
+$$c_0 + \frac{c_1}{1+r} + \frac{c_2}{(1+r)^2} + \cdots + \frac{c_n}{(1+r)^n}\,.$$
+This is an $n$--th order polynomial in the variable $x = 1/(1+r)$.  The equation NPV $=0$ is therefore an $n$--th order polynomial equation.  Such an equation has $n$ solutions, some of which may be real numbers and some of which may be complex numbers.  If there are multiple real solutions, then there are multiple IRR's.  If all solutions are complex numbers, then there is no IRR.
+:::
+
+## Python {#sec-miracle-python}
+
+The numpy-financial function npv can be used to calculate the total present value of multiple cash flows.  If instead we want the total future value, then we can multiply the present value by the future value factor as in the following example.  In this case, the cash flows end at date 4, and the future value is computed as of date 10.  This could represent investments made at dates 0, 1, 2, 3, and 4 which remain invested until date 10.
+
+
+``` p
+import numpy_financial as npf
+
+n = 10
+m = 4
+r = 0.08
+c0, c1, c2, c3, c4 = 100, 120, 130, 140, 150
+cashFlows = [c0, c1, c2, c3, c4]
+
+pv = npf.npv(r, cashFlows)
+fv = pv * (1+r)**n
+```
+
+We can calculate the IRR of a sequence of cash flows -- when it exists -- using the irr function.
+
+```p
+c0, c1, c2, c3 = -100, 80, 50, 20
+cashFlows = [c0, c1, c2, c3]
+irr = npf.irr(cashFlows)
+```
+
+Here is the financial calculator code for @sec-miracle-loans.  The sign conventions are that the loan principal is positive (a cash inflow) and loan payments (regular payments and balloon) are negative.  If the balloon calculation turns out to be positive, it means we've overpaid the bank and should get money back.  We can include a balloon when answering the first three questions by setting, for example, fv=-100000 when the balloon is $100,000.  The following is for a loan with monthly payments.  The rates are all expressed as annual rates $r$ with the monthly rate being $r/12$.  The rate that is calculated in #3 is also an annual rate.
+
+``` p
+n = 30     # number of years
+
+# 1. payment
+r, principal = 0.04, 500000
+payment = npf.pmt(
+    rate=r/12, 
+    nper=n*12, 
+    pv=principal, 
+    fv=0
+)
+ 
+# 2. principal
+r, payment = 0.04, -2000
+principal = npf.pv(
+    rate=r/12, 
+    nper=n*12, 
+    pmt=payment, 
+    fv=0
+)
+ 
+# 3. rate
+principal, payment = 500000, -2000
+rate = 12*npf.rate(
+    nper=n*12, 
+    pv=principal, 
+    pmt=payment, 
+    fv=0
+)
+ 
+# 4. balloon
+r, principal, payment = 0.04, 500000, -2000
+balloon = npf.fv(
+    rate=r/12, 
+    nper=n*12, 
+    pmt=payment, 
+    pv=principal
+)
+ ```
+
+We can track a loan balance or retirement plan by looping over dates.  Here is an illustration for a loan balance.  This calculates the balance at each date *after* the payment at that date.  The sequence of balances is stored in a list L.
+
+```p
+principal = 20000     # initial balance
+r = .06/12            # monthly interest rate
+n = 5*12              # number of months
+
+P = npf.pmt(
+    rate=r, 
+    nper=n, 
+    pv=principal, 
+    fv=0
+)
+
+L = [principal]
+for i in range(1, n+1):
+    L.append(L[-1]*(1+r) + P)   # recall P is negative
+```
+    
+We can calculate the ending balance for a loan or retirement plan by computing the future value of all cash flows as of the ending date.  We illustrate for a retirement plan.  We allow the deposits to grow at a rate $g$, and we allow the withdrawals to grow (or decline if $h<0$) at a rate $h$.  There are m deposits and n withdrawals.  The timing is as follows:
+
+* date 0: initial balance
+* dates 1 through m: deposits 
+* dates m through m+n-1: withdrawals
+    
+The deposits and withdrawals overlap at date m, because we assume deposits are at the end of each month, and withdrawals are at the beginning of each month.  There is no withdrawal at date m+n, because the withdrawal for the last month occurs at the beginning of that month (date m+n-1).  An easy way to generate a sequence of growing or declining deposits or withdrawals is to use the numpy arange function.  The gFactors in the following is an array containing
+$$1, 1+g, (1+g)^2, \ldots, (1+g)^{m-1}$$
+and hFactors is an array containing
+$$1, 1+h, (1+h)^2, \ldots, (1+h)^{n-1}\,.$$
+
+
+```p
+import numpy as np
+
+m = 25*12              # number of monthly deposits
+n = 30*12              # number of monthly withdrawals
+B = 50000              # initial account balance
+D = 1000               # size of first deposit
+W = 10000              # size of first withdrawal
+g = .02/12             # monthly growth rate of deposits
+h = 0                  # monthly growth rate of withdrawals
+r = .06/12             # monthly rate of return
+
+gFactors = (1+g)**np.arange(m)
+hFactors = (1+h)**np.arange(n)
+d = D * gFactors
+w = W * hFactors
+
+inFlows = np.concatenate(([B], d, np.zeros(n)))
+outFlows = np.concatenate((np.zeros(m), w, [0]))
+pv = npf.npv(r, inFlows - outFlows)
+ending_balance = pv * (1+r)**(m+n)
+```
+
+When we simulate, we will have different returns each month, so we can't use the npv function to compute the present value.  Instead, we will compute future value factors by compounding the monthly returns, then multiply the cash flows by the future value factors to compute the future value of each cash flow, and then sum the future values to obtain the ending balance.  The numpy cumprod function is useful for computing the future value factors.  Given an array (a, b, c), the cumprod function returns (a, a\*b, a\*b\*c).  For us, these numbers will be 1+returns, and we want the sequence to be declining in the number of products (all of the returns for the first FV factor, ..., only one return for the last FV factor).  To obtain this, we apply the cumprod function and then flip the result to obtain (a\*b\*c, a\*b, a).^[These are random returns, so it doesn't matter if we compute (a\*b\*c, a\*b, a) or (c\*b\*a, c\*b, c).  If the ordering of the returns mattered and a were the first and c the last, then we would need to reverse the order (by flipping) to obtain (c, b, a) and then apply cumprod and flip  to obtain (c\*b\*a, c\*b, c).]
+
+The first part of the code for the simulation repeats calculations from the previous retirement planning exercise.
+
+```.p
+m = 25*12              # number of monthly deposits
+n = 30*12              # number of monthly withdrawals
+B = 50000              # initial account balance
+D = 1000               # size of first deposit
+W = 10000              # size of first withdrawal
+g = .02/12             # monthly growth rate of deposits
+h = 0                  # monthly growth rate of withdrawals
+
+gFactors = (1+g)**np.arange(m)
+hFactors = (1+h)**np.arange(n)
+d = D * gFactors
+w = W * hFactors
+
+inFlows = np.concatenate(([B], d, np.zeros(n)))
+outFlows = np.concatenate((np.zeros(m), w, [0]))
+cashFlows = inFlows - outFlows
+```
+
+Now, to simulate, we generate random returns from the numpy random.normal function, compound and flip to obtain FV factors, and then multiply the cash flows by the FV factors and sum.  The parameters for the monthly return distribution in this example correspond to an annual expected return of 6% and a standard deviation of the annual return equal to 10%.  The array ending_balances has shape (1, numsims) and it contains the ending balance for each of the simulated lifetimes.
+
+```.p
+mn = 0.06 / 12         # expected monthly return
+sd = 0.1 / np.sqrt(12) # standard deviation of monthly return
+numsims = 5000         # number of simulated lifetimes
+
+r = np.random.normal(loc=mn, scale=sd, size=numsims*(m+n))
+r = r.reshape((m+n, numsims))
+compounded = np.cumprod(1+r, axis=0)
+fvFactors = np.flip(compounded, axis=0)
+ending_balances = cashFlows[:-1].reshape((1, m+n)) @ fvFactors
+```
+
+
+
+
