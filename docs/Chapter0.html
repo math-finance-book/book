@@ -318,81 +318,114 @@ div.csl-indent {
 <div class="cell" data-execution_count="1">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">import pandas as pd</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">import yfinance as yf</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">from datetime import datetime, timezone</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">ticker   = 'TSLA'           # ticker to pull</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">kind     = 'call'           # call or put</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">maturity = 4                # option maturity in order of maturities trading</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">tick = yf.Ticker(ticker.upper())</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull last stock price</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">close = tick.history().iloc[-1].Close</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Get maturity date</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">date = tick.options[maturity]</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull options data</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">df = (</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">    tick.option_chain(date).calls</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">    if kind == "call"</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">    else tick.option_chain(date).puts</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">)</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate time since last trade</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">def timesince(x):</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">    # convert datetime to now minus datetime</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">    x = datetime.now(timezone.utc) - x</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">    total_seconds = int(x.total_seconds())</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">    days, remainder = divmod(total_seconds, 24 * 60 * 60)</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">    hours, remainder = divmod(remainder, 60 * 60)</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">    minutes, seconds = divmod(remainder, 60)</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">    return "{} days, {} hrs, {} mins, {} secs".format(days, hours, minutes, seconds)</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co">df["Time Since Last Trade"] = df.lastTradeDate.map(timesince)</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">cols = [</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co">    "strike",</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">    "bid",</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co">    "ask",</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co">    "lastPrice",</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="co">    "change",</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co">    "percentChange",</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="co">    "Time Since Last Trade",</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co">    "volume",</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co">    "openInterest",</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co">    "impliedVolatility",</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="co">]</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co">df = df[cols]</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co">df["impliedVolatility"] = df["impliedVolatility"].map("{:.1%}".format)</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co">df["change"] = df["change"].round(2)</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co">df["percentChange"] = (df["percentChange"]/100).map("{:.1%}".format)</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co">df.columns = [</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="co">    "Strike",</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="co">    "Bid",</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="co">    "Ask",</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="co">    "Last Price",</span></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="co">    "Change",</span></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="co">    "% Change",</span></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="co">    "Time Since Last Trade",</span></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="co">    "Volume",</span></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="co">    "Open Interest",</span></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="co">    "Implied Volatility",</span></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="co">]</span></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="co">print(f"Last {ticker.upper()} price:</span><span class="ch">\t</span><span class="co">${close:.2f}.")</span></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="co">print(f'Option maturity:</span><span class="ch">\t</span><span class="co">{maturity}')</span></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co">pd.set_option('display.max_rows', 500)</span></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="co">pd.set_option('display.max_columns', 500)</span></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="co">pd.set_option('display.width', 1000)</span></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="co">print(df)</span></span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime, timezone</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span>          <span class="co"># ticker to pull</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>kind <span class="op">=</span> <span class="st">"call"</span>           <span class="co"># call or put</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>maturity <span class="op">=</span> <span class="dv">4</span>                <span class="co"># option maturity in order of maturities trading</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>tick <span class="op">=</span> yf.Ticker(ticker.upper())</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull last stock price</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>close <span class="op">=</span> tick.history().iloc[<span class="op">-</span><span class="dv">1</span>].Close</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Get maturity date</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>date <span class="op">=</span> tick.options[maturity]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull options data</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    tick.option_chain(date).calls</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> kind <span class="op">==</span> <span class="st">"call"</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> tick.option_chain(date).puts</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate time since last trade</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> timesince(x):</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert datetime to now minus datetime</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> datetime.now(timezone.utc) <span class="op">-</span> x</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    total_seconds <span class="op">=</span> <span class="bu">int</span>(x.total_seconds())</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    days, remainder <span class="op">=</span> <span class="bu">divmod</span>(total_seconds, <span class="dv">24</span> <span class="op">*</span> <span class="dv">60</span> <span class="op">*</span> <span class="dv">60</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    hours, remainder <span class="op">=</span> <span class="bu">divmod</span>(remainder, <span class="dv">60</span> <span class="op">*</span> <span class="dv">60</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    minutes, seconds <span class="op">=</span> <span class="bu">divmod</span>(remainder, <span class="dv">60</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"</span><span class="sc">{}</span><span class="st"> days, </span><span class="sc">{}</span><span class="st"> hrs, </span><span class="sc">{}</span><span class="st"> mins, </span><span class="sc">{}</span><span class="st"> secs"</span>.<span class="bu">format</span>(days, hours, minutes, seconds)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Time Since Last Trade"</span>] <span class="op">=</span> df.lastTradeDate.<span class="bu">map</span>(timesince)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"strike"</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bid"</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ask"</span>,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastPrice"</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">"change"</span>,</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"percentChange"</span>,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Time Since Last Trade"</span>,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"volume"</span>,</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"openInterest"</span>,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"impliedVolatility"</span>,</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[cols]</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"impliedVolatility"</span>] <span class="op">=</span> df[<span class="st">"impliedVolatility"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"change"</span>] <span class="op">=</span> df[<span class="st">"change"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"percentChange"</span>] <span class="op">=</span> (df[<span class="st">"percentChange"</span>]<span class="op">/</span><span class="dv">100</span>).<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> [</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Strike"</span>,</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Bid"</span>,</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ask"</span>,</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Last Price"</span>,</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Change"</span>,</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="st">"% Change"</span>,</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Time Since Last Trade"</span>,</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Volume"</span>,</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Open Interest"</span>,</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implied Volatility"</span>,</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Last </span><span class="sc">{</span>ticker<span class="sc">.</span>upper()<span class="sc">}</span><span class="ss"> price:</span><span class="ch">\t</span><span class="ss">$</span><span class="sc">{</span>close<span class="sc">:.2f}</span><span class="ss">."</span>)</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Option maturity:</span><span class="ch">\t</span><span class="sc">{</span>maturity<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">500</span>)</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="dv">500</span>)</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.width'</span>, <span class="dv">1000</span>)</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>'\nimport pandas as pd\nimport yfinance as yf\nfrom datetime import datetime, timezone\n\nticker   = \'TSLA\'           # ticker to pull\nkind     = \'call\'           # call or put\nmaturity = 4                # option maturity in order of maturities trading\n\ntick = yf.Ticker(ticker.upper())\n\n# Pull last stock price\nclose = tick.history().iloc[-1].Close\n\n# Get maturity date\ndate = tick.options[maturity]\n\n# Pull options data\ndf = (\n    tick.option_chain(date).calls\n    if kind == "call"\n    else tick.option_chain(date).puts\n)\n\n# Calculate time since last trade\ndef timesince(x):\n    # convert datetime to now minus datetime\n    x = datetime.now(timezone.utc) - x\n    total_seconds = int(x.total_seconds())\n    days, remainder = divmod(total_seconds, 24 * 60 * 60)\n    hours, remainder = divmod(remainder, 60 * 60)\n    minutes, seconds = divmod(remainder, 60)\n    return "{} days, {} hrs, {} mins, {} secs".format(days, hours, minutes, seconds)\ndf["Time Since Last Trade"] = df.lastTradeDate.map(timesince)\n\n# Formatting\ncols = [\n    "strike",\n    "bid",\n    "ask",\n    "lastPrice",\n    "change",\n    "percentChange",\n    "Time Since Last Trade",\n    "volume",\n    "openInterest",\n    "impliedVolatility",\n]\ndf = df[cols]\ndf["impliedVolatility"] = df["impliedVolatility"].map("{:.1%}".format)\ndf["change"] = df["change"].round(2)\ndf["percentChange"] = (df["percentChange"]/100).map("{:.1%}".format)\ndf.columns = [\n    "Strike",\n    "Bid",\n    "Ask",\n    "Last Price",\n    "Change",\n    "% Change",\n    "Time Since Last Trade",\n    "Volume",\n    "Open Interest",\n    "Implied Volatility",\n]\n\nprint(f"Last {ticker.upper()} price:\t${close:.2f}.")\nprint(f\'Option maturity:\t{maturity}\')\npd.set_option(\'display.max_rows\', 500)\npd.set_option(\'display.max_columns\', 500)\npd.set_option(\'display.width\', 1000)\nprint(df)\n'</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code>Last AAPL price:    $217.96.
+Option maturity:    4
+    Strike     Bid     Ask  Last Price  Change % Change              Time Since Last Trade  Volume  Open Interest Implied Volatility
+0    100.0  117.60  120.25      118.50    0.00     0.0%    3 days, 1 hrs, 37 mins, 48 secs     NaN            NaN             143.8%
+1    135.0   82.85   84.55       83.81    0.00     0.0%   3 days, 21 hrs, 32 mins, 36 secs     1.0            1.0              89.4%
+2    140.0   77.90   79.55       78.98    0.00     0.0%   3 days, 22 hrs, 20 mins, 25 secs     1.0            3.0              84.0%
+3    145.0   72.90   74.60       90.21    0.00     0.0%  12 days, 22 hrs, 39 mins, 17 secs     1.0            1.0              78.8%
+4    150.0   68.00   70.55       74.34    0.00     0.0%    6 days, 0 hrs, 42 mins, 31 secs     NaN            1.0              81.6%
+5    165.0   53.10   54.85       63.10    0.00     0.0%   10 days, 1 hrs, 56 mins, 49 secs     3.0            6.0              60.6%
+6    170.0   48.20   49.90       50.00    0.00     0.0%    4 days, 1 hrs, 41 mins, 45 secs     1.0            8.0              56.3%
+7    175.0   43.50   45.25       44.20   -2.50    -5.4%   1 days, 21 hrs, 25 mins, 29 secs     1.0           10.0              54.5%
+8    180.0   38.35   40.10       40.50   -7.03   -14.8%   1 days, 23 hrs, 47 mins, 37 secs     3.0           46.0              55.3%
+9    185.0   33.55   35.25       32.85   -1.47    -4.3%    2 days, 2 hrs, 43 mins, 23 secs     2.0           22.0              50.6%
+10   190.0   29.10   30.40       30.69    0.74     2.5%   1 days, 23 hrs, 15 mins, 20 secs     9.0          121.0              45.7%
+11   195.0   24.55   25.60       24.50   -2.65    -9.8%    1 days, 21 hrs, 14 mins, 3 secs     7.0           35.0              41.0%
+12   200.0   20.45   20.90       20.25   -0.55    -2.6%   1 days, 20 hrs, 57 mins, 33 secs    60.0         2063.0              36.5%
+13   205.0   16.05   17.20       16.26   -1.84   -10.2%     2 days, 0 hrs, 1 mins, 42 secs    23.0          101.0              36.2%
+14   210.0   12.45   13.40       12.62   -0.48    -3.7%   1 days, 21 hrs, 17 mins, 51 secs   116.0          186.0              34.0%
+15   215.0    9.20   10.25        9.25   -1.10   -10.6%   1 days, 20 hrs, 53 mins, 51 secs    85.0          209.0              33.0%
+16   220.0    6.80    7.05        6.85   -0.05    -0.7%   1 days, 20 hrs, 50 mins, 12 secs  1236.0         1887.0              30.1%
+17   225.0    4.60    4.95        4.52   -0.38    -7.8%    1 days, 21 hrs, 13 mins, 8 secs   473.0          836.0              29.6%
+18   230.0    2.95    3.10        3.00   -0.30    -9.1%   1 days, 20 hrs, 51 mins, 42 secs  1197.0         2073.0              28.1%
+19   235.0    1.75    1.92        1.78   -0.57   -24.3%   1 days, 20 hrs, 59 mins, 23 secs   616.0         1399.0              27.5%
+20   240.0    1.04    1.13        1.06   -0.18   -14.5%    1 days, 22 hrs, 9 mins, 17 secs   466.0         2349.0              27.0%
+21   245.0    0.60    0.69        0.65   -0.13   -16.7%   1 days, 21 hrs, 47 mins, 49 secs    67.0          652.0              27.2%
+22   250.0    0.39    0.42        0.38   -0.13   -25.5%   1 days, 21 hrs, 43 mins, 20 secs   306.0         4924.0              27.5%
+23   255.0    0.24    0.30        0.24   -0.07   -22.6%   1 days, 21 hrs, 13 mins, 28 secs    60.0          471.0              28.7%
+24   260.0    0.16    0.21        0.17   -0.07   -29.2%   1 days, 21 hrs, 31 mins, 16 secs    18.0          279.0              29.7%
+25   265.0    0.11    0.20        0.15    0.00     0.0%     3 days, 0 hrs, 44 mins, 1 secs     5.0          465.0              32.0%
+26   270.0    0.09    0.11        0.10    0.02    25.0%    2 days, 0 hrs, 50 mins, 28 secs     4.0          228.0              31.7%
+27   275.0    0.07    0.21        0.07   -0.03   -30.0%     2 days, 2 hrs, 3 mins, 47 secs     1.0          156.0              37.3%
+28   280.0    0.00    0.27        0.05   -0.03   -37.5%   1 days, 23 hrs, 58 mins, 18 secs    39.0          137.0              41.2%
+29   285.0    0.04    0.06        0.06    0.00     0.0%    2 days, 22 hrs, 21 mins, 2 secs     3.0           25.0              35.5%
+30   290.0    0.03    0.05        0.05    0.00     0.0%    3 days, 1 hrs, 48 mins, 57 secs     6.0           36.0              36.9%
+31   295.0    0.02    0.05        0.03    0.00     0.0%   2 days, 22 hrs, 19 mins, 53 secs     5.0           74.0              38.8%
+32   300.0    0.00    0.05        0.05    0.00     0.0%    3 days, 1 hrs, 51 mins, 38 secs     2.0          117.0              40.6%</code></pre>
 </div>
 </div>
 <p>If the market value of the asset exceeds the exercise price, then we say the call option is in the money. Buying a call option is a way to bet on the upside of the underlying asset.</p>
