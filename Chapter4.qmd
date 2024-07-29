@@ -266,7 +266,7 @@ It is straightforward to check, from the definitions of $\Theta$, $\Gamma$ and $
 the sum of the terms in @eq-hedgeprofits is zero.  The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest.
 Therefore, the delta hedge is a perfect hedge.  The portfolio, which has a zero cost, neither earns nor loses money.  This is true not only on average but for every possible change in the stock price.  
 
-To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in $S$ over time and sum the gains and losses over discrete rebalancing periods.  One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses.  This is discussed further in @sec-s_blackscholes_vba.
+To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in $S$ over time and sum the gains and losses over discrete rebalancing periods.  One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses.  This is discussed further in @sec-blackscholes_python.
 
 ## Gamma Hedging {#sec-s_gammahedging}
 
@@ -299,7 +299,7 @@ $$
 
 ## Implied Volatilities {#sec-s_impliedvolatility}
 
-All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient $\sigma$.  We can estimate $\sigma$ from historical data (see @sec-c_stochasticvolatility), or estimate it from the prices of other options.  The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the $\sigma$ that is input, so one can take the price as given and infer $\sigma$ from the formula. The $\sigma$ computed in this way is called the implied volatility. \index{implied volatility}  The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.  The calculation of implied volatilities is discussed in @sec-s_blackscholes_vba.
+All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient $\sigma$.  We can estimate $\sigma$ from historical data (see @sec-c_stochasticvolatility), or estimate it from the prices of other options.  The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the $\sigma$ that is input, so one can take the price as given and infer $\sigma$ from the formula. The $\sigma$ computed in this way is called the implied volatility. \index{implied volatility}  The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.  The calculation of implied volatilities is discussed in @sec-blackscholes_implied.
 
 
 Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small.  Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity.  To some extent, the implied volatility normalizes the price relative to the exercise price and maturity.  Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!
@@ -344,6 +344,242 @@ for $T_i<t\leq T_{i+1}$, provided the expression inside the square root symbol i
 If we compute implied volatilities for options  with the same maturity but different strikes, we will again obtain different implied volatilities for different options.  If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money).  The implied volatility will then generally flatten out or increase slightly at higher strikes.  The graph looks like a twisted smile (smirk).  \index{smile} \index{smirk} This pattern has been very pronounced in equity index option prices since the crash of 1987.  In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model.  It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed).  We will return to this subject in @sec-s_smilesagain.
 
 
+
+## Calculations in Python {#sec_blackscholes_python}
+
+The following calculates the Black Scholes put or call price.
+```
+def blackscholes(S0, K, r, q, sig, T, call = True):
+    '''Calculate option price using B-S formula.
+    
+    Args:
+        S0 (num): initial price of underlying asset.
+        K (num): strick price.
+        r (num): risk free rate
+        q (num): dividend yield
+        sig (num): Black-Scholes volatility.
+        T (num): maturity.
+        call (bool): True returns call price, False returns put price.
+        
+    Returns:
+        num
+    '''
+    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+     <!-- norm = sp.stats.norm -->
+    norm = stats.norm
+    if call:
+        return np.exp(- q *T) * S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1) 
+    else:
+        return -np.exp(-q * T) * S0 * norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
+```
+
+
+## Gamma
+The following calculates the delta for a put or a call.  From put-call parity we know they are the same for both options.
+```
+def blackscholes_gamma(S0, K, r, sig, T, call = True):
+    '''Calculate option price using B-S formula.
+
+    Args:
+        S0 (num): initial price of underlying asset.
+        K (num): strick price.
+        sig (num): Black-Scholes volatility.
+        T (num): maturity.
+        call (bool): True returns call price, False returns put price.
+
+    Returns:
+        num
+    '''
+    d1 = (np.log(S0/K) + (r + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+
+     <!-- norm = sp.stats.norm -->
+    norm = stats.norm
+    if type(call) == bool:
+        if call:
+            return np.exp(-q * T) * norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
+        else:
+            return np.exp(-q * T) *norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
+    else:
+        print("Not a valid value for call")
+```
+      
+## Implied Volatility{#sec-blackscholes_implied}
+The following calculates the implied volatility for a call option. 
+
+```
+def implied_vol(S0,K,r,q,T,price):
+    def dsquared(sig):
+        """Squared Difference between Black-Scholes and Market Price"""
+        d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+        d2 = d1 - sig*np.sqrt(T)
+        norm = stats.norm
+        call = np.exp(-q*T)*S0*norm.cdf(d1,0,1) - K*np.exp(-r*T)*norm.cdf(d2,0, 1)
+        return (call - price) ** 2
+    res = minimize_scalar(dsquared, bounds=(0, 1), method='bounded')
+    return res.x
+```
+
+## Example: Replicating Portfolios and Simulating Portfolio Insurance
+
+Another derivation of the Black Scholes formula is provided by Merton.  He asked the question whether by trading the stock and the risk free asset whether the payoff to a European call option can be replicated.  Let $\theta_t$ be the number of shares of the stock held at time $t$ and $\alpha_t$ the number of shares of an initial investment of one dollar in the risk free asset.   Then the portfolio is worth $\alpha_t R_t + \theta_t S_t$ where $R_t= e^{rt}$ is the time $t$ value of an initial time $0$ investment of one dollar in the risk free asset. The portfolio should start with an initial value, should not have any cash inflows or outflows and have a terminal value equal to a call payoff so the changes in value are completely dictated by the changes in the value of the assets.  That is, assuming continuous trading,
+$$  d W_t = \theta_t d S_t + \alpha_t  d R_t = \theta_t \left(\mu S_t dt + q S_t dt + \sigma S_t d B_t\right)  + \alpha_t r R_t dt$$
+with terminal condition 
+$$ W_T = \alpha_T R_T + \theta_T S_T = (S_T - K)^{+} $$
+The problem is to find $\theta_t$ and $\alpha_t$ for all times and states.  If we can accomplish this, then by `no-arbitrage' the call price must be the value of the initial investment.  Assume the call price is a function of the stock price and time: $C(t,S_t)$.  Then by Ito's Lemma
+$$ d C(t,S_t) = \left(\frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2 \right) dt + \frac{\partial C}{\partial S} \sigma S_t dB_t $$
+It should be apparent that we want to hold $\theta = \frac{\partial C}{\partial S}$, which is the delta of the call option.  By doing so, we match the diffusion term in thw change in wealth and the change in the call option.  Then matching the drift terms in both expressions
+$$ \frac{\partial C}{\partial S} \mu S_t + \alpha_t r R_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2$$
+which can be solved to give
+$$ \alpha_t r R_t=r \left(W_t -\frac{\partial C}{\partial S} S_t\right)  = \frac{\partial C}{\partial t}-\frac{\partial C}{\partial S} q S_t  + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2$$
+which gives the equation
+$$r W_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S}(r-q) S_t+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2$$
+with a boundary condition $W_T = (S_T-K)^{+}$.  However, no-arbitrage suggests $W_t = C(t,S_t)$ which gives us the partial differential equation
+$$r C = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (r-q) S+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S^2$$
+with a boundary condition $C(T,S_T)= (S_T - K)^{+}$.  This is a partial differential equation and a fairly tedious set of calcuations show the Black Scholes formula is a solution (in fact it is the only positive solution).  Close observation of the right hand side we see this is the drift term of Ito expansion for $C$ if we work in the risk neutral measure.  The right hand side then says in the risk neutral measure, the call option earns the risk free return.
+
+However, there is nothing special about a call option.  The same argument will apply for any European style option.  The only difference is the boundary condition.  This procedure allows us to replicate the payoff of any European option even for those which might not be traded.  This observation had a profound effect on practice.  A particularly popular example is portfolio insurance.
+
+Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by $\max(K,S_T)$.  The reason for the name protective put is apparent since the position can pay off no less than $K$.  The cost of this insurance is the price of the put.  However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously.  The basic recipe is to start with inital wealth equal to that for a protective put position: $W_0 = P(0,S_0)+S_0$.  The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is $N(d_1)$, where $d_1$ is calculated at each point in time.  However, in practice we cannot trade continuously.  A simple discrete strategy would rebalance at intervals $\Delta t$.  The strategy calculates $N(d_1)$ at time 0 and holds $P(0,S_0)+S_0 - N(d_1)S_0$ dollars in the risk free asset and $N(d_1)$ shares of the asset.  Thereafter these holdings are adjusted.  The change in portfolio value over the interval $\Delta t$ is 
+$$\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} $$
+$$ = (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t}) $$
+where $N(d1-)$ is the delta chosen at time $(i-1)\Delta t$.  The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be?  This is simulated in the following code:
+```{python}
+
+import numpy as np
+# from bsfunctions import *
+import matplotlib.pyplot as plt
+import time
+from math import pow, exp, sqrt
+from scipy import stats
+# incs = np.genfromtxt('incs.csv',delimiter=",",skip_header=1)
+def blackscholes(S0, K, r, q, sig, T, call = True):
+    '''Calculate option price using B-S formula.
+
+    Args:
+        S0 (num): initial price of underlying asset.
+        K (num): strick price.
+        r (num): risk free rate.
+        q (num): dividend yield
+        sig (num): Black-Scholes volatility.
+        T (num): maturity.
+        call (bool): True returns call price, False returns put price.
+
+    Returns:
+        num
+    '''
+    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+#     norm = sp.stats.norm
+    norm = stats.norm
+    if call:
+        return np.exp(-q*T)*S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1)
+    else:
+        return np.exp(-q*T)*S0 * -norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
+
+def blackscholes_delta(S0, K, r, q, sig, T, call = True):
+    '''Calculate option price using B-S formula.
+
+    Args:
+        S0 (num): initial price of underlying asset.
+        K (num): strick price.
+        r (num): risk free rate.
+        q (num): dividend yield
+        sig (num): Black-Scholes volatility.
+        T (num): maturity.
+        call (bool): True returns call price, False returns put price.
+
+    Returns:
+        num
+    '''
+    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+#     norm = sp.stats.norm
+    norm = stats.norm
+    if type(call) == bool:
+        if call:
+            return np.exp(-q*T)*norm.cdf(d1,0,1)
+        else:
+            return np.exp(-q*T)*norm.cdf(-d1,0,1)
+    else:
+        print("Not a valid value for call")
+
+# parameters
+# number of paths
+# n = incs.shape[1]
+n = 100000
+# number of divisions
+# m = incs.shape[0]
+m = 100
+# interest rate
+r = .1
+# dividend yield
+q=0.0
+# true drift
+mu = .15
+# volatility
+sig = .2
+# Initial Stock Price
+S0 = 42
+# Strike Price
+K = 42
+# Maturity
+T = 0.5
+
+
+# seed for random generator
+seed= 1234
+# define a random generator
+rg = np.random.RandomState(seed)
+# initialize
+
+
+# generate normal random vairables
+dt= T/m
+vol=sig*np.sqrt(dt)
+incs = rg.normal(0,vol,[m,n])
+
+
+tline = np.linspace(0,T,m+1)
+
+
+St = np.zeros((m+1,n))
+#St1 = np.zeros((m+1,n))
+
+V_vec = np.zeros((m+1,n))
+
+delta = np.zeros((m,n))
+
+put= blackscholes(S0,K,r, q, sig,T,call=False)
+
+incs_cumsum =  np.concatenate((np.zeros((1,n)),incs),axis=0).cumsum(axis=0)
+V_vec = np.zeros((m+1,n))
+t_mat =  np.repeat(tline.reshape((m+1,1)), n, axis=1)
+drift_cumsum = (mu -q -0.5*sig**2) * t_mat
+
+St = S0 * np.exp(incs_cumsum + drift_cumsum)
+
+delta = blackscholes_delta(St[:-1,:],K,r, q, sig,T-t_mat[:-1,:])
+
+V_vec[0,:] = S0 + put
+
+for i in range(1,m+1):
+    V_vec[i,:] = V_vec[i-1,:] + (np.exp(r*dt)-1) * (V_vec[i-1,:] - delta[i-1,:] * St[i-1,:])+ delta[i-1,:] * (St[i,:]-St[i-1,:])
+
+# Uses actual simulated changes in riskfree and stock price not the dt and dB approximations 
+# plot ST versus VT
+plt.scatter(St[m,:],V_vec[m,:])
+plt.xlabel('Stock Price at Maturity')
+plt.ylabel('Value of Portfolio Insurance')
+plt.show()
+```
+With $m=100$ rebalancing dates over $T=0.5$ for the parameters chosen the repliacting strategy does a pretty good job.  The hedging errors occur when the stock price is close to the strike price.  This is not surprising since the delta changes (measured by the gamma) fastest around this point.  A gamma hedge would potentially improve the performance.
+
+The portfolio insurance rebalancing scheme involves sell stock and buying bonds when the stock price goes down and buying stocks and selling bonds when the stock price goes up.  This can be destabilizing and was identified as a contributor to the 1987 stock market crash.
+
+
+<!-- 
 ## Calculations in VBA {#sec-s_blackscholes_vba}
 
 The Black-Scholes call and put formulas and Greeks can easily be calculated in an Excel worksheet, using the standard functions \verb!Exp!, \verb!Ln! and the cumulative normal distribution function, which  is provided in Excel as \verb!NormSDist!.  However, if these are to be used repeatedly, it is useful to create functions in VBA.   In VBA, the cumulative normal distribution function is called \verb!Application.NormSDist!.  Also, the natural logarithm function in VBA is \verb!Log! rather than \verb!Ln! and the square root function in VBA is \verb!Sqr! rather than \verb!Sqrt!.
@@ -541,7 +777,7 @@ This amounts to approximating the Black-Scholes formula as being linear in $\sig
 \begin{center}
 \verb!vega = (call - prior_call) / (guess - prior_guess)!\;.
  \end{center}
-This is the essence of the \emph{secant} method. \index{secant method}
+This is the essence of the \emph{secant} method. \index{secant method} -->
 
 ### Discretely-Rebalanced Delta Hedges
 To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return $\mu$.  We consider adjusting the hedge at dates $0=t_0<t_1<\cdots<t_N=T$, with $t_i-t_{i-1}=\Delta t = T/N$ for each $i$.  The changes in the natural logarithm of the stock price between successive dates $t_{i-1}$ and $t_i$ are simulated as
@@ -605,7 +841,7 @@ End Function
 ## Exercises
 
 ::: {#exr-problem4.1}
-  Create an Excel worksheet in which the user inputs $K$, $r$, $\sigma$, $q$ and $T$.  Compute the delta of a call option 
+  Create Python code which inputs $K$, $r$, $\sigma$, $q$ and $T$.  Compute the delta of a call option 
 for stock prices $S = .01K$, $.02K$, \ldots, $1.99K$, $2K$ (i.e., $S = iK/100$ for $i=1, \ldots 200$) and plot the delta against the stock price.  
 :::
 
@@ -616,11 +852,15 @@ Repeat  the previous problem for the delta of this digital.  Given that in reali
 :::
 
 ::: {#exr-nolabel}
+Modify the  Python code for replicating portfolio insurance to simulate a discrete replication of a digital option using the delta in the previous problem.  Run the code for $10,20,100,1000$ rebalancing dates.  When does the strategy do a good job and when does it fail? 
+::: 
+
+::: {#exr-nolabel}
  Repeat @exr-problem4.1 for the gamma of a call option.
 :::
-::: {#exr-nolabel}
+<!-- ::: {#exr-nolabel}
  Use put-call parity to derive the Greeks of a put option, and write a VBA function that computes the value and Greeks.
-:::
+::: -->
 ::: {#exr-nolabel}
  Consider delta and gamma hedging a short call option, using the underlying and a put with the same strike and maturity as the call.  Calculate the position in the underlying and the put that you should take, using the analysis in @sec-s_gammahedging.  Will you ever need to adjust this hedge?  Relate your result to put-call parity.
 :::
@@ -631,7 +871,7 @@ $$\mathrm{e}^{-qT}\mathrm{N}(d_1) + \frac{\mathrm{e}^{-qT}\mathrm{n}d(d_1)}{\sig
 Repeat @exr-problem4.1 for the delta of this share digital.
 :::
 ::: {#exr-nolabel}
- Create an Excel worksheet in which the user inputs $K$, $r$, $q$ and $T$.  Compute the value of an at-the-money call option ($S=K$) using the function  \verb!Black_Scholes_Call! for volatilities $\sigma = .01, .02, \ldots, 1.0$.  Plot the call value against the volatility.
+ Compute the value of an at-the-money call option ($S=K$) using the Python code for volatilities $\sigma = .01, .02, \ldots, 1.0$.  Plot the call value against the volatility.
 :::
 ::: {#exr-nolabel}
  Repeat the previous problem for  $S=1.2K$ (an example of an in-the-money call option).
