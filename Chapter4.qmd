@@ -335,7 +335,8 @@ $$\hat{\sigma}_2 \geq \sqrt{\frac{T_1}{T_2}} \hat{\sigma}_1\; .$$
 Provided this last inequality is satisfied, we can easily construct the function $\sigma(t)$ as
 $$\sigma(t) = \begin{cases} \hat{\sigma}_1 & \quad\text{for $t\leq T_1$} \\
 \sqrt{\frac{\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1}{T_2-T_1}} &\quad\text{for $T_1 < t\leq T_2$}.
-\end{cases}$$
+\end{cases}
+$$
 More generally, given a sequence of at-the-money options with maturities $T_1<T_2<\cdots T_N$ and implied volatilities $\hat{\sigma}_1,\dots,\hat{\sigma}_N$, we define
 $$\sigma(t) = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}$$
 for $T_i<t\leq T_{i+1}$, provided the expression inside the square root symbol is positive. This $\sigma(t)$ is often called the term structure of (implied) volatilities.  \index{term structure of volatility} Generally, we may expect $\sigma(t)$ to be a decreasing function of time $t$ when the current market is especially volatile and to be an increasing function when the current market is especially quiet.  
@@ -344,81 +345,208 @@ for $T_i<t\leq T_{i+1}$, provided the expression inside the square root symbol i
 If we compute implied volatilities for options  with the same maturity but different strikes, we will again obtain different implied volatilities for different options.  If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money).  The implied volatility will then generally flatten out or increase slightly at higher strikes.  The graph looks like a twisted smile (smirk).  \index{smile} \index{smirk} This pattern has been very pronounced in equity index option prices since the crash of 1987.  In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model.  It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed).  We will return to this subject in @sec-s_smilesagain.
 
 
-
 ## Calculations in Python {#sec_blackscholes_python}
 
-The following calculates the Black Scholes put or call price.
-```
-def blackscholes(S0, K, r, q, sig, T, call = True):
-    '''Calculate option price using B-S formula.
-    
-    Args:
-        S0 (num): initial price of underlying asset.
-        K (num): strick price.
-        r (num): risk free rate
-        q (num): dividend yield
-        sig (num): Black-Scholes volatility.
-        T (num): maturity.
-        call (bool): True returns call price, False returns put price.
-        
-    Returns:
-        num
-    '''
-    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
-    d2 = d1 - sig*np.sqrt(T)
-     <!-- norm = sp.stats.norm -->
-    norm = stats.norm
-    if call:
-        return np.exp(- q *T) * S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1) 
+The following calculates the Black Scholes call, put, call delta, call gamma, and impliied volatility.
+
+```{python}
+import numpy as np
+from scipy.stats import norm
+import scipy.optimize as optimize
+
+def black_scholes_call(S, K, r, sigma, q, T):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    """
+    if sigma == 0:
+        return max(0, np.exp(-q * T) * S - np.exp(-r * T) * K)
     else:
-        return -np.exp(-q * T) * S0 * norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
-```
+        d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = d1 - sigma * np.sqrt(T)
+        N1 = norm.cdf(d1)
+        N2 = norm.cdf(d2)
+        return np.exp(-q * T) * S * N1 - np.exp(-r * T) * K * N2
 
-
-## Gamma
-The following calculates the delta for a put or a call.  From put-call parity we know they are the same for both options.
-```
-def blackscholes_gamma(S0, K, r, sig, T, call = True):
-    '''Calculate option price using B-S formula.
-
-    Args:
-        S0 (num): initial price of underlying asset.
-        K (num): strick price.
-        sig (num): Black-Scholes volatility.
-        T (num): maturity.
-        call (bool): True returns call price, False returns put price.
-
-    Returns:
-        num
-    '''
-    d1 = (np.log(S0/K) + (r + sig**2/2) * T)/(sig*np.sqrt(T))
-    d2 = d1 - sig*np.sqrt(T)
-
-     <!-- norm = sp.stats.norm -->
-    norm = stats.norm
-    if type(call) == bool:
-        if call:
-            return np.exp(-q * T) * norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
-        else:
-            return np.exp(-q * T) *norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
+def black_scholes_put(S, K, r, sigma, q, T):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    """
+    if sigma == 0:
+        return max(0, np.exp(-r * T) * K - np.exp(-q * T) * S)
     else:
-        print("Not a valid value for call")
-```
-      
-## Implied Volatility{#sec-blackscholes_implied}
-The following calculates the implied volatility for a call option. 
+        d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = d1 - sigma * np.sqrt(T)
+        N1 = norm.cdf(-d1)
+        N2 = norm.cdf(-d2)
+        return np.exp(-r * T) * K * N2 - np.exp(-q * T) * S * N1
 
+def black_scholes_call_delta(S, K, r, sigma, q, T):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    """
+    d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    return np.exp(-q * T) * norm.cdf(d1)
+
+def black_scholes_call_gamma(S, K, r, sigma, q, T):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    """
+    d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    nd1 = np.exp(-d1 ** 2 / 2) / np.sqrt(2 * np.pi)
+    return np.exp(-q * T) * nd1 / (S * sigma * np.sqrt(T))
+
+def black_scholes_call_implied_vol(S, K, r, q, T, CallPrice):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    q = dividend yield
+    T = time to maturity
+    CallPrice = call price
+    """
+    def objective(sigma):
+        return black_scholes_call(S, K, r, sigma, q, T) - CallPrice
+
+    if CallPrice < np.exp(-q * T) * S - np.exp(-r * T) * K:
+        raise ValueError("Option price violates the arbitrage bound.")
+
+    tol = 1e-6
+    lower = 0
+    upper = 1
+    fupper = objective(upper)
+
+    while fupper < 0:
+        upper *= 2
+        fupper = objective(upper)
+
+    implied_vol = optimize.bisect(objective, lower, upper, xtol=tol)
+    return implied_vol
+
+
+# Example usage (you can replace these with input values)
+S = 100  # Initial stock price
+K = 100  # Strike price
+r = 0.05  # Risk-free rate
+sigma = 0.2  # Volatility
+q = 0.02  # Dividend yield
+T = 1  # Time to maturity in years
+CallPrice = 10  # Call price for implied volatility calculation
+
+# Calculate Black-Scholes call and put prices
+call_price = black_scholes_call(S, K, r, sigma, q, T)
+put_price = black_scholes_put(S, K, r, sigma, q, T)
+print(f"Call Price: {call_price}, Put Price: {put_price}")
+
+# Calculate Delta and Gamma for the call option
+call_delta = black_scholes_call_delta(S, K, r, sigma, q, T)
+call_gamma = black_scholes_call_gamma(S, K, r, sigma, q, T)
+print(f"Call Delta: {call_delta}, Call Gamma: {call_gamma}")
+
+# Calculate implied volatility for a given call price
+implied_vol = black_scholes_call_implied_vol(S, K, r, q, T, CallPrice)
+print(f"Implied Volatility: {implied_vol}")
 ```
-def implied_vol(S0,K,r,q,T,price):
-    def dsquared(sig):
-        """Squared Difference between Black-Scholes and Market Price"""
-        d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
-        d2 = d1 - sig*np.sqrt(T)
-        norm = stats.norm
-        call = np.exp(-q*T)*S0*norm.cdf(d1,0,1) - K*np.exp(-r*T)*norm.cdf(d2,0, 1)
-        return (call - price) ** 2
-    res = minimize_scalar(dsquared, bounds=(0, 1), method='bounded')
-    return res.x
+
+The following plot the Black Scholes call price against the stock price, the strike price, volatility, dividend yield, interest rate, and time to maturity.  
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+black_scholes_call(S, K, r, sigma, q, T)
+
+# Parameters
+S = np.linspace(50, 150, 100)
+K = 100
+T = 1
+r = 0.05
+sigma = 0.2
+q = 0.01
+
+# Plot Black-Scholes call price against various parameters
+fig, axs = plt.subplots(3, 2, figsize=(8, 10))
+
+# Plot against stock price
+call_prices_S = [black_scholes_call(s, K, r, sigma, q, T) for s in S]
+axs[0, 0].plot(S, call_prices_S, label='Call Option Price', color='blue')
+axs[0, 0].set_title('')
+axs[0, 0].set_xlabel('Stock Price')
+axs[0, 0].set_ylabel('Call Option Price')
+axs[0, 0].grid(True)
+
+# Plot against strike price
+strike_prices = np.linspace(50, 150, 100)
+call_prices_K = [black_scholes_call(S[50],k, r, sigma, q, T) for k in strike_prices]
+axs[0, 1].plot(strike_prices, call_prices_K, label='Call Option Price', color='green')
+axs[0, 1].set_title('')
+axs[0, 1].set_xlabel('Strike Price')
+axs[0, 1].set_ylabel('Call Option Price')
+axs[0, 1].grid(True)
+
+# Plot against volatility
+volatilities = np.linspace(0.1, 0.5, 100)
+call_prices_sigma = [black_scholes_call(S[50],K, r, sigma, q, T) for sigma in volatilities]
+axs[1, 0].plot(volatilities, call_prices_sigma, label='Call Option Price', color='red')
+axs[1, 0].set_title('')
+axs[1, 0].set_xlabel('Volatility')
+axs[1, 0].set_ylabel('Call Option Price')
+axs[1, 0].grid(True)
+
+# Plot against dividend yield
+dividend_yields = np.linspace(0, 0.1, 100)
+call_prices_q = [black_scholes_call(S[50],K, r, sigma, q, T) for q in dividend_yields]
+axs[1, 1].plot(dividend_yields, call_prices_q, label='Call Option Price', color='purple')
+axs[1, 1].set_title('')
+axs[1, 1].set_xlabel('Dividend Yield')
+axs[1, 1].set_ylabel('Call Option Price')
+axs[1, 1].grid(True)
+
+# Plot against interest rate
+interest_rates = np.linspace(0, 0.1, 100)
+call_prices_r = [black_scholes_call(S[50],K, r, sigma, q, T) for r in interest_rates]
+axs[2, 0].plot(interest_rates, call_prices_r, label='Call Option Price', color='orange')
+axs[2, 0].set_title('')
+axs[2, 0].set_xlabel('Interest Rate')
+axs[2, 0].set_ylabel('Call Option Price')
+axs[2, 0].grid(True)
+
+# Plot against time to maturity
+times_to_maturity = np.linspace(0.1, 2, 100)
+call_prices_T = [black_scholes_call(S[50],K, r, sigma, q, T) for T in times_to_maturity]
+axs[2, 1].plot(times_to_maturity, call_prices_T, label='Call Option Price', color='brown')
+axs[2, 1].set_title('')
+axs[2, 1].set_xlabel('Time to Maturity')
+axs[2, 1].set_ylabel('Call Option Price')
+axs[2, 1].grid(True)
+
+plt.tight_layout()
+plt.show()
 ```
 
 ## Example: Replicating Portfolios and Simulating Portfolio Insurance
@@ -443,8 +571,11 @@ However, there is nothing special about a call option.  The same argument will a
 
 Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by $\max(K,S_T)$.  The reason for the name protective put is apparent since the position can pay off no less than $K$.  The cost of this insurance is the price of the put.  However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously.  The basic recipe is to start with inital wealth equal to that for a protective put position: $W_0 = P(0,S_0)+S_0$.  The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is $N(d_1)$, where $d_1$ is calculated at each point in time.  However, in practice we cannot trade continuously.  A simple discrete strategy would rebalance at intervals $\Delta t$.  The strategy calculates $N(d_1)$ at time 0 and holds $P(0,S_0)+S_0 - N(d_1)S_0$ dollars in the risk free asset and $N(d_1)$ shares of the asset.  Thereafter these holdings are adjusted.  The change in portfolio value over the interval $\Delta t$ is 
 $$\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} $$
-$$ = (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t}) $$
+$$ 
+= (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t}) 
+$$
 where $N(d1-)$ is the delta chosen at time $(i-1)\Delta t$.  The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be?  This is simulated in the following code:
+
 ```{python}
 
 import numpy as np
@@ -579,206 +710,6 @@ With $m=100$ rebalancing dates over $T=0.5$ for the parameters chosen the replia
 The portfolio insurance rebalancing scheme involves sell stock and buying bonds when the stock price goes down and buying stocks and selling bonds when the stock price goes up.  This can be destabilizing and was identified as a contributor to the 1987 stock market crash.
 
 
-<!-- 
-## Calculations in VBA {#sec-s_blackscholes_vba}
-
-The Black-Scholes call and put formulas and Greeks can easily be calculated in an Excel worksheet, using the standard functions \verb!Exp!, \verb!Ln! and the cumulative normal distribution function, which  is provided in Excel as \verb!NormSDist!.  However, if these are to be used repeatedly, it is useful to create functions in VBA.   In VBA, the cumulative normal distribution function is called \verb!Application.NormSDist!.  Also, the natural logarithm function in VBA is \verb!Log! rather than \verb!Ln! and the square root function in VBA is \verb!Sqr! rather than \verb!Sqrt!.
-
-
-### Black-Scholes Call and Put Formulas
-The following function implements the Black-Scholes call pricing formula. For the sake of completeness, the function returns a value even when a volatility of zero is input, in which case @eq-blackscholescall is invalid (it involves division by zero in the calculation of $d_1$ and $d_2$).  If the volatility is zero, then the stock is riskless and should appreciate at rate $r-q$.  Moreover the option is riskless and its date--0 value should be the date--T value discounted at the risk-free rate.  This implies that the call value at date~0 is^[This result can be verified by a simple arbitrage argument.  For example, if the call value were less than this formula, then put-call parity would show that the put price is negative, which is impossible.  On the other hand, if the call price is greater than this formula (and hence positive), then put-call parity shows that the put price is positive, and it is impossible that both the put and call will finish in the money (so, given that they are riskless, only one should have a positive value).]
-$$\mathrm{e}^{-rT}\max\left(0,\mathrm{e}^{(r-q)T}S(0)-K\right) = \max \left(0, \mathrm{e}^{-qT}S(0)-\mathrm{e}^{-rT}K\right)\; .$$
-\addcontentsline{lof}{figure}{Black Scholes Call}
-\begin{verbatim}
-Function Black_Scholes_Call(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2
-If sigma = 0 Then
-    Black_Scholes_Call = Application.Max(0,Exp(-q*T)*S-Exp(-r*T)*K)
-Else
-    d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-    d2 = d1 - sigma * Sqr(T)
-    N1 = Application.NormSDist(d1)
-    N2 = Application.NormSDist(d2)
-    Black_Scholes_Call = Exp(-q*T)*S*N1 - Exp(-r*T)*K*N2
-End If
-End Function
-\end{verbatim}
-
-
- 
-It is useful to note that 
-
-\begin{center}
-\verb!Black_Scholes_Call(S,K,r,sigma,q,T)! 
-\end{center}
-
-gives the same result as 
-
-\begin{center}
-\verb!Black_Scholes_Call(exp(-q*T)*S,K,r,sigma,0,T)!.
-\end{center}
-
-In the latter formulation, we view the underlying asset as the portfolio which starts with $\mathrm{e}^{-qT}$ shares of the asset and reinvests dividends until date $T$.  This portfolio has value $S(T)$ at date $T$, so a European call option on this non-dividend-paying portfolio is equivalent to a European call option on the stock.  The initial value of the portfolio is $\mathrm{e}^{-qT}S(0)$, which is input as the asset price in the latter formulation.
-
-
-The Black-Scholes formula for the value of a European put option can be implemented as follows.
-\addcontentsline{lof}{figure}{Black Scholes Put}
-\begin{verbatim}
-Function Black_Scholes_Put(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2
-If sigma = 0 Then
-    Black_Scholes_Put = Application.Max(0,Exp(-r*T)*K-Exp(-q*T)*S)
-Else
-    d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-    d2 = d1 - sigma * Sqr(T)
-    N1 = Application.NormSDist(-d1)
-    N2 = Application.NormSDist(-d2)
-    Black_Scholes_Put = Exp(-r*T)*K*N2 - Exp(-q*T)*S*N1
-End If
-End Function
-\end{verbatim}
-
-### Black-Scholes Greeks
-
-The delta and gamma of a European call option can be computed with the following functions.  The other Greeks are obviously calculated in a similar manner.  Note that the constant $\pi = 3.14159...$ is provided in Excel as the function \verb!Pi()! and can be accessed in Excel VBA as \verb!Application.Pi!. 
-\addcontentsline{lof}{figure}{Black Scholes Call Delta}
-\begin{verbatim}
-Function Black_Scholes_Call_Delta(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2
-d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-N1 = Application.NormSDist(d1)
-N2 = Application.NormSDist(d2)
-Black_Scholes_Call_Delta = Exp(-q*T)*N1
-End Function
-\end{verbatim}
-
-\addcontentsline{lof}{figure}{Black Scholes Call Gamma}
-\begin{verbatim}
-Function Black_Scholes_Call_Gamma(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2, nd1
-d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-N1 = Application.NormSDist(d1)
-N2 = Application.NormSDist(d2)
-nd1 = Exp(-d1 * d1 / 2) / Sqr(2 * Application.Pi)
-Black_Scholes_Call_Gamma = Exp(-q*T)*nd1/(S*sigma*Sqr(T))
-End Function
-\end{verbatim}
-
-
-
-### Implied Volatilities
-We could find an implied volatility using the Solver tool, but then we would have to re-run Solver each time we changed one of the input values.  We will need to solve similar problems on several occasions, so it seems worthwhile to program a Solver-like function in VBA.  We will write this in such a way that it can easily be applied in other contexts.  We will assume there is a single variable for which we want to solve, solving for multiple variables being  more difficult.
-
-Letting \verb!C! denote the market price of a European call option, the implied volatility is \verb!sigma! satisfying
-\begin{center}
-\verb! Black_Scholes_Call(S,K,r,sigma,q,T) - C = 0!.
-\end{center}
-The solution of this equation is called a root of the function \index{root}
-\begin{center}
-\verb! Black_Scholes_Call(S,K,r,sigma,q,T) - C!,
-\end{center}
-and the problem of finding roots of functions is a standard numerical problem.  Roots are found by what are essentially sophisticated trial-and-error methods.  The simplest method is to start with upper and lower bounds for $\sigma$ and repeatedly bisect the interval containing $\sigma$, each time finding a new upper or lower bound.  \index{bisection} The program below is a standard bisection routine.
-
-
-For there to be a volatility that equates the market price to the Black-Scholes price, it is necessary for the call option price to satisfy the arbitrage bound^[Note that by put-call parity---@eq-putcallparity11---the difference between the left and right-hand sides of this inequality is the value of the put with the same strike and maturity as the call.  Thus, the inequality is equivalent to the statement that the put value is nonnegative, which must be the case.] $C +\mathrm{e}^{-rT}K \geq \mathrm{e}^{-qT}S$.  We check this condition at the beginning of the program and supply an error message if it is violated.  
-
-We need to input  all of the inputs of \verb!Black_Scholes_Call! other than $\sigma$, and we need to input the call option price.  The following uses an error tolerance of $10^{-6}$. \index{error tolerance}
-Therefore, the value that is returned will equal the exact implied volatility to at least five decimal places.  The bisection is begun with a lower bound of $\sigma =0$.  An iterative procedure is used to find an upper bound, starting with $\sigma = 100$\%.
-
-
-
-This same algorithm can be used to find a real number $x$ such that $f(x)=0$ for any (continuous) function $f$.  The only changes necessary are in the right hand sides of the assignment statements for \verb!flower!, \verb!fupper!, and \verb!fguess! and in finding lower and upper bounds (and obviously one would not check the arbitrage bound in general).^[The key to the function  is checking each time whether the root is between the guess and the upper bound or between the guess and the lower bound.  If $\text{fupper] \times \text{fguess} < 0$, then there is a root between the guess and the upper bound.  In this case, we define the new lower bound to be the old  guess and define the new guess to be the midpoint of this new lower bound and the old upper bound.  We do the opposite if we find the root is between the guess and the lower bound.}  We will use this algorithm on several occasions to find roots of functions.
-
-\addcontentsline{lof}{figure}{Black Scholes Implied Vol}
-\begin{verbatim}
-Function Black_Scholes_Call_Implied_Vol(S, K, r, q, T, CallPrice)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            q = dividend yield
-'            T = time to maturity
-'            CallPrice = call price
-'
-Dim tol, lower, flower, upper, fupper, guess, fguess
-If CallPrice < Exp(-q * T) * S - Exp(-r * T) * K Then
-    MsgBox ("Option price violates the arbitrage bound.")
-    Exit Function
-End If
-tol = 10 ^ -6
-lower = 0
-flower = Black_Scholes_Call(S, K, r, lower, q, T) - CallPrice
-upper = 1
-fupper = Black_Scholes_Call(S, K, r, upper, q, T) - CallPrice
-Do While fupper < 0       ' double upper until it is an upper bound
-    upper = 2 * upper
-    fupper = Black_Scholes_Call(S, K, r, upper, q, T) - CallPrice
-Loop
-guess = 0.5 * lower + 0.5 * upper
-fguess = Black_Scholes_Call(S, K, r, guess, q, T) - CallPrice
-Do While upper - lower > tol  ' until root is bracketed within tol
-    If fupper * fguess < 0 Then  ' root is between guess and upper
-        lower = guess            ' make guess the new lower bound
-        flower = fguess
-        guess = 0.5 * lower + 0.5 * upper  ' new guess = bi-section
-        fguess = Black_Scholes_Call(S,K,r,guess,q,T) - CallPrice
-    Else                         ' root is between lower and guess
-        upper = guess            ' make guess the new upper bound
-        fupper = fguess
-        guess = 0.5 * lower + 0.5 * upper  ' new guess = bi-section
-        fguess = Black_Scholes_Call(S,K,r,guess,q,T) - CallPrice
-    End If
-Loop
-Black_Scholes_Call_Implied_Vol = guess
-End Function
-\end{verbatim}
-
-To compute an implied volatility from a put option price, one can first compute a corresponding call option price from put-call parity and then run the above program.
-
-There are faster root-finding methods than bisection.  These use other methods to update the guess than just halving the distance between the prior guess and the upper or lower bound.  For example, one can use the vega (the derivative of the option formula with respect to $\sigma$) at the given guess for $\sigma$ and replace the bisection with
-\begin{center}
-\verb!guess = guess - call/vega!\;.
-\end{center}
-This amounts to approximating the Black-Scholes formula as being linear in $\sigma$ and using the root of the approximation as the updated guess.  This is the essence of the \emph{Newton-Raphson} method.  \index{Newton-Raphson method} A similar idea that does not require the computation of vega is to keep track of the two most recent (\verb!guess!, \verb!call!) pairs and to approximate \verb!vega! as: 
-\begin{center}
-\verb!vega = (call - prior_call) / (guess - prior_guess)!\;.
- \end{center}
-This is the essence of the \emph{secant} method. \index{secant method} -->
-
 ### Discretely-Rebalanced Delta Hedges
 To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return $\mu$.  We consider adjusting the hedge at dates $0=t_0<t_1<\cdots<t_N=T$, with $t_i-t_{i-1}=\Delta t = T/N$ for each $i$.  The changes in the natural logarithm of the stock price between successive dates $t_{i-1}$ and $t_i$ are simulated as
 $$\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\Delta B\; ,$$
@@ -787,55 +718,77 @@ $\sqrt{\Delta t}$.  We begin with the portfolio that is short a call, long $\del
 
 To describe the distribution of gains and losses, we compute percentiles of the distribution.  You should see that the hedge becomes more nearly perfect as the number of periods $N$ is increased.  Note that this is true regardless of the $\mu$ that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Excel \verb!Percentile! function.^[If numsims = 11 and pct =0.1, the percentile function returns the second lowest element in the series.  The logic is that 10\% of the numbers, excluding the number returned, are below the number returned---i.e., 1 out of the other 10 are below---and 90\% of the others are above.  In particular, if pct = 0.5, the percentile function returns the median.  When necessary, the function interpolates; for example, if numsims = 10 and pct=0.1, then the number returned is an interpolation between the lowest and second lowest numbers.] 
 
-\addcontentsline{lof}{figure}{Simulated Delta Hedge Profit}
-\begin{verbatim}
-Function Simulated_Delta_Hedge_Profit(S0,K,r,sigma,q,T,mu,M,N,pct)
-'
-' Inputs are S0 = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            mu = expected rate of return
-'            N = number of time periods
-'            M = number of simulations
-'            pct = percentile to be returned
-'
-Dim dt, SigSqrdt, drift, LogS0, Call0, Delta0, Cash0, Comp, Div
-Dim S, LogS, Cash, NewS, Delta, NewDelta, HedgeValue, i, j
-Dim Profit() As Double
-ReDim Profit(M)
-dt = T / N
-SigSqrdt = sigma * Sqr(dt)
-drift = (mu - q - 0.5 * sigma * sigma) * dt
-Comp = Exp(r * dt)
-Div = Exp(q * dt) - 1
-LogS0 = Log(S0)               ' store log of initial stock price
-Call0 = Black_Scholes_Call(S0, K, r, sigma, q, T)
-Delta0 = Black_Scholes_Call_Delta(S0, K, r, sigma, q, T)
-Cash0 = Call0 - Delta0 * S0   ' initial cash position
-For i = 0 To M
-    LogS = LogS0              ' initialize log of stock price
-    Cash = Cash0              ' initialize cash position
-    S = S0                    ' initialize beginning stock price
-    Delta = Delta0            ' initialize beginning stock position
-    For j = 1 To N - 1
-        LogS = LogS + drift + SigSqrdt * RandN()   ' new log S
-        NewS = Exp(LogS)                           ' new S
-        NewDelta = Black_Scholes_Call_Delta(NewS,K,r,sigma,q,T-j*dt)
-        Cash = Comp*Cash + Delta*S*Div - (NewDelta-Delta)*NewS
-        S = NewS             ' update stock price
-        Delta = NewDelta     ' update stock position
-    Next j
-    LogS = LogS+drift+SigSqrdt*RandN()  ' final log of stock price
-    NewS = Exp(LogS)                    ' final stock price
-    HedgeValue = Comp*Cash + Delta*S*Div + Delta*NewS
-    Profit(i) = HedgeValue - Application.Max(NewS-K,0)
-Next i
-Simulated_Delta_Hedge_Profit = Application.Percentile(Profit, pct)
-End Function
-\end{verbatim}
+```{python}
+
+import numpy as np
+from scipy.stats import norm
+import scipy.optimize as optimize
+
+def simulated_delta_hedge_profit(S0, K, r, sigma, q, T, mu, M, N, pct):
+    """
+    Inputs:
+    S0 = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    mu = expected rate of return
+    N = number of time periods
+    M = number of simulations
+    pct = percentile to be returned
+    """
+    dt = T / N
+    SigSqrdt = sigma * np.sqrt(dt)
+    drift = (mu - q - 0.5 * sigma ** 2) * dt
+    Comp = np.exp(r * dt)
+    Div = np.exp(q * dt) - 1
+    LogS0 = np.log(S0)
+    Call0 = black_scholes_call(S0, K, r, sigma, q, T)
+    Delta0 = black_scholes_call_delta(S0, K, r, sigma, q, T)
+    Cash0 = Call0 - Delta0 * S0
+    Profit = np.zeros(M)
+
+    for i in range(M):
+        LogS = LogS0
+        Cash = Cash0
+        S = S0
+        Delta = Delta0
+
+        for j in range(1, N):
+            LogS += drift + SigSqrdt * np.random.randn()
+            NewS = np.exp(LogS)
+            NewDelta = black_scholes_call_delta(NewS, K, r, sigma, q, T - j * dt)
+            Cash = Comp * Cash + Delta * S * Div - (NewDelta - Delta) * NewS
+            S = NewS
+            Delta = NewDelta
+
+        LogS += drift + SigSqrdt * np.random.randn()
+        NewS = np.exp(LogS)
+        HedgeValue = Comp * Cash + Delta * S * Div + Delta * NewS
+        Profit[i] = HedgeValue - max(NewS - K, 0)
+
+    return np.percentile(Profit, pct * 100)
+
+# Example usage (you can replace these with input values)
+S = 100  # Initial stock price
+K = 100  # Strike price
+r = 0.05  # Risk-free rate
+sigma = 0.2  # Volatility
+q = 0.02  # Dividend yield
+T = 1  # Time to maturity in years
+CallPrice = 10  # Call price for implied volatility calculation
+
+# Simulate delta hedging profit
+S0 = 100  # Initial stock price
+mu = 0.1  # Expected rate of return
+M = 1000  # Number of simulations
+N = 252  # Number of time periods
+pct = 0.95  # Percentile to be returned
+
+delta_hedge_profit = simulated_delta_hedge_profit(S0, K, r, sigma, q, T, mu, M, N, pct)
+print(f"Delta Hedge Profit (95th percentile): {delta_hedge_profit}")
+```
 
 
 ## Exercises

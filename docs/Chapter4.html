@@ -269,10 +269,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sec-s_timevaryingvolatility" id="toc-sec-s_timevaryingvolatility" class="nav-link" data-scroll-target="#sec-s_timevaryingvolatility"><span class="header-section-number">4.8</span> Term Structure of Volatility</a></li>
   <li><a href="#sec-s_smiles" id="toc-sec-s_smiles" class="nav-link" data-scroll-target="#sec-s_smiles"><span class="header-section-number">4.9</span> Smiles and Smirks</a></li>
   <li><a href="#sec_blackscholes_python" id="toc-sec_blackscholes_python" class="nav-link" data-scroll-target="#sec_blackscholes_python"><span class="header-section-number">4.10</span> Calculations in Python</a></li>
-  <li><a href="#gamma" id="toc-gamma" class="nav-link" data-scroll-target="#gamma"><span class="header-section-number">4.11</span> Gamma</a></li>
-  <li><a href="#sec-blackscholes_implied" id="toc-sec-blackscholes_implied" class="nav-link" data-scroll-target="#sec-blackscholes_implied"><span class="header-section-number">4.12</span> Implied Volatility</a></li>
-  <li><a href="#example-replicating-portfolios-and-simulating-portfolio-insurance" id="toc-example-replicating-portfolios-and-simulating-portfolio-insurance" class="nav-link" data-scroll-target="#example-replicating-portfolios-and-simulating-portfolio-insurance"><span class="header-section-number">4.13</span> Example: Replicating Portfolios and Simulating Portfolio Insurance</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">4.14</span> Exercises</a></li>
+  <li><a href="#example-replicating-portfolios-and-simulating-portfolio-insurance" id="toc-example-replicating-portfolios-and-simulating-portfolio-insurance" class="nav-link" data-scroll-target="#example-replicating-portfolios-and-simulating-portfolio-insurance"><span class="header-section-number">4.11</span> Example: Replicating Portfolios and Simulating Portfolio Insurance</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">4.12</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -521,7 +519,7 @@ a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 </section>
 <section id="sec-s_impliedvolatility" class="level2" data-number="4.7">
 <h2 data-number="4.7" class="anchored" data-anchor-id="sec-s_impliedvolatility"><span class="header-section-number">4.7</span> Implied Volatilities</h2>
-<p>All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient <span class="math inline">\(\sigma\)</span>. We can estimate <span class="math inline">\(\sigma\)</span> from historical data (see <a href="Chapter5.html"><span>Chapter&nbsp;5</span></a>), or estimate it from the prices of other options. The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the <span class="math inline">\(\sigma\)</span> that is input, so one can take the price as given and infer <span class="math inline">\(\sigma\)</span> from the formula. The <span class="math inline">\(\sigma\)</span> computed in this way is called the implied volatility. The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option. The calculation of implied volatilities is discussed in <a href="#sec-blackscholes_implied"><span>Section&nbsp;4.12</span></a>.</p>
+<p>All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient <span class="math inline">\(\sigma\)</span>. We can estimate <span class="math inline">\(\sigma\)</span> from historical data (see <a href="Chapter5.html"><span>Chapter&nbsp;5</span></a>), or estimate it from the prices of other options. The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the <span class="math inline">\(\sigma\)</span> that is input, so one can take the price as given and infer <span class="math inline">\(\sigma\)</span> from the formula. The <span class="math inline">\(\sigma\)</span> computed in this way is called the implied volatility. The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option. The calculation of implied volatilities is discussed in <span class="quarto-unresolved-ref">?sec-blackscholes_implied</span>.</p>
 <p>Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small. Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity. To some extent, the implied volatility normalizes the price relative to the exercise price and maturity. Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!</p>
 </section>
 <section id="sec-s_timevaryingvolatility" class="level2" data-number="4.8">
@@ -536,7 +534,8 @@ a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 <p>It is important to recognize that, throughout this chapter, date 0 means the date at which the option is being valued. It is not necessarily the date at which the option was first bought or sold. So <span class="math inline">\(\sigma_{\text{avg}}\)</span> is the average (in a sense) volatility during the remaining lifetime of the option, which need not be the same as the average during the option’s entire lifetime. It is this remaining volatility that is important for pricing and hedging. Moreover, it is a mistake at date 0 to use <span class="math inline">\(\sigma(0)\)</span> as the volatility to compute prices and hedges. Instead, prices and hedges should be based on <span class="math inline">\(\sigma_{\text{avg}}\)</span>.</p>
 <p>These considerations provide a way to address the following situation. If we compute implied volatilities for options with different maturities, we will normally get different numbers. For example, consider two at-the-money options with maturities <span class="math inline">\(T_1\)</span> and <span class="math inline">\(T_2\)</span> where <span class="math inline">\(T_2&gt;T_1\)</span>. Denote the implied volatilities by <span class="math inline">\(\hat{\sigma}_1\)</span> and <span class="math inline">\(\hat{\sigma}_2\)</span>. We want to interpret these as average volatilities for the time periods <span class="math inline">\([0,T_1]\)</span> and <span class="math inline">\([0,T_2]\)</span> respectively. This requires the existence of a function <span class="math inline">\(\sigma(t)\)</span> such that <span class="math display">\[\hat{\sigma}_1^2 = \frac{1}{T_1}\int_0^{T_1} \sigma^2(t)\,\mathrm{d} t \quad \text{and} \quad \hat{\sigma}_2^2 = \frac{1}{T_2}\int_0^{T_2} \sigma^2(t)\,\mathrm{d} t\; .\]</span> This would imply <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 = \int_{T_1}^{T_2} \sigma^2(t)\,\mathrm{d} t\; ,\]</span> which requires <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 \geq 0\; .\]</span> Equivalently, <span class="math display">\[\hat{\sigma}_2 \geq \sqrt{\frac{T_1}{T_2}} \hat{\sigma}_1\; .\]</span> Provided this last inequality is satisfied, we can easily construct the function <span class="math inline">\(\sigma(t)\)</span> as <span class="math display">\[\sigma(t) = \begin{cases} \hat{\sigma}_1 &amp; \quad\text{for $t\leq T_1$} \\
 \sqrt{\frac{\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1}{T_2-T_1}} &amp;\quad\text{for $T_1 &lt; t\leq T_2$}.
-\end{cases}\]</span> More generally, given a sequence of at-the-money options with maturities <span class="math inline">\(T_1&lt;T_2&lt;\cdots T_N\)</span> and implied volatilities <span class="math inline">\(\hat{\sigma}_1,\dots,\hat{\sigma}_N\)</span>, we define <span class="math display">\[\sigma(t) = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}\]</span> for <span class="math inline">\(T_i&lt;t\leq T_{i+1}\)</span>, provided the expression inside the square root symbol is positive. This <span class="math inline">\(\sigma(t)\)</span> is often called the term structure of (implied) volatilities. Generally, we may expect <span class="math inline">\(\sigma(t)\)</span> to be a decreasing function of time <span class="math inline">\(t\)</span> when the current market is especially volatile and to be an increasing function when the current market is especially quiet.</p>
+\end{cases}
+\]</span> More generally, given a sequence of at-the-money options with maturities <span class="math inline">\(T_1&lt;T_2&lt;\cdots T_N\)</span> and implied volatilities <span class="math inline">\(\hat{\sigma}_1,\dots,\hat{\sigma}_N\)</span>, we define <span class="math display">\[\sigma(t) = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}\]</span> for <span class="math inline">\(T_i&lt;t\leq T_{i+1}\)</span>, provided the expression inside the square root symbol is positive. This <span class="math inline">\(\sigma(t)\)</span> is often called the term structure of (implied) volatilities. Generally, we may expect <span class="math inline">\(\sigma(t)\)</span> to be a decreasing function of time <span class="math inline">\(t\)</span> when the current market is especially volatile and to be an increasing function when the current market is especially quiet.</p>
 </section>
 <section id="sec-s_smiles" class="level2" data-number="4.9">
 <h2 data-number="4.9" class="anchored" data-anchor-id="sec-s_smiles"><span class="header-section-number">4.9</span> Smiles and Smirks</h2>
@@ -544,80 +543,227 @@ a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 </section>
 <section id="sec_blackscholes_python" class="level2" data-number="4.10">
 <h2 data-number="4.10" class="anchored" data-anchor-id="sec_blackscholes_python"><span class="header-section-number">4.10</span> Calculations in Python</h2>
-<p>The following calculates the Black Scholes put or call price.</p>
-<pre><code>def blackscholes(S0, K, r, q, sig, T, call = True):
-    '''Calculate option price using B-S formula.
-    
-    Args:
-        S0 (num): initial price of underlying asset.
-        K (num): strick price.
-        r (num): risk free rate
-        q (num): dividend yield
-        sig (num): Black-Scholes volatility.
-        T (num): maturity.
-        call (bool): True returns call price, False returns put price.
-        
-    Returns:
-        num
-    '''
-    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
-    d2 = d1 - sig*np.sqrt(T)
-     &lt;!-- norm = sp.stats.norm --&gt;
-    norm = stats.norm
-    if call:
-        return np.exp(- q *T) * S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1) 
-    else:
-        return -np.exp(-q * T) * S0 * norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)</code></pre>
+<p>The following calculates the Black Scholes call, put, call delta, call gamma, and impliied volatility.</p>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.optimize <span class="im">as</span> optimize</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call(S, K, r, sigma, q, T):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sigma <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        N1 <span class="op">=</span> norm.cdf(d1)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> N2</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_put(S, K, r, sigma, q, T):</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sigma <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">-</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        N1 <span class="op">=</span> norm.cdf(<span class="op">-</span>d1)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        N2 <span class="op">=</span> norm.cdf(<span class="op">-</span>d2)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> N2 <span class="op">-</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call_delta(S, K, r, sigma, q, T):</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> norm.cdf(d1)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call_gamma(S, K, r, sigma, q, T):</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>    nd1 <span class="op">=</span> np.exp(<span class="op">-</span>d1 <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">/</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> np.pi)</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> nd1 <span class="op">/</span> (S <span class="op">*</span> sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call_implied_vol(S, K, r, q, T, CallPrice):</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="co">    CallPrice = call price</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> objective(sigma):</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> black_scholes_call(S, K, r, sigma, q, T) <span class="op">-</span> CallPrice</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> CallPrice <span class="op">&lt;</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K:</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Option price violates the arbitrage bound."</span>)</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-6</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>    fupper <span class="op">=</span> objective(upper)</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> fupper <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>        upper <span class="op">*=</span> <span class="dv">2</span></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>        fupper <span class="op">=</span> objective(upper)</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>    implied_vol <span class="op">=</span> optimize.bisect(objective, lower, upper, xtol<span class="op">=</span>tol)</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> implied_vol</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage (you can replace these with input values)</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Strike price</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Risk-free rate</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span>  <span class="co"># Volatility</span></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>  <span class="co"># Dividend yield</span></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span>  <span class="co"># Time to maturity in years</span></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>CallPrice <span class="op">=</span> <span class="dv">10</span>  <span class="co"># Call price for implied volatility calculation</span></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Black-Scholes call and put prices</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>call_price <span class="op">=</span> black_scholes_call(S, K, r, sigma, q, T)</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>put_price <span class="op">=</span> black_scholes_put(S, K, r, sigma, q, T)</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Call Price: </span><span class="sc">{</span>call_price<span class="sc">}</span><span class="ss">, Put Price: </span><span class="sc">{</span>put_price<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Delta and Gamma for the call option</span></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>call_delta <span class="op">=</span> black_scholes_call_delta(S, K, r, sigma, q, T)</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>call_gamma <span class="op">=</span> black_scholes_call_gamma(S, K, r, sigma, q, T)</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Call Delta: </span><span class="sc">{</span>call_delta<span class="sc">}</span><span class="ss">, Call Gamma: </span><span class="sc">{</span>call_gamma<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate implied volatility for a given call price</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>implied_vol <span class="op">=</span> black_scholes_call_implied_vol(S, K, r, q, T, CallPrice)</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Implied Volatility: </span><span class="sc">{</span>implied_vol<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call Price: 9.227005508154036, Put Price: 6.330080627549918
+Call Delta: 0.586851146134764, Call Gamma: 0.018950578755008718
+Implied Volatility: 0.2203836441040039</code></pre>
+</div>
+</div>
+<p>The following plot the Black Scholes call price against the stock price, the strike price, volatility, dividend yield, interest rate, and time to maturity.</p>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>black_scholes_call(S, K, r, sigma, q, T)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.linspace(<span class="dv">50</span>, <span class="dv">150</span>, <span class="dv">100</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot Black-Scholes call price against various parameters</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">10</span>))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot against stock price</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>call_prices_S <span class="op">=</span> [black_scholes_call(s, K, r, sigma, q, T) <span class="cf">for</span> s <span class="kw">in</span> S]</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">0</span>].plot(S, call_prices_S, label<span class="op">=</span><span class="st">'Call Option Price'</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">0</span>].set_title(<span class="st">''</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">0</span>].set_xlabel(<span class="st">'Stock Price'</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">0</span>].set_ylabel(<span class="st">'Call Option Price'</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">0</span>].grid(<span class="va">True</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot against strike price</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>strike_prices <span class="op">=</span> np.linspace(<span class="dv">50</span>, <span class="dv">150</span>, <span class="dv">100</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>call_prices_K <span class="op">=</span> [black_scholes_call(S[<span class="dv">50</span>],k, r, sigma, q, T) <span class="cf">for</span> k <span class="kw">in</span> strike_prices]</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">1</span>].plot(strike_prices, call_prices_K, label<span class="op">=</span><span class="st">'Call Option Price'</span>, color<span class="op">=</span><span class="st">'green'</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">1</span>].set_title(<span class="st">''</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">1</span>].set_xlabel(<span class="st">'Strike Price'</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">1</span>].set_ylabel(<span class="st">'Call Option Price'</span>)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">1</span>].grid(<span class="va">True</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot against volatility</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>volatilities <span class="op">=</span> np.linspace(<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="dv">100</span>)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>call_prices_sigma <span class="op">=</span> [black_scholes_call(S[<span class="dv">50</span>],K, r, sigma, q, T) <span class="cf">for</span> sigma <span class="kw">in</span> volatilities]</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">0</span>].plot(volatilities, call_prices_sigma, label<span class="op">=</span><span class="st">'Call Option Price'</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">0</span>].set_title(<span class="st">''</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">0</span>].set_xlabel(<span class="st">'Volatility'</span>)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">0</span>].set_ylabel(<span class="st">'Call Option Price'</span>)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">0</span>].grid(<span class="va">True</span>)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot against dividend yield</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>dividend_yields <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="fl">0.1</span>, <span class="dv">100</span>)</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>call_prices_q <span class="op">=</span> [black_scholes_call(S[<span class="dv">50</span>],K, r, sigma, q, T) <span class="cf">for</span> q <span class="kw">in</span> dividend_yields]</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">1</span>].plot(dividend_yields, call_prices_q, label<span class="op">=</span><span class="st">'Call Option Price'</span>, color<span class="op">=</span><span class="st">'purple'</span>)</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">1</span>].set_title(<span class="st">''</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">1</span>].set_xlabel(<span class="st">'Dividend Yield'</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">1</span>].set_ylabel(<span class="st">'Call Option Price'</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">1</span>].grid(<span class="va">True</span>)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot against interest rate</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>interest_rates <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="fl">0.1</span>, <span class="dv">100</span>)</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>call_prices_r <span class="op">=</span> [black_scholes_call(S[<span class="dv">50</span>],K, r, sigma, q, T) <span class="cf">for</span> r <span class="kw">in</span> interest_rates]</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">0</span>].plot(interest_rates, call_prices_r, label<span class="op">=</span><span class="st">'Call Option Price'</span>, color<span class="op">=</span><span class="st">'orange'</span>)</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">0</span>].set_title(<span class="st">''</span>)</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">0</span>].set_xlabel(<span class="st">'Interest Rate'</span>)</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">0</span>].set_ylabel(<span class="st">'Call Option Price'</span>)</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">0</span>].grid(<span class="va">True</span>)</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot against time to maturity</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>times_to_maturity <span class="op">=</span> np.linspace(<span class="fl">0.1</span>, <span class="dv">2</span>, <span class="dv">100</span>)</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>call_prices_T <span class="op">=</span> [black_scholes_call(S[<span class="dv">50</span>],K, r, sigma, q, T) <span class="cf">for</span> T <span class="kw">in</span> times_to_maturity]</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">1</span>].plot(times_to_maturity, call_prices_T, label<span class="op">=</span><span class="st">'Call Option Price'</span>, color<span class="op">=</span><span class="st">'brown'</span>)</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">1</span>].set_title(<span class="st">''</span>)</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">1</span>].set_xlabel(<span class="st">'Time to Maturity'</span>)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">1</span>].set_ylabel(<span class="st">'Call Option Price'</span>)</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">1</span>].grid(<span class="va">True</span>)</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Chapter4_files/figure-html/cell-3-output-1.png" width="744" height="950"></p>
+</div>
+</div>
 </section>
-<section id="gamma" class="level2" data-number="4.11">
-<h2 data-number="4.11" class="anchored" data-anchor-id="gamma"><span class="header-section-number">4.11</span> Gamma</h2>
-<p>The following calculates the delta for a put or a call. From put-call parity we know they are the same for both options.</p>
-<pre><code>def blackscholes_gamma(S0, K, r, sig, T, call = True):
-    '''Calculate option price using B-S formula.
-
-    Args:
-        S0 (num): initial price of underlying asset.
-        K (num): strick price.
-        sig (num): Black-Scholes volatility.
-        T (num): maturity.
-        call (bool): True returns call price, False returns put price.
-
-    Returns:
-        num
-    '''
-    d1 = (np.log(S0/K) + (r + sig**2/2) * T)/(sig*np.sqrt(T))
-    d2 = d1 - sig*np.sqrt(T)
-
-     &lt;!-- norm = sp.stats.norm --&gt;
-    norm = stats.norm
-    if type(call) == bool:
-        if call:
-            return np.exp(-q * T) * norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
-        else:
-            return np.exp(-q * T) *norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
-    else:
-        print("Not a valid value for call")</code></pre>
-</section>
-<section id="sec-blackscholes_implied" class="level2" data-number="4.12">
-<h2 data-number="4.12" class="anchored" data-anchor-id="sec-blackscholes_implied"><span class="header-section-number">4.12</span> Implied Volatility</h2>
-<p>The following calculates the implied volatility for a call option.</p>
-<pre><code>def implied_vol(S0,K,r,q,T,price):
-    def dsquared(sig):
-        """Squared Difference between Black-Scholes and Market Price"""
-        d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
-        d2 = d1 - sig*np.sqrt(T)
-        norm = stats.norm
-        call = np.exp(-q*T)*S0*norm.cdf(d1,0,1) - K*np.exp(-r*T)*norm.cdf(d2,0, 1)
-        return (call - price) ** 2
-    res = minimize_scalar(dsquared, bounds=(0, 1), method='bounded')
-    return res.x</code></pre>
-</section>
-<section id="example-replicating-portfolios-and-simulating-portfolio-insurance" class="level2" data-number="4.13">
-<h2 data-number="4.13" class="anchored" data-anchor-id="example-replicating-portfolios-and-simulating-portfolio-insurance"><span class="header-section-number">4.13</span> Example: Replicating Portfolios and Simulating Portfolio Insurance</h2>
+<section id="example-replicating-portfolios-and-simulating-portfolio-insurance" class="level2" data-number="4.11">
+<h2 data-number="4.11" class="anchored" data-anchor-id="example-replicating-portfolios-and-simulating-portfolio-insurance"><span class="header-section-number">4.11</span> Example: Replicating Portfolios and Simulating Portfolio Insurance</h2>
 <p>Another derivation of the Black Scholes formula is provided by Merton. He asked the question whether by trading the stock and the risk free asset whether the payoff to a European call option can be replicated. Let <span class="math inline">\(\theta_t\)</span> be the number of shares of the stock held at time <span class="math inline">\(t\)</span> and <span class="math inline">\(\alpha_t\)</span> the number of shares of an initial investment of one dollar in the risk free asset. Then the portfolio is worth <span class="math inline">\(\alpha_t R_t + \theta_t S_t\)</span> where <span class="math inline">\(R_t= e^{rt}\)</span> is the time <span class="math inline">\(t\)</span> value of an initial time <span class="math inline">\(0\)</span> investment of one dollar in the risk free asset. The portfolio should start with an initial value, should not have any cash inflows or outflows and have a terminal value equal to a call payoff so the changes in value are completely dictated by the changes in the value of the assets. That is, assuming continuous trading, <span class="math display">\[  d W_t = \theta_t d S_t + \alpha_t  d R_t = \theta_t \left(\mu S_t dt + q S_t dt + \sigma S_t d B_t\right)  + \alpha_t r R_t dt\]</span> with terminal condition <span class="math display">\[ W_T = \alpha_T R_T + \theta_T S_T = (S_T - K)^{+} \]</span> The problem is to find <span class="math inline">\(\theta_t\)</span> and <span class="math inline">\(\alpha_t\)</span> for all times and states. If we can accomplish this, then by `no-arbitrage’ the call price must be the value of the initial investment. Assume the call price is a function of the stock price and time: <span class="math inline">\(C(t,S_t)\)</span>. Then by Ito’s Lemma <span class="math display">\[ d C(t,S_t) = \left(\frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2 \right) dt + \frac{\partial C}{\partial S} \sigma S_t dB_t \]</span> It should be apparent that we want to hold <span class="math inline">\(\theta = \frac{\partial C}{\partial S}\)</span>, which is the delta of the call option. By doing so, we match the diffusion term in thw change in wealth and the change in the call option. Then matching the drift terms in both expressions <span class="math display">\[ \frac{\partial C}{\partial S} \mu S_t + \alpha_t r R_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> which can be solved to give <span class="math display">\[ \alpha_t r R_t=r \left(W_t -\frac{\partial C}{\partial S} S_t\right)  = \frac{\partial C}{\partial t}-\frac{\partial C}{\partial S} q S_t  + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> which gives the equation <span class="math display">\[r W_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S}(r-q) S_t+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> with a boundary condition <span class="math inline">\(W_T = (S_T-K)^{+}\)</span>. However, no-arbitrage suggests <span class="math inline">\(W_t = C(t,S_t)\)</span> which gives us the partial differential equation <span class="math display">\[r C = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (r-q) S+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S^2\]</span> with a boundary condition <span class="math inline">\(C(T,S_T)= (S_T - K)^{+}\)</span>. This is a partial differential equation and a fairly tedious set of calcuations show the Black Scholes formula is a solution (in fact it is the only positive solution). Close observation of the right hand side we see this is the drift term of Ito expansion for <span class="math inline">\(C\)</span> if we work in the risk neutral measure. The right hand side then says in the risk neutral measure, the call option earns the risk free return.</p>
 <p>However, there is nothing special about a call option. The same argument will apply for any European style option. The only difference is the boundary condition. This procedure allows us to replicate the payoff of any European option even for those which might not be traded. This observation had a profound effect on practice. A particularly popular example is portfolio insurance.</p>
-<p>Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by <span class="math inline">\(\max(K,S_T)\)</span>. The reason for the name protective put is apparent since the position can pay off no less than <span class="math inline">\(K\)</span>. The cost of this insurance is the price of the put. However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously. The basic recipe is to start with inital wealth equal to that for a protective put position: <span class="math inline">\(W_0 = P(0,S_0)+S_0\)</span>. The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is <span class="math inline">\(N(d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is calculated at each point in time. However, in practice we cannot trade continuously. A simple discrete strategy would rebalance at intervals <span class="math inline">\(\Delta t\)</span>. The strategy calculates <span class="math inline">\(N(d_1)\)</span> at time 0 and holds <span class="math inline">\(P(0,S_0)+S_0 - N(d_1)S_0\)</span> dollars in the risk free asset and <span class="math inline">\(N(d_1)\)</span> shares of the asset. Thereafter these holdings are adjusted. The change in portfolio value over the interval <span class="math inline">\(\Delta t\)</span> is <span class="math display">\[\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} \]</span> <span class="math display">\[ = (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t}) \]</span> where <span class="math inline">\(N(d1-)\)</span> is the delta chosen at time <span class="math inline">\((i-1)\Delta t\)</span>. The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be? This is simulated in the following code:</p>
-<div class="cell" data-execution_count="1">
+<p>Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by <span class="math inline">\(\max(K,S_T)\)</span>. The reason for the name protective put is apparent since the position can pay off no less than <span class="math inline">\(K\)</span>. The cost of this insurance is the price of the put. However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously. The basic recipe is to start with inital wealth equal to that for a protective put position: <span class="math inline">\(W_0 = P(0,S_0)+S_0\)</span>. The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is <span class="math inline">\(N(d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is calculated at each point in time. However, in practice we cannot trade continuously. A simple discrete strategy would rebalance at intervals <span class="math inline">\(\Delta t\)</span>. The strategy calculates <span class="math inline">\(N(d_1)\)</span> at time 0 and holds <span class="math inline">\(P(0,S_0)+S_0 - N(d_1)S_0\)</span> dollars in the risk free asset and <span class="math inline">\(N(d_1)\)</span> shares of the asset. Thereafter these holdings are adjusted. The change in portfolio value over the interval <span class="math inline">\(\Delta t\)</span> is <span class="math display">\[\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} \]</span> <span class="math display">\[
+= (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t})
+\]</span> where <span class="math inline">\(N(d1-)\)</span> is the delta chosen at time <span class="math inline">\((i-1)\Delta t\)</span>. The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be? This is simulated in the following code:</p>
+<div class="cell" data-execution_count="3">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -748,218 +894,95 @@ a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 <span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="Chapter4_files/figure-html/cell-2-output-1.png" width="585" height="429"></p>
+<p><img src="Chapter4_files/figure-html/cell-4-output-1.png" width="585" height="429"></p>
 </div>
 </div>
 <p>With <span class="math inline">\(m=100\)</span> rebalancing dates over <span class="math inline">\(T=0.5\)</span> for the parameters chosen the repliacting strategy does a pretty good job. The hedging errors occur when the stock price is close to the strike price. This is not surprising since the delta changes (measured by the gamma) fastest around this point. A gamma hedge would potentially improve the performance.</p>
 <p>The portfolio insurance rebalancing scheme involves sell stock and buying bonds when the stock price goes down and buying stocks and selling bonds when the stock price goes up. This can be destabilizing and was identified as a contributor to the 1987 stock market crash.</p>
-<!-- 
-## Calculations in VBA {#sec-s_blackscholes_vba}
-
-The Black-Scholes call and put formulas and Greeks can easily be calculated in an Excel worksheet, using the standard functions \verb!Exp!, \verb!Ln! and the cumulative normal distribution function, which  is provided in Excel as \verb!NormSDist!.  However, if these are to be used repeatedly, it is useful to create functions in VBA.   In VBA, the cumulative normal distribution function is called \verb!Application.NormSDist!.  Also, the natural logarithm function in VBA is \verb!Log! rather than \verb!Ln! and the square root function in VBA is \verb!Sqr! rather than \verb!Sqrt!.
-
-
-### Black-Scholes Call and Put Formulas
-The following function implements the Black-Scholes call pricing formula. For the sake of completeness, the function returns a value even when a volatility of zero is input, in which case @eq-blackscholescall is invalid (it involves division by zero in the calculation of $d_1$ and $d_2$).  If the volatility is zero, then the stock is riskless and should appreciate at rate $r-q$.  Moreover the option is riskless and its date--0 value should be the date--T value discounted at the risk-free rate.  This implies that the call value at date~0 is^[This result can be verified by a simple arbitrage argument.  For example, if the call value were less than this formula, then put-call parity would show that the put price is negative, which is impossible.  On the other hand, if the call price is greater than this formula (and hence positive), then put-call parity shows that the put price is positive, and it is impossible that both the put and call will finish in the money (so, given that they are riskless, only one should have a positive value).]
-$$\mathrm{e}^{-rT}\max\left(0,\mathrm{e}^{(r-q)T}S(0)-K\right) = \max \left(0, \mathrm{e}^{-qT}S(0)-\mathrm{e}^{-rT}K\right)\; .$$
-\addcontentsline{lof}{figure}{Black Scholes Call}
-\begin{verbatim}
-Function Black_Scholes_Call(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2
-If sigma = 0 Then
-    Black_Scholes_Call = Application.Max(0,Exp(-q*T)*S-Exp(-r*T)*K)
-Else
-    d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-    d2 = d1 - sigma * Sqr(T)
-    N1 = Application.NormSDist(d1)
-    N2 = Application.NormSDist(d2)
-    Black_Scholes_Call = Exp(-q*T)*S*N1 - Exp(-r*T)*K*N2
-End If
-End Function
-\end{verbatim}
-
-
- 
-It is useful to note that 
-
-\begin{center}
-\verb!Black_Scholes_Call(S,K,r,sigma,q,T)! 
-\end{center}
-
-gives the same result as 
-
-\begin{center}
-\verb!Black_Scholes_Call(exp(-q*T)*S,K,r,sigma,0,T)!.
-\end{center}
-
-In the latter formulation, we view the underlying asset as the portfolio which starts with $\mathrm{e}^{-qT}$ shares of the asset and reinvests dividends until date $T$.  This portfolio has value $S(T)$ at date $T$, so a European call option on this non-dividend-paying portfolio is equivalent to a European call option on the stock.  The initial value of the portfolio is $\mathrm{e}^{-qT}S(0)$, which is input as the asset price in the latter formulation.
-
-
-The Black-Scholes formula for the value of a European put option can be implemented as follows.
-\addcontentsline{lof}{figure}{Black Scholes Put}
-\begin{verbatim}
-Function Black_Scholes_Put(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2
-If sigma = 0 Then
-    Black_Scholes_Put = Application.Max(0,Exp(-r*T)*K-Exp(-q*T)*S)
-Else
-    d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-    d2 = d1 - sigma * Sqr(T)
-    N1 = Application.NormSDist(-d1)
-    N2 = Application.NormSDist(-d2)
-    Black_Scholes_Put = Exp(-r*T)*K*N2 - Exp(-q*T)*S*N1
-End If
-End Function
-\end{verbatim}
-
-### Black-Scholes Greeks
-
-The delta and gamma of a European call option can be computed with the following functions.  The other Greeks are obviously calculated in a similar manner.  Note that the constant $\pi = 3.14159...$ is provided in Excel as the function \verb!Pi()! and can be accessed in Excel VBA as \verb!Application.Pi!. 
-\addcontentsline{lof}{figure}{Black Scholes Call Delta}
-\begin{verbatim}
-Function Black_Scholes_Call_Delta(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2
-d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-N1 = Application.NormSDist(d1)
-N2 = Application.NormSDist(d2)
-Black_Scholes_Call_Delta = Exp(-q*T)*N1
-End Function
-\end{verbatim}
-
-\addcontentsline{lof}{figure}{Black Scholes Call Gamma}
-\begin{verbatim}
-Function Black_Scholes_Call_Gamma(S, K, r, sigma, q, T)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'
-Dim d1, d2, N1, N2, nd1
-d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-N1 = Application.NormSDist(d1)
-N2 = Application.NormSDist(d2)
-nd1 = Exp(-d1 * d1 / 2) / Sqr(2 * Application.Pi)
-Black_Scholes_Call_Gamma = Exp(-q*T)*nd1/(S*sigma*Sqr(T))
-End Function
-\end{verbatim}
-
-
-
-### Implied Volatilities
-We could find an implied volatility using the Solver tool, but then we would have to re-run Solver each time we changed one of the input values.  We will need to solve similar problems on several occasions, so it seems worthwhile to program a Solver-like function in VBA.  We will write this in such a way that it can easily be applied in other contexts.  We will assume there is a single variable for which we want to solve, solving for multiple variables being  more difficult.
-
-Letting \verb!C! denote the market price of a European call option, the implied volatility is \verb!sigma! satisfying
-\begin{center}
-\verb! Black_Scholes_Call(S,K,r,sigma,q,T) - C = 0!.
-\end{center}
-The solution of this equation is called a root of the function \index{root}
-\begin{center}
-\verb! Black_Scholes_Call(S,K,r,sigma,q,T) - C!,
-\end{center}
-and the problem of finding roots of functions is a standard numerical problem.  Roots are found by what are essentially sophisticated trial-and-error methods.  The simplest method is to start with upper and lower bounds for $\sigma$ and repeatedly bisect the interval containing $\sigma$, each time finding a new upper or lower bound.  \index{bisection} The program below is a standard bisection routine.
-
-
-For there to be a volatility that equates the market price to the Black-Scholes price, it is necessary for the call option price to satisfy the arbitrage bound^[Note that by put-call parity---@eq-putcallparity11---the difference between the left and right-hand sides of this inequality is the value of the put with the same strike and maturity as the call.  Thus, the inequality is equivalent to the statement that the put value is nonnegative, which must be the case.] $C +\mathrm{e}^{-rT}K \geq \mathrm{e}^{-qT}S$.  We check this condition at the beginning of the program and supply an error message if it is violated.  
-
-We need to input  all of the inputs of \verb!Black_Scholes_Call! other than $\sigma$, and we need to input the call option price.  The following uses an error tolerance of $10^{-6}$. \index{error tolerance}
-Therefore, the value that is returned will equal the exact implied volatility to at least five decimal places.  The bisection is begun with a lower bound of $\sigma =0$.  An iterative procedure is used to find an upper bound, starting with $\sigma = 100$\%.
-
-
-
-This same algorithm can be used to find a real number $x$ such that $f(x)=0$ for any (continuous) function $f$.  The only changes necessary are in the right hand sides of the assignment statements for \verb!flower!, \verb!fupper!, and \verb!fguess! and in finding lower and upper bounds (and obviously one would not check the arbitrage bound in general).^[The key to the function  is checking each time whether the root is between the guess and the upper bound or between the guess and the lower bound.  If $\text{fupper] \times \text{fguess} < 0$, then there is a root between the guess and the upper bound.  In this case, we define the new lower bound to be the old  guess and define the new guess to be the midpoint of this new lower bound and the old upper bound.  We do the opposite if we find the root is between the guess and the lower bound.}  We will use this algorithm on several occasions to find roots of functions.
-
-\addcontentsline{lof}{figure}{Black Scholes Implied Vol}
-\begin{verbatim}
-Function Black_Scholes_Call_Implied_Vol(S, K, r, q, T, CallPrice)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            q = dividend yield
-'            T = time to maturity
-'            CallPrice = call price
-'
-Dim tol, lower, flower, upper, fupper, guess, fguess
-If CallPrice < Exp(-q * T) * S - Exp(-r * T) * K Then
-    MsgBox ("Option price violates the arbitrage bound.")
-    Exit Function
-End If
-tol = 10 ^ -6
-lower = 0
-flower = Black_Scholes_Call(S, K, r, lower, q, T) - CallPrice
-upper = 1
-fupper = Black_Scholes_Call(S, K, r, upper, q, T) - CallPrice
-Do While fupper < 0       ' double upper until it is an upper bound
-    upper = 2 * upper
-    fupper = Black_Scholes_Call(S, K, r, upper, q, T) - CallPrice
-Loop
-guess = 0.5 * lower + 0.5 * upper
-fguess = Black_Scholes_Call(S, K, r, guess, q, T) - CallPrice
-Do While upper - lower > tol  ' until root is bracketed within tol
-    If fupper * fguess < 0 Then  ' root is between guess and upper
-        lower = guess            ' make guess the new lower bound
-        flower = fguess
-        guess = 0.5 * lower + 0.5 * upper  ' new guess = bi-section
-        fguess = Black_Scholes_Call(S,K,r,guess,q,T) - CallPrice
-    Else                         ' root is between lower and guess
-        upper = guess            ' make guess the new upper bound
-        fupper = fguess
-        guess = 0.5 * lower + 0.5 * upper  ' new guess = bi-section
-        fguess = Black_Scholes_Call(S,K,r,guess,q,T) - CallPrice
-    End If
-Loop
-Black_Scholes_Call_Implied_Vol = guess
-End Function
-\end{verbatim}
-
-To compute an implied volatility from a put option price, one can first compute a corresponding call option price from put-call parity and then run the above program.
-
-There are faster root-finding methods than bisection.  These use other methods to update the guess than just halving the distance between the prior guess and the upper or lower bound.  For example, one can use the vega (the derivative of the option formula with respect to $\sigma$) at the given guess for $\sigma$ and replace the bisection with
-\begin{center}
-\verb!guess = guess - call/vega!\;.
-\end{center}
-This amounts to approximating the Black-Scholes formula as being linear in $\sigma$ and using the root of the approximation as the updated guess.  This is the essence of the \emph{Newton-Raphson} method.  \index{Newton-Raphson method} A similar idea that does not require the computation of vega is to keep track of the two most recent (\verb!guess!, \verb!call!) pairs and to approximate \verb!vega! as: 
-\begin{center}
-\verb!vega = (call - prior_call) / (guess - prior_guess)!\;.
- \end{center}
-This is the essence of the \emph{secant} method. \index{secant method} -->
 <section id="discretely-rebalanced-delta-hedges" class="level3">
 <h3 class="anchored" data-anchor-id="discretely-rebalanced-delta-hedges">Discretely-Rebalanced Delta Hedges</h3>
 <p>To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return <span class="math inline">\(\mu\)</span>. We consider adjusting the hedge at dates <span class="math inline">\(0=t_0&lt;t_1&lt;\cdots&lt;t_N=T\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. The changes in the natural logarithm of the stock price between successive dates <span class="math inline">\(t_{i-1}\)</span> and <span class="math inline">\(t_i\)</span> are simulated as <span class="math display">\[\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\Delta B\; ,\]</span> where <span class="math inline">\(\Delta B\)</span> is normally distributed with mean zero and variance <span class="math inline">\(\Delta t\)</span>. The random variables <span class="math inline">\(\Delta B\)</span> are simulated as standard normals multiplied by <span class="math inline">\(\sqrt{\Delta t}\)</span>. We begin with the portfolio that is short a call, long <span class="math inline">\(\delta\)</span> shares of the underlying, and short <span class="math inline">\(\delta S-C\)</span> in cash. After the stock price changes, say from <span class="math inline">\(S\)</span> to <span class="math inline">\(S'\)</span>, we compute the new delta <span class="math inline">\(\delta'\)</span>. The cash flow from adjusting the hedge is <span class="math inline">\((\delta-\delta')S'\)</span>. Accumulation (or payment) of interest on the cash position is captured by the factor <span class="math inline">\(e^{r\Delta t}\)</span>. Continuous payment of dividends is modelled similarly: the dividends earned during the period <span class="math inline">\(\Delta t\)</span> is taken to be <span class="math inline">\(\delta S\left(e^{q\Delta t}-1\right)\)</span>. The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge. At date <span class="math inline">\(T\)</span>, the value of the portfolio is the cash position less the intrinsic value of the option.</p>
 <p>To describe the distribution of gains and losses, we compute percentiles of the distribution. You should see that the hedge becomes more nearly perfect as the number of periods <span class="math inline">\(N\)</span> is increased. Note that this is true regardless of the <span class="math inline">\(\mu\)</span> that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Excel function.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.optimize <span class="im">as</span> optimize</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulated_delta_hedge_profit(S0, K, r, sigma, q, T, mu, M, N, pct):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    S0 = initial stock price</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">    mu = expected rate of return</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">    M = number of simulations</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">    pct = percentile to be returned</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    SigSqrdt <span class="op">=</span> sigma <span class="op">*</span> np.sqrt(dt)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    drift <span class="op">=</span> (mu <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    Comp <span class="op">=</span> np.exp(r <span class="op">*</span> dt)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    Div <span class="op">=</span> np.exp(q <span class="op">*</span> dt) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    LogS0 <span class="op">=</span> np.log(S0)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    Call0 <span class="op">=</span> black_scholes_call(S0, K, r, sigma, q, T)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    Delta0 <span class="op">=</span> black_scholes_call_delta(S0, K, r, sigma, q, T)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    Cash0 <span class="op">=</span> Call0 <span class="op">-</span> Delta0 <span class="op">*</span> S0</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    Profit <span class="op">=</span> np.zeros(M)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(M):</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        LogS <span class="op">=</span> LogS0</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        Cash <span class="op">=</span> Cash0</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> S0</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        Delta <span class="op">=</span> Delta0</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N):</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>            LogS <span class="op">+=</span> drift <span class="op">+</span> SigSqrdt <span class="op">*</span> np.random.randn()</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>            NewS <span class="op">=</span> np.exp(LogS)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>            NewDelta <span class="op">=</span> black_scholes_call_delta(NewS, K, r, sigma, q, T <span class="op">-</span> j <span class="op">*</span> dt)</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>            Cash <span class="op">=</span> Comp <span class="op">*</span> Cash <span class="op">+</span> Delta <span class="op">*</span> S <span class="op">*</span> Div <span class="op">-</span> (NewDelta <span class="op">-</span> Delta) <span class="op">*</span> NewS</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>            S <span class="op">=</span> NewS</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>            Delta <span class="op">=</span> NewDelta</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        LogS <span class="op">+=</span> drift <span class="op">+</span> SigSqrdt <span class="op">*</span> np.random.randn()</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        NewS <span class="op">=</span> np.exp(LogS)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        HedgeValue <span class="op">=</span> Comp <span class="op">*</span> Cash <span class="op">+</span> Delta <span class="op">*</span> S <span class="op">*</span> Div <span class="op">+</span> Delta <span class="op">*</span> NewS</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>        Profit[i] <span class="op">=</span> HedgeValue <span class="op">-</span> <span class="bu">max</span>(NewS <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.percentile(Profit, pct <span class="op">*</span> <span class="dv">100</span>)</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage (you can replace these with input values)</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Strike price</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Risk-free rate</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span>  <span class="co"># Volatility</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>  <span class="co"># Dividend yield</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span>  <span class="co"># Time to maturity in years</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>CallPrice <span class="op">=</span> <span class="dv">10</span>  <span class="co"># Call price for implied volatility calculation</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate delta hedging profit</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">0.1</span>  <span class="co"># Expected rate of return</span></span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">1000</span>  <span class="co"># Number of simulations</span></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>  <span class="co"># Number of time periods</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>pct <span class="op">=</span> <span class="fl">0.95</span>  <span class="co"># Percentile to be returned</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>delta_hedge_profit <span class="op">=</span> simulated_delta_hedge_profit(S0, K, r, sigma, q, T, mu, M, N, pct)</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Delta Hedge Profit (95th percentile): </span><span class="sc">{</span>delta_hedge_profit<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Delta Hedge Profit (95th percentile): 0.584864290265307</code></pre>
+</div>
+</div>
 </section>
 </section>
-<section id="exercises" class="level2" data-number="4.14">
-<h2 data-number="4.14" class="anchored" data-anchor-id="exercises"><span class="header-section-number">4.14</span> Exercises</h2>
+<section id="exercises" class="level2" data-number="4.12">
+<h2 data-number="4.12" class="anchored" data-anchor-id="exercises"><span class="header-section-number">4.12</span> Exercises</h2>
 <div id="exr-problem4.1" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 4.1 </strong></span>Create Python code which inputs <span class="math inline">\(K\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span> and <span class="math inline">\(T\)</span>. Compute the delta of a call option for stock prices <span class="math inline">\(S = .01K\)</span>, <span class="math inline">\(.02K\)</span>, , <span class="math inline">\(1.99K\)</span>, <span class="math inline">\(2K\)</span> (i.e., <span class="math inline">\(S = iK/100\)</span> for <span class="math inline">\(i=1, \ldots 200\)</span>) and plot the delta against the stock price.</p>
 </div>
