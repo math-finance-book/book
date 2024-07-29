@@ -1,404 +1,703 @@
-# Foreign Exchange {#sec-c_foreignexchange}
+## Introduction to Monte Carlo and Binomial Models {#sec-c_introcomputation}
 
-We will see in this chapter how to apply the Black-Scholes formulas to value currency options and options on foreign assets.  We will also discuss currency forwards and futures, quanto forwards, and return swaps.  
+In this chapter, we will introduce two principal numerical methods for valuing derivative securities: Monte Carlo and binomial models.  We will consider two applications: valuing European options in the presence of stochastic volatility with Monte Carlo and valuing American options via binomial models.  Additional applications of these methods will be presented in @sec-c_montecarlo.  Throughout the chapter, we will assume there is a constant risk-free rate.  The last section, while quite important, could be skimmed on first reading---the rest of the book does not build upon it.
 
-For concreteness, we will call one currency the domestic currency and the other the foreign currency. 
-Let $X(t)$ denote the exchange rate at time $t$ measured in units of the domestic currency per unit of the foreign currency.  Exchange rates can be confusing, because we can look at them from the perspective of either currency, so it may help to keep in mind that $X(t)$ here means the price of a unit of the foreign currency, just as we might consider the price of a stock.   When we speak of the cost or value of something without specifying the currency, it should be understood to be the domestic currency that we mean.  If $S$ is the price of a foreign asset, denominated in units of the foreign currency, we can convert it into a domestic asset price simply by multiplying by the exchange rate:  $X(t)S(t)$ is the price of the asset, denominated in the domestic currency.  For example, if the domestic currency is dollars and the foreign currency is yen, then $S$ is in units of yen and $X$ is units of dollars per unit of yen, so $XS$ is in units of dollars.
+## Introduction to Monte Carlo {#sec-s_mc_europeans}
 
-Throughout the chapter, we will maintain assumptions similar to the Black-Scholes assumptions.  There is a foreign asset with price $S$ in the foreign currency.  It has a constant dividend yield $q$ and a constant volatility $\sigma_s$.  The exchange rate has a constant volatility $\sigma_x$ and a constant correlation $\rho$ with the foreign asset.  There is a domestic risk-free asset with constant interest rate $r$ and a foreign risk-free asset with constant interest rate $r_f$.  The term risk free means of course that they are risk-free in their respective currencies.  For example, an investment in the foreign risk-free asset is not risk free to a domestic investor, because of exchange rate risk.
-
-
-## Currency Options\index{currency option}
-A European call option on the exchange rate $X$ pays $\max(0,X(T)-K)$ at its maturity $T$, where $K$ is the strike price (in domestic currency).  The underlying asset should be regarded as the foreign risk-free asset, the domestic price of which fluctuates with the exchange rate.   An investment in the foreign risk-free asset grows via reinvestment of interest at rate $r_f$, just as the number of shares held of a stock grows via reinvestment of dividends at rate $q$, if $q$ is its constant dividend yield.  In particular, the cost at date~0 of obtaining one unit of foreign currency at date $T$ is the cost at date 0 of $\mathrm{e}^{-r_fT}$ units of foreign currency, which is $\mathrm{e}^{-r_fT}X(0)$.  Thus, the exchange rate is analogous to a stock price, with the foreign risk-free rate being its dividend yield.  This means we can apply the Black-Scholes formulas to value currency calls and puts:
-
-
-::: {.callout-tip}
-## 
-Calls and puts on foreign currency can be valued by the Black-Scholes formulas with inputs $X(0) =$ initial asset price, $r =$ risk-free rate, $\sigma_x =$ volatility, and $r_f =$ dividend yield.
-:::
-
-
-
-
-## Options on Foreign Assets Struck in Foreign Currency {#sec-s_foreignstrike}
-An option on a foreign asset, with the strike price defined in the foreign currency, can be priced with the Black-Scholes formula, assuming the volatility and dividend yields of the asset are constant and that the (foreign) interest rate is constant.  This must be true, because we did not need to specify the currency (dollars, yen, etc.) when deriving the Black-Scholes formula.  The value given by the Black-Scholes formula is in the same currency as the asset.  To obtain a value in domestic currency for an option on a foreign asset, we simply multiply the Black-Scholes formula by the current exchange rate.
-
-## Options on Foreign Assets Struck in Domestic Currency {#sec-s_domesticstrike}
-
-A call option on a foreign asset with domestic strike price $K$ on the foreign asset with price $S$ pays
-$$\max(X(T)S(T)-K,0)$$
-at its maturity $T$.  The underlying price $X(T)S(T)$ is the value in domestic currency of the portfolio that with starts with $\mathrm{e}^{-qT}$ units of the asset and reinvests dividends until date $T$.  Thus, we can use the Black-Scholes formula to value it, taking the initial asset price to be $\mathrm{e}^{-qT}X(0)S(0)$ and the dividend rate to be zero (or taking the initial asset price to be $X(0)S(0)$ and the dividend rate to be $q$).  The volatility that should be input into the Black-Scholes formula is the volatility of the domestic currency price $\mathrm{e}^{-q(T-t)}X(t)S(t)$, which is the same as the volatility of $X(t)S(t)$.  
-According to @eq-volatilityproduct, the volatility of the domestic currency price $XS$ is 
+According to our risk-neutral pricing @eq-riskneutralformula, the value of a security paying an amount $x$ at date $T$ is
 $$
-\sigma = \sqrt{\sigma_x^2+\sigma_s^2+2\rho\sigma_x\sigma_s}\;.
-$$ {#eq-foreignoptiondomcurrencyvol}
+\mathrm{e}^{-rT}E^R[x]\;.
+$$ {#eq-montecarlo1}
 
-We conclude:
+To estimate this by Monte-Carlo \index{Monte Carlo} means to simulate a sample of values for the random variable
+$x$
+and to estimate the expectation by averaging the sample values.^[Boyle~[@boyle] introduced Monte-Carlo methods for derivative valuation, including the variance-reduction methods of control variates and antithetic variates to be discussed in @sec-c_montecarlo].  Of course, for this to work, the sample must be generated from a population having a distribution consistent with the risk-neutral probabilities.
 
-::: {.callout-tip}
-## 
-Calls and puts on foreign assets struck in domestic currency can be valued by the Black-Scholes formulas with inputs $X(0)S(0) =$ initial price, $r =$ risk-free rate, @eq-foreignoptiondomcurrencyvol =  volatility, $q =$ dividend yield.
-:::
+The simplest example is valuing a European option under the Black-Scholes assumptions.  Of course, for calls and puts, this is redundant, because we already have the Black-Scholes formulas.  Nevertheless, we will describe how to do this for the sake of introducing the Monte Carlo method.  In the case of a call option, the random variable $x$ in @eq-montecarlo1 is $\max(0,S(T)-K)$.  To simulate a sample of values for this random variable, we need to simulate the terminal stock price $S(T)$.  This is easy to do, because, under the Black-Scholes assumptions, the logarithm of $S(T)$ is normally distributed under the risk-neutral measure with mean $\log S(0)+\mathrm{n}u T$ and variance $\sigma^2T$, where $\mathrm{n}u=r-q-\sigma^2/2$.  Thus, we can simulate values for $\log S(T)$ as $\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z$, where $z$ is a standard normal.  We can  average the simulated values of $\max(0,S(T)-K)$, or whatever the payoff of the derivative is, and then discount at the risk-free rate to compute the date--0 value of the derivative.  This means that we generate some number $M$ of standard normals $z_i$ and estimate the option value as $\mathrm{e}^{-rT}\bar{x}$, where $\bar{x}$ is the mean of 
+$$x_i = \max\left(0,\mathrm{e}^{\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z_i}-K\right)\; .$$
+To value options that are path-dependent  we need to simulate the path of the underlying asset price.  Path-dependent options are discussed in Chaps.~\ref{c_exotics} and~\ref{c_montecarlo}.
 
+There are two main drawbacks to Monte-Carlo methods.  First, it is difficult (though not impossible) to value early-exercise features.^[Monte-Carlo methods for valuing early exercise include the stochastic mesh method of Broadie and Glasserman [@BG] and the regression method of Longstaff and Schwartz [@LS01].  Glasserman [@Glasserman] provides a good discussion of these methods and the relation between them.]  To value early exercise, we need to know the value at each date if not exercised, to compare to the intrinsic value.  One could consider performing a simulation at each date to calculate the value if not exercised, but this value depends on the option to exercise early at later dates, which cannot be calculated without knowing the value of being able to exercise early at even later dates, etc.  In contrast, the binomial model (and finite difference models discussed in @sec-c_pde) can easily handle early exercise but cannot easily handle path dependencies.  
 
-## Currency Forwards and Futures {#sec-s_currencyforwards}
-
-Consider a forward contract maturing at some date $T$ on one unit of foreign currency.   In keeping with our convention for options, we will always assume (without loss of generality) that a forward contract is written on a single unit of currency.  Let $F(t)$ denote the forward price (in domestic currency) at date $t\leq T$.  This means that someone who purchases (goes long) the contract at date $t$ will receive a unit of foreign currency, worth $X(T)$, at date $T$ and must pay $F(t)$ at date $T$.  \index{forward contract} The value of the long contract at date $T$ is therefore $X(T) - F(t)$.  The value at date $T$ of a short contract initiated at date $t$ is the opposite: $F(t)-X(T)$.  Naturally, the forward price $F(t)$ is called the forward exchange rate. \index{forward exchange rate}
-
-The deepest market for currency is the inter-bank forward market, but futures contracts are also traded on exchanges.  The difference between forwards and futures is that futures are marked to market daily.  \index{futures contract} \index{marking to market} Thus, there are daily cash flows with a futures contract, whereas the only cash flows on a forward contract occur at the maturity of the forward.  In both cases, there is no cash flow at the time the contract is bought/sold, so its market value is zero.  In @sec-s_futuresforwards we will discuss futures contracts further.  In particular, we will show, assuming continuous marking to market, that if there is a constant (domestic) risk-free rate---or, more generally, if there is an instantaneous risk-free rate that changes over time in a non-random way---then futures prices must equal forward prices in the absence of arbitrage opportunities.  Thus, our assumptions in this chapter imply that currency futures prices should equal currency forward prices.  We will consider currency forwards in the remainder of this section.
-
-A forward contract on a traded asset can always be created synthetically simply by buying the asset and holding it, using borrowed money to finance the purchase and to finance any storage costs, assuming the storage costs can be estimated in advance.  \index{synthetic forward}  If the asset pays dividends or generates other positive cash flows, then we do not need to purchase the entire amount covered by the forward contract, because we can accumulate additional amounts of the asset by reinvesting the dividends.  There are no storage costs on currency and its dividend yield is equal to the foreign risk-free rate.  A forward contract on one unit of foreign currency maturing at date $T$ can be created synthetically at date 0 by buying $\mathrm{e}^{-r_fT}$ units of foreign currency and borrowing the cost $\mathrm{e}^{-r_fT}X(0)$ at the domestic risk-free rate.  This will lead to ownership of one unit of foreign currency at date $T$ and a liability, including interest, of $\mathrm{e}^{(r-r_f)T}X(0)$ at date $T$.  Thus, the forward price at date 0 must be $F(0) = \mathrm{e}^{(r-r_f)T}X(0)$; otherwise, one could arbitrage by buying the forward and selling the synthetic forward, or vice versa.  More generally, 
-
-::: {.callout-tip}
-## 
-The forward exchange rate at date $t$, for a contract maturing at $T$, must be
+The second drawback of Monte Carlo methods is that they can be quite inefficient in terms of computation time (though, as will be explained in @sec-c_montecarlo, they may be faster than alternative methods for derivatives written on multiple assets).  As in statistics, the standard error of the estimate depends on the sample size.  Specifically, 
+we observed in @sec-s_statistics that, given a random sample $\{x_1,\ldots,x_M\}$ of size $M$ from a population with mean $\mu$ and variance $\sigma^2$, the best estimate of $\mu$ is the sample mean $\bar{x}$, and the standard error of $\bar{x}$ (which means the standard deviation of $\bar{x}$ in repeated samples) is best estimated by
 $$
-F(t) = \mathrm{e}^{(r-r_f)(T-t)}X(t)\;.
-$$ {#eq-forwardexchangerate}
+\sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^{M} x_i^2-M\bar{x}^2\right)}\;.
+$$ {#eq-standarderror}
+ \index{standard error}
+Recall that $\bar{x}$ plus or minus 1.96 standard errors is a 95\% confidence interval for $\mu$ when the $x_i$ are normally distributed.
+In the context of European option valuation, the expression @eq-standarderror gives the  standard error of the estimated option value at maturity, and multiplication of @eq-standarderror by $\mathrm{e}^{-rT}$ gives the standard error of the estimated date--0 option value.
 
-:::
-
-The relation @eq-forwardexchangerate is called covered interest parity. \index{covered interest parity}The name stems from the fact that an investment in one of the risk-free assets (foreign or domestic) financed by borrowing in the other, with the currency risk hedged (covered) by a forward contract, is certain to generate zero value (otherwise, it would be an arbitrage opportunity).^[
-A relation analogous to covered interest parity holds for any forward contract if the underlying asset has a constant dividend yield and storage costs that are a constant proportion of the value of the units stored.  For commodities, the term dividend yield must be interpreted in a broad sense, and is usually called convenience yield, \index{convenience yield] because ownership of the physical asset may produce abnormal profits during temporary shortages, an advantage that is not obtained by owning a forward contract on the asset, just as dividends are not received by the owner of a forward contract.  Thus, one must consider the convenience of owning the physical asset as an advantage analogous to dividends.}
-
-Suppose that one has made a commitment to pay a certain amount of foreign currency (perhaps to a foreign manufacturer) at some date in the future.  The exchange rate risk that this commitment entails can obviously be hedged by buying the currency forward.  However, one can also create a synthetic forward, by buying currency today and investing it in the foreign risk-free asset.  The cash outflow can be incurred today, or it can be deferred by borrowing the cost of the currency at the domestic risk-free rate.  In the latter case, we have created a true synthetic forward.  In either case, we would call this a money market hedge \index{money market hedge} because we have utilized the foreign money market (risk-free asset) to create the hedge.
-
-Later in this chapter we will construct replicating strategies for various contracts using the foreign risk-free asset and the domestic risk-free asset.  One can interpret these replicating strategies as money market hedges or synthetic currency forwards.  In practice, it will often be more convenient to use actual forwards rather than using the foreign risk-free asset.  Using actual currency forwards produces an equivalent (given that we are not considering transaction costs) replicating strategy.   Here is, in abstract, the way we convert from money market hedges to hedges using forwards.  As we have discussed,
-\begin{align*}
-\text{Long Currency Forward} &= \text{Long Synthetic Currency Forward} \\
-&= \text{Long Foreign Risk-Free Asset} \\
-&\qquad + \text{Short Domestic Risk-Free Asset}\;.
-\end{align*}
-Subtracting a short position is the same as adding a long position, so we can rearrange this as
-\begin{multline*}
-\text{Long Currency Forward} + \text{Long Domestic Risk-Free Asset}\\=  \text{Long Foreign Risk-Free Asset} \; .
-\end{multline*}
-Thus, an investment in the foreign risk-free asset can be replaced in any replicating strategy by long currency forwards  and an investment in the domestic risk-free asset.  
-
-To be more precise about the sizes of the investments, consider replacing a money market hedge with a forward hedge at some date $t$ prior to the maturity of the forward and analyze the replacement per unit of the money market hedge (per unit of foreign currency invested in the foreign risk-free asset).  One unit of foreign currency invested in the foreign risk-free asset at date $t$ will grow to $\mathrm{e}^{r_f(T-t)}$ units by date $T$.  Thus, the corresponding forward contract should be on $\mathrm{e}^{r_f(T-t)}$ units of currency.  The value at date $t$ of both sides of the above equation should be the same, and the value of a forward contract at the date of initiation is zero, so the investment in the domestic risk-free asset should be the domestic currency equivalent of one unit of foreign currency, which is the exchange rate $X(t)$.  Thus, we have
-
-::: {.callout-tip}
-## 
+To obtain an estimate with an acceptably small standard error may require a large sample size and hence a relatively large amount of computation time.  The complexities of Monte Carlo methods arise from trying to reduce the required sample size.  In @sec-c_montecarlo, we will describe two such methods (antithetic variates and control variates).   For those who want to engage in a more detailed study of Monte Carlo methods, the book of Glasserman [@Glasserman] is highly recommended.  J\"ackel [@Jackel] is useful for more advanced readers, and Clewlow and Strickland [@CS] and  Brandimarte [@Brandimarte] are useful references that include computer code.
 
 
+## Introduction to Binomial Models {#sec-s_introbinomial}
+
+As in the previous section, \index{binomial model} we will work with the dynamics of the logarithms of asset prices under the risk-neutral measure.  Thus, our starting point is the equation
 $$
-\begin{multline}
- \text{$\mathrm{e}^{r_f(T-t)}$ Long Currency Forwards} \\+  \text{$X(t)$ Long in the Domestic Risk-Free Asset}\\
-= \text{1 Unit of Foreign Currency Long in the Foreign Risk-Free Asset}\;.
-\end{multline}
-$$ {#eq-mmhedge}
+\mathrm{d} \log S = \left(r-q-\frac{\sigma^2}{2}\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
+$$ {#eq-logstock_riskneutral}
 
+where $B$  represents a Brownian motion under the risk-neutral measure.
 
-:::
+In the binomial model, we assume that if the stock price is $S$ at the beginning of the period, it will be either $uS$ or $dS$ at the end of the period, where the multiplicative factors $u$ and $d$ are constants to be determined.  This means that the rate of return is $\Delta S/S = u\!-\!1$ in the up state and $\Delta S/S = d\!-\!1$ in the down state. There are three parameters to the model: $u$, $d$, and the probability $p$ of the up state (the probability of the down state being necessarily $1\!-\!p$). The following illustrates a three-period model.
 
-To check this, consider holding the portfolios until date $T$.  As explained in the first paragraph of this section, the currency forwards will have value $\mathrm{e}^{r_f(T-t)}[X(T)-F(t)]$, which by covered interest parity is $\mathrm{e}^{r_f(T-t)}X(T)-\mathrm{e}^{r(T-t)}X(t)$.  When we include the long position in the domestic risk-free asset with accumulated interest, the value at date $T$ of the portfolio on the left-hand side of @eq-mmhedge is  $\mathrm{e}^{r_f(T-t)}X(T)$.  On the other, the right-hand side of @eq-mmhedge with accumulated interest will consist of $\mathrm{e}^{r_f(T-t)}$ units of foreign currency, also worth $\mathrm{e}^{r_f(T-t)}X(T)$.
+\begin{center}
+\setlength{\unitlength}{0.6cm}
+\begin{picture}(13,13)
+\put(0,6){$S$}
+\put(1,6){\vector(1,1){2}}
+\put(1,6){\vector(1,-1){2}}
+\put(5,8){\vector(1,1){2}}
+\put(5,8){\vector(1,-1){2}}
+\put(9,10){\vector(1,1){2}}
+\put(9,10){\vector(1,-1){2}}
+\put(5,4){\vector(1,1){2}}
+\put(5,4){\vector(1,-1){2}}
+\put(9,6){\vector(1,1){2}}
+\put(9,6){\vector(1,-1){2}}
+\put(9,2){\vector(1,1){2}}
+\put(9,2){\vector(1,-1){2}}
+\put(3.5,8){$uS$}
+\put(3.5,4){$dS$}
+\put(7.5,2){$d^2S$}
+\put(7.5,6){$udS$}
+\put(7.5,10){$u^2S$}
+\put(11.5,0){$d^3S$}
+\put(11.5,4){$ud^2S$}
+\put(11.5,8){$du^2S$}
+\put(11.5,12){$u^3S$}
+\end{picture}
+\end{center}
 
-## Quantos {#sec-s_quantos}
-A quanto \index{quanto} is a derivative written on a foreign asset the value of which is converted to domestic currency at a fixed exchange rate.  In other words, the contract pays in the domestic currency and the exchange rate is part of the contract.  Such contracts are very useful for investors who want to bet on foreign assets but do not want exposure to exchange rate risk.  Such an investor could simply buy the foreign asset and hedge the currency risk by selling currency futures or forwards, but doing so is a bit tricky because the amount of currency that needs to be hedged depends on how well the foreign asset does.  Thus, quantos can be desirable contracts.  Of course, when an investor purchases a quanto, the problem of hedging the exchange rate risk has simply been transferred to the seller.  In this and the following section, we will see how to value and how to replicate a contract that pays the price of a foreign asset at some future date $T$ with the price translated into the domestic currency at a fixed exchange rate.  The replicating strategy is the strategy that would be followed by the seller (or by an investor who wants to create a synthetic  on his own).    Specifically, in this section we will determine the value  at date 0 (in domestic currency) of a contract that pays $\bar{X}S(T)$ at date $T$, where $\bar{X}$ is a fixed exchange rate.  Later in the chapter, we will consider quanto forwards and quanto options.
+A tree constructed like this is recombining in \index{recombining tree} the sense that the stock price after an up-down sequence is the same as after a down-up sequence.  This is very important for reducing the computation time.  For example, the number of nodes at the final date is $N+1$ in a recombining tree, where $N$ is the number of periods, but it is $2^N$ for a non-recombining (sometimes called bushy) tree.  Hence, the computation time will increase linearly with $N$ for a recombining tree but exponentially with $N$ for a non-recombining tree.  Unfortunately, this computational savings is generally not possible for path-dependent options, because the number of distinct paths through a tree (whether recombining or not) is again $2^N$.
 
-In addition to being practically useful, this contract is an excellent example for demonstrating the methodology of pricing and hedging.  The best way to proceed in problems of this general type is to first value the contract and then calculate the replicating strategy.^[We did the same thing in @sec-c_blackscholes]:  we first derived the Black-Scholes formula and then found the replicating strategy (delta hedge) by differentiating the formula.  As discussed in @sec-s_introoptions, valuation is simplified by choosing a numeraire that will cancel the randomness in the contract payoff.  Our numeraire must be a non-dividend-paying (domestic) asset price, so we can choose $Z(t)=X(t)\mathrm{e}^{qt}S(t)$ to be the numeraire asset price.  This is the value in the domestic currency of a strategy that is long one unit of the foreign asset at date 0 and which reinvests the dividends of the asset into new shares.  As we will see immediately, using it as numeraire introduces randomness into the payoff through the exchange rate, and that poses some complications.  Applying our fundamental pricing @eq-formula, the value of the contract is
-
-$$
-Z(0) E^Z \left[\frac{\bar{X}S(T)}{Z(T)}\right] = \mathrm{e}^{-qT}X(0)S(0)E^Z \left[\frac{\bar{X}S(T)}{X(T)S(T)}\right]
-$$
-$$
-= \mathrm{e}^{-qT}\bar{X}S(0)E^Z \left[\frac{X(0)}{X(T)}\right]\;.
-$$ {#eq-quanto}
-
-
-
-Now we need to evaluate $E^Z[X(0)/X(T)]$, which is the expected growth of $1/X$ when $Z$ is used as the numeraire.    We will show that
-$$
-E^Z \left[\frac{X(0)}{X(T)}\right] = \exp\left\{(r_f - r-\rho\sigma_x\sigma_s)T\right\}\;.
-$$ {#eq-growthreciprocalX}
-
-This implies:
-
-::: {.callout-tip}
-## 
-The value at date 0 of a contract that pays $\bar{X}S(T)$ at date $T$, where $\bar{X}$ is a fixed exchange rate and $S$ is the foreign price of an asset with a constant dividend yield $q$, is
-$$
-\exp\left\{(r_f - r-q-\rho\sigma_x\sigma_s)T\right\}\bar{X}S(0)\;.
-$$ {#eq-quanto1}
-
-:::
-
-
-::: {.callout-note}
- ## 
-
-We will now prove @eq-growthreciprocalX.  The assumption that $S$ and $X$ have constant volatilities and  correlation means that  
-\begin{align*}
-\frac{\mathrm{d} X}{X} &= \mu_x\,\mathrm{d} t+\sigma_x\,\mathrm{d} B_x\;,\\
-\frac{\mathrm{d} S}{S} &= \mu_s\,\mathrm{d} t+\sigma_s\,\mathrm{d} B_s\;,
-\end{align*}
-for some (possibly random) $\mu_x$ and $\mu_s$, where $B_s$ and $B_x$ are Brownian motions with correlation equal to $\rho$.  From Ito's formula, we have
-\begin{align*}
-\frac{\mathrm{d} Z}{Z} &= q\,\mathrm{d} t + \frac{\mathrm{d} (XS)}{XS}\\
-&= \left(q+\mu_x +\mu_s+ \rho\sigma_x\sigma_s\right)\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x + \sigma_s\,\mathrm{d} B_s \\
-&= \left(q+\mu_x +\mu_s+ \rho\sigma_x\sigma_s\right)\,\mathrm{d} t + \sigma\left(\frac{\sigma_x}{\sigma}\,\mathrm{d} B_x + \frac{\sigma_s}{\sigma}\,\mathrm{d} B_s\right) \\
-&= \left(q+\mu_x +\mu_s+ \rho\sigma_x\sigma_s\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
-\end{align*}
-where we define $\sigma$  in @eq-foreignoptiondomcurrencyvol and $B$ by $B(0)=0$ and
-$$\mathrm{d} B = \frac{\sigma_x}{\sigma}\,\mathrm{d} B_x + \frac{\sigma_s}{\sigma}\,\mathrm{d} B_s\; .$$
-As discussed in @sec-s_volatilities, $B$ is a Brownian motion and $\sigma$ is the volatility of $Z$.
-Notice that the correlation of $X$ and $Z$ is
-\begin{align*}
-(\mathrm{d} B)(\mathrm{d} B_x) &= \left(\frac{\sigma_x}{\sigma}\,\mathrm{d} B_x + \frac{\sigma_s}{\sigma}\,\mathrm{d} B_s\right)(\mathrm{d} B_x)\\
-&= \frac{\sigma_x + \rho\sigma_s}{\sigma}\,\mathrm{d} t\;.
-\end{align*}
-Now we use @eq-other11 in @sec-s_girsanov which gives  the drift of an asset when another risky asset is used as the numeraire.  We use $Z$ as the numeraire and $X$ as the other asset, regarding $X$ as the domestic price of an asset with dividend yield $r_f$ as before.  Therefore, we substitute $r_f$ for $q$ in  @eq-other11, substitute $\sigma$ for the volatility of the numeraire asset price, substitute $\sigma_x$ for the volatility of the other asset, and substitute $(\sigma_x+\rho\sigma_s)/\sigma$ for their correlation.  This yields
-$$\frac{\mathrm{d} X}{X} = \left(r-r_f+\sigma_x^2+\rho\sigma_x\sigma_s\right)\,\mathrm{d} t + \sigma_x\,\mathrm{d} B^*_x\; ,$$
-where $B^*_x$ is a Brownian motion when $Z$ is the numeraire.  
-Now we apply Ito's formula for ratios to obtain
-\begin{align*}
-\frac{\mathrm{d} (1/X)}{1/X} &= -\frac{\mathrm{d} X}{X} + \left(\frac{\mathrm{d} X}{X}\right)^2\\
-&= \left(r_f-r-\rho\sigma_x\sigma_s\right)\,\mathrm{d} t + \sigma_x\,\mathrm{d} B^*_x\;.
-\end{align*}
-This implies  that $1/X$ is a geometric Brownian motion with growth rate $r_f-r-\rho\sigma_x\sigma_s$, from which @eq-growthreciprocalX follows.
-:::
-
-
-## Replicating Quantos {#sec-s_replicatingquantos}
-
-The assets we will use to replicate the payoff $\bar{X}S(T)$ are the foreign asset with price $S$, the foreign risk-free asset, and the domestic risk-free asset.  At the end of this section, we will explain how to replace the foreign risk-free asset with currency forwards, as discussed in @sec-s_currencyforwards.  Before beginning the calculations, we can make the following intuitive observations: 
-
-
--  The payoff $\bar{X}S(T)$ has exposure to the foreign asset price $S$, so the replicating portfolio must be long the foreign asset.  
-- The payoff $\bar{X}S(T)$ has no exposure to the exchange rate, so the replicating portfolio cannot have any exposure to the exchange rate either.  Thus, the long position in the foreign risky asset must be offset by an equal short position in the foreign risk-free asset.  
-- As a result of the previous observation, the value of the replicating portfolio, displayed in @eq-quanto1, will equal the investment in the domestic risk-free asset.  
-
-
-Consequently, our real task is to compute the number of shares of the foreign asset that should be held, the remainder of the replicating portfolio being thereby determined.
-
-The value of the replicating portfolio at any date $t\leq T$ must be the value at date $t$ of receiving the payoff $\bar{X}S(T)$ at date $T$.  We have calculated this value at date 0, and, clearly, @eq-quanto1 applies to general dates $t$, when we replace the time $T$ to maturity by $T-t$ and the asset price $S(0)$ at the date of valuation by $S(t)$.  That is, the value of the portfolio at any date $t\leq T$ must be $V(t)$ defined as
-$$
-V(t) = \exp\left\{(r_f - r-q-\rho\sigma_x\sigma_s)(T-t)\right\}\bar{X}S(t)\;.
-$$ {#eq-quanto2}
-
-As just noted, we will need to invest this amount in the domestic risk-free asset at date $t$.  What remains to be done is to calculate the size of the long position in the foreign risky asset and the offsetting short position in the foreign risk-free asset.
-
-From Ito's formula, we have
-$$
-\frac{\mathrm{d} V}{V} = -(r_f - r-q-\rho\sigma_x\sigma_s)\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\;.
-$$ {#eq-quanto21}
-
-Equivalently,
-$$
-\mathrm{d} V =(r+q-r_f+\rho\sigma_x\sigma_s)V\,\mathrm{d} t + V\frac{\mathrm{d} S}{S}\;.
-$$ {#eq-quanto5}
-
-On the other hand, consider a strategy that invests $a(t)$ units of the domestic currency in the foreign asset, $b(t)$ units of the domestic currency in the foreign risk-free asset, and $c(t)$ units of the domestic currency in the domestic risk-free asset.  Let $W=a+b+c$ denote the value of this portfolio.  The return on the foreign asset, per unit of domestic currency invested, is
-
-$$
-\frac{\mathrm{d} (X\mathrm{e}^{qt}S)}{X\mathrm{e}^{qt}S} = q\,\mathrm{d} t+\frac{\mathrm{d} X}{X} + \frac{\mathrm{d} S}{S} + \left(\frac{\mathrm{d} X}{X} \right)\left( \frac{\mathrm{d} S}{S}\right) 
-$$
-$$
-= (q+\rho\sigma_x\sigma_s)\,\mathrm{d} t+\frac{\mathrm{d} X}{X} + \frac{\mathrm{d} S}{S}\;.
-$$ {#eq-quanto200}
-
-
-Similarly, the rate of return on the foreign risk-free asset is
-$$
-\frac{\mathrm{d} (\mathrm{e}^{r_ft}X)}{\mathrm{e}^{r_ft}X} = r_f\,\mathrm{d} t + \frac{\mathrm{d} X}{X}\;,
-$$ {#eq-quanto300}
-
-and of course the rate of return on the domestic risk-free asset is $r\,\mathrm{d} t$.  Therefore, the change in the value of the portfolio will be
-
-$$
-\mathrm{d} W = a\left[(q+\rho\sigma_x\sigma_s)\,\mathrm{d} t+\frac{\mathrm{d} X}{X} + \frac{\mathrm{d} S}{S}\right] + b\left[r_f\,\mathrm{d} t + \frac{\mathrm{d} X}{X}\right] + cr\,\mathrm{d} t
-$$
-$$
-=( aq+a\rho\sigma_x\sigma_s + br_f+cr)\,\mathrm{d} t +  (a+b)\frac{\mathrm{d} X}{X} +a \frac{\mathrm{d} S}{S}\; .
-$$ {#eq-quanto6}
-
-
-The change @eq-quanto6 of the portfolio value will match the change @eq-quanto5 of $V$ if and only if
-$$
-a= V, \qquad b= -V, \qquad c = V\;.
-$$ {#eq-quanto7}
-
-This implies:
-
-::: {.callout-tip}
-## 
-The strategy that replicates the payoff $\bar{X}S(T)$ at date $T$ is to invest $V(t)$ units of  domestic currency in the foreign asset, where $V(t)$ is defined in @eq-quanto2.  This will purchase
-$$
-\frac{V(t)}{X(t)S(t)} = \frac{\bar{X}}{X(t)}\exp\left\{(r_f - r-q-\rho\sigma_x\sigma_s)(T-t)\right\}
-$$ {#eq-quanto4}
-
-shares of the foreign asset.  This position is financed entirely by borrowing at the foreign risk-free rate.  On the other hand, the same amount $V(t)$ of the domestic currency is invested in the domestic risk-free asset. 
-:::
-
-
-From our analysis at the end of @sec-s_currencyforwards, we know that the  foreign risk-free asset in this replicating strategy can be replaced by currency forwards.  The strategy here involves borrowing at the foreign risk-free rate, so we should replace long by short in  @eq-mmhedge.  Borrowing $V(t)$ units of  domestic currency means borrowing $V(t)/X(t)$ units of the foreign currency.  Therefore,  @eq-mmhedge gives us:
-
-::: {.callout-tip}
-## 
-An equivalent strategy for replicating the payoff $\bar{X}S(T)$ at date $T$ is to invest $V(t)$ units of  domestic currency in the foreign asset and to be short $\mathrm{e}^{r_f(T-t)}V(t)/X(t)$ currency forwards  at  date $t$.
-:::
  
-
-At the beginning of the previous section, we noted that an investor who wants to bet on a foreign asset but does not want the exchange rate exposure could simply buy the asset and sell the currency forward.  This shows how much of the asset he should buy and how much currency he should sell forward.
-
-It is important to note that this strategy involves continuously buying and selling forwards, just as it involves continuously trading the foreign asset.    Buying at date $t$ a forward contract sold at date $s<t$ cancels the delivery obligation on the contract sold at $s$ and leaves a cash flow of $F(s)-F(t)$ to be paid/received at the maturity date $T$.  Therefore, the strategy accumulates a liability or asset, depending on the direction the forward price moves, to be received at $T$.  On the other hand, maintaining an investment of $V(t)$ in the foreign asset will generate cash flows as the asset is sold or purchased over time.  As  @eq-quanto4 shows, whether it is sold or purchased depends on the direction the exchange rate moves.  These cash flows should be invested or borrowed at the domestic risk-free rate.  Thus, there is a liability or asset to be received at date $T$ that is not shown in the boxed statement immediately above, and there is an investment or liability in the domestic risk-free asset that is not shown.  It can be demonstrated that these cancel each other: if profits are made from trading forwards, then they (more precisely, their present value) will be consumed by the cost of buying the foreign asset, and vice versa.  Hedging with  forwards (and with futures) is considered in more detail in @sec-s_hedgingforwards.
-
-
-
-## Quanto Forwards {#sec-s_quantoforwards}
-
-In this section, we consider a contract similar to that of the previous section, except that it is a pure forward, meaning that the payment for the contract occurs at date $T$.  We maintain all of the assumptions of the previous section.  The payment at date $T$ is in domestic currency, and we define the quanto forward price in units of domestic currency.  Specifically, a long quanto forward contract, \index{quanto forward} initiated at date $t$ and maturing at date $T$ and initiated at the forward price $F^*(t)$ will pay 
-$$\bar{X}S(T)-F^*(t)$$ 
-at date $T$.  The forward price $F^*(t)$ should be the price that makes this contract have a value of 0 at date $t$.  
-
-We already know how to replicate the underlying payoff $\bar{X}S(T)$ of the forward contract at the cost $V(t)$ defined in @eq-quanto2.  Thus, the synthetic quanto forward is to purchase the replicating strategy and to borrow the cost $V(t)$ at the domestic risk-free rate.  This leads to the liability $\mathrm{e}^{r(T-t)}V(t)$ at date $T$.  Therefore, we have:
-
-::: {.callout-tip}
-## 
-The quanto forward price is 
+The value of a European derivative is of course the discounted expectation of its value at maturity, discounting at the risk-free rate and taking the expectation under the risk-neutral measure.  The binomial tree allows us to approximate the expectation very easily.  We simply sum over the nodes of the tree at the option maturity and weight each node by its binomial probability.  In an $N$-period model, the probability of the top node is $p^N$, since the stock must go up each time to reach the top node.  There are $N$ paths reaching the second node from the top (since the period of the single down move could be any one of the $N$ periods) and each such path has probability $p^{N-1}(1-p)$; therefore, the probability of reaching the second node from the top is $Np^{N-1}(1-p)$.  More generally, the probability of going up $i$ times and down $N-i$ times is
+$$\frac{N!}{i!(N-i)!}p^i(1-p)^{N-i}\; ,$$
+where as usual $x!$ denotes $x$ factorial.  Therefore, the expectation, for a European call option,  is the following sum over the $N+1$ nodes at date $N$ (starting with $i=0$ up moves and ending with $i=N$ up moves):
 $$
-F^*(t) = \mathrm{e}^{r(T-t)}V(t) = \exp\left\{(r_f - q-\rho\sigma_x\sigma_s)(T-t)\right\}\bar{X}S(t)\;.
-$$ {#eq-quantoforward0}
+\sum_{i=0}^N \frac{N!}{i!(N-i)!}p^i(1-p)^{N-i}\max(u^id^{N-i}S-K,0)\;.
+$$ {#eq-binomialsum}
 
-:::
+Multiplying the expectation by $\mathrm{e}^{-rT}$ yields the option value.
 
-
-Notice that borrowing $V$ in domestic currency to finance the replicating strategy of the previous section --- i.e., the domestic currency investments described in @eq-quanto7 --- means eliminating the domestic risk-free investment $c=V$ required in the previous section.  The replicating strategy for the quanto forward is simply to invest $V$ in the foreign asset and to finance the investment entirely by borrowing at the foreign risk-free rate.  As in the previous section, borrowing at the foreign risk-free rate can be replaced by borrowing at the domestic risk-free rate and selling currency forwards.  
-
-## Quanto Options {#sec-s_quantooptions}
-
-Consider now a European call option on a foreign asset, with strike $K$ set in the domestic currency and the value of the foreign asset being converted to domestic currency at a fixed exchange rate $\bar{X}$.   This is called a quanto call. \index{quanto call} We maintain all the assumptions of the previous two sections.
-
-The value of the quanto call at maturity is
-$\max(0, \bar{X}S(T)-K)$.
-To value this, we make use of what we learned in @sec-s_quantos.  Namely, the portfolio with value $V$ defined in @eq-quanto2 replicates the payoff $\bar{X}S(T)$:  in each state of the world, $V(T) = \bar{X}S(T)$.  Therefore, the quanto call is equivalent to a standard European call on the portfolio with domestic currency price $V$.  The value is therefore given by the Black-Scholes formula.  From @eq-quanto21 for the dynamics of $V$, we see that the volatility of $V$ is the same as that of $S$; therefore, we should input $\sigma_s$ as the volatility in the Black-Scholes formula.  Furthermore, the portfolio $V$ is non-dividend-paying (it is the value of a claim to $\bar{X}S(T)$ at date $T$ with no interim cash flows), so the dividend rate in the Black-Scholes formula should be zero. Thus, we have:
+It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section.  In the Monte-Carlo method for valuing a European call option, we generate $M$ random values for $S(T)$ and estimate the expectation $E^R[\max(0,S(T)-K)]$ by averaging the $M$ values.  This amounts to approximating the distribution of $S(T)$ by an $M$--point distribution, each point being assigned equal probability.  In the binomial method, we choose a particular set of points for $S(T)$ and assign the probabilities specified above in order to approximate the distribution of $S(T)$.  Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of $S(T)$ as the number of points increases.  However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods $N$ in the binomial model than we would need simulations $M$ in the Monte-Carlo method.  Thus, the binomial method will be much faster.   Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options.  On the other hand, as mentioned in the previous section, to value a path-dependent option in  an $N$--period binomial tree would require the analysis of $2^N$ separate paths, so Monte Carlo may be faster for path-dependent options.  Finally, as we will discuss in @sec-s_curse, Monte Carlo may be faster for options on multiple assets.
 
 
-::: {.callout-tip}
-## 
-The value of a quanto call is 
+
+There is an important alternative method for calculating the sum @eq-binomialsum, which is usually called backward induction.  \index{backward induction} We will describe it here and implement it in the next section to value American options.  We begin at the last date, where there are $N+1$ nodes.   We calculate the option value at each of these nodes, storing the value at the bottom node as $C(0)$, the value at the next node up as $C(1)$, etc.  This is illustrated in the diagram on the next page.  Then we step back to the penultimate date.  At each node at this date, we calculate the option value as the discounted expectation of its value at the last date.  From each node, there are two nodes that can be reached at the next date, corresponding to a down move or an up move.  So, the option value is calculated as
+$$
+C = \mathrm{e}^{-r\Delta t}p\,C_{\text{up}} + \mathrm{e}^{-r\Delta t}(1-p)C_{\text{down}}\;.
+$$ {#eq-binomial001}
+
+In terms of the vector notation shown in the diagram on the following page, the down move from node $i$ is also node $i$ and the up move is $i+1$.  So, we write over the elements of the $C$ vector as
+$$
+C(i) = \mathrm{e}^{-r\Delta t}p\,C(i+1) + \mathrm{e}^{-r\Delta t}(1-p)C(i)\;.
+$$ {#eq-binomial002}
+
+Discounting back through the tree like this, we reach date 0 and return the option value as $C(0)$.  The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option.  This approach is essential for assessing the value of early exercise.
+
+## Binomial Models for American Options
+
+Early exercise \index{early exercise} features are very simple to handle in a binomial framework.  One only has to use the backward induction approach and check the optimality of early exercise at each node.  Exercise is optimal when the intrinsic value of the option exceeds the discounted expected value of the option contingent on not exercising.  When we back up in the tree, we check whether exercise is optimal, and, when it is, we replace the discounted expected value with the intrinsic value.  
+
+
+\begin{center}
+\setlength{\unitlength}{0.6cm}
+\begin{picture}(13,13)
+\put(-.5,6){$C(0)$}
+\put(1,6){\vector(1,1){2}}
+\put(1,6){\vector(1,-1){2}}
+\put(5,8){\vector(1,1){2}}
+\put(5,8){\vector(1,-1){2}}
+\put(9,10){\vector(1,1){2}}
+\put(9,10){\vector(1,-1){2}}
+\put(5,4){\vector(1,1){2}}
+\put(5,4){\vector(1,-1){2}}
+\put(9,6){\vector(1,1){2}}
+\put(9,6){\vector(1,-1){2}}
+\put(9,2){\vector(1,1){2}}
+\put(9,2){\vector(1,-1){2}}
+\put(3.5,8){$C(1)$}
+\put(3.5,4){$C(0)$}
+\put(7.5,2){$C(0)$}
+\put(7.5,6){$C(1)$}
+\put(7.5,10){$C(2)$}
+\put(11.5,0){$C(0)$}
+\put(11.5,4){$C(1)$}
+\put(11.5,8){$C(2)$}
+\put(11.5,12){$C(3)$}
+\end{picture}
+\end{center}
+
+Early exercise is more important for puts than for calls (as discussed in @sec-s_fundamentalconcepts, an American call on a non-dividend-paying stock should not be exercised early) so we will change our symbol for the option value from $C$ to $P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
+$$
+P(i) = \max\left(0,K-u^{i}d^{N-i}S\right)\;,
+$$ {#eq-binomial003}
+
+for $i=0,\ldots,N$.  For a European put, we would also back up in the tree in accord with  @eq-binomial002:
+$$
+P(i) = \mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}^{-r\Delta t}(1-p)P(i)\;.
+$$ {#eq-binomial004}
+
+To accommodate early exercise, we simply need to assign to $P(i)$ the larger of this value and the value of early exercise.  At node $i$ at date $n$ the stock price is
+$u^{i}d^{n-i}S$ and the intrinsic value of a put option is $\max(0,K-u^{i}d^{n-i}S)$.  Therefore we replace @eq-binomial004 with
+$$
+P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}^{-r\Delta t}(1-p)P(i)\big)\;.
+$$ {#eq-binomial005}
+
+This will be explained in more detail in @sec-s_introcompvba.
+
+## Binomial Parameters {#sec-s_binomialparameters}
+
+
+Several different ways have been proposed for matching the binomial model to the continuous-time model.  Consider an $N$--period binomial model for a time period of $T$ years.  This means that the length of each period is $\Delta t = T/N$.  In the continuous-time model, over a discrete time period $\Delta t$, we have
+$$\Delta \log S =\mathrm{n}u\,\Delta t + \sigma\,\Delta B\; ,$$
+where $\mathrm{n}u = r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-neutral measure.  The mean and variance, under the risk-neutral measure, of $\Delta \log S$ in the continuous-time model are
+\begin{align*}
+E^R[\Delta \log S] &= \mathrm{n}u\,\Delta t\; ,\\
+\mathrm{var}^R[\Delta \log S]&=\sigma^2\Delta t\; ,
+\end{align*}
+so 
+\begin{align*}
+\frac{E^R[\Delta \log S]}{\Delta t} &= \mathrm{n}u\; ,\\
+\frac{\mathrm{var}^R[\Delta \log S]}{\Delta t}&=\sigma^2\;.
+\end{align*}
+In the binomial model, we have
+\begin{align*}
+\frac{E^R\big[\Delta \log S\big]}{\Delta t} &=\frac{p\,\log u+(1-p)\log d}{\Delta t}\; ,\\
+\frac{\mathrm{var}^R\big[\Delta \log S\big] }{\Delta t}&=\frac{p\,(1-p)(\log u-\log d)^2}{\Delta t}\;.
+\end{align*}
+In order for the binomial model to converge in the appropriate sense to the continuous-time model as the number of periods $N \rightarrow \infty$ keeping the total amount of time $T$ fixed (equivalently, as $\Delta t \rightarrow 0$), it is sufficient that
+\begin{align*}
+\frac{p\log u+(1-p)\log d}{\Delta t} &\rightarrow \mathrm{n}u\; ,\\
+\frac{p\,(1-p)(\log u-\log d)^2}{\Delta t} &\rightarrow \sigma^2\;.
+\end{align*}
+
+
+The most popular model is probably that proposed by Cox, Ross and Rubinstein [@CRR], \index{Cox-Ross-Rubinstein model} who set $d=1/u$ and 
+
 
 $$
-\begin{multline}
- V(0)\mathrm{N}(d_1) - \mathrm{e}^{-rT}K\mathrm{N}(d_2) \\= \exp\left\{(r_f - r-q-\rho\sigma_x\sigma_s)T\right\}\bar{X}S(0)\mathrm{N}(d_1) - \mathrm{e}^{-rT}K\mathrm{N}(d_2)\;,
-\end{multline}
-$$ {#eq-quantocall21}
+u = \mathrm{e}^{\sigma\sqrt{\Delta t}}\;,
+$$ {#eq-crru}
+
+$$
+p = \frac{\mathrm{e}^{(r-q)\Delta t}-d}{u-d}\;.
+$$ {#eq-crrp}
+
+
+
+Another well-known model is that of Jarrow and Rudd [@JR], \index{Jarrow-Rudd model} who take $p=1/2$ and
+
+
+$$
+u = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t + \sigma\sqrt{\Delta t}\right)\;,
+$$ {#eq-jru}
+
+$$
+d = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t - \sigma\sqrt{\Delta t}\right)\;.
+$$ {#eq-jrd}
+
+
+
+Yet another method is proposed by 
+ Leisen and Reimer [@LR], \index{Leisen-Reimer model} and Jackson and Staunton [@JS]  show that it is more efficient for approximating the Black-Scholes value of a European option than are the Cox-Ross-Rubinstein and Jarrow-Rudd trees.
+
+For illustration,  the Cox-Ross-Rubinstein tree will be implemented in @sec-s_introcompvba.  However, when we consider binomial models for multiple assets in @sec-c_montecarlo, we will use the tree proposed by Trigeorgis [@Trigeorgis], \index{Trigeorgis model} because it is the simplest to explain in that context.
+Trigeorgis proposes choosing $p$, $u$ and $d$ so that the mean and variance of $\Delta \log S$ in the binomial model match those in the continuous-time model exactly.  This means that
+
+\begin{align*}
+\frac{p\log u+(1-p)\log d}{\Delta t} &= \mathrm{n}u\; ,\\
+\frac{p(1-p)(\log u-\log d)^2}{\Delta t} &= \sigma^2\;.
+\end{align*}
+
+These are two equations in the three unknowns, leaving one degree of freedom, so Trigeorgis takes $d=1/u$, as do Cox, Ross and Rubinstein.  As we will show in the next section, taking $d=1/u$ simplifies the calculations of deltas and gammas.
+Solving these two equations yields^[Notice that if we were to drop the $(\Delta t)^2$ term in @eq-trig1 (which we could do because it becomes increasingly negligible as $\Delta t \rightarrow 0)$, then  @eq-trig1 would be the same as @eq-crru.  The different choices of $p$ in @eq-crrp and @eq-trig2 can be understood as follows.  Equation @eq-crrp implies that the expected stock price
+$pS_u + (1-p)S_d$ equals $\mathrm{e]^{(r-q)\Delta t}S$, so we have average growth at the rate $r-q$ as in the continuous-time model.  On the other hand,  @eq-trig2 implies that the expected \emph{log} stock price $p \,\log S_u + (1-p) \log S_d$ equals $\log S + \mathrm{n}u \Delta t$, so the expected change in the logarithm is $\mathrm{n}u\Delta t$, also as in the continuous-time model.  Thus, both match the binomial model to the continuous-time model, the Cox-Ross-Rubinstein method focusing on the expected return (equivalently, the expected change in the price of the underlying) and the Trigeorgis method focusing on the expected continuously-compounded return (the expected change in the logarithm of the price).}
+
+
+$$
+\log u=\sqrt{\sigma^2\Delta t + \mathrm{n}u^2(\Delta t)^2}\;,
+$$ {#eq-trig1}
+
+$$
+p = \frac{1}{2}+\frac{\mathrm{n}u\Delta t}{2\log u}\;.
+$$ {#eq-trig2}
+
+
+
+
+
+
+
+
+
+## Binomial Greeks {#sec-s_binomial_greeks}
+
+To estimate Greeks in any valuation model, one can run the valuation program twice, for two different parameter values, and then estimate the Greek as the difference in value divided by the difference in parameters.   For example, to estimate vega when the volatility of the underlying is $\sigma$, we could estimate the derivative value for a volatility of $0.99\sigma$ and for a volatility of $1.01\sigma$.  Denoting the former derivative value by $C_d$ and the latter by $C_u$, the vega can be estimated by 
+$$\frac{C_u-C_d}{1.01\sigma-0.99\sigma} = \frac{C_u-C_d}{0.02\sigma}\; .$$  We can in principle obtain a more precise estimate of the derivative by making a smaller change in the parameter (e.g., using $0.999\sigma$ and $1.001\sigma$) but computer round-off errors limit how small a parameter change one should take in practice.  
+
+To estimate the gamma when the price of the underlying is $S$, we need to estimate the derivative value at two other prices for the underlying, which we will call $S_u$ and $S_d$, with  $S_u>S>S_d$.  As just explained, the estimate of the delta (which we continue to denote by $\delta$) would be
+$$
+\delta = \frac{C_u-C_d}{S_u-S_d}\;,
+$$ {#eq-binomialdelta100}
+
+where $C_u$ denotes the derivative value when the underlying is equal to $S_u$ and $C_d$ denotes the derivative value when the underlying is equal to $S_d$.
+Letting $C$ denote the derivative value when the underlying is equal to $S$, two other obvious estimates of the delta are
+$$\delta_u = \frac{C_u-C}{S_u-S} \qquad \text{and} \qquad \delta_d = \frac{C-C_d}{S-S_d}\; .$$
+The first of these should be understood as an estimate of the delta when the price of the underlying is at the midpoint of $S_u$ and $S$, and the second is an estimate of the delta when the price of the underlying is at the midpoint of $S_d$ and $S$.  The distance between these midpoints is 
+$$\frac{S_u+S}{2} - \frac{S_d+S}{2} = \frac{S_u-S_d}{2}\; ,$$ so we obtain an estimate of $\Gamma$ (the derivative of $\delta$) as
+$$
+\Gamma = \frac{\delta_u-\delta_d}{(S_u-S_d)/2}\;.
+$$ {#eq-binomialgamma100}
+
+
+
+In a binomial model, it is possible to compute the most important Greeks, delta and gamma, more efficiently than by simply running the valuation program several times. 
+Assume we have taken $d=1/u$, so after an up and a down move (or a down and an up move) the stock price returns to its initial value $S$.  After fixing the length $\Delta t = T/N$ of each time period, we redefine $N=N+2$.  This results in an $N+2$ period tree covering a time period of length $T+2\Delta t$.
+Now consider the tree starting two periods from the initial date.  At the middle node shown below, the stock price is $udS=S$.  Ignoring the top and bottom nodes and the branches that follow them, the result of adding two periods is that the tree starting from $udS$ is an $N$--period tree for a time period of length $T$.  
+\begin{center}
+\setlength{\unitlength}{0.6cm}
+\begin{picture}(13,13)
+\put(9,10){\vector(1,1){2}}
+\put(9,10){\vector(1,-1){2}}
+\put(9,6){\vector(1,1){2}}
+\put(9,6){\vector(1,-1){2}}
+\put(9,2){\vector(1,1){2}}
+\put(9,2){\vector(1,-1){2}}
+\put(7.5,2){$d^2S$}
+\put(7.5,6){$udS$}
+\put(7.5,10){$u^2S$}
+\put(11.5,0){$d^3S$}
+\put(11.5,4){$ud^2S$}
+\put(11.5,8){$du^2S$}
+\put(11.5,12){$u^3S$}
+\end{picture}
+\end{center}
+Hence, the derivative price calculated at the middle node will be the price we are trying to estimate.  The derivative price at the top node will be the value of a derivative of maturity $T$ when the initial price of the underlying is $u^2S$.  Similarly, the derivative price at the bottom node will be the value of a derivative of maturity $T$ when the initial price of the underlying is $d^2S$.  Thus, when we back up in the tree to this date, we will have all of the information we need to return an estimate of the derivative value and to return estimates of the delta and gamma, taking $S_u=u^2S$ and $S_d = d^2S$ in equations  @eq-binomialdelta100 and @eq-binomialgamma100.  We are not interested in the tree to the left of what is shown above.
+
+## Monte Carlo Greeks I: Difference Ratios {#sec-s_montecarlogreeks1}
+
+As with binomial models, Greeks can be calculated by Monte Carlo by running the valuation program twice and computing a difference ratio, for example $(C_u-C_d)/(S_u-S_d)$ to estimate a delta.  However, to minimize the error, and minimize the number of computations required, one should use the same set of random draws to estimate the derivative value for different values of the parameter.  For path-independent options (e.g., European puts and calls) under the Black-Scholes assumptions, we only need to generate $S(T)$ and then we can compute $S_u(T)$ as $[S_u(0)/S(0)] \times S(T)$ and $S_d(T)$ as $[S_u(0)/S(0)] \times S(T)$.  We can estimate standard errors for the Greeks in the same way that we estimate the standard error of the derivative value.  
+
+Actually, there is often a better method available that is just as simple.  This is called pathwise calculation.  We will explain this in the next section.   Here we will describe how to estimate the delta and gamma of a derivative as sample means of difference ratios.
+
+Consider  initial prices for the underlying $S_u>S>S_d$.  Denote the underlying price at the option maturity in a given simulation by $S_u(T)$  when the initial underlying price is $S_u$, by $S(T)$  when the initial underlying price is $S$, and by $S_d(T)$  when the initial underlying price is $S_d$.   Under the Black-Scholes assumptions, the logarithm of the stock price at date $T$ starting from the three initial prices $S_d$, $S$ and $S_u$ is
+\begin{align*}
+\log S_d(T) &= \log S_d + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\; ,\\
+\log S(T) &= \log S + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\; ,\\
+\log S_u (T) &= \log S_u + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\;,
+\end{align*}
+so 
+$$\log S_d(T) = \log S(T) + \log S_d - \log S\Longrightarrow S_d(T) = \left(\frac{S_d}{S}\right) S(T)\; ,$$
+and
+$$\log S_u(T) = \log S(T) + \log S_u - \log S \Longrightarrow S_u(T) = \left(\frac{S_u}{S}\right) S(T)\; .$$
+Therefore, under the Black-Scholes assumptions, we only need to simulate $S(T)$ and then perform the multiplications indicated above to obtain $S_d(T)$ and $S_u(T)$. 
+
+Consider a particular simulation and let $C_d(T)$ denote the value of the derivative at maturity  when the initial asset price is $S_d$, let  $C(T)$ denote the value of the derivative at maturity  when the initial asset price is $S$, and let $C_u(T)$ denote the value of the derivative at maturity  when the initial asset price is $S_u$.  For path-independent derivatives under the Black-Scholes assumptions, these can be computed directly from the simulation of $S(T)$ as just described.  However, the following applies to general European derivatives under general assumptions about the underlying asset price (for example, it could follow a GARCH process).
+
+The estimates $C_d$, $C$ and $C_u$ of the date--0 derivative values, for the different initial prices of the underlying, are the discounted sample means of the $C_d(T)$, $C(T)$ and $C_u(T)$.
+One way to estimate the delta is $(C_u-C_d)/(S_u-S_d)$.  This is a difference of discounted sample means, multiplied by the reciprocal of $S_u-S_d$.  Equivalently, it is the sample mean of the differences $C_u(T)-C_d(T)$, multiplied by $\mathrm{e}^{-rT}/(S_u-S_d)$.  As a sample mean, its standard error can be estimated as described in @sec-c_stochasticvolatility.   The standard error is
+$$\frac{\mathrm{e}^{-rT}}{S_u-S_d}\sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^M \left[C_{ui}(T)-C_{di}(T)\right]^2 - M\left[\overline{C_{u}(T)}-\overline{C_{d}(T)}\right]^2\right)}\; ,$$ \index{standard error}
+where the overline denotes the sample mean and where $C_{ui}(T)$ [respectively, $C_{di}(T)$] denotes the value of the derivative at maturity in simulation $i$ when the initial asset price is $S_u$ [respectively, $S_d$].
+
+The corresponding Monte Carlo estimate of the gamma is also a sample mean.  Simple algebra shows that @eq-binomialgamma100 is equivalent to
+$$
+\Gamma = \frac{2}{(S_u-S)(S_u-S_d)}C_u - \frac{2}{(S_u-S)(S-S_d)}C +\frac{2}{(S-S_d)(S_u-S_d)}C_d\;.
+$$ {#eq-binomialgamma200}
+
+Normally one would take $S_u=(1+\alpha)S$ and $S_d = (1-\alpha)S$ for some $\alpha$ (e.g., $\alpha=0.01$).  In this case  @eq-binomialgamma200
+simplifies to
+$$
+\Gamma = \frac{C_u - 2C + C_d}{\alpha^2S^2}\;,
+$$ {#eq-binomialgamma300}
+
+and the standard error of the gamma is
+\begin{multline*}\frac{\mathrm{e}^{-rT}}{\alpha^2S^2}\sqrt{\frac{1}{M(M-1)}}\\
+\times \sqrt{\sum_{i=1}^M \left[C_{ui}(T)-2C_i(T)+C_{di}(T)\right]^2 -M\left[\overline{C_{u}(T)}-2\overline{C(T)}+\overline{C_{d}(T)}\right]^2}\; .
+\end{multline*}
+
+
+## Monte Carlo Greeks II: Pathwise Estimates {#sec-s_montecarlogreeks2}
+We will examine the bias in the Monte Carlo delta estimate discussed in the preceding section and explain  pathwise estimation of Greeks. By biased, we mean that the expected value of an estimate is different from the true value. \index{bias} It is important to recognize that if a Monte Carlo estimate is biased, then, even if a large number of simulations is used and the standard error is nearly zero, the answer provided by the Monte Carlo method will be incorrect.   For simplicity, consider a European call under the Black-Scholes assumptions.  
+
+The delta estimate we have considered is the discounted sample mean of 
+$$
+\frac{C_u(T) - C_d(T)}{S_u-S_d}\;.
+$$ {#eq-montecarlodelta2}
+
+This ratio takes on one of three values, depending on $S(T)$:
+
+
+- If $S_u(T) \leq K$ then the option is out of the money in both the up and down cases; i.e., 
+$$C_u(T) = C_d(T) = 0\; ,$$
+so the ratio @eq-montecarlodelta2 is zero.
+- If $S_d(T) \geq K$ then the option is in the money in both the up and down cases; i.e.,
+\begin{align*} C_u(T) &= S_u(T) - K =\left(\frac{S_u}{S}\right)S(T) - K\; ,\\
+C_d(T) &= S_d(T) - K = \left(\frac{S_d}{S}\right)S(T) - K\;,
+\end{align*}
+so the ratio  @eq-montecarlodelta2 equals $S(T)/S$.
+- If $S_u(T) > K > S_d(T)$, then the option is in the money in only the up case; i.e.,
+\begin{align*}
+C_u(T) &= S_u(T) - K = \left(\frac{S_u}{S}\right)S(T) - K\; ,\\
+C_d(T) &= 0\;,
+\end{align*}
+so the ratio @eq-montecarlodelta2 equals 
+$$\frac{\left(\frac{S_u}{S}\right)S(T) - K}{S_u-S_d} < \frac{S(T)}{S}\; .$$
+
+
+The bias is induced by the third case above.  We can see this as follows.  We are trying to estimate
+$$
+\frac{\partial }{\partial S} \mathrm{e}^{-rT}E^R \big[\max(0,S(T)-K)\big] = \mathrm{e}^{-rT}E^R  \left[ \frac{\partial }{\partial S} \max(0,S(T)-K)\right]\;.
+$$ {#eq-montecarlodelta4}
+
+The delta estimate $(C_u-C_d)/(S_u-S_d)$ replaces the mean $E^R$ with the sample mean and replaces
+$$
+\frac{\partial }{\partial S} \max(0,S(T)-K)
+$$ {#eq-montecarlodelta3}
+
+with the ratio @eq-montecarlodelta2.  The derivative @eq-montecarlodelta3 takes on two possible values, depending on $S(T)$---we can ignore the case $S(T)=K$ because it occurs with zero probability:
+
+
+- If $S(T) < K$, then $\max(0,S(T)-K) = 0$ and the derivative is zero.
+- If $S(T)>K$,  then $\max(0,S(T)-K) = S(T)-K$ and the derivative equals 
+$$\frac{\partial S(T)}{\partial S}=\mathrm{e}^{(r-q-\sigma^2/2)T + \sigma B(T)} = \frac{S(T)}{S}\; .$$
+
+Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}E^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c_blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c_blackscholes, $V(t)=\mathrm{e}^{qt}S(t)$ denotes the value of the non-dividend-paying portfolio created from the stock).] 
+$$
+\mathrm{e}^{-rT}E^R\left[\frac{S(T)}{S} x\right]\;,
+$$ {#eq-montecarlodelta5}
+
+where $x$ is the random variable defined as
+\begin{equation*}
+x =  \begin{cases} 1 & \text{if $S(T)>K$}\; ,\\
+0 & \text{otherwise}\;.
+\end{cases}
+\end{equation*}
+ On the other hand, our  analysis of the ratio @eq-montecarlodelta2 shows that the expected value of the delta estimate $(C_u-C_d)/(S_u-S_d)$ is
+$$
+\mathrm{e}^{-rT}E^R\left[\frac{S(T)}{S} y\right] + \mathrm{e}^{-rT}E^R\left[\frac{S_uS(T)-SK}{S(S_u-S_d)}z\right]\;,
+$$ {#eq-montecarlodelta6}
 
 where
-
-
+\begin{align*}
+y &=  \begin{cases} 1 & \text{if $S_d(T)>K$}\; ,\\
+0 & \text{otherwise}\;.
+\end{cases}
 $$
-d_1 = \frac{\log\left(\frac{V(0)}{K}\right)+\left(r+\frac{1}{2}\sigma_s^2\right)T}{\sigma_s\sqrt{T}}
+and
 $$
-$$
-= \frac{\log\left(\frac{\bar{X}S(0)}{K}\right)+\left(r_f-q-\rho\sigma_x\sigma_s+\frac{1}{2}\sigma_s^2\right)T}{\sigma_s\sqrt{T}}\; ,
-$$
-$$
-d_2 = d_1 - \sigma_s\sqrt{T}\;.
-$$
+z &=  \begin{cases} 1 & \text{if $S_u(T)>K>S_d(T)$}\; ,\\
+0 & \text{otherwise}\;.
+\end{cases}
+\end{align*}
+To contrast @eq-montecarlodelta5 and @eq-montecarlodelta6, note that if $y=1$ then $x=1$, so the term 
+$E^R\left[\frac{S(T)}{S} y\right]$ in @eq-montecarlodelta6 is part of @eq-montecarlodelta5.  However, there are two partially offsetting errors in @eq-montecarlodelta6: $z$ sometimes equals one when $x$ is zero, and when both $z$ and $x$ are one, then the factor multiplying $z$ is smaller than the factor multiplying $x$.  In any case, the expected value @eq-montecarlodelta6  is not the same as the true delta @eq-montecarlodelta5.  As noted before, this implies that the delta estimate will be incorrect even if its standard error is zero.  The bias can be made as small as one wishes by taking the magnitude $S_u-S_d$ of the perturbation to be small, but taking the perturbation to be very small will introduce unacceptable roundoff error.
 
-Likewise, the value of a quanto put \index{quanto put} is given by the Black-Scholes formula:
-$$\mathrm{e}^{-rT}K\mathrm{N}(-d_2) - V(0)\mathrm{N}(-d_1)\; .$$
-:::
+The obvious way to estimate the delta in this situation is simply to compute the discounted sample average of $[S(T)/S]x$.  This is called a pathwise estimate \index{pathwise Monte Carlo Greeks} of the delta, because it only uses the sample paths of $S(t)$ rather than considering up and down perturbations.  This method is due to Broadie and Glasserman [@bg2]. Because the pathwise estimate is a sample average, its standard error can be computed in the usual way.
 
-Notice that this is simply the Black-Scholes call option formula with inputs $V(0)=$ initial asset price, $K=$ exercise price, $r=$ interest rate, $\sigma_s=$ volatility, $0=$ dividend yield, and $T=$ time to maturity.
-
-We can hedge a written quanto call the same way we hedge a written ordinary call: we buy delta shares of the underlying and borrow the difference between the cost of the delta shares and the option value.  However, for the quanto call, the underlying should be regarded as the portfolio with value $V$ described  in @sec-s_quantos.  This portfolio consists of investing $V(0)$ units of domestic currency in the foreign asset, borrowing the same amount at the foreign risk-free rate, and investing $V(0)$ units of domestic currency in the domestic risk-free asset.  The delta of the call is $\mathrm{N}(d_1)$, so the hedge consists of investing $\mathrm{N}(d_1)V(0)$ units of domestic currency in the foreign asset, borrowing the same amount at the foreign risk-free rate, and investing $\mathrm{N}(d_1)V(0)$ in the domestic risk-free asset.  The difference between the cost of this portfolio and the value of the option is
-$$\mathrm{N}(d_1)V(0) - [V(0)\mathrm{N}(d_1) - \mathrm{e}^{-rT}K\mathrm{N}(d_2)] = \mathrm{e}^{-rT}K\mathrm{N}(d_2)\; .$$
-This amount is to be borrowed at the domestic risk-free rate.  Thus, the net investment in the domestic risk-free asset is
-$$\mathrm{N}(d_1)V(0) - \mathrm{e}^{-rT}K\mathrm{N}(d_2)\; ,$$
-which is just the value of the option.  To summarize:
-
-::: {.callout-tip}
-## 
- To delta-hedge a written quanto call, one should invest $\mathrm{N}(d_1)V(0)$ units of domestic currency in the foreign asset, borrow the same amount at the foreign risk-free rate, and invest the value of the option in the domestic risk-free asset.
-:::
+To compute pathwise estimates in other models and for other Greeks, we need the Greek to be an expectation as on the right-hand side of @eq-montecarlodelta4.  Additional examples can be found in  Glasserman [@Glasserman] and J\"ackel [@Jackel].
 
 
-As in @sec-s_replicatingquantos, borrowing $\mathrm{N}(d_1)V(0)$ units of domestic currency at the foreign risk-free rate can be replaced by borrowing the same amount at the domestic risk-free rate and selling $\mathrm{e}^{r_fT}\mathrm{N}(d_1)V(0)/X(0)$ currency forwards.  This results in:
-
-::: {.callout-tip}
-## 
-An equivalent delta hedge for a written quanto call is to  invest $\mathrm{N}(d_1)V(0)$ units of domestic currency in the foreign asset, sell $\mathrm{e}^{r_fT}\mathrm{N}(d_1)V(0)/X(0)$ currency forward contracts at the market forward price $F(0)$, and borrow $\mathrm{e}^{-rT}K\mathrm{N}(d_2)$ at the domestic risk-free rate.
-:::
 
 
-## Return Swaps {#sec-s_returnswaps}
-There are many types and applications of return swaps, \index{return swap} but here is one important example that involves the concepts discussed in this chapter.  Suppose an investor wants to receive at date $T$ the difference in the rates of return of two assets that are denominated in different currencies.  The return will be calculated on a given notional principal.  \index{notional principal} For example, an investor may want to receive at the end of a year the Nikkei rate of return minus the rate of return on the S\&P 500, calculated on a \$1 million notional principal.  If the Nikkei earns 15\% over the year and the S\&P earns 10\%, then the payment to the investor is 5\% of \$1 million.  If the reverse happens---the Nikkei earns 10\% and the S\&P earns 15\%---then the investor must pay 5\% of \$1 million to the counterparty.
-
-To model this,  let $S_f$ denote the price of a foreign asset and $S_d$ the price of a domestic asset.  Assume they have constant dividend yields $q_f$ and $q_d$.  If the returns are calculated excluding dividends, as is likely to be the case, then the payment to the investor is
-$$\left(\frac{S_f(T)-S_f(0)}{S_f(0)} - \frac{S_d(T)-S_d(0)}{S_d(0)}\right)  A = \left(\frac{S_f(T)}{S_f(0)} - \frac{S_d(T)}{S_d(0)}\right)  A\; ,$$
-where $A$ denotes the notional principal.  Of course, the investor may want the reverse swap, and we consider this particular case only for concreteness.
-
-The swap may have nonzero market value at date 0, which means that some payment will have to be made upfront.  To eliminate this, we can add a swap spread into the contract, affecting the cash flow at date $T$.  This is a constant number $a$ (which may be positive or negative), and including it changes the payment to the investor to
-$$
-\left(a+\frac{S_f(T)}{S_f(0)} - \frac{S_d(T)}{S_d(0)}\right)  A\;.
-$$ {#eq-returnswap1}
-
-The question we will address here is: what is the fair swap spread; i.e., \index{swap spread} for what number $a$ does the cash flow @eq-returnswap1 have zero market value at date 0?
-
-If the value is zero, then it is zero for any notional principal $A$, so we can conveniently take $A=1$.  The cash flow consists of three pieces, all of which are to be received/paid at date $T$: the constant $a$, the gross return on the foreign asset, and the gross return on the domestic asset.  The value at date 0 of receiving $a$ units of domestic currency is obviously $\mathrm{e}^{-rT}a$.  As we have observed several times before, the value at date 0 of receiving 
-$S_d(T)$ units of domestic currency at date $T$ is $\mathrm{e}^{-q_d t}S_d(0)$, because this is the cost of enough shares to accumulate to one share at date $T$ via reinvestment of dividends.  Therefore, the value at date 0 of receiving $S_d(T)/S_d(0)$ at date $T$ is  $\mathrm{e}^{-q_dT}S_d(0)/S_d(0) = \mathrm{e}^{-q_dT}$.
-
-What remains is to calculate the value of receiving $S_f(T)/S_f(0)$ units of domestic currency at date $T$.  We can do this by interpreting $1/S_f(0)$ as the fixed exchange rate $\bar{X}$ in the definition of a quanto.^[To make sense of the units, note that the cash flow of $S_f(T)/S_f(0)$ units of domestic currency can be calculated as $S_f(T)$ units of foreign currency times $1/S_f(0)$ units of domestic currency per unit of foreign currency.  Therefore, the units of $1/S_f(0)$ can be taken to be the units of an exchange rate.]  We need to assume as before that the foreign asset price $S_f$ and the exchange rate have constant volatilities and a constant correlation.  Denoting the volatilities by $\sigma_s$ and $\sigma_x$ and the correlation by $\rho$ as before, equation~@eq-quanto1 shows that the value of receiving $\bar{X}S_f(T) = S_f(T)/S_f(0)$ units of domestic currency at date $T$ is
-$$\exp\left\{(r_f - r-q_f-\rho\sigma_x\sigma_s)T\right\}\; .$$
-Adding up the pieces, the value at date 0 of the cash flow @eq-returnswap1 (with $A=1$) is
-$$\mathrm{e}^{-rT}a + \exp\left\{(r_f - r-q_f-\rho\sigma_x\sigma_s)T\right\} - \mathrm{e}^{-q_dT}\; ,$$
-so we conclude:
-
-::: {.callout-tip}
-## 
-The fair swap spread, which equates the value at date 0 of receiving the cash flow @eq-returnswap1 at date T to zero, is
-$$
-a = \exp\left\{(r-q_d)T\right\} - \exp\left\{(r_f -q_f-\rho\sigma_x\sigma_s)T\right\}\;.
-$$ {#eq-fairswapspread}
 
 
-:::
+## Calculations in VBA {#sec-s_introcompvba}
 
-\section[Uncovered Interest Parity]{Uncovered Interest Parity in the Risk-Neutral Probabilities}
+### Monte Carlo Valuation of a European Call
+We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions.  We will also estimate the delta by each of the methods described in @sec-s_montecarlogreeks1 and~\ref{s_montecarlogreeks2}.  Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates.
 
-When we use numerical methods to value American and path-dependent options, as in @sec-c_introcomputation, we typically focus on the dynamics of asset prices under the risk-neutral measure.  To apply these results to currency options or options on foreign assets, we need to know the dynamics of the exchange rate under the risk-neutral measure.  Because we can view the exchange rate as the domestic price of an asset with the foreign risk-free rate $r_f$ being its dividend yield, we have already calculated these dynamics in equation~@eq-riskneutral11 of @sec-s_girsanov.  The result is:
+In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process.  To estimate the option delta as a difference ratio $(C_u-C_d)/(S_u-S_d)$, we use the perturbations $S_u = 1.01S$ and $S_d = 0.99S$.  The inputs are the same as for the Black-Scholes formula plus the sample size $M$ (the number of stock prices to be simulated).
 
-::: {.callout-tip}
-## 
-The exchange rate $X$ must satisfy
-$$
-\frac{\mathrm{d} X}{X} = (r-r_f)\,\mathrm{d} t + \sigma_x\,\mathrm{d} B^*_x
-$$ {#eq-uncoveredparity}
+\addcontentsline{lof}{figure}{European Call MC}
+\begin{verbatim}
+Function European_Call_MC(S, K, r, sigma, q, T, M)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'            M = number of simulations
+'
+' This outputs the row vector (call value, delta 1, delta 2)
+'
+Dim LogS0,drift,SigSqrT,UpChange,DownChange,SumCall,SumCallChange
+Dim SumPathwise,LogS,LogSd,LogSu,CallV,CallVu,CallVd,i,Delta1,Delta2
+LogS0 = Log(S)
+drift = (r - q - 0.5 * sigma * sigma) * T
+SigSqrT = sigma * Sqr(T)
+UpChange = Log(1.01)
+DownChange = Log(0.99)
+SumCall = 0
+SumCallChange = 0
+SumPathwise = 0
+For i = 1 To M
+    LogS = LogS0 + drift + SigSqrT * RandN()     ' log S(T)
+    CallV = Application.Max(0, Exp(LogS) - K)    ' call value
+    SumCall = SumCall + CallV                    ' sum call values
+    LogSu = LogS + UpChange                          ' log Su(T)
+    CallVu = Application.Max(0, Exp(LogSu) - K)      ' call value
+    LogSd = LogS + DownChange                        ' Sd(T)
+    CallVd = Application.Max(0, Exp(LogSd) - K)      ' call value
+    SumCallChange = SumCallChange + CallVu - CallVd  ' differences
+    If Exp(LogS) > K Then
+        SumPathwise = SumPathwise + Exp(LogS) / S    ' for pathwise
+    End If
+Next i
+CallV = Exp(-r * T) * SumCall / M                      
+Delta1 = Exp(-r * T) * SumCallChange / (M * 0.02 * S)  
+Delta2 = Exp(-r * T) * SumPathwise / M                 
+European_Call_MC = Array(CallV, Delta1, Delta2)
+End Function
+\end{verbatim}
 
-for some process $\sigma_x$, where $B^*_x$ is a Brownian motion under the risk-neutral measure.
-:::
-  
+### Monte Carlo Valuation in a GARCH Model
 
-This equation has an interesting interpretation in terms of uncovered interest parity, \index{uncovered interest parity} which is the theory that differences in interest rates across currencies will be offset on average by appreciation/depreciation of the currencies.  In other words, it is the theory that the strategy of borrowing in low-interest-rate currencies to invest in high-interest-rate currencies will not earn money on average because of depreciation of the high-interest-rate currency relative to the low-interest-rate currency.  It is well known that this theory is not always true in reality.  However, equation~@eq-uncoveredparity shows that it is true when we calculate expectations using the risk-neutral measure.
+For another example of Monte Carlo, we will value a European call option and estimate its standard error in a GARCH model.  The underlying asset price is simulated as in @sec-s_garch.  After each path of the underlying is simulated, we compute the date--T value of the option.  We sum these as the simulations proceed in order to compute the average value.  We also sum the squared date--~T option values in order to compute the standard error of the estimate of the date--0 option value.
 
-To see the interpretation of equation~@eq-uncoveredparity as uncovered interest parity, suppose that the foreign interest rate $r_f$ is lower than the domestic rate $r$.  Then one may be tempted to borrow at the foreign rate and invest at the domestic rate.  This would create a short position in the foreign currency.  Equation @eq-uncoveredparity states that the exchange rate is expected (under the risk-neutral measure) to appreciate at the rate $r-r_f$; thus, repayment of the foreign currency will be more expensive in terms of domestic currency, offsetting the interest rate differential.
+In addition to the inputs in the previous function, we input  the number $N$ of time periods in the interval $[0,T]$---implying a GARCH model for returns over time intervals of length $\Delta t = T/N$ under the risk-neutral measure---and the GARCH parameters $\kappa$, $\theta$, and $\lambda$. To value a different type of European derivative, we would simply modify the statement 
+\begin{center}
+\verb!CallV = Application.Max(0,Exp(LogS)-K)!.
+ \end{center}
+
+\addcontentsline{lof}{figure}{European Call GARCH MC}
+\begin{verbatim}
+Function Eur_Call_GARCH_MC(S,K,r,sigma0,q,T,N,kappa,theta,lambda,M)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma0 = initial volatility
+'            q = dividend yield
+'            T = time to maturity
+'            N = number of time periods
+'            kappa = GARCH parameter
+'            theta = GARCH parameter
+'            lambda = GARCH parameter
+'            M = number of simulations
+'
+' This returns the row vector (call value, standard error).
+'
+Dim dt, Sqrdt, a, b, c, LogS0, SumCall, SumCallSq, LogS, sigma
+Dim y, CallV, StdError, i, j
+dt = T / N
+Sqrdt = Sqr(dt)
+a = kappa * theta                ' GARCH parameter
+b = (1 - kappa) * lambda         ' GARCH parameter
+c = (1 - kappa) * (1 - lambda)   ' GARCH parameter
+LogS0 = Log(S)                   ' store log stock price
+SumCall = 0                      ' initialize running total
+SumCallSq = 0                    ' initialize running total
+For i = 1 To M
+    LogS = LogS0                 ' initialize log stock price
+    sigma = sigma0               ' initialize volatility
+    For j = 1 To N               ' generate path
+        y = sigma * RandN()
+        LogS = LogS + (r-q-0.5*sigma*sigma)*dt + Sqrdt*y
+        sigma = Sqr(a + b * y ^ 2 + c * sigma ^ 2)  ' update vol
+    Next j
+    CallV = Application.Max(0, Exp(LogS) - K)       ' date-T value
+    SumCall = SumCall + CallV                       ' update sum
+    SumCallSq = SumCallSq + CallV * CallV           ' update sum
+Next i
+CallV = Exp(-r * T) * SumCall / M  
+StdError = Exp(-r * T) * Sqr((SumCallSq - SumCall * SumCall / M) / _
+           (M * (M - 1)))
+Eur_Call_GARCH_MC = Array(CallV, StdError)
+End Function
+\end{verbatim}
+
+
+
+### Binomial Valuation of European Options
+
+The binomial model for path-independent European options can be implemented as follows.  We will use the Cox-Ross-Rubinstein parameters.  To value a different type of European option in a binomial model, one would only have to change the formula 
+\begin{center}
+\verb!Application.Max(S - K, 0)! 
+\end{center}
+in the following.  We first define the binomial parameters and some useful constants, denoting the probability $p\,$ of an up move as \verb!pu! and the probability $1-p$ of a down move as~\verb!pd!.  
+
+\addcontentsline{lof}{figure}{European Call Binomial}
+\begin{verbatim}
+Function European_Call_Binomial(S, K, r, sigma, q, T, N)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'            N = number of time periods
+'
+Dim dt, u, d, pu, pd, u2, prob, CallV, i
+dt = T / N                             ' length of time period
+u = Exp(sigma * Sqr(dt))               ' size of up step
+d = 1 / u                              ' size of down step
+pu = (Exp((r - q) * dt) - d) / (u - d) ' probability of up step
+pd = 1 - pu                            ' probability of down step
+u2 = u * u
+\end{verbatim}
+
+\mathrm{n}oindent Now we calculate the stock price at the bottom node (the node corresponding to all down moves), the probability of reaching that node, and the first term in the sum @eq-binomialsum.
+
+\begin{verbatim}
+S = S * d ^ N            ' stock price at bottom node at last date
+prob = pd ^ N            ' probability of bottom node at last date
+CallV = prob * Application.Max(S - K, 0)      
+\end{verbatim}
+
+To calculate the other $N$ terms in the sum, we note that the stock price when there are $i$ up moves is $u^2$ times the stock price with only $i-1$ up moves (because one more up move also means one fewer down move and adding an up and removing a down produces the factor $u/d = u^2$).  Furthermore, the ratio of the probability of $i$ up moves to $i-1$ up moves is
+$$\frac{p^i(1-p)^{N-i}N!/i!(N-i)!}{p^{i-1}(1-p)^{N-i+1}N!/(i-1)!(N-i+1)!} = \frac{(N-i+1)p}{(1-p)i}\; .$$
+Therefore, as we increase the index $i$ in computing the sum @eq-binomialsum, we need to multiply the previous stock price by $u^2$ and multiply the previous probability by $(N-i+1)p/[(1-p)i]$.  We add the result to \verb!CallV! each time and, at the end, discount by $\mathrm{e}^{-rT}$.
+
+\begin{verbatim}
+For i = 1 To N                                
+    S = S * u2                                       
+    prob = prob * (pu / pd) * (N - i + 1) / i        
+    CallV = CallV + prob * Application.Max(S - K, 0) 
+Next i
+European_Call_Binomial = Exp(-r * T) * CallV
+End Function
+\end{verbatim}
+
+### Binomial Valuation of American Options
+We will consider an American put.  It may also be optimal to exercise an American call early, if there is a positive dividend yield, and the same procedure can be used for American calls.
+We begin as in the previous subsection by defining the binomial parameters, some useful constants, and the stock price at the bottom node at the last date.^[Note that the variable name $S0$ is assigned to the initial stock price.  The variable $S$ is modified as we step up across the nodes at each date.  When we back up to the previous date, the initial stock price is still available in the variable $S0$.] We also compute the put value $P(0)$ at the bottom node at the last date.
+
+
+\addcontentsline{lof}{figure}{American Put Binomial}
+\begin{verbatim}
+Function American_Put_Binomial(S0, K, r, sigma, q, T, N)
+'
+' Inputs are S0 = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'            N = number of time periods
+'
+Dim dt, u, d, pu, dpu, dpd, u2, S, i, j
+Dim PutV() As Double
+ReDim PutV(N)
+dt = T / N                              ' length of time period
+u = Exp(sigma * Sqr(dt))                ' size of up step
+d = 1 / u                               ' size of down step
+pu = (Exp((r - q) * dt) - d) / (u - d)  ' probability of up step
+dpu = Exp(-r * dt) * pu                 ' discount x up prob 
+dpd = Exp(-r * dt) * (1 - pu)           ' discount x down prob
+u2 = u * u
+S = S0 * d ^ N                          ' bottom stock price
+PutV(0) = Application.Max(K - S, 0)     ' bottom put value
+\end{verbatim}
+
+Now we loop over the other nodes at the last date, increasing the stock price by a factor of $u^2$ each time as before, and defining the put value as its intrinsic value at maturity.
+
+\begin{verbatim}
+For j = 1 To N
+    S = S * u2
+    PutV(j) = Application.Max(K - S, 0)
+Next j
+\end{verbatim}
+
+Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.  Since we are backing up in the tree, we step backwards from $i=N-1$ to $i=0$.  At each date we start by defining the stock price at the bottom node.  At date $i$ there have been $i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date $i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date 0, we return the put value $P(0)$, the value at the bottom node, which is the only node at date~0.
+
+
+\begin{verbatim}
+For i = N - 1 To 0 Step -1              ' back up in time to date 0
+    S = S0 * d ^ i                      ' bottom stock price
+    PutV(0) = Application.Max(K - S, dpd * PutV(0) + dpu * PutV(1))
+    For j = 1 To i                      ' step up over nodes
+        S = S * u2
+        PutV(j) = Application.Max(K-S, dpd*PutV(j)+dpu*PutV(j+1))
+    Next j
+Next i
+American_Put_Binomial = PutV(0)         
+End Function
+\end{verbatim}
+
+### Binomial Estimation of Delta and Gamma
+
+We add two periods to the model and then stop the backward induction at date $n=2$, as described in @sec-s_binomial_greeks.
+
+\addcontentsline{lof}{figure}{American Put Binomial DG}
+\begin{verbatim}
+Function American_Put_Binomial_DG(S0, K, r, sigma, q, T, N)
+'
+' Inputs are S0 = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'            N = number of time periods
+'
+' This returns the row vector (put value, delta, gamma).
+'
+Dim dt, u, d, pu, dpu, dpd, u2, S, Su, Sd, Deltau, Deltad, dist
+Dim i, j, NewN, Delta, Gamma
+Dim PutV() As Double
+ReDim PutV(N + 2)
+dt = T / N                              ' length of time period
+NewN = N + 2                            ' now we add 2 periods
+u = Exp(sigma * Sqr(dt))                ' size of up step
+d = 1 / u                               ' size of down step
+pu = (Exp((r - q) * dt) - d) / (u - d)  ' probability of up step
+dpu = Exp(-r * dt) * pu                 ' discount x up prob
+dpd = Exp(-r * dt) * (1 - pu)           ' discount x down prob
+u2 = u * u
+S = S0 * d ^ NewN                       ' bottom stock price
+PutV(0) = Application.Max(K - S, 0)     ' bottom put value
+For j = 1 To NewN                       ' step up over nodes
+    S = S * u2
+    PutV(j) = Application.Max(K - S, 0)
+Next j
+For i = NewN - 1 To 2 Step -1           ' back up in time
+    S = S0 * d ^ i                      ' bottom stock price
+    PutV(0) = Application.Max(K - S, dpd * PutV(0) + dpu * PutV(1))
+    For j = 1 To i                      ' step up over nodes
+        S = S * u2
+        PutV(j) = Application.Max(K-S, dpd*PutV(j)+dpu*PutV(j+1))
+    Next j
+Next i                             
+Su = S0 * u2                       ' higher stock price  
+Sd = S0 / u2                       ' lower stock price 
+Deltau = (PutV(2) - PutV(1)) / (Su - S0) ' midpoint delta
+Deltad = (PutV(1) - PutV(0)) / (S0 - Sd) ' midpoint delta
+dist = S0 * (u2 - d * d)       ' dist between Su and Sd
+Delta = (PutV(2) - PutV(0)) / dist
+Gamma = 2 * (Deltau - Deltad) / dist
+American_Put_Binomial_DG = Array(PutV(1), Delta, Gamma)
+End Function
+\end{verbatim}
 
 
 ## Exercises
 
 ::: {#exr-nolabel}
- Create an Excel worksheet to compare the values of call options on foreign assets that are (i) struck in foreign currency or (ii) struck in domestic currency.  Prompt the user to input $X(0)$, $S(0)$, $K$, $r$, $r_f$, $\sigma_x$, $\sigma_s$, $\rho$, $q$ and $T$.  Take the strike price of the option struck in foreign currency to be $K$ and take the strike price of the option struck in domestic currency to be $X(0)K$ (so $K$ is interpreted as an amount in foreign currency).  You should be able to confirm, for example, that if $r=r_f$ and $\rho \geq 0$ then the option struck in domestic currency is more valuable.
+ Consider an at-the-money European call option on a non-dividend-paying stock with six months to maturity.  Take the initial stock price to be \$50, the interest rate to be 5\% and $\sigma=$30\%.  Compute the value in a binomial model with $N=10, 11, \ldots, 20$ and plot the values against $N$.  Is convergence monotone?
 :::
 ::: {#exr-nolabel}
- Repeat the preceding problem comparing (i) call options struck in foreign currency, versus (ii) quanto call options.  Use the same inputs as in the preceding problem and take the fixed exchange rate in the quanto to be $\bar{X}=X(0)$.  You should be able to confirm, for example, that if $r=r_f$ and $\rho \geq 0$ then the option struck in foreign currency is more valuable.
+ Consider the same option as in the previous problem.  Roughly what value of $N$ is needed to get penny accuracy?  (To evaluate the accuracy, compare the price to the price given by the Black-Scholes formula.)
 :::
 ::: {#exr-nolabel}
- Create an Excel worksheet in which the user inputs $r$ and $r_f$ and the exchange rate.  Compute the forward exchange rate at maturities $T=0.1, 0.2, \dots, 2.0$ and plot the forward rate against the maturity in a scatter plot. A market is said to be in contango if this curve is upward sloping and to be in backwardation if this curve is downward sloping.  For currencies, what determines whether the market is in contango or in backwardation?
+  The early exercise premium \index{early exercise premium} is the difference between the value of an American option and the value of a European option with the same parameters.  Compute the early exercise premium for an American put and various values for the interest rate, exercise price, and stock parameters.  Under what circumstances is the early exercise premium relatively large?
+:::
+::: {#exr-e_GARCHimpliedvols}
+  Create an Excel worksheet in which the user inputs $S$, $r$, $\sigma$, $q$, $T$, $N$, $\kappa$, $\theta$, and $\lambda$.  Use the function \verb!European_Call_GARCH_MC! to compute call option prices for exercise prices $K=0.6S$, $0.7S$, $0,8S$, $0.9S$, $S$, $1.1S$, $1.2S$, $1.3S$ and $1.4S$, taking $M=500$ in each case.  For each computed price, use the function \verb!Black_Scholes_Call_Implied_Vol! to compute an implied Black-Scholes volatility.  Plot the implied volatilities against the exercise prices.
+:::
+::: {#exr-e_Hestoncall}
+  Create a VBA function using Monte Carlo to estimate the value of a European call option in the Heston stochastic volatility model.  The inputs should be the initial stock price $S$, the strike price $K$, the risk-free rate $r$, the initial volatility $\sigma$, the dividend yield $q$, the time to maturity $T$, the number of time periods $N$, the parameters  $\kappa$, $\theta$, $\gamma$, and $\rho$, and the number of simulations $M$.  Return the estimated option value and its standard error.  
 :::
 ::: {#exr-nolabel}
- Create a VBA subroutine to simulate a path of the exchange rate and the forward exchange rate under the risk-neutral measure, prompting the user to input $X(0)$, $r$, $r_f$, $\sigma_x$, and the maturity $T$ of the forward contract.
+ Modify the VBA function in the previous exercise to also return the estimated delta of the option and the standard error of the delta.
 :::
 ::: {#exr-nolabel}
- Create a VBA subroutine to simulate a path of the exchange rate under the actual probability measure, prompting the user to input $X(0)$, $\sigma_x$, and the expected rate of growth $\mu$ of the exchange rate under the actual probability measure.  Prompt the user also to input $S(0)$, $r$, $r_f$, $\sigma_s$, $q$, $\rho$, a fixed exchange rate $\bar{X}$, a maturity $T$, and a number of periods $N$.  Calculate the gain/loss from the portfolio that promises to pay $\bar{X}S(T)$ at date $T$ and uses a discretely rebalanced hedge, rebalancing at dates $t_1,\ldots t_N=T$, where $t_i-t_{i-1} = T/N$, similar to the calculation in the function \verb!Simulated_Delta_Hedge_Profit!.  Use the money-market hedge, which means investing $V(0)$ at date 0, holding the number of shares of the foreign asset shown in  @eq-quanto4 at each date $t_i$, and having a short position in the foreign risk-free asset of the same value at each date $t_i$.  Cash flows generated at each date from buying/selling the foreign asset and lending/borrowing at the foreign risk-free rate should be withdrawn/deposited in the domestic risk-free asset.  Note: Because of discrete rebalancing, this is not a perfect hedge, and the investment in the domestic risk-free asset will not always equal $V(t)$.  
+ Repeat @exr-e_GARCHimpliedvols using the Heston model (the function developed in @exr-e_Hestoncall) to compute the call option prices, allowing the user to input $\gamma$ and $\rho$ (instead of $\lambda$).  
 :::
-::: {#exr-e_forwardhedging}
-  Repeat the previous exercise using the forward contract hedge discussed in @sec-s_replicatingquantos.  The cash flows generated from trading forwards cannot be withdrawn/deposited in the domestic risk-free asset, because they do not materialize until the maturity of the forward.  You will have to create a variable to keep track of the net asset/liability and include it in the valuation at date $T$.
-:::
-::: {#exr-nolabel}
- Derive the  money-market hedge and the forward contract hedge for a written quanto put.
-:::
-::: {#exr-nolabel}
- Suppose a customer has contracted with you for a return swap in which the customer will receive the cash flow @eq-returnswap1 for some number $a$, where $A=1$.  How can you hedge this?
-:::
+

@@ -1,703 +1,373 @@
-## Introduction to Monte Carlo and Binomial Models {#sec-c_introcomputation}
+# Estimating and Modelling Volatility {#sec-c_stochasticvolatility}
 
-In this chapter, we will introduce two principal numerical methods for valuing derivative securities: Monte Carlo and binomial models.  We will consider two applications: valuing European options in the presence of stochastic volatility with Monte Carlo and valuing American options via binomial models.  Additional applications of these methods will be presented in @sec-c_montecarlo.  Throughout the chapter, we will assume there is a constant risk-free rate.  The last section, while quite important, could be skimmed on first reading---the rest of the book does not build upon it.
+Thus far, we have assumed that the volatility of the underlying asset is constant or varying in a non-random way during the lifetime of the derivative.  In this chapter we will look at models that relax this assumption and allow the volatility to change randomly.  This is very important, because there is plenty of evidence that volatilities do change over time in a random way.  
 
-## Introduction to Monte Carlo {#sec-s_mc_europeans}
+In the first three sections, we will consider the problem of estimating the volatility.  The discussion of estimation methods leads naturally into the discussion of modelling a changing volatility.  
 
-According to our risk-neutral pricing @eq-riskneutralformula, the value of a security paying an amount $x$ at date $T$ is
-$$
-\mathrm{e}^{-rT}E^R[x]\;.
-$$ {#eq-montecarlo1}
+## Statistics Review {#sec-s_statistics}
 
-To estimate this by Monte-Carlo \index{Monte Carlo} means to simulate a sample of values for the random variable
-$x$
-and to estimate the expectation by averaging the sample values.^[Boyle~[@boyle] introduced Monte-Carlo methods for derivative valuation, including the variance-reduction methods of control variates and antithetic variates to be discussed in @sec-c_montecarlo].  Of course, for this to work, the sample must be generated from a population having a distribution consistent with the risk-neutral probabilities.
-
-The simplest example is valuing a European option under the Black-Scholes assumptions.  Of course, for calls and puts, this is redundant, because we already have the Black-Scholes formulas.  Nevertheless, we will describe how to do this for the sake of introducing the Monte Carlo method.  In the case of a call option, the random variable $x$ in @eq-montecarlo1 is $\max(0,S(T)-K)$.  To simulate a sample of values for this random variable, we need to simulate the terminal stock price $S(T)$.  This is easy to do, because, under the Black-Scholes assumptions, the logarithm of $S(T)$ is normally distributed under the risk-neutral measure with mean $\log S(0)+\mathrm{n}u T$ and variance $\sigma^2T$, where $\mathrm{n}u=r-q-\sigma^2/2$.  Thus, we can simulate values for $\log S(T)$ as $\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z$, where $z$ is a standard normal.  We can  average the simulated values of $\max(0,S(T)-K)$, or whatever the payoff of the derivative is, and then discount at the risk-free rate to compute the date--0 value of the derivative.  This means that we generate some number $M$ of standard normals $z_i$ and estimate the option value as $\mathrm{e}^{-rT}\bar{x}$, where $\bar{x}$ is the mean of 
-$$x_i = \max\left(0,\mathrm{e}^{\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z_i}-K\right)\; .$$
-To value options that are path-dependent  we need to simulate the path of the underlying asset price.  Path-dependent options are discussed in Chaps.~\ref{c_exotics} and~\ref{c_montecarlo}.
-
-There are two main drawbacks to Monte-Carlo methods.  First, it is difficult (though not impossible) to value early-exercise features.^[Monte-Carlo methods for valuing early exercise include the stochastic mesh method of Broadie and Glasserman [@BG] and the regression method of Longstaff and Schwartz [@LS01].  Glasserman [@Glasserman] provides a good discussion of these methods and the relation between them.]  To value early exercise, we need to know the value at each date if not exercised, to compare to the intrinsic value.  One could consider performing a simulation at each date to calculate the value if not exercised, but this value depends on the option to exercise early at later dates, which cannot be calculated without knowing the value of being able to exercise early at even later dates, etc.  In contrast, the binomial model (and finite difference models discussed in @sec-c_pde) can easily handle early exercise but cannot easily handle path dependencies.  
-
-The second drawback of Monte Carlo methods is that they can be quite inefficient in terms of computation time (though, as will be explained in @sec-c_montecarlo, they may be faster than alternative methods for derivatives written on multiple assets).  As in statistics, the standard error of the estimate depends on the sample size.  Specifically, 
-we observed in @sec-s_statistics that, given a random sample $\{x_1,\ldots,x_M\}$ of size $M$ from a population with mean $\mu$ and variance $\sigma^2$, the best estimate of $\mu$ is the sample mean $\bar{x}$, and the standard error of $\bar{x}$ (which means the standard deviation of $\bar{x}$ in repeated samples) is best estimated by
-$$
-\sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^{M} x_i^2-M\bar{x}^2\right)}\;.
-$$ {#eq-standarderror}
- \index{standard error}
-Recall that $\bar{x}$ plus or minus 1.96 standard errors is a 95\% confidence interval for $\mu$ when the $x_i$ are normally distributed.
-In the context of European option valuation, the expression @eq-standarderror gives the  standard error of the estimated option value at maturity, and multiplication of @eq-standarderror by $\mathrm{e}^{-rT}$ gives the standard error of the estimated date--0 option value.
-
-To obtain an estimate with an acceptably small standard error may require a large sample size and hence a relatively large amount of computation time.  The complexities of Monte Carlo methods arise from trying to reduce the required sample size.  In @sec-c_montecarlo, we will describe two such methods (antithetic variates and control variates).   For those who want to engage in a more detailed study of Monte Carlo methods, the book of Glasserman [@Glasserman] is highly recommended.  J\"ackel [@Jackel] is useful for more advanced readers, and Clewlow and Strickland [@CS] and  Brandimarte [@Brandimarte] are useful references that include computer code.
-
-
-## Introduction to Binomial Models {#sec-s_introbinomial}
-
-As in the previous section, \index{binomial model} we will work with the dynamics of the logarithms of asset prices under the risk-neutral measure.  Thus, our starting point is the equation
-$$
-\mathrm{d} \log S = \left(r-q-\frac{\sigma^2}{2}\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
-$$ {#eq-logstock_riskneutral}
-
-where $B$  represents a Brownian motion under the risk-neutral measure.
-
-In the binomial model, we assume that if the stock price is $S$ at the beginning of the period, it will be either $uS$ or $dS$ at the end of the period, where the multiplicative factors $u$ and $d$ are constants to be determined.  This means that the rate of return is $\Delta S/S = u\!-\!1$ in the up state and $\Delta S/S = d\!-\!1$ in the down state. There are three parameters to the model: $u$, $d$, and the probability $p$ of the up state (the probability of the down state being necessarily $1\!-\!p$). The following illustrates a three-period model.
-
-\begin{center}
-\setlength{\unitlength}{0.6cm}
-\begin{picture}(13,13)
-\put(0,6){$S$}
-\put(1,6){\vector(1,1){2}}
-\put(1,6){\vector(1,-1){2}}
-\put(5,8){\vector(1,1){2}}
-\put(5,8){\vector(1,-1){2}}
-\put(9,10){\vector(1,1){2}}
-\put(9,10){\vector(1,-1){2}}
-\put(5,4){\vector(1,1){2}}
-\put(5,4){\vector(1,-1){2}}
-\put(9,6){\vector(1,1){2}}
-\put(9,6){\vector(1,-1){2}}
-\put(9,2){\vector(1,1){2}}
-\put(9,2){\vector(1,-1){2}}
-\put(3.5,8){$uS$}
-\put(3.5,4){$dS$}
-\put(7.5,2){$d^2S$}
-\put(7.5,6){$udS$}
-\put(7.5,10){$u^2S$}
-\put(11.5,0){$d^3S$}
-\put(11.5,4){$ud^2S$}
-\put(11.5,8){$du^2S$}
-\put(11.5,12){$u^3S$}
-\end{picture}
-\end{center}
-
-A tree constructed like this is recombining in \index{recombining tree} the sense that the stock price after an up-down sequence is the same as after a down-up sequence.  This is very important for reducing the computation time.  For example, the number of nodes at the final date is $N+1$ in a recombining tree, where $N$ is the number of periods, but it is $2^N$ for a non-recombining (sometimes called bushy) tree.  Hence, the computation time will increase linearly with $N$ for a recombining tree but exponentially with $N$ for a non-recombining tree.  Unfortunately, this computational savings is generally not possible for path-dependent options, because the number of distinct paths through a tree (whether recombining or not) is again $2^N$.
-
- 
-The value of a European derivative is of course the discounted expectation of its value at maturity, discounting at the risk-free rate and taking the expectation under the risk-neutral measure.  The binomial tree allows us to approximate the expectation very easily.  We simply sum over the nodes of the tree at the option maturity and weight each node by its binomial probability.  In an $N$-period model, the probability of the top node is $p^N$, since the stock must go up each time to reach the top node.  There are $N$ paths reaching the second node from the top (since the period of the single down move could be any one of the $N$ periods) and each such path has probability $p^{N-1}(1-p)$; therefore, the probability of reaching the second node from the top is $Np^{N-1}(1-p)$.  More generally, the probability of going up $i$ times and down $N-i$ times is
-$$\frac{N!}{i!(N-i)!}p^i(1-p)^{N-i}\; ,$$
-where as usual $x!$ denotes $x$ factorial.  Therefore, the expectation, for a European call option,  is the following sum over the $N+1$ nodes at date $N$ (starting with $i=0$ up moves and ending with $i=N$ up moves):
-$$
-\sum_{i=0}^N \frac{N!}{i!(N-i)!}p^i(1-p)^{N-i}\max(u^id^{N-i}S-K,0)\;.
-$$ {#eq-binomialsum}
-
-Multiplying the expectation by $\mathrm{e}^{-rT}$ yields the option value.
-
-It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section.  In the Monte-Carlo method for valuing a European call option, we generate $M$ random values for $S(T)$ and estimate the expectation $E^R[\max(0,S(T)-K)]$ by averaging the $M$ values.  This amounts to approximating the distribution of $S(T)$ by an $M$--point distribution, each point being assigned equal probability.  In the binomial method, we choose a particular set of points for $S(T)$ and assign the probabilities specified above in order to approximate the distribution of $S(T)$.  Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of $S(T)$ as the number of points increases.  However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods $N$ in the binomial model than we would need simulations $M$ in the Monte-Carlo method.  Thus, the binomial method will be much faster.   Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options.  On the other hand, as mentioned in the previous section, to value a path-dependent option in  an $N$--period binomial tree would require the analysis of $2^N$ separate paths, so Monte Carlo may be faster for path-dependent options.  Finally, as we will discuss in @sec-s_curse, Monte Carlo may be faster for options on multiple assets.
-
-
-
-There is an important alternative method for calculating the sum @eq-binomialsum, which is usually called backward induction.  \index{backward induction} We will describe it here and implement it in the next section to value American options.  We begin at the last date, where there are $N+1$ nodes.   We calculate the option value at each of these nodes, storing the value at the bottom node as $C(0)$, the value at the next node up as $C(1)$, etc.  This is illustrated in the diagram on the next page.  Then we step back to the penultimate date.  At each node at this date, we calculate the option value as the discounted expectation of its value at the last date.  From each node, there are two nodes that can be reached at the next date, corresponding to a down move or an up move.  So, the option value is calculated as
-$$
-C = \mathrm{e}^{-r\Delta t}p\,C_{\text{up}} + \mathrm{e}^{-r\Delta t}(1-p)C_{\text{down}}\;.
-$$ {#eq-binomial001}
-
-In terms of the vector notation shown in the diagram on the following page, the down move from node $i$ is also node $i$ and the up move is $i+1$.  So, we write over the elements of the $C$ vector as
-$$
-C(i) = \mathrm{e}^{-r\Delta t}p\,C(i+1) + \mathrm{e}^{-r\Delta t}(1-p)C(i)\;.
-$$ {#eq-binomial002}
-
-Discounting back through the tree like this, we reach date 0 and return the option value as $C(0)$.  The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option.  This approach is essential for assessing the value of early exercise.
-
-## Binomial Models for American Options
-
-Early exercise \index{early exercise} features are very simple to handle in a binomial framework.  One only has to use the backward induction approach and check the optimality of early exercise at each node.  Exercise is optimal when the intrinsic value of the option exceeds the discounted expected value of the option contingent on not exercising.  When we back up in the tree, we check whether exercise is optimal, and, when it is, we replace the discounted expected value with the intrinsic value.  
-
-
-\begin{center}
-\setlength{\unitlength}{0.6cm}
-\begin{picture}(13,13)
-\put(-.5,6){$C(0)$}
-\put(1,6){\vector(1,1){2}}
-\put(1,6){\vector(1,-1){2}}
-\put(5,8){\vector(1,1){2}}
-\put(5,8){\vector(1,-1){2}}
-\put(9,10){\vector(1,1){2}}
-\put(9,10){\vector(1,-1){2}}
-\put(5,4){\vector(1,1){2}}
-\put(5,4){\vector(1,-1){2}}
-\put(9,6){\vector(1,1){2}}
-\put(9,6){\vector(1,-1){2}}
-\put(9,2){\vector(1,1){2}}
-\put(9,2){\vector(1,-1){2}}
-\put(3.5,8){$C(1)$}
-\put(3.5,4){$C(0)$}
-\put(7.5,2){$C(0)$}
-\put(7.5,6){$C(1)$}
-\put(7.5,10){$C(2)$}
-\put(11.5,0){$C(0)$}
-\put(11.5,4){$C(1)$}
-\put(11.5,8){$C(2)$}
-\put(11.5,12){$C(3)$}
-\end{picture}
-\end{center}
-
-Early exercise is more important for puts than for calls (as discussed in @sec-s_fundamentalconcepts, an American call on a non-dividend-paying stock should not be exercised early) so we will change our symbol for the option value from $C$ to $P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
-$$
-P(i) = \max\left(0,K-u^{i}d^{N-i}S\right)\;,
-$$ {#eq-binomial003}
-
-for $i=0,\ldots,N$.  For a European put, we would also back up in the tree in accord with  @eq-binomial002:
-$$
-P(i) = \mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}^{-r\Delta t}(1-p)P(i)\;.
-$$ {#eq-binomial004}
-
-To accommodate early exercise, we simply need to assign to $P(i)$ the larger of this value and the value of early exercise.  At node $i$ at date $n$ the stock price is
-$u^{i}d^{n-i}S$ and the intrinsic value of a put option is $\max(0,K-u^{i}d^{n-i}S)$.  Therefore we replace @eq-binomial004 with
-$$
-P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}^{-r\Delta t}(1-p)P(i)\big)\;.
-$$ {#eq-binomial005}
-
-This will be explained in more detail in @sec-s_introcompvba.
-
-## Binomial Parameters {#sec-s_binomialparameters}
-
-
-Several different ways have been proposed for matching the binomial model to the continuous-time model.  Consider an $N$--period binomial model for a time period of $T$ years.  This means that the length of each period is $\Delta t = T/N$.  In the continuous-time model, over a discrete time period $\Delta t$, we have
-$$\Delta \log S =\mathrm{n}u\,\Delta t + \sigma\,\Delta B\; ,$$
-where $\mathrm{n}u = r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-neutral measure.  The mean and variance, under the risk-neutral measure, of $\Delta \log S$ in the continuous-time model are
+We begin with a brief review of basic statistics.
+Given a random sample $\{x_1,\ldots,x_N\}$ of size $N$ from a population with mean $\mu$ and variance $\sigma^2$, the best estimate of $\mu$ is of course the sample mean 
+$$\bar{x} = \frac{1}{N}\sum_{i=1}^{N}x_i\; .$$
+The variance is the expected value of $(x-\mu)^2$, so an obvious estimate of the variance is the sample average of $(x_i-\mu)^2$, replacing $\mu$ with its estimate $\bar{x}$.  This would be
+$$\frac{1}{N}\sum_{i=1}^{N} (x_i-\bar{x})^2$$
+However, because $\bar{x}$ is computed from the $x_i$, the $x_i$ will deviate less on average from $\bar{x}$ than they do from the true mean $\mu$.  Hence the estimate proposed above will on average be less than $\sigma^2$.  To eliminate this bias, it suffices just to scale the estimate up by a factor of $N/(N-1)$.  This leads to the estimate
+$$s^2=\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2\; ,$$
+and the best estimate of $\sigma$ is the square root
+$$s=\sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2}\; .$$
+To calculate $s^2$, notice that 
 \begin{align*}
-E^R[\Delta \log S] &= \mathrm{n}u\,\Delta t\; ,\\
-\mathrm{var}^R[\Delta \log S]&=\sigma^2\Delta t\; ,
+\sum_{i=1}^{N} (x_i-\bar{x})^2 &= \sum_{i=1}^{N} (x_i^2-2x_i\bar{x}+\bar{x}^2)\\
+&=\sum_{i=1}^{N} x_i^2 -2\bar{x}\sum_{i=1}^{N} x_i + \sum_{i=1}^N \bar{x}^2\\
+&=\sum_{i=1}^{N} x_i^2 -2\bar{x}(N\bar{x})+N\bar{x}^2\\
+&=\sum_{i=1}^{N} x_i^2 -N\bar{x}^2\;.
 \end{align*}
-so 
+Therefore
+$$s=\sqrt{\frac{1}{N-1}\left(\sum_{i=1}^{N} x_i^2-N\bar{x}^2\right)}\; .$$
+
+It is important to know how much variation there would be in $\bar{x}$ if one had access to multiple random samples.  More variation means that an $\bar{x}$ computed from a single sample will be a less reliable estimate of $\mu$.  The variance of $\bar{x}$ in repeated samples is $\sigma^2/N$,^[The variance of $\bar{x] = (1/N)(x_1 + \cdots + x_N)$ is, by independence of the $x_i$, equal to $(1/N)^2(\mathrm{var}{x_1} + \cdots + \mathrm{var}{x_N})$, and, because the $x_i$ all have the same variance $\sigma^2$, this is equal to $(1/N)^2 \times N\sigma^2 = \sigma^2/N$.} and our best estimate of this variance is $s^2/N$.  The standard deviation of $\bar{x}$ in repeated samples, which is called the standard error of \index{standard error} $\bar{x}$, is $\sigma/\sqrt{N}$, and we estimate this by $s/\sqrt{N}$, which equals
+$$\sqrt{\frac{1}{N(N-1)}\left(\sum_{i=1}^{N} x_i^2-N\bar{x}^2\right)}\; .$$
+If the population from which $x$ is sampled has a normal distribution, then a 95\% confidence interval for $\mu$ will be $\bar{x}$ plus or minus 1.96 standard errors.  Even if $x$ does not have a normal distribution, by the Central Limit Theorem, $\bar{x}/\sqrt{N}$ will be approximately normally distributed if the sample size $N$ is large enough, and plus or minus 1.96 standard errors will still be approximately a 95\% confidence interval for $\mu$. \index{confidence interval}
+
+## Estimating a Constant Volatility and Mean {#sec-s_estimatingvolatility}
+
+Consider an asset price that is a geometric Brownian motion under the actual probability measure:
+$$\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\; ,$$
+where $\mu$ and $\sigma$ are unknown constants and $B$ is a Brownian motion.  We can as usual write this in log form as
+$$\mathrm{d}\log S = \left(\mu-\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .$$
+Over a discrete time period of length $\Delta t$, this implies
+$$
+\Delta \log S = \left(\mu-\frac{1}{2}\sigma^2\right)\Delta t + \sigma \Delta B\;.
+$$ {#eq-dlogs}
+
+Suppose we have observed the asset price $S$ at dates $0=t_0<t_1<\cdots< t_N=T$, where $t_i-t_{i-1}=\Delta t$.  If the asset pays dividends, we will take $S$ to be the value of the portfolio in which the dividends are reinvested in new shares.  Thus, in general, $S(t_i)/S(t_{i-1})$ denotes the gross return (one plus the rate of return) between dates $t_{i-1}$ and $t_i$.  This return is measured on a non-compounded and non-annualized basis.  The annualized continuously-compounded rate of return is the rate $r_i$ defined by 
+$$\frac{S(t_i)}{S(t_{i-1})} = \mathrm{e}^{r_i\Delta t}\; .$$
+This implies that
+$$
+r_i = \frac{\log S(t_i)-\log S(t_{i-1})}{\Delta t} = \mu-\frac{1}{2}\sigma^2 + \sigma \frac{B(t_i)-B(t_{i-1})}{\Delta t}\;.
+$$ {#eq-contcompreturn}
+
+Because $B(t_i)-B(t_{i-1})$ is normally distributed with mean zero and variance $\Delta t$, the sample $\{r_1,\ldots,r_N\}$ is a sample of independent random variables each of which is normally distributed with mean $\mu-\sigma^2/2$ and variance $\sigma^2/\Delta t$.  We are focused on estimating $\sigma^2$, so it will simplify things to define
+$$
+y_i = r_i\sqrt{\Delta t} = \frac{\log S(t_i)-\log S(t_{i-1})}{\sqrt{\Delta t}}\;.
+$$ {#eq-volyi}
+
+The sample $\{y_1,\ldots,y_N\}$ is a sample of independent random variables each of which is normally distributed with mean $(\mu-\sigma^2/2)\sqrt{\Delta t}$ and variance $\sigma^2$.
+As was discussed in the previous section, the best estimate of the mean of $y$ is the sample mean
+$$\bar{y} = \frac{1}{N}\sum_{i=1}^{N}y_i\; ,$$
+and the best estimate of $\sigma^2$ is
+$$\hat{\sigma}^2 = \frac{1}{N-1}\sum_{i=1}^{N} (y_i-\bar{y})^2\; .$$
+This means that we estimate $\mu$ as
+$$\hat{\mu} = \frac{\bar{y}}{\sqrt{\Delta t}} + \frac{1}{2}\hat{\sigma}^2 = \bar{r}+ \frac{1}{2}\hat{\sigma}^2\; .$$ 
+
+Let us digress for a moment to discuss the reliability of $\hat{\mu}$ as an estimate of $\mu$.  Notice that 
+
+$$
+\bar{r} 
+= \frac{\sum_{i=1}^N \log S(t_i)-\log S(t_{i-1})}{N\Delta t}
+$$
+$$
+=   \frac{\log S(T)-\log S(0)}{N\Delta t}
+$$
+$$
+ = \frac{\log S(T)-\log S(0)}{T}\;.
+$$ {#eq-volrbar}
+
+
+Therefore the first component $\bar{r}$ of the estimate of $\mu$ depends only on the total change in $S$ over the time period.  Hence, the reliability of this component cannot depend on how frequently we observe $S$ within the time period $[0,T]$.  The standard deviation of $\bar{r}$ in repeated samples
+is the standard deviation of $[\log S(T)-\log S(0)]/T$, which is $\sigma/\sqrt{T}$.  This is likely to be quite large.  For example, with $\sigma =0.3$ and ten years of data ($T=10$), the standard deviation of $\bar{r}$ is 9.5\%, which means that a 95\% confidence interval will be a band of roughly 38\%.  Given that $\mu$ itself should be of the order of magnitude of 10\%, such a wide confidence interval is useless for all practical purposes.
+
+Fortunately, it is easier to estimate $\sigma$.  We observed in the previous section that the $\hat{\sigma}^2$ defined above can be calculated as
+$$
+\frac{1}{N-1}\sum_{i=1}^N y_i^2 - \frac{N\bar{y}^2}{N-1}\;.
+$$ {#eq-estimator_sig2}
+
+From @eq-volyi of $y_i$ and @eq-volrbar, we have
+$$\bar{y} =  \frac{\sqrt{\Delta t}}{T}[\log S(T)-\log S(0)]\; .$$
+Hence, the second term in @eq-estimator_sig2 is
+$$ \frac{N}{N-1}\left(\frac{\Delta t}{T^2}\right)[\log S(T)-\log S(0)]^2\; .$$
+If we observe the stock price sufficiently frequently, so that $\Delta t$ is very small, this term will be negligible.  In this circumstance,  $\hat{\sigma}^2$ is approximately
+
+$$
+\frac{1}{N-1}\sum_{i=1}^N y_i^2 = \frac{1}{N-1}\sum_{i=1}^N \frac{[\log S(t_i)-\log S(t_{i-1})]^2}{\Delta t}
+$$
+$$
+= \frac{N}{N-1}\times \frac{1}{T}\times \sum_{i=1}^N [\log S(t_i)-\log S(t_{i-1})]^2 \;.
+$$ {#eq-estimator_sig2_3}
+
+
+If we observe $S$ more and more frequently, letting $\Delta t \rightarrow 0$ and $N \rightarrow \infty$, the sum 
+$$\sum_{i=1}^N [\log S(t_i)-\log S(t_{i-1})]^2$$
+will converge with probability one to $\sigma^2T$, as explained in @sec-s_quadraticvariation.  This implies that $\hat{\sigma}^2$ will converge to $\sigma^2$.  Thus, in theory, we can estimate $\sigma^2$ with any desired degree of precision by simply observing $S$ sufficiently frequently.  This is true no matter how short the overall time period $[0,T]$ may be.  
+
+In practice, this doesn't work out quite so well.  If we observe minute-by-minute data, or we observe each transaction, much of the variation in the price $S$ will be due to bouncing back and forth between the bid price and the ask price.  This is not really what we want to estimate, and this source of variation will be much less important if we look at weekly or even daily data.  So, there are practical limits to how frequently we should observe $S$.  Nevertheless, it is still true that, if $\sigma^2$ were truly constant, we could estimate it with a very high degree of precision.
+In fact, we can estimate the volatility of a stock with enough precision to determine that it really isn't constant!  The real problem that we face is to estimate and model a changing volatility.  
+
+## Estimating a Changing Volatility
+Without attempting yet to model how the volatility may change, we can say a few things about how we might estimate a changing volatility.  In this and following sections, we will take the observation interval $\Delta t$ to be fixed.  We assume it is small (say, a day or a week) and focus on the estimate @eq-estimator_sig2_3.  Recall from @sec-s_statistics that the reason we are dividing by $N-1$ rather than $N$ is that the sample standard deviation usually underestimates the actual standard deviation, because it uses the sample mean, which will be closer to the points $x_i$ than will be the true mean.  However, @eq-estimator_sig2_3 does not employ the sample mean (it replaces it with zero), so there is no reason to make this correction.  So, we take as our point of departure the estimate
+$$\frac{1}{T} \sum_{i=1}^N [\log S(t_i)-\log S(t_{i-1})]^2 = \frac{1}{N}\sum_{i=1}^N y_i^2 \; .$$
+An obvious response to the volatility changing over time is simply to avoid using data from the distant past.  Such data is not likely to be informative about the current value of the volatility.  What distant should mean in this context is not entirely clear, but, for example, we might want to use only the last 60 observations.  If we are using daily data, this would mean that at the end of each day we would add that day's observation and drop the observation from 61 days past.  This leads to a somewhat abruptly varying estimate.  For example, a very large movement in the price on a particular day increases the volatility estimate for the next 60 days.  On the 61st day, this observation would drop from the sample, leading to an abrupt drop in the estimate (presuming that there is not an equally large change in $S$ on the 61st day).  This seems unreasonable.  An estimate in which the impact of each observation decays smoothly over time is more attractive.  
+
+We can construct such an estimate as
+$$
+\hat{\sigma}^2_{i+1} = (1-\lambda) y_{i}^2 + \lambda\hat{\sigma}^2_{i}
+$$ {#eq-sig_estimator4}
+
+for any constant $0<\lambda<1$.
+Here, $\hat{\sigma}^2_{i+1}$ denotes the estimate of the volatility from date $t_{i}$ to date $t_{i+1}$.  The estimate @eq-sig_estimator4 is a weighted average of the estimate $\hat{\sigma}^2_{i}$ for the previous time period and the most recently observed squared change $y_{i}^2$.  Following the same procedure, the next estimate will be
 \begin{align*}
-\frac{E^R[\Delta \log S]}{\Delta t} &= \mathrm{n}u\; ,\\
-\frac{\mathrm{var}^R[\Delta \log S]}{\Delta t}&=\sigma^2\;.
+\hat{\sigma}^2_{i+2}& = (1-\lambda) y_{i+1}^2 + \lambda\hat{\sigma}^2_{i+1}\\
+&= (1-\lambda) y_{i+1}^2 + \lambda(1-\lambda)  y_{i}^2 + \lambda^2\hat{\sigma}^2_{i}\;.
 \end{align*}
-In the binomial model, we have
+Likewise, the estimate at the following date will be
+$$\hat{\sigma}^2_{i+3} = (1-\lambda) y_{i+2}^2 +\lambda(1-\lambda) y_{i+1}^2 + \lambda^2(1-\lambda)^2  y_{i}^2 +\lambda^{3}\hat{\sigma}^2_{i}\; .$$
+This demonstrates the declining importance of the squared deviation $y_{i}^2$ for future estimates.  At each date, $y_{i}^2$ enters with a weight that is lower by a factor of $\lambda$, compared to the previous date. 
+If $\lambda$ is small, the decay in the importance of each squared deviation will be fast.  In fact, @eq-sig_estimator4 shows that, if $\lambda$ is close to zero, the estimate $\hat{\sigma}_{i+1}^2$ is approximately equal to the squared deviation $y_i^2$---previous squared deviations are relatively unimportant.  On the other hand, if $\lambda$ is close to one, the decay will be slow; i.e., the importance of $y_i^2$ for the estimate $\hat{\sigma}^2_{i+2}$ will be nearly the same as for $\hat{\sigma}^2_{i+1}$, and nearly the same for $\hat{\sigma}^2_{i+3}$ as for $\hat{\sigma}^2_{i+2}$, etc.   This will lead to a smooth (slowly varying) volatility estimate.  The slowly varying nature of the estimate in this case is also clear from @eq-sig_estimator4, because it shows that if $\lambda$ is close to one, then $\hat{\sigma}^2_{i+1}$ will be approximately the same as $\hat{\sigma}^2_{i}$.
+
+This method can also be used to estimate covariances, simply by replacing the squared deviations $y_i^2$ by the product of deviations for two different assets.  And, of course, given covariance and variance estimates, we can construct estimates of correlations.  To ensure that an estimated correlation is between $-1$ and $+1$, we will need to use the same $\lambda$ to estimate each of the variances and the covariance.  This is the method used by RiskMetrics.^[See Mina and Xiao [@MX], available online at \emph{www.riskmetrics.com].} \index{RiskMetrics}
+
+## GARCH Models {#sec-s_garch}
+
+We are going to adopt a subtle but important change of perspective now.  Instead of considering @eq-sig_estimator4 as simply an estimation procedure, we are going to assume that the actual volatility evolves according to @eq-sig_estimator4, or a generalization thereof.  We are also going to reintroduce the expected change in $\log S$, which we dropped in going from @eq-estimator_sig2 to @eq-estimator_sig2_3.  Specifically, we return to @eq-dlogs, but we operate under the risk-neutral measure, so 
+$\mu=r-q$, and we have
+$$
+\log S(t_{i+1}) - \log S(t_i) = \left(r-q-\frac{1}{2}\sigma_{i+1}^2\right)\Delta t + \sigma_{i+1} \Delta B\;.
+$$ {#eq-dlogs2}
+
+We assume the volatility $\sigma_{i+1}$ between dates $t_i$ and $t_{i+1}$ is given by
+$$
+\sigma_{i+1}^2 = a + b y_{i}^2 + c \sigma_i^2\;,
+$$ {#eq-garch}
+
+for some constants $a > 0$, $b\geq 0$ and $c\geq 0$, with $y_i$ now defined by
+$$y_i = \frac{\log S(t_i)-\log S(t_{i-1})-\left(r-q-\frac{1}{2}\sigma_i^2\right)\Delta t}{\sqrt{\Delta t}}\; .$$
+From @eq-dlogs2, applied to the period from $t_{i-1}$ to $t_i$, this implies that $y_i$ is normally distributed with mean zero and variance $\sigma_i^2$, and of course $y_{i+1}$ has variance $\sigma_{i+1}^2$, etc.  
+Under these assumptions, the random process $\log S$ is called a \index{GARCH process} GARCH(1,1) process.^[GARCH is the acronym for Generalized Autoregressive Conditional Heteroskedastic.  GARCH(1,1) means that there is only one past $y$  (no $y_{i-1]$, $y_{i-2}$, etc.) and one past $\sigma$ (no  $\sigma_{i-1}$, $\sigma_{i-2}$, etc.) in  @eq-garch.  See Bollerslev [@Bollerslev].}  There are many varieties of GARCH processes that have been proposed in the literature, but we will only consider GARCH(1,1), which is the simplest.
+
+We assume $b+c<1$, in which case we can write the variance equation as a generalization of @eq-sig_estimator4.  Namely,
+%$$\sigma_{i+1}^2 = (1-\phi)d + \phi\left[(1-\lambda) y_{i}^2 + \lambda \sigma^2_{i}\right]\; ,$$
+$$
+\sigma_{i+1}^2 = \kappa\theta + (1-\kappa)\left[  (1-\lambda) y_{i}^2 + \lambda\sigma^2_{i}\right]\;,
+$$ {#eq-garch10}
+
+where $\lambda=c/(b+c)$, 
+%$\phi=b+c$, and $d=a/(1-b-c)$.  
+$\kappa = 1-b-c$, and $\theta=a/(1-b-c)$.  Hence, $\sigma_{i+1}^2$ is a weighted average with weights $\kappa$ and $1-\kappa$, of two parts, one being the constant $\theta$ and the other being itself a weighted average of $y_{i}^2$ and $\sigma^2_{i}$.  Whatever the variance might be at time $t_i$, the variance of $y_j$ at any date $t_j$ far into the future, computed without knowing the intervening $y_{i+1}, y_{i+2},\ldots$, will be approximately the constant $\theta$.  The constant $\theta$ is called the unconditional variance, \index{unconditional variance} whereas $\sigma_{i}^2$ is the conditional variance of $y_i$.  \index{conditional variance}
+
+To understand the unconditional variance, it is useful to consider the variance forecasting equation.  Specifically, we can calculate $E_{t_i} \left[\sigma_{i+n}^2\right]$, which is the estimate made at date $t_i$ of the variance of $y_{i+n}$; i.e, we estimate the variance without having observed $y_{i+1},\ldots,y_{i+n-1}$.  Note that by definition $E_{t_{i}}[y_{i+1}^2]=\sigma_{i+1}^2$, so @eq-garch10 implies
 \begin{align*}
-\frac{E^R\big[\Delta \log S\big]}{\Delta t} &=\frac{p\,\log u+(1-p)\log d}{\Delta t}\; ,\\
-\frac{\mathrm{var}^R\big[\Delta \log S\big] }{\Delta t}&=\frac{p\,(1-p)(\log u-\log d)^2}{\Delta t}\;.
+E_{t_{i}}\left[\sigma_{i+2}^2\right] &= \kappa\theta + (1-\kappa)\left[  (1-\lambda) E_{t_{i}}[y_{i+1}^2] + \lambda\sigma^2_{i+1}\right] \\
+&= \kappa\theta + (1-\kappa)\sigma^2_{i+1}\; .
 \end{align*}
-In order for the binomial model to converge in the appropriate sense to the continuous-time model as the number of periods $N \rightarrow \infty$ keeping the total amount of time $T$ fixed (equivalently, as $\Delta t \rightarrow 0$), it is sufficient that
+Likewise,
+$$E_{t_{i+1}}\left[\sigma_{i+3}^2\right] = \kappa\theta + (1-\kappa)\sigma^2_{i+2}\; ,$$
+and taking the expectation at date $t_i$ of both sides of this yields
 \begin{align*}
-\frac{p\log u+(1-p)\log d}{\Delta t} &\rightarrow \mathrm{n}u\; ,\\
-\frac{p\,(1-p)(\log u-\log d)^2}{\Delta t} &\rightarrow \sigma^2\;.
+E_{t_{i}}\left[\sigma_{i+3}^2\right] = E_{t_{i}}\left[E_{t_{i+1}}\left[\sigma_{i+3}^2\right]\right] &=\kappa\theta + (1-\kappa)E_{t_{i}}\left[\sigma_{i+2}^2\right]\\
+&=\kappa\theta + (1-\kappa)\left[\kappa\theta + (1-\kappa)\sigma^2_{i+1}\right]\\
+&=\kappa\theta[1+(1-\kappa)] + (1-\kappa)^2\sigma^2_{i+1}\;.
 \end{align*}
-
-
-The most popular model is probably that proposed by Cox, Ross and Rubinstein [@CRR], \index{Cox-Ross-Rubinstein model} who set $d=1/u$ and 
-
-
-$$
-u = \mathrm{e}^{\sigma\sqrt{\Delta t}}\;,
-$$ {#eq-crru}
-
-$$
-p = \frac{\mathrm{e}^{(r-q)\Delta t}-d}{u-d}\;.
-$$ {#eq-crrp}
-
-
-
-Another well-known model is that of Jarrow and Rudd [@JR], \index{Jarrow-Rudd model} who take $p=1/2$ and
-
-
-$$
-u = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t + \sigma\sqrt{\Delta t}\right)\;,
-$$ {#eq-jru}
-
-$$
-d = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t - \sigma\sqrt{\Delta t}\right)\;.
-$$ {#eq-jrd}
-
-
-
-Yet another method is proposed by 
- Leisen and Reimer [@LR], \index{Leisen-Reimer model} and Jackson and Staunton [@JS]  show that it is more efficient for approximating the Black-Scholes value of a European option than are the Cox-Ross-Rubinstein and Jarrow-Rudd trees.
-
-For illustration,  the Cox-Ross-Rubinstein tree will be implemented in @sec-s_introcompvba.  However, when we consider binomial models for multiple assets in @sec-c_montecarlo, we will use the tree proposed by Trigeorgis [@Trigeorgis], \index{Trigeorgis model} because it is the simplest to explain in that context.
-Trigeorgis proposes choosing $p$, $u$ and $d$ so that the mean and variance of $\Delta \log S$ in the binomial model match those in the continuous-time model exactly.  This means that
-
-\begin{align*}
-\frac{p\log u+(1-p)\log d}{\Delta t} &= \mathrm{n}u\; ,\\
-\frac{p(1-p)(\log u-\log d)^2}{\Delta t} &= \sigma^2\;.
-\end{align*}
-
-These are two equations in the three unknowns, leaving one degree of freedom, so Trigeorgis takes $d=1/u$, as do Cox, Ross and Rubinstein.  As we will show in the next section, taking $d=1/u$ simplifies the calculations of deltas and gammas.
-Solving these two equations yields^[Notice that if we were to drop the $(\Delta t)^2$ term in @eq-trig1 (which we could do because it becomes increasingly negligible as $\Delta t \rightarrow 0)$, then  @eq-trig1 would be the same as @eq-crru.  The different choices of $p$ in @eq-crrp and @eq-trig2 can be understood as follows.  Equation @eq-crrp implies that the expected stock price
-$pS_u + (1-p)S_d$ equals $\mathrm{e]^{(r-q)\Delta t}S$, so we have average growth at the rate $r-q$ as in the continuous-time model.  On the other hand,  @eq-trig2 implies that the expected \emph{log} stock price $p \,\log S_u + (1-p) \log S_d$ equals $\log S + \mathrm{n}u \Delta t$, so the expected change in the logarithm is $\mathrm{n}u\Delta t$, also as in the continuous-time model.  Thus, both match the binomial model to the continuous-time model, the Cox-Ross-Rubinstein method focusing on the expected return (equivalently, the expected change in the price of the underlying) and the Trigeorgis method focusing on the expected continuously-compounded return (the expected change in the logarithm of the price).}
-
-
-$$
-\log u=\sqrt{\sigma^2\Delta t + \mathrm{n}u^2(\Delta t)^2}\;,
-$$ {#eq-trig1}
-
-$$
-p = \frac{1}{2}+\frac{\mathrm{n}u\Delta t}{2\log u}\;.
-$$ {#eq-trig2}
-
-
-
-
-
-
-
-
-
-## Binomial Greeks {#sec-s_binomial_greeks}
-
-To estimate Greeks in any valuation model, one can run the valuation program twice, for two different parameter values, and then estimate the Greek as the difference in value divided by the difference in parameters.   For example, to estimate vega when the volatility of the underlying is $\sigma$, we could estimate the derivative value for a volatility of $0.99\sigma$ and for a volatility of $1.01\sigma$.  Denoting the former derivative value by $C_d$ and the latter by $C_u$, the vega can be estimated by 
-$$\frac{C_u-C_d}{1.01\sigma-0.99\sigma} = \frac{C_u-C_d}{0.02\sigma}\; .$$  We can in principle obtain a more precise estimate of the derivative by making a smaller change in the parameter (e.g., using $0.999\sigma$ and $1.001\sigma$) but computer round-off errors limit how small a parameter change one should take in practice.  
-
-To estimate the gamma when the price of the underlying is $S$, we need to estimate the derivative value at two other prices for the underlying, which we will call $S_u$ and $S_d$, with  $S_u>S>S_d$.  As just explained, the estimate of the delta (which we continue to denote by $\delta$) would be
-$$
-\delta = \frac{C_u-C_d}{S_u-S_d}\;,
-$$ {#eq-binomialdelta100}
-
-where $C_u$ denotes the derivative value when the underlying is equal to $S_u$ and $C_d$ denotes the derivative value when the underlying is equal to $S_d$.
-Letting $C$ denote the derivative value when the underlying is equal to $S$, two other obvious estimates of the delta are
-$$\delta_u = \frac{C_u-C}{S_u-S} \qquad \text{and} \qquad \delta_d = \frac{C-C_d}{S-S_d}\; .$$
-The first of these should be understood as an estimate of the delta when the price of the underlying is at the midpoint of $S_u$ and $S$, and the second is an estimate of the delta when the price of the underlying is at the midpoint of $S_d$ and $S$.  The distance between these midpoints is 
-$$\frac{S_u+S}{2} - \frac{S_d+S}{2} = \frac{S_u-S_d}{2}\; ,$$ so we obtain an estimate of $\Gamma$ (the derivative of $\delta$) as
-$$
-\Gamma = \frac{\delta_u-\delta_d}{(S_u-S_d)/2}\;.
-$$ {#eq-binomialgamma100}
-
-
-
-In a binomial model, it is possible to compute the most important Greeks, delta and gamma, more efficiently than by simply running the valuation program several times. 
-Assume we have taken $d=1/u$, so after an up and a down move (or a down and an up move) the stock price returns to its initial value $S$.  After fixing the length $\Delta t = T/N$ of each time period, we redefine $N=N+2$.  This results in an $N+2$ period tree covering a time period of length $T+2\Delta t$.
-Now consider the tree starting two periods from the initial date.  At the middle node shown below, the stock price is $udS=S$.  Ignoring the top and bottom nodes and the branches that follow them, the result of adding two periods is that the tree starting from $udS$ is an $N$--period tree for a time period of length $T$.  
-\begin{center}
-\setlength{\unitlength}{0.6cm}
-\begin{picture}(13,13)
-\put(9,10){\vector(1,1){2}}
-\put(9,10){\vector(1,-1){2}}
-\put(9,6){\vector(1,1){2}}
-\put(9,6){\vector(1,-1){2}}
-\put(9,2){\vector(1,1){2}}
-\put(9,2){\vector(1,-1){2}}
-\put(7.5,2){$d^2S$}
-\put(7.5,6){$udS$}
-\put(7.5,10){$u^2S$}
-\put(11.5,0){$d^3S$}
-\put(11.5,4){$ud^2S$}
-\put(11.5,8){$du^2S$}
-\put(11.5,12){$u^3S$}
-\end{picture}
-\end{center}
-Hence, the derivative price calculated at the middle node will be the price we are trying to estimate.  The derivative price at the top node will be the value of a derivative of maturity $T$ when the initial price of the underlying is $u^2S$.  Similarly, the derivative price at the bottom node will be the value of a derivative of maturity $T$ when the initial price of the underlying is $d^2S$.  Thus, when we back up in the tree to this date, we will have all of the information we need to return an estimate of the derivative value and to return estimates of the delta and gamma, taking $S_u=u^2S$ and $S_d = d^2S$ in equations  @eq-binomialdelta100 and @eq-binomialgamma100.  We are not interested in the tree to the left of what is shown above.
-
-## Monte Carlo Greeks I: Difference Ratios {#sec-s_montecarlogreeks1}
-
-As with binomial models, Greeks can be calculated by Monte Carlo by running the valuation program twice and computing a difference ratio, for example $(C_u-C_d)/(S_u-S_d)$ to estimate a delta.  However, to minimize the error, and minimize the number of computations required, one should use the same set of random draws to estimate the derivative value for different values of the parameter.  For path-independent options (e.g., European puts and calls) under the Black-Scholes assumptions, we only need to generate $S(T)$ and then we can compute $S_u(T)$ as $[S_u(0)/S(0)] \times S(T)$ and $S_d(T)$ as $[S_u(0)/S(0)] \times S(T)$.  We can estimate standard errors for the Greeks in the same way that we estimate the standard error of the derivative value.  
-
-Actually, there is often a better method available that is just as simple.  This is called pathwise calculation.  We will explain this in the next section.   Here we will describe how to estimate the delta and gamma of a derivative as sample means of difference ratios.
-
-Consider  initial prices for the underlying $S_u>S>S_d$.  Denote the underlying price at the option maturity in a given simulation by $S_u(T)$  when the initial underlying price is $S_u$, by $S(T)$  when the initial underlying price is $S$, and by $S_d(T)$  when the initial underlying price is $S_d$.   Under the Black-Scholes assumptions, the logarithm of the stock price at date $T$ starting from the three initial prices $S_d$, $S$ and $S_u$ is
-\begin{align*}
-\log S_d(T) &= \log S_d + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\; ,\\
-\log S(T) &= \log S + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\; ,\\
-\log S_u (T) &= \log S_u + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\;,
-\end{align*}
-so 
-$$\log S_d(T) = \log S(T) + \log S_d - \log S\Longrightarrow S_d(T) = \left(\frac{S_d}{S}\right) S(T)\; ,$$
-and
-$$\log S_u(T) = \log S(T) + \log S_u - \log S \Longrightarrow S_u(T) = \left(\frac{S_u}{S}\right) S(T)\; .$$
-Therefore, under the Black-Scholes assumptions, we only need to simulate $S(T)$ and then perform the multiplications indicated above to obtain $S_d(T)$ and $S_u(T)$. 
-
-Consider a particular simulation and let $C_d(T)$ denote the value of the derivative at maturity  when the initial asset price is $S_d$, let  $C(T)$ denote the value of the derivative at maturity  when the initial asset price is $S$, and let $C_u(T)$ denote the value of the derivative at maturity  when the initial asset price is $S_u$.  For path-independent derivatives under the Black-Scholes assumptions, these can be computed directly from the simulation of $S(T)$ as just described.  However, the following applies to general European derivatives under general assumptions about the underlying asset price (for example, it could follow a GARCH process).
-
-The estimates $C_d$, $C$ and $C_u$ of the date--0 derivative values, for the different initial prices of the underlying, are the discounted sample means of the $C_d(T)$, $C(T)$ and $C_u(T)$.
-One way to estimate the delta is $(C_u-C_d)/(S_u-S_d)$.  This is a difference of discounted sample means, multiplied by the reciprocal of $S_u-S_d$.  Equivalently, it is the sample mean of the differences $C_u(T)-C_d(T)$, multiplied by $\mathrm{e}^{-rT}/(S_u-S_d)$.  As a sample mean, its standard error can be estimated as described in @sec-c_stochasticvolatility.   The standard error is
-$$\frac{\mathrm{e}^{-rT}}{S_u-S_d}\sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^M \left[C_{ui}(T)-C_{di}(T)\right]^2 - M\left[\overline{C_{u}(T)}-\overline{C_{d}(T)}\right]^2\right)}\; ,$$ \index{standard error}
-where the overline denotes the sample mean and where $C_{ui}(T)$ [respectively, $C_{di}(T)$] denotes the value of the derivative at maturity in simulation $i$ when the initial asset price is $S_u$ [respectively, $S_d$].
-
-The corresponding Monte Carlo estimate of the gamma is also a sample mean.  Simple algebra shows that @eq-binomialgamma100 is equivalent to
-$$
-\Gamma = \frac{2}{(S_u-S)(S_u-S_d)}C_u - \frac{2}{(S_u-S)(S-S_d)}C +\frac{2}{(S-S_d)(S_u-S_d)}C_d\;.
-$$ {#eq-binomialgamma200}
-
-Normally one would take $S_u=(1+\alpha)S$ and $S_d = (1-\alpha)S$ for some $\alpha$ (e.g., $\alpha=0.01$).  In this case  @eq-binomialgamma200
-simplifies to
-$$
-\Gamma = \frac{C_u - 2C + C_d}{\alpha^2S^2}\;,
-$$ {#eq-binomialgamma300}
-
-and the standard error of the gamma is
-\begin{multline*}\frac{\mathrm{e}^{-rT}}{\alpha^2S^2}\sqrt{\frac{1}{M(M-1)}}\\
-\times \sqrt{\sum_{i=1}^M \left[C_{ui}(T)-2C_i(T)+C_{di}(T)\right]^2 -M\left[\overline{C_{u}(T)}-2\overline{C(T)}+\overline{C_{d}(T)}\right]^2}\; .
-\end{multline*}
-
-
-## Monte Carlo Greeks II: Pathwise Estimates {#sec-s_montecarlogreeks2}
-We will examine the bias in the Monte Carlo delta estimate discussed in the preceding section and explain  pathwise estimation of Greeks. By biased, we mean that the expected value of an estimate is different from the true value. \index{bias} It is important to recognize that if a Monte Carlo estimate is biased, then, even if a large number of simulations is used and the standard error is nearly zero, the answer provided by the Monte Carlo method will be incorrect.   For simplicity, consider a European call under the Black-Scholes assumptions.  
-
-The delta estimate we have considered is the discounted sample mean of 
-$$
-\frac{C_u(T) - C_d(T)}{S_u-S_d}\;.
-$$ {#eq-montecarlodelta2}
-
-This ratio takes on one of three values, depending on $S(T)$:
-
-
-- If $S_u(T) \leq K$ then the option is out of the money in both the up and down cases; i.e., 
-$$C_u(T) = C_d(T) = 0\; ,$$
-so the ratio @eq-montecarlodelta2 is zero.
-- If $S_d(T) \geq K$ then the option is in the money in both the up and down cases; i.e.,
-\begin{align*} C_u(T) &= S_u(T) - K =\left(\frac{S_u}{S}\right)S(T) - K\; ,\\
-C_d(T) &= S_d(T) - K = \left(\frac{S_d}{S}\right)S(T) - K\;,
-\end{align*}
-so the ratio  @eq-montecarlodelta2 equals $S(T)/S$.
-- If $S_u(T) > K > S_d(T)$, then the option is in the money in only the up case; i.e.,
-\begin{align*}
-C_u(T) &= S_u(T) - K = \left(\frac{S_u}{S}\right)S(T) - K\; ,\\
-C_d(T) &= 0\;,
-\end{align*}
-so the ratio @eq-montecarlodelta2 equals 
-$$\frac{\left(\frac{S_u}{S}\right)S(T) - K}{S_u-S_d} < \frac{S(T)}{S}\; .$$
-
-
-The bias is induced by the third case above.  We can see this as follows.  We are trying to estimate
-$$
-\frac{\partial }{\partial S} \mathrm{e}^{-rT}E^R \big[\max(0,S(T)-K)\big] = \mathrm{e}^{-rT}E^R  \left[ \frac{\partial }{\partial S} \max(0,S(T)-K)\right]\;.
-$$ {#eq-montecarlodelta4}
-
-The delta estimate $(C_u-C_d)/(S_u-S_d)$ replaces the mean $E^R$ with the sample mean and replaces
-$$
-\frac{\partial }{\partial S} \max(0,S(T)-K)
-$$ {#eq-montecarlodelta3}
-
-with the ratio @eq-montecarlodelta2.  The derivative @eq-montecarlodelta3 takes on two possible values, depending on $S(T)$---we can ignore the case $S(T)=K$ because it occurs with zero probability:
-
-
-- If $S(T) < K$, then $\max(0,S(T)-K) = 0$ and the derivative is zero.
-- If $S(T)>K$,  then $\max(0,S(T)-K) = S(T)-K$ and the derivative equals 
-$$\frac{\partial S(T)}{\partial S}=\mathrm{e}^{(r-q-\sigma^2/2)T + \sigma B(T)} = \frac{S(T)}{S}\; .$$
-
-Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}E^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c_blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c_blackscholes, $V(t)=\mathrm{e}^{qt}S(t)$ denotes the value of the non-dividend-paying portfolio created from the stock).] 
-$$
-\mathrm{e}^{-rT}E^R\left[\frac{S(T)}{S} x\right]\;,
-$$ {#eq-montecarlodelta5}
-
-where $x$ is the random variable defined as
-\begin{equation*}
-x =  \begin{cases} 1 & \text{if $S(T)>K$}\; ,\\
-0 & \text{otherwise}\;.
-\end{cases}
-\end{equation*}
- On the other hand, our  analysis of the ratio @eq-montecarlodelta2 shows that the expected value of the delta estimate $(C_u-C_d)/(S_u-S_d)$ is
-$$
-\mathrm{e}^{-rT}E^R\left[\frac{S(T)}{S} y\right] + \mathrm{e}^{-rT}E^R\left[\frac{S_uS(T)-SK}{S(S_u-S_d)}z\right]\;,
-$$ {#eq-montecarlodelta6}
-
-where
-\begin{align*}
-y &=  \begin{cases} 1 & \text{if $S_d(T)>K$}\; ,\\
-0 & \text{otherwise}\;.
-\end{cases}
-$$
-and
-$$
-z &=  \begin{cases} 1 & \text{if $S_u(T)>K>S_d(T)$}\; ,\\
-0 & \text{otherwise}\;.
-\end{cases}
-\end{align*}
-To contrast @eq-montecarlodelta5 and @eq-montecarlodelta6, note that if $y=1$ then $x=1$, so the term 
-$E^R\left[\frac{S(T)}{S} y\right]$ in @eq-montecarlodelta6 is part of @eq-montecarlodelta5.  However, there are two partially offsetting errors in @eq-montecarlodelta6: $z$ sometimes equals one when $x$ is zero, and when both $z$ and $x$ are one, then the factor multiplying $z$ is smaller than the factor multiplying $x$.  In any case, the expected value @eq-montecarlodelta6  is not the same as the true delta @eq-montecarlodelta5.  As noted before, this implies that the delta estimate will be incorrect even if its standard error is zero.  The bias can be made as small as one wishes by taking the magnitude $S_u-S_d$ of the perturbation to be small, but taking the perturbation to be very small will introduce unacceptable roundoff error.
-
-The obvious way to estimate the delta in this situation is simply to compute the discounted sample average of $[S(T)/S]x$.  This is called a pathwise estimate \index{pathwise Monte Carlo Greeks} of the delta, because it only uses the sample paths of $S(t)$ rather than considering up and down perturbations.  This method is due to Broadie and Glasserman [@bg2]. Because the pathwise estimate is a sample average, its standard error can be computed in the usual way.
-
-To compute pathwise estimates in other models and for other Greeks, we need the Greek to be an expectation as on the right-hand side of @eq-montecarlodelta4.  Additional examples can be found in  Glasserman [@Glasserman] and J\"ackel [@Jackel].
-
-
-
-
-
-
-## Calculations in VBA {#sec-s_introcompvba}
-
-### Monte Carlo Valuation of a European Call
-We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions.  We will also estimate the delta by each of the methods described in @sec-s_montecarlogreeks1 and~\ref{s_montecarlogreeks2}.  Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates.
-
-In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process.  To estimate the option delta as a difference ratio $(C_u-C_d)/(S_u-S_d)$, we use the perturbations $S_u = 1.01S$ and $S_d = 0.99S$.  The inputs are the same as for the Black-Scholes formula plus the sample size $M$ (the number of stock prices to be simulated).
-
-\addcontentsline{lof}{figure}{European Call MC}
+This generalizes to
+$$E_{t_{i}}\left[\sigma_{i+n}^2\right] = \kappa\theta\left[1+(1-\kappa)+ \cdots (1-\kappa)^{n-2}\right] + (1-\kappa)^{n-1}\sigma^2_{i+1}\; .$$
+Thus, there is decay at rate $\kappa$ in the importance of the current volatility $\sigma^2_{i+1}$ for forecasting the future volatility.  Furthermore, as $n\rightarrow \infty$, the geometric series
+$$1+(1-\kappa)+ \cdots (1-\kappa)^{n-2}$$
+converges to $1/\kappa$, so, as $n \rightarrow \infty$ we obtain
+$$E_{t_{i}}\left[\sigma_{i+n}^2\right] \rightarrow \theta\; .$$
+This means that our best estimate of the conditional variance, at some date far in the future, is approximately the unconditional variance $\theta$.
+
+The most interesting feature of the volatility equation is that large returns (in absolute value) lead to an increase in the variance and hence are likely to be followed by more large returns (whether positive or negative).  This is the phenomenon of volatility clustering, \index{volatility clustering} which is quite observable in actual markets.  This feature also implies that the distribution of returns will be fat tailed  (more technically, leptokurtic).  \index{leptokurtic} This means that the probability of extreme returns is higher than under a normal distribution with the same standard deviation.^[Conversely, the probability of returns very near the mean must also be higher than under a normal distribution with the same standard deviation---a fat-tailed distribution must also have a relatively narrow peak.]  It is well documented that daily and weekly returns in most markets have this fat-tailed property.
+
+We can simulate a path of an asset price that follows a GARCH process and the path of its volatility as follows.  The following macro produces three columns of data (with headings), the first column being time, the second  the asset price, and the third  the volatility.
+
+\addcontentsline{lof}{figure}{Simulating GARCH}
 \begin{verbatim}
-Function European_Call_MC(S, K, r, sigma, q, T, M)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            M = number of simulations
-'
-' This outputs the row vector (call value, delta 1, delta 2)
-'
-Dim LogS0,drift,SigSqrT,UpChange,DownChange,SumCall,SumCallChange
-Dim SumPathwise,LogS,LogSd,LogSu,CallV,CallVu,CallVd,i,Delta1,Delta2
-LogS0 = Log(S)
-drift = (r - q - 0.5 * sigma * sigma) * T
-SigSqrT = sigma * Sqr(T)
-UpChange = Log(1.01)
-DownChange = Log(0.99)
-SumCall = 0
-SumCallChange = 0
-SumPathwise = 0
-For i = 1 To M
-    LogS = LogS0 + drift + SigSqrT * RandN()     ' log S(T)
-    CallV = Application.Max(0, Exp(LogS) - K)    ' call value
-    SumCall = SumCall + CallV                    ' sum call values
-    LogSu = LogS + UpChange                          ' log Su(T)
-    CallVu = Application.Max(0, Exp(LogSu) - K)      ' call value
-    LogSd = LogS + DownChange                        ' Sd(T)
-    CallVd = Application.Max(0, Exp(LogSd) - K)      ' call value
-    SumCallChange = SumCallChange + CallVu - CallVd  ' differences
-    If Exp(LogS) > K Then
-        SumPathwise = SumPathwise + Exp(LogS) / S    ' for pathwise
-    End If
-Next i
-CallV = Exp(-r * T) * SumCall / M                      
-Delta1 = Exp(-r * T) * SumCallChange / (M * 0.02 * S)  
-Delta2 = Exp(-r * T) * SumPathwise / M                 
-European_Call_MC = Array(CallV, Delta1, Delta2)
-End Function
-\end{verbatim}
-
-### Monte Carlo Valuation in a GARCH Model
-
-For another example of Monte Carlo, we will value a European call option and estimate its standard error in a GARCH model.  The underlying asset price is simulated as in @sec-s_garch.  After each path of the underlying is simulated, we compute the date--T value of the option.  We sum these as the simulations proceed in order to compute the average value.  We also sum the squared date--~T option values in order to compute the standard error of the estimate of the date--0 option value.
-
-In addition to the inputs in the previous function, we input  the number $N$ of time periods in the interval $[0,T]$---implying a GARCH model for returns over time intervals of length $\Delta t = T/N$ under the risk-neutral measure---and the GARCH parameters $\kappa$, $\theta$, and $\lambda$. To value a different type of European derivative, we would simply modify the statement 
-\begin{center}
-\verb!CallV = Application.Max(0,Exp(LogS)-K)!.
- \end{center}
-
-\addcontentsline{lof}{figure}{European Call GARCH MC}
-\begin{verbatim}
-Function Eur_Call_GARCH_MC(S,K,r,sigma0,q,T,N,kappa,theta,lambda,M)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma0 = initial volatility
-'            q = dividend yield
-'            T = time to maturity
-'            N = number of time periods
-'            kappa = GARCH parameter
-'            theta = GARCH parameter
-'            lambda = GARCH parameter
-'            M = number of simulations
-'
-' This returns the row vector (call value, standard error).
-'
-Dim dt, Sqrdt, a, b, c, LogS0, SumCall, SumCallSq, LogS, sigma
-Dim y, CallV, StdError, i, j
-dt = T / N
+Sub Simulating_GARCH()
+Dim S, sigma, r, q, dt, theta, kappa, lambda, LogS, Sqrdt
+Dim a, b, c, y, i, N
+S = InputBox("Enter initial stock price")
+sigma = InputBox("Enter initial volatility")
+r = InputBox("Enter risk-free rate")
+q = InputBox("Enter dividend yield")
+dt = InputBox("Enter length of each time period (Delta t)")
+N = InputBox("Enter number of time periods (N)")
+theta = InputBox("Enter theta")
+kappa = InputBox("Enter kappa")
+lambda = InputBox("Enter lambda")
+LogS = Log(S)
 Sqrdt = Sqr(dt)
-a = kappa * theta                ' GARCH parameter
-b = (1 - kappa) * lambda         ' GARCH parameter
-c = (1 - kappa) * (1 - lambda)   ' GARCH parameter
-LogS0 = Log(S)                   ' store log stock price
-SumCall = 0                      ' initialize running total
-SumCallSq = 0                    ' initialize running total
-For i = 1 To M
-    LogS = LogS0                 ' initialize log stock price
-    sigma = sigma0               ' initialize volatility
-    For j = 1 To N               ' generate path
-        y = sigma * RandN()
-        LogS = LogS + (r-q-0.5*sigma*sigma)*dt + Sqrdt*y
-        sigma = Sqr(a + b * y ^ 2 + c * sigma ^ 2)  ' update vol
-    Next j
-    CallV = Application.Max(0, Exp(LogS) - K)       ' date-T value
-    SumCall = SumCall + CallV                       ' update sum
-    SumCallSq = SumCallSq + CallV * CallV           ' update sum
+a = kappa * theta
+b = (1 - kappa) * (1 - lambda)
+c = (1 - kappa) * lambda
+ActiveCell.Value = "Time"
+ActiveCell.Offset(0, 1) = "Stock Price"
+ActiveCell.Offset(0, 2) = "Volatility"
+ActiveCell.Offset(1, 0) = 0               ' initial time
+ActiveCell.Offset(1, 1) = S               ' initial stock price
+ActiveCell.Offset(1, 2) = sigma           ' initial volatility
+For i = 1 To N
+    ActiveCell.Offset(i + 1, 0) = i * dt  ' next time
+    y = sigma * RandN()
+    LogS = LogS + (r - q - 0.5 * sigma * sigma) * dt + Sqrdt * y
+    S = Exp(LogS)
+    ActiveCell.Offset(i + 1, 1) = S       ' next stock price
+    sigma = Sqr(a + b * y ^ 2 + c * sigma ^ 2)
+    ActiveCell.Offset(i + 1, 2) = sigma   ' next volatility
 Next i
-CallV = Exp(-r * T) * SumCall / M  
-StdError = Exp(-r * T) * Sqr((SumCallSq - SumCall * SumCall / M) / _
-           (M * (M - 1)))
-Eur_Call_GARCH_MC = Array(CallV, StdError)
-End Function
+End Sub
 \end{verbatim}
 
+To price European options, we need to compute the usual probabilities 
+$\text{prob}^S(S(T)>K)$ and $\text{prob}^R(S(T) >K)$.
+Heston and Nandi [@HN] provide a fast method for computing these probabilities in a GARCH (1,1) model.^[Actually, a slightly more general model is considered in [@HN], in which large negative returns lead to a greater increase in volatility than do large positive returns.  This accommodates the empirically observed negative correlation between stock returns and volatility.]  Rather than developing this approach, we will show in @sec-c_introcomputation how to apply Monte-Carlo methods.
 
 
-### Binomial Valuation of European Options
 
-The binomial model for path-independent European options can be implemented as follows.  We will use the Cox-Ross-Rubinstein parameters.  To value a different type of European option in a binomial model, one would only have to change the formula 
-\begin{center}
-\verb!Application.Max(S - K, 0)! 
-\end{center}
-in the following.  We first define the binomial parameters and some useful constants, denoting the probability $p\,$ of an up move as \verb!pu! and the probability $1-p$ of a down move as~\verb!pd!.  
+## Stochastic Volatility Models {#sec-s_stochasticvolatility}
 
-\addcontentsline{lof}{figure}{European Call Binomial}
+The volatility is stochastic (random) in a GARCH model, but it is determined by the changes in the stock price.  In this section, in contrast, we will consider models in which the volatility depends on a second Brownian motion.  \index{stochastic volatility} The most popular model of this type is the model of Heston [@Heston].  \index{Heston model} In this model, we have, as usual, 
+
+
+$$
+\mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B_s\;,
+$$ {#eq-heston1}
+
+where $B_s$ is a Brownian motion under the risk-neutral measure but now $\sigma$ is not a constant but instead evolves as $\sigma(t) = \sqrt{v(t)}$ where
+
+$$
+dv(t) = \kappa \big[\theta-v(t)\big]\,\mathrm{d} t + \gamma \sqrt{v(t)}\,\mathrm{d} B_v\;,
+$$ {#eq-heston2}
+
+
+where $B_v$ is a Brownian motion under the risk-neutral measure having a constant correlation $\rho$ with the Brownian motion $B_s$.  In this equation, $\kappa$, $\theta$ and $\gamma$ are positive constants.  Given the empirical fact that negative return shocks have a bigger impact on future volatility than do positive shocks, one would expect the correlation $\rho$ to be negative.
+
+The term $\kappa (\theta-v)$ will be positive when $v<\theta$ and negative when $v>\theta$ and hence $\sigma^2=v$ will tend to drift towards $\theta$, which, as in the GARCH model, is the long-run or unconditional mean of $\sigma^2$.  Thus, the volatility is said to mean revert. \index{mean reversion} The rate at which it drifts towards $\theta$ is obviously determined by the magnitude of $\kappa$, also as in the GARCH model.  
+
+The specification @eq-heston2 implies that the volatility of $v$ approaches zero whenever $v$ approaches zero.      In this circumstance, one might expect the drift towards $\theta$ to dominate the volatility and keep $v$ nonnegative, and this is indeed the case; thus, the definition $\sigma(t) = \sqrt{v(t)}$ is possible.  Moreover, the parameter $\gamma$ plays a role here that is similar to the role of $1-\lambda$ in the GARCH model---the variance of the variance in the GARCH model @eq-garch10 depends on the weight $1-\lambda$ placed on the scaled return $y_i$, just as the variance of the variance in the stochastic volatility model @eq-heston2 depends on the weight $\gamma$ placed on  $\mathrm{d} B_v$.
+
+We could discretize @eq-heston1 - @eq-heston2 as:
+
+
+$$
+\log S(t_{i+1}) = \log S(t_i) + \left(r-q-\frac{1}{2}\sigma(t_i)^2\right)\,\Delta t + \sqrt{v(t_i)}\,\Delta B_s,
+$$ {#eq-heston3}
+
+$$
+v(t_{i+1}) = v(t_i) + \kappa \big[\theta-v(t_i)\big]\,\Delta t + \gamma \sqrt{v(t_i)}\,\Delta B_v\;.
+$$ {#eq-heston4}
+
+
+
+However, even though in the continuous-time model @eq-heston1 - @eq-heston2 we always have $v(t) \geq 0$ and hence can define $\sigma(t)=\sqrt{v(t)}$, there is no guarantee that $v(t_{i+1})$ defined by @eq-heston4 will be nonnegative.  A simple remedy is to define $v(t_{i+1})$ as the larger of zero and the right-hand side of @eq-heston4; thus, we will simulate the Heston model as @eq-heston3 and^[There are better (but more complicated) ways to simulate the Heston model.  An excellent discussion of ways to simulate the volatility process can be found in Glasserman [@Glasserman].  Broadie and Kaya [@broadiekaya] present a method for simulating from the exact distribution of the asset price in the Heston model and related models.]
+$$
+v(t_{i+1}) = \max\left\{0,v(t_i) + \kappa \big[\theta-v(t_i)\big]\,\Delta t + \gamma \sqrt{v(t_i)}\,\Delta B_v\right\}\;.
+$$ {#eq-heston41}
+
+
+
+A simple way to simulate the changes $\Delta B_s$ and $\Delta B_v$ in the two correlated Brownian motions is to generate two independent standard normals $z_1$ and $z_2$ and take
+$$\Delta B_s = \sqrt{\Delta t}\,z \qquad \text{and} \qquad \Delta B_v = \sqrt{\Delta t}\,z^*\; ,$$
+where we define 
+$$z = z_1 \qquad \text{and} \qquad z^* = \rho z_1 + \sqrt{1-\rho^2}\,z_2\; .$$
+The random variable $z^*$ is also a standard normal, and the correlation between $z$ and $z^*$ is $\rho$.  
+
+\addcontentsline{lof}{figure}{Simulating Stochastic Volatility}
 \begin{verbatim}
-Function European_Call_Binomial(S, K, r, sigma, q, T, N)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            N = number of time periods
-'
-Dim dt, u, d, pu, pd, u2, prob, CallV, i
-dt = T / N                             ' length of time period
-u = Exp(sigma * Sqr(dt))               ' size of up step
-d = 1 / u                              ' size of down step
-pu = (Exp((r - q) * dt) - d) / (u - d) ' probability of up step
-pd = 1 - pu                            ' probability of down step
-u2 = u * u
-\end{verbatim}
-
-\mathrm{n}oindent Now we calculate the stock price at the bottom node (the node corresponding to all down moves), the probability of reaching that node, and the first term in the sum @eq-binomialsum.
-
-\begin{verbatim}
-S = S * d ^ N            ' stock price at bottom node at last date
-prob = pd ^ N            ' probability of bottom node at last date
-CallV = prob * Application.Max(S - K, 0)      
-\end{verbatim}
-
-To calculate the other $N$ terms in the sum, we note that the stock price when there are $i$ up moves is $u^2$ times the stock price with only $i-1$ up moves (because one more up move also means one fewer down move and adding an up and removing a down produces the factor $u/d = u^2$).  Furthermore, the ratio of the probability of $i$ up moves to $i-1$ up moves is
-$$\frac{p^i(1-p)^{N-i}N!/i!(N-i)!}{p^{i-1}(1-p)^{N-i+1}N!/(i-1)!(N-i+1)!} = \frac{(N-i+1)p}{(1-p)i}\; .$$
-Therefore, as we increase the index $i$ in computing the sum @eq-binomialsum, we need to multiply the previous stock price by $u^2$ and multiply the previous probability by $(N-i+1)p/[(1-p)i]$.  We add the result to \verb!CallV! each time and, at the end, discount by $\mathrm{e}^{-rT}$.
-
-\begin{verbatim}
-For i = 1 To N                                
-    S = S * u2                                       
-    prob = prob * (pu / pd) * (N - i + 1) / i        
-    CallV = CallV + prob * Application.Max(S - K, 0) 
+Sub Simulating_Stochastic_Volatility()
+Dim S, sigma, r, q, dt, theta, kappa, Gamma, rho, LogS, var
+Dim Sqrdt, Sqrrho, z1, Z2, Zstar, i, N
+S = InputBox("Enter initial stock price")
+sigma = InputBox("Enter initial volatility")
+r = InputBox("Enter risk-free rate")
+q = InputBox("Enter dividend yield")
+dt = InputBox("Enter length of each time period (Delta t)")
+N = InputBox("Enter number of time periods (N)")
+theta = InputBox("Enter theta")
+kappa = InputBox("Enter kappa")
+Gamma = InputBox("Enter gamma")
+rho = InputBox("Enter rho")
+LogS = Log(S)
+var = sigma * sigma
+Sqrdt = Sqr(dt)
+Sqrrho = Sqr(1 - rho * rho)
+ActiveCell.Value = "Time"
+ActiveCell.Offset(0, 1) = "Stock Price"
+ActiveCell.Offset(0, 2) = "Volatility"
+ActiveCell.Offset(1, 0) = 0               ' initial time
+ActiveCell.Offset(1, 1) = S               ' initial stock price
+ActiveCell.Offset(1, 2) = sigma           ' initial volatility
+For i = 1 To N
+    ActiveCell.Offset(i + 1, 0) = i * dt  ' next time
+    z1 = RandN()
+    LogS = LogS + (r-q-0.5*sigma*sigma)*dt + sigma*Sqrdt*z1
+    S = Exp(LogS)
+    ActiveCell.Offset(i + 1, 1) = S       ' next stock price
+    Z2 = RandN()
+    Zstar = rho * z1 + Sqrrho * Z2
+    var = Application.Max(0, var+kappa*(theta-var)*dt _
+           +Gamma*sigma*Sqrdt*Zstar)
+    sigma = Sqr(var)
+    ActiveCell.Offset(i + 1, 2) = sigma   ' next volatility
 Next i
-European_Call_Binomial = Exp(-r * T) * CallV
-End Function
+End Sub
 \end{verbatim}
 
-### Binomial Valuation of American Options
-We will consider an American put.  It may also be optimal to exercise an American call early, if there is a positive dividend yield, and the same procedure can be used for American calls.
-We begin as in the previous subsection by defining the binomial parameters, some useful constants, and the stock price at the bottom node at the last date.^[Note that the variable name $S0$ is assigned to the initial stock price.  The variable $S$ is modified as we step up across the nodes at each date.  When we back up to the previous date, the initial stock price is still available in the variable $S0$.] We also compute the put value $P(0)$ at the bottom node at the last date.
+
+To price European options, we again need to compute 
+$$\text{prob}^S(S(T)>K) \qquad \text{and} \qquad \text{prob}^R(S(T)>K)\; .$$
+The virtue of modelling volatility as in @eq-heston2 is that these probabilities can be computed quite efficiently, as shown by Heston [@Heston].^[Further discussion can be found in Epps [@Epps].]  There are many other ways in which one could model volatility, but the computations may be more difficult.  For example, one could  replace @eq-heston2 by
+$$
+\sigma(t) = \mathrm{e}^{v(t)} \quad \text{and} \quad dv(t) = \kappa (\theta-v(t))\,\mathrm{d} t + \lambda \,\mathrm{d} B^*\;.
+$$ {#eq-heston5}
+
+This implies a lognormal volatility and is simpler to simulate than @eq-heston2---because $\mathrm{e}^{v}$ is well defined even when $v$ is negative---but it is easier to calculate the probabilities $\text{prob}^S(S(T)>K)$ and $\text{prob}^R(S(T)>K)$ if we assume @eq-heston2.
+
+One way to implement the GARCH or stochastic volatility model is to imply both the initial volatility $\sigma(0)$ and the constants $\kappa$, $\theta$ and $\lambda$ or $\kappa$, $\theta$, $\gamma$ and $\rho$ from observed option prices.  These four (or five) constants can be computed by forcing the model prices of four (or five) options to equal the observed market prices.  Or, a larger set of prices can be used and the constants can be chosen to minimize the average squared error or some other measure of goodness-of-fit between the model and market prices.
+
+## Smiles and Smirks Again {#sec-s_smilesagain}
+
+As mentioned before, the GARCH and stochastic volatility models can generate  fat-tailed distributions for the asset price $S(T)$.  Thus, they can be more nearly consistent with the option smiles \index{smile}discussed in @sec-s_smiles than is the Black-Scholes model (though it appears that one must include jumps in asset prices as well as stochastic volatility in order to duplicate market prices with an option pricing formula).  To understand the relation, let $\sigma_\text{am}$ denote the implied volatility from an at-the-money call option, i.e., a call option with strike $K=S(0)$.  The characteristic of a smile is that implied volatilities from options of the same maturity with strike prices significantly above and below $S(0)$ are higher than $\sigma_\text{am}$.  
+
+A strike price higher than $S(0)$  corresponds to an out-of-the money call option.  The high implied volatility means that the market is pricing the right to buy at $K>S(0)$ above the Black-Scholes price computed from the volatility $\sigma_\text{am}$; thus, the market must attach a higher probability to stock prices $S(T)>S(0)$ than the  volatility $\sigma_\text{am}$ would suggest.  
+
+A strike price lower than $S(0)$ corresponds to an in-the-money call option.  The put option with the same strike is out of the money.  The high implied volatility means that the market is pricing call options  above the Black-Scholes price computed from the volatility $\sigma_\text{am}$.  By put-call parity, the market must also be pricing put options above the Black-Scholes price computed from the  volatility $\sigma_\text{am}$.  The high prices for the rights to buy and sell at $K<S(0)$ means that the market must attach a higher probability to stock prices $S(T)<S(0)$ than the volatility $\sigma_\text{am}$ would suggest.  In particular, the high price for the right to sell at $K<S(0)$ means a high insurance premium for owners of the asset who seek to insure their positions, which is consistent with a market view that there is a significant probability of a large loss.  This can be interpreted as a crash premium.  \index{crash premium} Indeed, the implied volatilities at strikes less than $S(0)$  are typically higher than the implied volatilities at strikes above $S(0)$ (giving the smile the appearance of a smirk, as discussed in @sec-s_smiles), which is consistent with a larger probability of crashes than of booms (a fatter tail for low returns than for high).
 
 
-\addcontentsline{lof}{figure}{American Put Binomial}
-\begin{verbatim}
-Function American_Put_Binomial(S0, K, r, sigma, q, T, N)
-'
-' Inputs are S0 = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            N = number of time periods
-'
-Dim dt, u, d, pu, dpu, dpd, u2, S, i, j
-Dim PutV() As Double
-ReDim PutV(N)
-dt = T / N                              ' length of time period
-u = Exp(sigma * Sqr(dt))                ' size of up step
-d = 1 / u                               ' size of down step
-pu = (Exp((r - q) * dt) - d) / (u - d)  ' probability of up step
-dpu = Exp(-r * dt) * pu                 ' discount x up prob 
-dpd = Exp(-r * dt) * (1 - pu)           ' discount x down prob
-u2 = u * u
-S = S0 * d ^ N                          ' bottom stock price
-PutV(0) = Application.Max(K - S, 0)     ' bottom put value
-\end{verbatim}
 
-Now we loop over the other nodes at the last date, increasing the stock price by a factor of $u^2$ each time as before, and defining the put value as its intrinsic value at maturity.
+## Hedging and Market Completeness
 
-\begin{verbatim}
-For j = 1 To N
-    S = S * u2
-    PutV(j) = Application.Max(K - S, 0)
-Next j
-\end{verbatim}
+The GARCH model is inherently a discrete-time model.  If returns have a GARCH structure at one frequency (e.g., monthly), they will not have a GARCH structure at a different frequency (e.g., weekly).  Hence, the return period (monthly, weekly, \ldots) is part of the specification of the model.  One interpretation of the model is that the dates $t_i$ at which the variance changes are the only dates at which investors can trade.  Under this interpretation, it is impossible to perfectly hedge an option: the gross return $S(t_i)/S(t_{i-1})$ over the interval $(t_{i-1},t_i)$ is lognormally distributed, so no portfolio of the stock and riskless asset formed at $t_{i-1}$ and held over the interval $(t_{i-1},t_i)$ can perfectly replicate the return of an option over the interval.  As discussed in @sec-s_incomplete, we call a market in which some derivatives cannot be perfectly hedged an incomplete market. \index{incomplete market}  Thus, the GARCH model is an example of an incomplete market, if investors can only trade at the frequency at which returns have a GARCH structure.  However, it is unreasonable to assume that investors can only trade weekly or monthly or even daily.
 
-Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.  Since we are backing up in the tree, we step backwards from $i=N-1$ to $i=0$.  At each date we start by defining the stock price at the bottom node.  At date $i$ there have been $i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date $i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date 0, we return the put value $P(0)$, the value at the bottom node, which is the only node at date~0.
+Another interpretation of the GARCH model is that investors can trade continuously and the asset has a constant volatility within each period $(t_{i-1},t_i)$.  Under this interpretation, the market is complete and options can be delta-hedged.  The completeness is a result of the fact that the change $\sigma_{i+1}-\sigma_i$ in the volatility  at date $t_i$ (recall that $\sigma_i$ is the volatility over the period $(t_{i-1},t_i)$ and $\sigma_{i+1}$ is the volatility over the period $(t_{i},t_{i+1})$) depends only on $\log S(t_i)$.  Thus, the only random factor in the model that needs to be hedged is, as usual, the underlying asset price.  However, this interpretation of the model is also a bit strange.  Suppose for example that monthly returns are assumed to have a GARCH structure.  Then the model states that the volatility in February will be higher if there is an unusually large return (in absolute value) in January.  Suppose there is an unusually large return in the first half of January.  Then, intuitively, one would expect the change in the volatility to occur in the second half of January rather than being delayed until February.  However, the model specifies that the volatility is constant during each month, hence constant during January in this example.
 
+The stochastic volatility model is more straightforward.  The market is definitely incomplete.  The value of a call option at date $t<T$, where $T$ is the maturity of the option, will depend on the underlying asset price $S(t)$ and the volatility $\sigma(t)$.  Denoting the value by $C(t,S(t),\sigma(t))$, we have
+from Ito's formula that
+$$
+\mathrm{d} C(t) = \text{something}\;\mathrm{d} t + \frac{\partial C}{\partial S}\,\mathrm{d} S(t) + \frac{\partial C}{\partial \sigma}\,\mathrm{d} \sigma(t)\; .$$
+A replicating portfolio must have the same dollar change at each date $t$.  If we hold $\partial C/\partial S$ shares of the underlying asset, then the change in the value of the shares will be $(\partial C/\partial S)\,\mathrm{d} S$.  However, there is no way to match the  
+$(\partial C/\partial \sigma)\,\mathrm{d} \sigma$ term using the underlying asset and the riskless asset.  
 
-\begin{verbatim}
-For i = N - 1 To 0 Step -1              ' back up in time to date 0
-    S = S0 * d ^ i                      ' bottom stock price
-    PutV(0) = Application.Max(K - S, dpd * PutV(0) + dpu * PutV(1))
-    For j = 1 To i                      ' step up over nodes
-        S = S * u2
-        PutV(j) = Application.Max(K-S, dpd*PutV(j)+dpu*PutV(j+1))
-    Next j
-Next i
-American_Put_Binomial = PutV(0)         
-End Function
-\end{verbatim}
-
-### Binomial Estimation of Delta and Gamma
-
-We add two periods to the model and then stop the backward induction at date $n=2$, as described in @sec-s_binomial_greeks.
-
-\addcontentsline{lof}{figure}{American Put Binomial DG}
-\begin{verbatim}
-Function American_Put_Binomial_DG(S0, K, r, sigma, q, T, N)
-'
-' Inputs are S0 = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            N = number of time periods
-'
-' This returns the row vector (put value, delta, gamma).
-'
-Dim dt, u, d, pu, dpu, dpd, u2, S, Su, Sd, Deltau, Deltad, dist
-Dim i, j, NewN, Delta, Gamma
-Dim PutV() As Double
-ReDim PutV(N + 2)
-dt = T / N                              ' length of time period
-NewN = N + 2                            ' now we add 2 periods
-u = Exp(sigma * Sqr(dt))                ' size of up step
-d = 1 / u                               ' size of down step
-pu = (Exp((r - q) * dt) - d) / (u - d)  ' probability of up step
-dpu = Exp(-r * dt) * pu                 ' discount x up prob
-dpd = Exp(-r * dt) * (1 - pu)           ' discount x down prob
-u2 = u * u
-S = S0 * d ^ NewN                       ' bottom stock price
-PutV(0) = Application.Max(K - S, 0)     ' bottom put value
-For j = 1 To NewN                       ' step up over nodes
-    S = S * u2
-    PutV(j) = Application.Max(K - S, 0)
-Next j
-For i = NewN - 1 To 2 Step -1           ' back up in time
-    S = S0 * d ^ i                      ' bottom stock price
-    PutV(0) = Application.Max(K - S, dpd * PutV(0) + dpu * PutV(1))
-    For j = 1 To i                      ' step up over nodes
-        S = S * u2
-        PutV(j) = Application.Max(K-S, dpd*PutV(j)+dpu*PutV(j+1))
-    Next j
-Next i                             
-Su = S0 * u2                       ' higher stock price  
-Sd = S0 / u2                       ' lower stock price 
-Deltau = (PutV(2) - PutV(1)) / (Su - S0) ' midpoint delta
-Deltad = (PutV(1) - PutV(0)) / (S0 - Sd) ' midpoint delta
-dist = S0 * (u2 - d * d)       ' dist between Su and Sd
-Delta = (PutV(2) - PutV(0)) / dist
-Gamma = 2 * (Deltau - Deltad) / dist
-American_Put_Binomial_DG = Array(PutV(1), Delta, Gamma)
-End Function
-\end{verbatim}
+The significance of the market being incomplete is that the value of a derivative asset that cannot be replicated using traded assets (e.g., the underlying and riskless assets) is not uniquely determined by arbitrage considerations.  As discussed in @sec-s_incomplete, one must use equilibrium pricing in this circumstance.  \index{equilibrium pricing} That is what we have implicitly done in this chapter.  By assuming particular dynamics for the volatility under the risk-neutral measure, we have implicitly selected a particular risk-neutral measure from the set of risk-neutral measures that are consistent with the absence of arbitrage.  
 
 
 ## Exercises
 
-::: {#exr-nolabel}
- Consider an at-the-money European call option on a non-dividend-paying stock with six months to maturity.  Take the initial stock price to be \$50, the interest rate to be 5\% and $\sigma=$30\%.  Compute the value in a binomial model with $N=10, 11, \ldots, 20$ and plot the values against $N$.  Is convergence monotone?
-:::
-::: {#exr-nolabel}
- Consider the same option as in the previous problem.  Roughly what value of $N$ is needed to get penny accuracy?  (To evaluate the accuracy, compare the price to the price given by the Black-Scholes formula.)
-:::
-::: {#exr-nolabel}
-  The early exercise premium \index{early exercise premium} is the difference between the value of an American option and the value of a European option with the same parameters.  Compute the early exercise premium for an American put and various values for the interest rate, exercise price, and stock parameters.  Under what circumstances is the early exercise premium relatively large?
-:::
-::: {#exr-e_GARCHimpliedvols}
-  Create an Excel worksheet in which the user inputs $S$, $r$, $\sigma$, $q$, $T$, $N$, $\kappa$, $\theta$, and $\lambda$.  Use the function \verb!European_Call_GARCH_MC! to compute call option prices for exercise prices $K=0.6S$, $0.7S$, $0,8S$, $0.9S$, $S$, $1.1S$, $1.2S$, $1.3S$ and $1.4S$, taking $M=500$ in each case.  For each computed price, use the function \verb!Black_Scholes_Call_Implied_Vol! to compute an implied Black-Scholes volatility.  Plot the implied volatilities against the exercise prices.
-:::
-::: {#exr-e_Hestoncall}
-  Create a VBA function using Monte Carlo to estimate the value of a European call option in the Heston stochastic volatility model.  The inputs should be the initial stock price $S$, the strike price $K$, the risk-free rate $r$, the initial volatility $\sigma$, the dividend yield $q$, the time to maturity $T$, the number of time periods $N$, the parameters  $\kappa$, $\theta$, $\gamma$, and $\rho$, and the number of simulations $M$.  Return the estimated option value and its standard error.  
-:::
-::: {#exr-nolabel}
- Modify the VBA function in the previous exercise to also return the estimated delta of the option and the standard error of the delta.
-:::
-::: {#exr-nolabel}
- Repeat @exr-e_GARCHimpliedvols using the Heston model (the function developed in @exr-e_Hestoncall) to compute the call option prices, allowing the user to input $\gamma$ and $\rho$ (instead of $\lambda$).  
+::: {#exr-e_mixture}
+  The purpose of this exercise is to generate a fat-tailed distribution from a model that is simpler than the GARCH and stochastic volatility models but has somewhat the same flavor.  The distribution will be a mixture of normals. Create an Excel worksheet in which the user can input $S$, $r$, $q$, $T$, $\sigma_1$ and $\sigma_2$.  Use these inputs to produce a column of 500 simulated $\log S(T)$.  In each simulation, define $\log S(T)$ as
+$$\log S(T) = \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma \sqrt{T}z\;,$$
+where $z$ is a standard normal,
+$\sigma = x\sigma_1 + (1-x)\sigma_2$,
+and $x$ is a random variable that equals zero or one with equal probabilities.  You can define $z$ in each simulation as
+\verb!NormSInv(Rand())! and $x$ as \verb!If(Rand()<0.5,1,0)!. 
+Calculate the mean and standard deviation of the $\log S(T)$ and calculate the fraction that lie more than two standard deviations below the mean.  If the $\log S(T)$ all came from a normal distribution with the same variance, then this fraction should equal $\mathrm{N}(-2) = $ 2.275\%.  If the fraction is higher, then the distribution is fat tailed.  (Of course, the actual fraction would differ from 2.275\% in any particular case due to the randomness of the simulation, even if all of the $\log S(T)$ came from a normal distribution with the same variance).
 :::
 
+::: {#exr-e_GARCH1}
+  Create an Excel macro prompting the user to input the same inputs as in the \verb!Simulating_GARCH! subroutine except for the initial volatility and $\theta$.  Simulate 500 paths of a GARCH process and output $\log S(T)$ for each simulation (you don't need to output the entire paths as in the \verb!Simulating_GARCH! macro).  Take the initial volatility to be 0.3 and $\theta = 0.09$.  Determine whether the distribution is fat-tailed by computing the fraction of the $\log S(T)$ that lie two or more standard deviations below the mean, as in the previous exercise.  For what values of $\kappa$ and $\lambda$ does the distribution appear to be especially fat-tailed? 
+:::
+::: {#exr-nolabel}
+ Repeat @exr-e_GARCH1 for the Heston stochastic volatility model, describing the values of $\kappa$,  $\gamma$ and $\rho$ that appear to generate especially fat-tailed distributions.
+\mathrm{n}ext
+\underline{Note}
+\mathrm{n}ext
+Excel provides some tools that are useful for exercises of this sort.  If you load the Data Analysis add-in (click Tools/Add Ins), you can produce a histogram of the simulated data, which is useful for visually analyzing departures from normality.  The Data Analysis add-in will also produce summary statistics, including the kurtosis and skewness of the data (without using the add-in, the kurtosis can be computed with the Excel function \verb!KURT! and the skewness with the Excel function \verb!SKEW!).  The kurtosis of a random variable $x$ is defined as $E[(x-\mu)^4]/\sigma^4$, where $\mu$ is the mean and $\sigma$ is the standard deviation of $x$.  The kurtosis of a normal distribution is 3.  A kurtosis larger than 3 is excess kurtosis, meaning the distribution is leptokurtic (fat tailed).  Excel's \verb!KURT! function actually computes excess kurtosis, so a positive value indicates a fat-tailed distribution.  The skewness of $x$ is defined as $E[(x-\mu)^3]/\sigma^3$.  The skewness of a normal distribution is zero.  Negative skewness indicates the distribution is skewed to the left, meaning the lower tail is fatter than the upper tail (crashes are more likely than booms).  Positive skewness indicates the distribution is skewed to the right.
+:::

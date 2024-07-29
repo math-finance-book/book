@@ -1,1058 +1,449 @@
-# Continuous-Time Models {#sec-c_continuoustime}
+# Binomial Model and Changes of Measure {#sec-c_basics}
 
-## From Discrete to Continuous Time {#sec_f_discrete}
-Our main point of departure is knowing how a given quantity evolves through time.  For example, $X(t)$ might denote how much wealth you have at time $t$.  Partition the interval $[0,T]$ into $N$ intervals of length $\Delta t = \frac{T}{N}$, in other words
- $$[0, \Delta t = \frac{T}{N}, 2 \Delta t, ..., (N-1) \Delta t, N \Delta t =T].$$
+This chapter introduces the change of measure (or change of numeraire or martingale)  method for valuing derivative securities.  The method is introduced in a binomial model and then extended to more general (continuum of states) models.  Computations in the more general model require the continuous-time mathematics presented in @sec-c_continuoustime.  
 
-If you invest your wealth $X((i-1)\Delta t)$ at a fixed rate of interest $r \Delta t$ over a period of length $\Delta t=\frac{T}{N}$, you will have $X((i-1)\Delta t) (1+ r \Delta t)$ at the end of the period; the change of your wealth from $(i-1)\Delta t$ to $t = i\Delta t$ is 
-$$\Delta X(t) = X(i \Delta t)-X((i-1) \Delta t)=(1+r \Delta t) X((i-1) \Delta t) - X(t)= r X(t) \Delta t$$.  
+It should be noted that the pricing and hedging results in this book are not tied to any particular currency.  However, for specificity (and as a consequence of the author's habit) the discussion will generally be in terms of dollars.  Multiple currencies are addressed in @sec-c_foreignexchange.
 
-The limiting form of this equation is 
+## Fundamental Concepts {#sec-s_fundamentalconcepts}
 
-$$d X(t) = r X(t) dt ~~~\text{or} ~~~\frac{d X(t)}{dt} = r X(t)$$ 
+### Longs, Shorts, and Margin
 
-which is a differential equation.  Notice this can also be written as a sum 
+In financial markets, the owner of an asset is said to be long the asset. \index{long}  If person A owes something to person B, the debt is an asset to person B but a liability to person A.  One also says that person A is short the asset.  \index{short} For example, if someone borrows money and invests the money in stocks, then the individual is short cash and long stocks.  
 
-$$X(N \Delta t) =X(0)+ \sum_{i=0}^N (X(i \Delta t)-X((i-1)\Delta t)) = X(0) + \sum_{i=0}^{N} r X((i-1)\Delta t) \Delta t ; $$
+One must invest some of one's own money when borrowing money to buy stocks.  For example, an individual could invest \$600, borrow \$400, and buy \$1000 of stock.  The \$600 is called the margin \index{margin} posted by the investor, and buying stocks in this way is called buying on margin.  The investor, or the portfolio, is also said to be levered, because buying \$1000 of stock with only a \$600 investment amplifies the risk and return per dollar of investment.  \index{leverage} On a percentage basis, we would say the account has 60\% margin, the 60\% being the ratio of the equity (assets minus liabilities = \$1000 of stock minus \$400 debt) to the assets (\$1000 of stock).   If the value of the stock drops sufficiently far, then it may become doubtful whether the investor can repay the \$400.  In this case, the investor must either sell the stock or invest more of his own funds (i.e., he receives a margin call).  \index{margin call} In other words, in actual markets there are margin requirements, \index{margin requirement} that specify a minimum percent margin an investor must have initially (when borrowing money) and a minimum percent margin the investor must maintain.  
 
-in the limit we get an integral equation
+Rather than borrowing money to buy stocks, an investor can do the opposite---he can borrow stocks to buy money.  In this case, buying money means selling the borrowed stocks for cash.  Such an investor will be short stocks and long cash.  This is called short selling (or, more briefly, shorting) stocks.  \index{short selling} For example, suppose individual A borrows 100 shares of stock from individual B and then sells them to individual C.  Both B and C are long the 100 shares and A is short, so the net long position is $2 \times 100 - 100$, which is the original 100 shares that B was long.  A short seller of stocks must pay to the lender of the stocks any dividends that are paid on the stock.  In our example, both B and C own the 100 shares so both expect to receive dividends.  The company will pay dividends only to C, and A must pay the dividends to~B.
 
-$$X(T) = X(0) + \int_0^T r X(t) dt.$$
+Of course, investors always wish to buy low and sell high.  The usual method is to buy stocks and hope they rise.  An investor who short sells also wishes to buy low and sell high, but he reverses the order---he sells first and then hopes the stocks fall.  The risk is that the stocks will instead rise, which will increase the value of his liability (short stock position) without increasing the value of his assets (long cash position), thus putting him under water.  To shield the lender of the stocks from this risk, a short seller must also invest some of his own funds, and this amount is again called the investor's margin.  For example, an investor might invest \$600, and borrow and sell \$1000 of stock.  In this case, the investor will be long \$1600 cash and short \$1000 worth of stock.  His equity is \$600 and his percent margin is calculated as \$600/\$1000 = 60\%.  Again, there are typically both initial and maintenance margin requirements.  An additional feature of short selling for small individual investors is that they typically will not earn interest on the proceeds of the short sale (the \$1000 cash obtained from selling stocks in the above example).  
 
-  The solution is $X(T) = X(0) e^{r T}$ which is easily verified by taking the derivative $\frac{d}{dt}e^{r t} X(t) = r X(t)$ or by inserting the solution into the integral equation. This is also the limiting value of the discretely compunded interest as the number of compounding periods $n$ goes to infinity: 
+In this book, we will assume there is a single risk-free rate at which one can both borrow and lend.  Moreover, we will assume that investors earn this rate on margin deposits, including the proceeds of short sales (and including any margin that may be required when buying and selling forward and futures contracts).  Thus, investors gain from buying on margin if the asset return is sure to exceed the risk-free rate, and they gain from short selling if the return on an asset is sure to be below the risk-free rate.   These assumptions are not reasonable for small individual investors, but they are fairly reasonable for institutional investors.  We will assume that no asset has a return that is certain to be above the risk-free rate nor certain to be below the risk-free rate, because institutional investors could arbitrage \index{arbitrage} such guaranteed high-return or guaranteed low-return assets.
 
-$$X(T)=\lim_{t \rightarrow \infty} \left(1+r \frac{T}{N}\right)^{N}.$$ 
+### Calls and Puts
 
-This can be verified by taking the log of $\left(1+r \frac{T}{N}\right)^{N}$ and using l'Hospital's rule.  Given the initial wealth, $X(0)$ and the rate of change $r X(t)$ (which, if the unit of account is dollars, is in units dollars / time), we can we  solve for the value of our wealth at all times. 
+Call and put options are the basic derivative securities and the building blocks of many others.  A derivative security is a security the value of which depends upon another security. \index{derivative security}
+A call option \index{call option} is the right to buy an asset at a pre-specified price.  The pre-specified price is called the exercise price, the strike price, or simply the strike.  \index{exercise price} \index{strike price} We will often call the asset a stock, but there are options on many other types of assets also, and everything we say will be applicable to those as well.^[One caveat is that by asset we mean something that can be stored; thus, for example, electricity is, practically speaking, not an asset.]  The asset to which the call option pertains is called the underlying asset, \index{underlying asset} or, more briefly, the underlying.  If the market value of the asset exceeds the exercise price, then we say the call option is in the money.  Buying a call option is a way to bet on the upside of the underlying asset.  
 
+A put option \index{put option} is the right to sell an asset at a pre-specified (exercise, strike) price.  Buying a put is a way to bet on an asset price becoming low (similar to shorting).  A put option is in the money if the exercise price exceeds the value of the asset.  Both puts and calls are potentially valuable and hence the buyer of a put or call must pay the seller.  
 
-```{python}
-#| label: fig-miracle-exponential
-#| fig-cap: "Growth of an investment account at different rates of return."
+A long put option provides insurance to someone who is long the underlying asset, because it guarantees that the asset can always be sold at the strike price of the put (of course, it can be sold at the market price, if that is higher than the strike of the put).  Symmetrically, a long call option provides insurance to someone who is short the underlying asset. The terminology in option markets reflects the parallels between options and insurance contracts.  In particular, the seller of an option is said to write the option and the compensation (price) he receives from the buyer is called the option premium, \index{option premium} just as an insurance company writes insurance contracts in exchange for premium income.  Calculating the price at which one should be willing to trade an option is the main topic of this book.
 
-import plotly.graph_objects as go
-import numpy as np
+It is important to recognize the different situations of someone who is short a call option and someone who is long a put.  Both positions are bets on the downside of the asset.  Both the investor who is short a call and the investor who is long a put may eventually sell the underlying asset  and receive the exercise price in exchange.  However, the investor who is long a put has an option to sell the asset at the exercise price and the investor who is short a call has an \emph{obligation} to sell the asset at the exercise price, should the counterparty choose to exercise the call.  Thus, the investor who is long a put will be selling at the exercise price when it is profitable to do so, whereas the investor who is short a call will be selling at the exercise price when it is unprofitable.  The buyer of a put must pay the premium to the seller; he then profits if the asset price is low, with his maximum possible profit being quite large (the maximum value is attained when the market value of the underlying asset reaches zero).  In contrast, the seller of a call receives premium income, and the premium is his maximum possible profit, whereas his potential losses are unbounded.  Thus, these are very different positions.
 
-trace1= go.Scatter(
-    x=np.arange(31), 
-    y=1.08**np.arange(31),
-    mode="lines",
-    name="8%"
-)
+Individuals who sell calls usually sell out-of-the-money covered calls.  Covered \index{covered call} means that they own the underlying asset and can therefore deliver the underlying if the call is exercised without incurring any further expense---they experience only an opportunity cost in delivering it for less than the market price.^[In contrast, one who sells a call without owning the underlying is said to sell a naked call.  \index{naked call] The seller of a naked call, or the seller of a put, must post margin, just like a short seller of stocks, in order to ensure that he can meet his obligation.  However, this does not apply to sellers of covered calls.}  A  call being out of the money implies that the price of the underlying must rise before the call would be exercised against the seller; thus, the seller of an out-of-the money covered call still has some potential for profit from the underlying.  In addition, of course, the seller receives the premium income from the call.  Institutions often follow this strategy also, using the premium income to enhance their return from the underlying.     One can hedge a short call without owning a full share of the underlying asset, if one is able to rebalance the hedge over time.  Calculating such hedges is another of the principal topics of this book.
 
-trace2 = go.Scatter(
-    x=np.arange(31), 
-    y=1.04**np.arange(31),
-    mode="lines",
-    name="4%"
-)
+In a certain sense, option markets are zero-sum games.  The profit earned by one counterparty to an option transaction is a loss suffered by the other.  However, options can allow for an increase in the welfare of all investors by improving the allocation of risk.  A producer who must purchase a certain input may buy a call option, giving him the right to buy the input at a fixed price.  This caps his expense.  The seller of the call now bears the risk that the input price will be high---in this case, the option will be exercised and he will be forced to sell at a price below the market price.  It may be that the seller is in a better position to bear the risk (for example, he may have less of the risk in his portfolio) and the option transaction may thereby improve the allocation of risks across investors.  The similarity to insurance should be apparent.
 
-fig = go.Figure()
-fig.add_trace(trace1)
-fig.add_trace(trace2)
-string = "year %{x}<br>balance = $%{y:.2f}"
-fig.update_traces(hovertemplate=string)
-fig.update_layout(
-    template="none",
-    xaxis_title="Year",
-    yaxis_title="Account Balance",
-    yaxis_tickprefix="$", 
-    yaxis_tickformat=",.0f",
-    legend=dict(
-        yanchor="top", 
-        y=0.99, 
-        xanchor="left", 
-        x=0.01
-        )
-)
-fig.show()
-```
+Quite complex bets or hedges can be created by combining options.  For example, a long call and put with the same strike price is called a straddle.  \index{straddle} Such a portfolio is (almost) always in the money.  It is in fact a bet on volatility---a big move in the underlying asset value away from the exercise price will lead to either the call or put having a high value.  Another important example of an option portfolio is a collar.  \index{collar} A collar consists of a long put and a short call, or a short call and a long put, with the options having the same maturity.  As mentioned before, a long put provides insurance to someone who is long the underlying asset.  Selling a call provides premium income that can be used to offset the cost of the put (the most popular type of collar is a zero-cost collar: \index{zero-cost collar} a collar in which the premium of the call is equal to the premium of the put).  The cost of selling a call for an owner of the underlying is that it sells off the upside of the underlying asset---if the value of the asset exceeds the strike price of the call, then the call will be exercised and the underlying asset must be delivered for the strike price (rather than the higher market price).  Thus, one can purchase the downside insurance provided by a long put by selling part of the upside potential of the asset, rather than paying the cost of the insurance out of pocket.  There are many other examples of option portfolios that could be given.  
 
-However, most investments involve risk.  We might think that part of the return is more or less known while a portion of the investment is random or risky.  Therefore we would like a model which can be written as 
-$$ d X(t) = \mu X(t) dt + \text{`noise'} \times X(t). $$
+Some puts and calls are traded on exchanges.  In this case, the exchange clearinghouse steps between the buyer and seller and becomes the counterparty to both the buyer and seller.  This eliminates the risk that the seller might default on his obligation when the buyer chooses to exercise his option.  If the owner of an option chooses to exercise, the clearinghouse randomly chooses someone who is short the option to fulfill the obligation.  Most exchange traded options are never exercised, because any gain on a long contract can be captured by selling the contract at the market price, thus cancelling the position.  Obviously, however, the right to exercise is essential, because it determines the market price.  Puts and calls are also transacted over the counter, \index{over the counter} which means that they are private contracts of the counterparties.  Moreover, puts and calls are embedded in many other financial instruments.  A prosaic but important example is that most homeowners have the right to pay off their mortgages early.  This means they have call options on their mortgages, with exercise price equal to the remaining mortgage principal.  Similarly, callable bonds can be redeemed early by the company issuing them, convertible bonds have  embedded call options on the company's stock (which are exercised by converting the bonds) and there are many, many other examples.  Puts and calls also exist outside financial markets.  For example, a company may begin manufacturing a new product at a small scale; if the product is successful, the scale can be expanded.  In this case, the company buys a call option on large-scale production with the premium being the cost of launching small-scale production.  Adapting the methods developed for financial options to value such real options is an important and growing field. \index{real option}
 
-It makes sense that the units of the noise should be in the unit of account (dollars) and it should have zero mean but it is not obvious how to make sense of a noisy change over an instant.  In the next section we examine the most popular choice for this model, namely Brownian motion.  Loosely speaking, we can take expectations to get
+### Exercise Policies for Calls and Puts
 
-$$ d E[X(t)]= \mu E[X(t)] dt$$ 
+It may be rational to exercise a call if the asset value exceeds the exercise price.  Thus, denoting the price of the asset by $S$ and the exercise price by $K$, the owner of a call option can profit by $S-K$ dollars by exercising the option when $S>K$.  If $S<K$, exercise would be irrational.  Thus, the payoff to the owner of the call option is^[We use the standard notation:  $\max(a,b)$ denotes the larger of $a$ and $b$ and $\min(a,b)$ denotes the smaller.] $\max(0,S-K)$.  It has been said that timing is everything, and the timing here should be made clearer.  The simplest type of option is called a European option.  \index{European option} A European option has a finite lifetime and can only be exercised at its maturity date.  For a European call option, the exercise strategy just described is the optimal one, with $S$ representing the asset price at the maturity date of the option.  Equally, if not more, important are American options, \index{American option} which can be exercised at any time before maturity.   
 
-which gives a solution 
+For an American call option, the exercise strategy just described is the optimal one at the maturity date, but it may also be optimal to exercise prior to maturity.  \index{early exercise}  Let $K$ denote the exercise price, $T$ the date the option matures, and $S(t)$ the price of the underlying asset at date $t \leq T$.  The intrinsic value \index{intrinsic value} of the call option at date $t$ is defined to be $\max(0,S(t)-K)$.  One would of course never exercise unless the intrinsic value is positive---i.e., unless the option is in the money.  Moreover, if the asset does not pay a dividend (or other type of cash flow) prior to the option maturity then one should not exercise in any circumstances prior to maturity.  This is captured in the saying:  calls are better alive than dead.  Exercise being suboptimal is equivalent  to the value of the option exceeding the intrinsic value.
 
-$$E[X(T)]=X(0) e^{\mu T}. $$
+The principle that calls on non-dividend-paying assets are better alive than dead follows from two facts: (i) it is generally a good thing (in financial markets as well as in life) to keep one's options open, and (ii) early exercise implies early payment of the exercise price and hence foregone interest.  The usual protest that is heard when this statement is made is that one should surely exercise if he expects the stock price to plummet, because by exercising (and then selling the stock acquired) one can lock in the current stock price rather than waiting for it to fall, in which case the option will surely be worth less.  This intuition is a reasonable one, but it ignores the fact that the investor could short sell the stock if he expects it to plummet---he doesn't need to exercise the option to lock in the current stock price.  In fact, shorting the stock and retaining the option is always better than exercising, assuming the underlying asset does not pay a dividend.  
 
-So we can think of this model as a known expected continuously compunded investment at a rate $\mu$ plus a noisy return.
+Specifically, suppose an investor considers exercising at date $t$.  As an alternative to exercising early, consider shorting the stock at date $t$ and retaining the option.  This is always better than exercising at date $t$, because the short position can  be covered (the stock can be purchased and returned to the lender to cancel the short position) at cost $K$ at date $T$ by exercising the option, and paying $K$ at date $T$ is better than paying it at date $t$, given that interest rates must be nonnegative.  To be more precise, note that exercise at date $t$ produces  $S(t)-K$ dollars at date $t$.  On the other hand, retaining the option, shorting the stock at date $t$, and covering the short either by exercising the option or buying the stock in the market (whichever is cheaper) produces $S(t)$ dollars at date $t$ and 
+$$\max(0,S(T)-K) - S(T) = \max(-S(T), -K) = -\min(S(T),K) \geq -K$$
+dollars at date $T$.  If $S(T)>K$, one has $-K$ dollars at date $T$, in which case retaining the option has been superior due to the time value of money.  Furthermore,  if $S(T)<K$, the strategy of retaining the option and shorting the stock produces $-S(T) > -K$ dollars at date $T$, so retaining the option is superior due both to flexibility (waiting until $T$ to decide whether to exercise turns out to be better than committing at date $t$) and because of the time value of money.^[Recall that we are assuming investors earn interest on the proceeds of short sales; otherwise, the $S(t)$ dollars earned from exercising the option and selling the stock will be worth more than the $S(t)$ dollars earned from shorting the stock.  In this case, early exercise could be optimal.  However, assuming institutional investors can earn interest on the proceeds of shorts,  such investors should prefer owning the option and shorting the stock to exercising.  This means  they should bid up the price of the option to the point where it exceeds the value $S(t)-K$ of exercise.  If this is the case, then an investor who cannot earn interest on the proceeds of shorts should simply sell the option in the market rather than exercise it.  Thus, a sufficient condition for calls to be better alive than dead is that there be some investors who can earn interest on the proceeds of shorts.  This type of reasoning is possible for each situation in this book where the assumption of earning interest on margin deposits is important, and we will not deal with it in this much detail again.]
 
-Historically, these deterministic mathematics trace back to Issac Newton who developed the classical laws of motion.  The model of noise was developed by Ito to account for random disturbances, such as unpredictable wind gusts,  to a deterministic model, for example, in a model predicting the position of a falling object.
+Early exercise of a call option can be optimal when the underlying asset pays a dividend.  The above analysis does not apply in this case, because paying the dividend to the lender of the stock is an additional cost for the strategy of retaining the option and shorting the stock.  If the dividend is so small that it cannot offset the time value of money on the exercise price, then early exercise will not be optimal.  In other cases, deriving the optimal exercise strategy is a complicated problem that we will first begin to study in @sec-c_introcomputation.
 
-This chapter has three objectives.  The first is to introduce the concept of a Brownian motion.  A Brownian motion is a random process (a variable that changes randomly over time) that evolves continuously in time and has the property that its change over any time period is normally distributed with mean zero and variance equal to the length of the time period.  The mean zero feature means that a Brownian motion is a martingale.  We will also give a different characterization (Levy's theorem) emphasizing the quadratic variation process, which is a property of the paths (how the variable evolves over time, in a given state of the world) of the process.  
+A European put option will be exercised at its maturity $T$ if the price $S(T)$ of the underlying asset is below the exercise price $K$.  In general, the value at maturity can be expressed as $\max(0,K-S(T))$.  Early exercise of an American put can be optimal, regardless of whether the underlying pays a dividend.  While it is valuable to keep one's options open (for puts as well as calls) the time value of money works in the opposite direction for puts.  Early exercise of a put option implies early receipt of the exercise price, and it is better to receive cash earlier rather than later. In general, whether early exercise is optimal depends on how deeply the option is in the money---if the underlying asset price is sufficiently low, then it will be fairly certain that exercise will be optimal, whether earlier or late; in this case, one should exercise earlier to earn interest on the exercise price.  How low it should be to justify early exercise depends on the interest rate (a higher rate makes the time-value-of-money issue more important, leading to earlier exercise) and the volatility of the underlying asset price (a lower volatility reduces the value of keeping one's options open, leading also to earlier exercise).  We will begin to study the valuation of American puts in @sec-c_introcomputation also.
 
-The second objective is to explain Ito's formula, which is the chain rule for stochastic calculus.  In the Black-Scholes model, the stock price is assumed to satisfy
-$$\frac{\mathrm{d} S}{S}=\mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,$$
-where $B$ is a Brownian motion.  In the case that the stock pays no dividend, the rate of return is its price change $\mathrm{d} S$ divided by the initial price $S$, so the model states that the expected rate of return in each instant $\mathrm{d} t$  is $\mu\,\mathrm{d} t$ (of course, $t$ denotes time, so $\mathrm{d} t$ is the change in time).  The variance of the rate of return depends on $\sigma$.  This model can be equivalently written in terms of the natural logarithm of $S$, which we will write as $\log S$.  The above equation for the rate of return is equivalent to
-$$\mathrm{d}\,\log S = \left(\mu - \frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .$$
-We will explain this equivalence and other similar calculations that are useful for pricing derivatives.
+### Compounding Interest
 
-The third objective is to explain how, when we change numeraires, as described in the previous chapter, we can calculate the expectation in the fundamental pricing @eq-formula.  The question is what effect does changing the numeraire (and hence the probability measure) have on the distribution of an asset price.  
+During most of the first two parts of the book (the only exception being @sec-c_forwardexchange) we will assume there is a risk-free asset earning a constant rate of return.  \index{risk-free asset} For simplicity, we will specify the rate of return as a continuously compounded rate.  \index{continuously compounded interest} For example, if the annual rate with annual compounding is $r_a$, then the corresponding continuously compounded rate is $r$ defined as $r = \log (1+r_a)$, where $\log$ denotes the natural logarithm function.  This means that the gross return over a year (one plus the rate of return) is $\mathrm{e}^r = 1+r_a$.  More generally, an investment of $x$ dollars for a time period of length $T$ (we measure time in years, so, e.g., a six-month investment would mean $T=0.5$) will result in the ownership of $x\mathrm{e}^{rT}$ dollars at the end of the time period.  
 
-Everything in the remainder of the book is based on the mathematics presented in this chapter.  For easy reference, the essential formulas have been highlighted in boxes.  
+Expressing the interest rate as a continuously compounded rate enables us to avoid having to specify in each instance whether the rate is for annual compounding, semi-annual compounding, monthly compounding, etc.  For example, the meaning of an annualized rate $r_s$ for semi-annual compounding is that an investment of $x$ dollars will grow over a year to $x(1+r_s/2)^2$.  The equivalent continuously compounded rate is defined as $r = \log (1+r_s/2)^2$, and in terms of this rate we can say that the investment will grow in six months to $x\mathrm{e}^{0.5 r}$ and that it will grow in one year to $x\mathrm{e}^r$.  We can interpret this rate as being continuously compounded because compounding $n$ times per year at an annualized rate of $r$ results in \$1 growing in a year to $(1+r/n)^n$ and
+$$\lim_{n \rightarrow \infty} \left(1+\frac{r}{n}\right)^n = \mathrm{e}^r\;\;.$$
+To develop pricing and hedging formulas for derivative securities, it is a great convenience to assume that investors can trade continuously in time.  This requires us to assume also that returns are computed continuously.  In the case of a risk-free investment of $x(t)$ dollars at any date $t$ at a continuously compounded rate of $r$, we will say that the interest earned in an instant $\mathrm{d} t$ is $x(t)r\,\mathrm{d} t$ dollars.  This is only meaningful when we accumulate the interest over a non-infinitesimal period of time.  So consider investing $x(0)$ dollars at time 0 and reinvesting interest in the risk-free asset over a time period of length $T$.  Let $x(t)$ denote the account balance at date $t$, for $0\leq t \leq T$.  The change in the account balance in each instant is the interest earned, so we have
+$\mathrm{d} x(t) = x(t)r\,\mathrm{d} t$.  The real meaning of this equation is that $x(t)$ satisfies the differential equation
+$$\frac{\mathrm{d} x(t)}{\mathrm{d} t} = x(t)r\; ,$$
+and it is well known (and easy to verify) that the solution is
+$$x(t) = x(0)\mathrm{e}^{rt}\; ,$$
+leading to an account balance at the end of the time period of $x(T) = x(0)\mathrm{e}^{rT}$.  Thus, the statement that the interest earned in an instant $\mathrm{d} t$ is $x(t)r\,\mathrm{d} t$ is equivalent to the statement that interest is continuously compounded at the rate $r$.
 
+In the last part of the book, we will drop the assumption that the risk-free asset earns a constant rate of return.  In this case, we will still generally assume that there is a risk-free asset for very short-term investments (i.e., for investments with infinitesimal durations!).  We will let $r(t)$ denote the risk-free rate for an instantaneous investment at date $t$. This means that an investment of $x(t)$ dollars at date $t$ in the risk-free asset earns interest in an instant $\mathrm{d} t$ equal to $x(t)r(t)\,\mathrm{d} t$.  Consider again an investment of $x(0)$ dollars at date 0 in this instantaneously risk-free asset with interest reinvested and let $x(t)$ denote the account balance at date $t$.  Then $x(t)$ must satisfy the differential equation
+$$\frac{\mathrm{d} x(t)}{\mathrm{d} t} = x(t)r(t)\;\;.$$
+The solution of this differential equation is
+$$x(t) = x(0)\exp\left(\int_0^t r(s)\,ds\right)\;\;.$$
+The expression $\int_0^t r(s)\,ds$ can be interpreted as a continuous sum over time of the rates of interest $r(s)$ earned at times $s$ between 0 and $t$.  If these rates are all the same, say equal to $r$, then $\int_0^t r(s)\,ds = rt$ and our compounding factor $\exp\left(\int_0^t r(s)\,ds\right)$ is $\mathrm{e}^{rt}$ as before.  
 
+## State Prices in a One-Period Binomial Model {#sec-s_oneperiodbinomial}
 
+To introduce the concepts that will be discussed in the remainder of the chapter, we will consider in this and the following section the following very simple framework.  \index{binomial model} There is a stock with price $S$ today (which we will call date~0).  At the end of some period of time of length $T$, the stock price will take one of two values: either $S_u$ or $S_d$, where $S_u > S_d$.  If the stock price equals $S_u$ we say we are in the up state of the world, and if it equals $S_d$ we say we are in the down state.  The stock does not pay a dividend.  There is also a risk-free asset earning a continuously compounded rate of interest $r$.  Finally we want to consider a European call option on the stock with maturity $T$ and strike $K$.   The value of the call option at the end of the period is $C_u=\max(0,S_u-K)$ in the up state and $C_d=\max(0,S_d-K)$ in the down state. 
 
-## Simulating a Brownian Motion {#sec-s_simulatingbrownian}
-We begin with the fact that changes in the value of a Brownian motion \index{Brownian motion} are normally distributed with mean zero and variance equal to the length of the time period.  Let $B(t)$ denote the value of a Brownian motion at time $t$.  Then for any date $u>t$, given the information at time $t$, the random variable $B(u) - B(t)$ is normally distributed with mean zero and variance equal to $u-t$.  Unless stated otherwise, our convention will be that a Brownian motion starts at $B(0)=0$.
-
-We can generate an approximate Brownian motion in Python.  To do so, we take a small time period $\Delta t$ and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance $\Delta t$.  In the following procedure, we input the length $T=0.5$ of the entire time period over which the Brownian motion is to be simulated.  One input the is number $n=10000$ of time periods of length $\Delta t$ within the full interval $[0,T]$.  The length $\Delta t$ of each individual time period is then calculated as $T/n$.  The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number $n$.  Plotting the output of the procedure creates a picture of what we call a path of the Brownian motion, which means that it shows the value taken at each time in one state of the world.  The procedure generates $m=2$ paths which can be interpreted as the values of the Brownian motion in another state of the world.  In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Python's random number generating function.  The random number generator np.random.normal(loc = 0, scale = vol,size = (n,m)) is an algorithm which produces numbers which mimic $n \times m$ normally distributed random variables with mean 0 (loc=0) and standard deviation $\sqrt{\Delta t}$ (scale=vol).  By setting the seed=1234 the generator is initialized and we will always get the same output whenever we run the code. The Brownian path is just the cumulative sum of $n$ of the normal increments.  
-
-
-```{python}
-#| label: Simulated Brownian Motion
-#| fig-cap: "Simulated Brownian Motion"
-import numpy as np
-import matplotlib.pyplot as plt
-
-# number of subdivisions
-n = 10000
-# number of paths
-m = 2
-# last date
-T = 0.5
-# delta t
-dt = T/n
-# volatility is standard deviation
-vol = np.sqrt(dt)
-# seed for random generator
-seed= 1234
-# define a random generator
-np.random.seed(seed)
-
-# generate "dB" for each date on each path distributed N(0,vol)
-inc = np.random.normal(loc = 0, scale = vol,size = (n,m))
-Bt = np.zeros(shape = (n + 1, m))
-
-# Brownian path starts at 0 and is cumulative sum of the dB
-Bt[1:] = inc.cumsum(axis = 0)
-# Could do previous step in a loop
-for i in range(1, n + 1):
-    Bt[i] = Bt[i - 1] + inc[i - 1]
-
-# plot one path
-t = np.array(range(0, n + 1, 1)) * dt
-plt.figure(figsize=(9,6))
-plt.plot(t,Bt[:,0])
-plt.xlabel("Time")
-plt.ylabel("Brownian Motion")
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- ^[The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrtdt]*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\Delta t}$ and hence its variance is $\Delta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings Time and Brownian Motion.  To plot the path of the Brownian motion, select the two columns and insert an XY (Scatter) chart, with data points connected by lines.} -->
-
-<!-- <!-- \addcontentsline{lof}{figure}{Simulating Brownian Motion}
-\begin{verbatim}
-Sub Simulating_Brownian_Motion()
-Dim T, dt, Sqrdt, BrownianMotion, i, N
-T = InputBox("Enter the length of the time period (T)")
-N = InputBox("Enter the number of periods (N)")
-dt = T / N
-Sqrdt = Sqr(dt)
-ActiveCell.Value = "Time"
-ActiveCell.Offset(0, 1) = "Brownian Motion"
-ActiveCell.Offset(1, 0) = 0   ' beginning time
-ActiveCell.Offset(1, 1) = 0   ' beginning value of Brownian motion
-BrownianMotion = 0
-For i = 1 To N
-  ActiveCell.Offset(i + 1, 0) = i * dt          ' next time
-  BrownianMotion = BrownianMotion + Sqrdt * RandN()
-  ActiveCell.Offset(i + 1, 1) = BrownianMotion  ' next value
-Next i
-End Sub -->
-<!-- \end{verbatim} --> -->
-
-
-
-
-## Quadratic Variation {#sec-s_quadraticvariation}
-If we take a large number $n$ of time steps in the simulation of the preceding section, we will see the distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price.   
-The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
-
-Consider a discrete partition 
-$$0=t_0 < t_1 < t_2 < \cdots < t_N=T$$
-of the time interval $[0,T]$.  Let $B$ be a Brownian motion and calculate the sum of squared changes
-$$\sum_{i=1}^N [\Delta B(t_i)]^2\; ,$$
-where $\Delta B(t_i)$ denotes the change $B(t_i)-B(t_{i-1}).$  If we consider finer partitions with the length of each time interval $t_i-t_{i-1}$ going to zero, the limit of the sum is called the quadratic variation of the process.  \index{quadratic variation} For a Brownian motion, the quadratic variation over an interval $[0,T]$ is equal to $T$ with probability one.  Here is a plot of the quadratic variation.  For large values of $n$, it is equal to $t$.
-
-```{python}
-#| label: Quadratic Variation
-#| fig-cap: "Quadratic Variation"
-# quadratic variation
-Q = np.zeros(shape = (n, m))
-# Generate dB^2
-Q = (Bt[1:n + 1] - Bt[0:n])**2
-
-# Quadratic variation is the cumulative sum of dB^2
-QV = np.zeros(shape = (n + 1, m))
-QV[1:] = Q.cumsum(axis = 0)
-plt.figure(figsize=(9,6))
-plt.plot(t,QV[:,0])
-plt.xlabel("Time")
-plt.ylabel("Quadratic Variation")
-```
-
-
-
-
-
-
-The functions with which we are normally familiar are continuously differentiable.  If $X$ is a continuously differentiable function of time (in each state of the world), then the quadratic variation of $X$ will be zero.  A simple example is a linear function: $X(t) = at$ for some constant $a$.  Then, taking $t_i-t_{i-1} = \Delta t = T/N$ for each $i$, the sum of squared changes is
-$$\sum_{i=1}^N [\Delta X(t_i)]^2 = \sum_{i=1}^N  [a\,\Delta t]^2 = Na^2 (\Delta t)^2 = Na^2 \left(\frac{T}{N}\right)^2 = \frac{a^2T^2}{N} \rightarrow 0$$
-as $N \rightarrow \infty$.  Essentially the same argument shows that the quadratic variation of any continuously differentiable function is zero, because such a function is approximately linear at each point.  Below is a plot of the quadratic variation for the function $X(t)=t$.  Look carefully at the scale of the y-axis
-
-```{python}
-#| label: squaredvariation
-#| fig-cap: "Approximate Squared Variation of $f(t)=t$"
-# Plot dt^2
-plt.figure(figsize=(9,6))
-plt.plot(t,t * dt **2)
-```
-
-
-
-Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual.  To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, \index{total variation} which is defined in the same way as quadratic variation but with the squared changes $[\Delta B(t_i)]^2$ replaced by the absolute value of the changes $|\Delta B(t_i)|.$  If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one).  It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion.  This is not quite right.  Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil.  Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has.  Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass.  If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function).  However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye---no matter how small the segment, one would still see the characteristic jiggling.
-
-One may well question why we should be interested in this curious mathematical object.  The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing @eq-formula establishes.  Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants.  More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes.  So, we are led to a study of continuous martingales.  An important fact is that any non-constant continuous martingale must have infinite total variation!  So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.  
-
-There remains perhaps the question of why we focus on Brownian motion within the world of continuous martingales.  The answer here is that any continuous martingale is really just a transformation of a Brownian motion.  This is a consequence of the following important fact, which is known as Levy's theorem: \index{Levy's theorem}
-
-::: {.callout-tip}
-## 
-A continuous martingale is a Brownian motion if and only if its quadratic variation over each interval $[0,T]$ equals $T$.
-:::
-
-Thus, among continuous martingales, a Brownian motion is defined by the condition that the quadratic variation over each interval $[0,T]$ is equal to $T$.  This is really just a normalization.  A different continuous martingale may have a different quadratic variation, but it can be converted to a Brownian motion just by deforming the time scale.  Furthermore, many continuous martingales can be constructed as stochastic integrals with respect to a Brownian motion.  We take up this topic in the next section.
-
-## Ito Processes {#sec-s_itoprocesses}
-An Ito process is a variable $X$ that changes over time as \index{Ito process}
+We will assume
 $$
-\mathrm{d} X(t) = \mu(t)\,\mathrm{d} t+\sigma(t)\,\mathrm{d} B(t)\;,
-$$ {#eq-itoprocess}
+\frac{S_u}{S} > \mathrm{e}^{rT} > \frac{S_d}{S}\;.
+$$ {#eq-binomialnoarbitrage}
 
-where $B$ is a Brownian motion, and $\mu$ and $\sigma$ can also be random processes.  Some regularity conditions are needed on $\mu$ and $\sigma$ which we will omit, except for noting that $\mu(t)$ and $\sigma(t)$ should be known at time $t$.  In particular, constant $\mu$ and $\sigma$ are certainly acceptable.  When we add the changes over time, we get
-$$X(T)=X(0) + \int_0^T\mu(t)\,\mathrm{d} t + \int_0^T\sigma(t)\,\mathrm{d} B(t)$$
-for any $T>0$.  There are other types of random processes, in particular, processes that can jump, but we will not consider them in this book.
+This condition means that the rate of return on the stock in the up state is greater than the risk-free rate, and the rate of return on the stock in the down state is less than the risk-free rate.  If it were not true, there would be an arbitrage opportunity: \index{arbitrage} if the rate of return on the stock were greater than the risk-free rate in both states, then one should buy an infinite amount of the stock on margin, and conversely if the rate of return on the stock were less than the risk-free rate in both states, then one should short an infinite amount of stock and put the proceeds in the risk-free asset.  So what we are assuming is that there are no arbitrage opportunities in the market for the stock and risk-free asset.
 
-We will not formally define the integral $\int_0^T \sigma(t)\,\mathrm{d} B(t)$, but it should be understood as being approximately equal to a discrete sum of the form 
-$$\sum_{i=1}^N \sigma(t_{i-1})\,\Delta B(t_i)\; ,$$
-where $0=t_0 < \cdots t_N=T$ and the time periods $t_i-t_{i-1}$ are small.  Given that we can simulate the changes $\Delta B(t_i)$ as random normals, we can approximately simulate the random variable $\int_0^T \sigma(t)\,\mathrm{d} B(t)$ and hence we can approximately simulate $X(T)$.
 
-An Ito process evolves continuously over time.  We interpret $\mu(t)\,\mathrm{d} t$ as the expected change in $X$ in an instant $\mathrm{d} t$.  The quantity $\mu(t)$  is also called the drift of the process $X$ at time $t$.   \index{drift} The coefficient $\sigma(t)$ is called the diffusion coefficient of $X$ at time $t$.  \index{diffusion coefficient}
-
-If $\mu$ and $\sigma$ are constant, it is standard to refer to an Ito process $X$ as a $(\mu,\sigma)$--Brownian motion.  In this case we have
-$$X(t)= \mu t + \sigma B_t$$
-
-Of course, it is not a martingale when $\mu\neq 0$.  For example, when $\mu>0$, $X$ tends to increase over time.  However, it has the jiggling property of a Brownian motion, scaled by the diffusion coefficient $\sigma$. 
-
-A very important fact is that an Ito process such as @eq-itoprocess can be a martingale only if $\mu=0$.  This should seem sensible, because $\mu\,\mathrm{d} t$ is the expected change in $X$, and a process is a martingale only if its expected change is zero.^[If the sources of uncertainty in the market can be modeled as Brownian motions, then in fact every martingale is an Ito process with $\mu=0$.  This is some justification for the assumption we will make in this book, when studying continuous-time models, that all martingales are Ito processes.]   This observation plays a fundamental role in deriving asset pricing formulas, as we will begin to see in @sec-s_girsanov.
-Conversely, if $\mu=0$ and 
+The delta of the call option is $\delta = (C_u-C_d)/(S_u-S_d)$.  \index{delta} Multiplying by $S_u-S_d$ gives us $\delta(S_u-S_d) = C_u-C_d$ and rearranging yields  $\delta S_u - C_u = \delta S_d-C_d$, which is critical to what follows.  Consider purchasing $\delta$ shares of the stock at date 0 and borrowing
+$$\mathrm{e}^{-rT}(\delta S_u-C_u) = \mathrm{e}^{-rT}(\delta S_d-C_d)$$
+dollars at date 0.  Then you will owe 
+$$\delta S_u-C_u = \delta S_d-C_d$$
+dollars at date $T$, and hence the value of the portfolio at date $T$ in the up state will be
+$$\text{Value of delta shares} - \text{Dollars owed} = \delta S_u - (\delta S_u-C_u) = C_u\; ,$$
+and the value of the portfolio at date $T$ in the down state will be
+$$\text{Value of delta shares} - \text{Dollars owed} = \delta S_d - (\delta S_d-C_d) = C_d\;\;.$$
+Thus, this portfolio of buying delta shares and  borrowing money (i.e., buying delta shares on margin) replicates the call option.  \index{replicating strategy} \index{delta hedge} Consequently, the value $C$ of the option at date 0 must be the date--0 cost of the portfolio; i.e.,
 $$
-E \left[\int_0^T \sigma^2(t)\,\mathrm{d} t\right] < \infty
-$$ {#eq-regularity1}
+C = \text{Cost of delta shares} - \text{Dollars borrowed} = \delta S - \mathrm{e}^{-rT}(\delta S_u-C_u)\;.
+$$ {#eq-C0}
 
-for each $T$,  
-then the Ito process is a continuous martingale and the variance of its date--$T$ value, calculated with the information available at date 0, is:
-$$\mathrm{var}[X(T)] = E \left[\int_0^T \sigma^2(t)\,\mathrm{d} t\right]\; .$$  
+Because the call option is equivalent to buying the stock on margin, it can be considered a levered investment in the stock. \index{leverage}
 
-Whether $\mu$ is zero or not, and independently of the assumption @eq-regularity1, the quadratic variation of the Ito process $X$ is 
-$$
-\lim_{N \rightarrow \infty} \sum_{i=1}^N[\Delta X(t_i)]^2 = \int_0^T \sigma^2(t)\,\mathrm{d} t
-$$ {#eq-itoquadraticvariation}
-
-with probability one.  Thus we obtain (when $\mu=0$ and @eq-regularity1 holds) a continuous martingale with a different quadratic variation than a Brownian motion via the diffusion function $\sigma$.  In fact, when @eq-regularity1 holds, a somewhat more precise definition of the stochastic integral is the (unique) martingale with quadratic variation given by @eq-itoquadraticvariation.
-
-To compute the quadratic variation of an Ito process, we use the following simple and important rules (for the sake of brevity, we drop the $(t)$ notation from $B(t)$ here and sometimes later):
-
-::: {.callout-tip}
-## 
+We will now rewrite the option pricing @eq-C0 in terms of state prices. \index{state price}
+By substituting for $\delta$ in @eq-C0, we can rearrange it as
 
 
 $$
-(\mathrm{d} t)^2 = 0\;, 
-$$ {#eq-dtsquared}
+C = \frac{S-\mathrm{e}^{-rT}S_d}{S_u-S_d} \times C_u + \frac{\mathrm{e}^{-rT}S_u-S}{S_u-S_d}\times C_d\; .
+$$ {#eq-binomialC1}
+
+A little algebra also shows that
+$$
+S = \frac{S-\mathrm{e}^{-rT}S_d}{S_u-S_d} \times 
+S_u + \frac{\mathrm{e}^{-rT}S_u-S}{S_u-S_d}\times S_d\; ,
+$$ {#eq-binomialS1}
+
+and
+$$
+1 = \frac{S-\mathrm{e}^{-rT}S_d}{S_u-S_d} \times \mathrm{e}^{rT}+ \frac{\mathrm{e}^{-rT}S_u-S}{S_u-S_d}\times \mathrm{e}^{rT}\;.
+$$ {#eq-binomialR1}
+
+
+It is convenient to denote the factors appearing in these equations as
+$$
+\pi_u = \frac{S-\mathrm{e}^{-rT}S_d}{S_u-S_d} \quad \text{and} \quad \pi_d = \frac{\mathrm{e}^{-rT}S_u-S}{S_u-S_d}\;.
+$$ {#eq-binomialstateprices}
+
+The numbers $\pi_u$ and $\pi_d$ are called the state prices, for reasons that will be explained below.
+
+With these definitions, we can write @eq-binomialC1--@eq-binomialR1 as
 
 $$
-(\mathrm{d} t)(\mathrm{d} B) =0\;, 
-$$ {#eq-dtdB}
+C = \pi_uC_u + \pi_dC_d\;,
+$$ {#eq-binomialC2}
 
 $$
-(\mathrm{d} B)^2 =\mathrm{d} t\;. 
-$$ {#eq-dBsquared}
+S = \pi_uS_u+\pi_dS_d\;,
+$$ {#eq-binomialS2}
+
+$$
+1 = \pi_u\mathrm{e}^{rT} + \pi_d \mathrm{e}^{rT}\;.
+$$ {#eq-binomialR2}
+
+
+These equations have the following interpretation: the value of a security today is its value in the up state times $\pi_u$ plus its value in the down state times $\pi_d$.  This applies to @eq-binomialR2 by considering an investment of \$1 today in the risk-free asset---it has value 1 today and will have value $\mathrm{e}^{rT}$ in both the up and down states at date $T$.  Moreover, this same equation will hold for any other derivative asset.  For example, if we considered a put option, then a delta--hedging argument analogous to that we just gave for the call option will lead to a formula for the value $P$ of the put today which can be expressed as $P = \pi_uP_u+\pi_dP_d$ for the same $\pi_u$ and $\pi_d$ defined in @eq-binomialstateprices.  
+
+In this model, we can think of any security as a portfolio of what are called Arrow securities (in recognition of the seminal work of Kenneth Arrow [@Arrow]).  \index{Arrow security} One of the Arrow securities pays \$1 at date $T$ if the up state occurs and the other pays \$1 at date $T$ if the down state occurs.  For example, the stock is equivalent to a portfolio consisting of $S_u$ units of the first Arrow security and $S_d$ units of the second, because the stock is worth $S_u$ dollars in the up state and $S_d$ dollars in the down state.  Equations @eq-binomialC2--@eq-binomialR2 show that~ $\pi_u$ is the price of the first Arrow security and $\pi_d$ is the price of the second.  For example, the right-hand side of @eq-binomialS2 is the value of the stock at date 0 viewed as a portfolio of Arrow securities when the Arrow securities have prices $\pi_u$ and $\pi_d$.  Because the stock clearly is such a portfolio, its price today must equal its value as that portfolio, which is what @eq-binomialS2 asserts.
+
+As mentioned before, the prices $\pi_u$ and $\pi_d$ of the Arrow securities are called the state prices, because they are the prices of receiving \$1 in the two states of the world.  The state prices should be positive, because the payoff  of each Arrow security is nonnegative in both states and positive in one.  A little algebra shows that the conditions $\pi_u>0$ and $\pi_d>0$  are exactly equivalent to our no-arbitrage assumption @eq-binomialnoarbitrage.  Thus, we conclude that **in the absence of arbitrage opportunities, there exist positive state prices such that the price of any security is the sum across the states of the world of its payoff multiplied by the state price.**
+
+This conclusion generalizes to other models, including models in which the stock price takes a continuum of possible values.  We will discuss more general models later in this chapter.  It is a powerful result that tremendously simplifies derivative security pricing.  
+
+## Probabilities and Numeraires
+
+In this section, we will continue our analysis of the binomial example.  To apply the statement about state prices appearing in boldface type above in the most convenient way, we will manipulate the state prices  so we can interpret the sums on the right-hand sides of  @eq-binomialC2--@eq-binomialR2 in terms of  expectations.  \index{expectation} The expectation (or mean) of a random variable is of course its probability-weighted average value.
+
+In general, there are different expectations that are useful.  In this model, there are two that we can define: one corresponding to the risk-free asset and one corresponding to the stock.  Many readers will have experience with the first in the form of risk-neutral probabilities.  
+
+The risk-neutral probabilities are defined as $\pi_u\mathrm{e}^{rT}$ for the up state and $\pi_d\mathrm{e}^{rT}$ for the down state.  Denoting these as $p_u$ and $p_d$ respectively,  @eq-binomialC2--@eq-binomialR2 can be written as
+
+$$
+C = \mathrm{e}^{-rT}[p_uC_u+p_dC_d]\;,
+$$ {#eq-binomialC3}
+
+$$
+S = \mathrm{e}^{-rT}[p_uS_u+p_dS_d]\;,
+$$ {#eq-binomialS3}
+
+$$
+1= p_u+p_d\;.
+$$ {#eq-binomialR3}
+
+
+The numbers $p_u$ and $p_d$ are both positive (because the state prices are positive under our no-arbitrage assumption) and @eq-binomialR3 states that they sum to one, so it is indeed sensible to consider them as probabilities.
+Equations @eq-binomialC3 and @eq-binomialS3 state that the value of a security today is its expected value at date $T$ (the expectation taken with respect to the risk-neutral probabilities) discounted at the risk-free rate.  Thus, these are present value formulas.  Unlike the Capital Asset Pricing Model, for example, there is no risk premium in the discount rate.  This is the calculation we would do to price assets under the actual probabilities if investors were risk neutral (or for zero-beta assets).  So, we can act as if investors are risk neutral by adjusting the probabilities.  Of course, we are not really assuming investors are risk neutral.  We have simply embedded any risk premia in the probabilities.^[This fundamental idea is due to Cox and Ross [@CR].]
+
+Equations @eq-binomialC3 and @eq-binomialS3 can be written in an equivalent form, which, though somewhat less intuitive, generalizes more readily.  First, let's introduce some notation for the price of the risk-free asset.  Considering an investment of \$1 today which grows to $\mathrm{e}^{rT}$ at date $T$, it is sensible to take the price today to be $R=1$ and the price in the up and down states at date $T$ to be $R_u=R_d=\mathrm{e}^{rT}$.^[All of the equations appearing below will also be true if instead we take $R=\mathrm{e]^{-rT}$ and $R_u=R_d=1$.}  In terms of this notation,  @eq-binomialC3--@eq-binomialR3 can be written as:
+
+$$
+\frac{C}{R} = p_u \frac{C_u}{R_u} + p_d \frac{C_d}{R_d}\;, 
+$$ {#eq-binomialC4}
+
+$$
+\frac{S}{R} = p_u \frac{S_u}{R_u} + p_d \frac{S_d}{R_d}\;, 
+$$ {#eq-binomialS4}
+
+$$
+1=p_u+p_d\;.
+$$ {#eq-binomialR4}
+
+
+Each of equations @eq-binomialC4 and @eq-binomialS4 states that the price of a security today divided by the price of the risk-free asset equals the expected future value of the same ratio, when we take expectations using the risk-neutral probabilities.  In other words, the mean of the date--$T$ value of the ratio is equal to the ratio today.  We will discuss the interpretation and significance of these equations further below.  First, we consider the other type of expectation in this model, which is based on probabilities corresponding to the stock.
+
+Note that the risk-neutral probabilities are the state prices multiplied by the gross return on the risk-free asset.  Analogously, define numbers $q_u = \pi_uS_u/S$ and $q_d = \pi_dS_d/S$.  Substituting for $\pi_u$ and $\pi_d$ in  @eq-binomialC2--@eq-binomialR2 and continuing to use the notation $R$ for the price of the risk-free asset, we obtain
+
+$$
+\frac{C}{S} = q_u \frac{C_u}{S_u} + q_d \frac{C_d}{S_d}\;, 
+$$ {#eq-binomialC5}
+
+$$
+1 = q_u + q_d\;,
+$$ {#eq-binomialS5}
+
+$$
+\frac{R}{S} = q_u \frac{R_u}{S_u} + q_d \frac{R_d}{S_d}\;. 
+$$ {#eq-binomialR5}
+
+
+Equation @eq-binomialS5 establishes that we can view the $q$'s as probabilities (like the risk-neutral probabilities, they are positive because the state prices are positive).  Equations @eq-binomialC5 and @eq-binomialR5 both state that the ratio of a security price to the price of the stock today equals the mean value of the same ratio at date $T$, when we compute expectations using the $q$'s as probabilities.  
+
+
+Here is some useful terminology:
+
+
+- An assignment of probabilities to events is called a \emph{probability measure}, or simply a \emph{measure} (because it measures the events, in a sense).  Thus, we have described two different probability measures in this section.  \index{measure} \index{probability measure}
+- The ratio of one price to another is the value of the first (numerator) asset  when we are using the second (denominator) asset  as the \emph{numeraire}.  \index{numeraire} The term numeraire means a unit of measurement.  For example, the ratio $C/S$ is the value of the call when we use the stock as the unit of measurement: it is the number of shares of stock for which one call option can be exchanged (to see this, note that $C/S$ shares is worth $C/S \times S = C$ dollars, so $C/S$ shares is worth the same as one call.) 
+- A variable that changes randomly over time with the expected future value being always equal to the current value is called a \emph{martingale}. \index{martingale}
 
 
 
-:::
+The right-hand sides of  @eq-binomialC4--@eq-binomialS4 and @eq-binomialC5 and @eq-binomialR5 are expectations under different \emph{probability measures} (the $p$'s or $q$'s).  The expected future (date--$T$) value equals the current (date--0) value, so the random variables ($C/R$ and $S/R$ or $C/S$ and $R/S$) are \emph{martingales}.  The values $C/R$ and $S/R$ are the values of the call and stock \emph{using the risk-free asset as numeraire}, and the values $C/S$ and $R/S$ are the values of the call and risk-free asset \emph{using the stock as numeraire}.  Thus, we will express  @eq-binomialC4--@eq-binomialS4 as the call and stock are martingales when we use the risk-free asset as numeraire.  Likewise, we will express  @eq-binomialC5 and @eq-binomialR5 as the call and risk-free asset are martingales when we use the stock as numeraire.  It should be understood in both cases that using an asset as numeraire means that we also use the corresponding probability measure (i.e., the $p$'s or $q$'s).  In general, our conclusion that assets can be priced in terms of positive state prices when there are no arbitrage opportunities can be rephrased as: 
+**if there are no arbitrage opportunities, then for each (non-dividend-paying) asset, there exists a probability measure  such that the ratio of any other (non-dividend-paying) asset price to the first (numeraire) asset price is a martingale.**
 
+We have applied this statement to the risk-free asset, which pays dividends (interest).  However, the price $R_u=R_d=\mathrm{e}^{rT}$ includes the interest, so no interest has been withdrawn---the interest has been reinvested---prior to the maturity $T$ of the option.  This is what we mean by a non-dividend-paying asset.  In general, we will apply the formulas developed in this and the following section to dividend-paying assets by considering the portfolios in which dividends are reinvested.
 
-We apply these rules to compute the quadratic variation of $X$ as follows:
+For this exposition, it was convenient to first calculate the state prices and then calculate the various probabilities.  However, that is not the most efficient way to proceed in most applications.  In a typical application, we would view the prices of the stock and risk-free asset in the various states of the world as given, and we would be attempting to compute the value of the call option.  Note that the sets of equations @eq-binomialC2--@eq-binomialR2, @eq-binomialC4--@eq-binomialR4, and @eq-binomialC5--@eq-binomialR5 are all equivalent.  In each case we would consider that there are three unknowns---the value $C$ of the call option and either two state prices or two probabilities.  In each case the state prices or probabilities can be computed from the last two equations in the set of three equations and then the call value $C$ can be computed from the first equation in the set.  All three sets of equations produce the same call value.  
 
-::: {.callout-tip}
-## 
-If $\mathrm{d} X = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B$ for a Brownian motion $B$, then
+In fact, as we will see, it will not even be necessary to calculate the probabilities.  The fact  that ratios of non-dividend paying asset prices to the numeraire asset price are martingales will tell us enough about the probabilities to calculate derivative values without having to calculate the probabilities themselves.
+
+We conclude this section with another reformulation of the pricing relations @eq-binomialC2--@eq-binomialR2.  This formulation will generalize more easily to pricing when there are a continuum of states, the subject of the next section.  
+Let $\text{prob}_u$ denote the actual probability of the up state and $\text{prob}_d$ denote the probability of the down state.  These probabilities are irrelevant for pricing derivatives in the binomial model, but we will use them to write the pricing relations @eq-binomialC2--@eq-binomialR2 as expectations with respect to the actual probabilities.  To do this, we can define
 \begin{align*}
-(\mathrm{d} X)^2 &= (\mu\,\mathrm{d} t+\sigma\,\mathrm{d} B)^2\\
-&= \mu^2(\mathrm{d} t)^2 + 2\mu\sigma(\mathrm{d} t)(\mathrm{d} B) + \sigma^2(\mathrm{d} B)^2\\
-&= 0 + 0 + \sigma^2\,\mathrm{d} t\;.
+\phi_u &= \frac{\pi_u}{\text{prob}_u}\; ,\\
+\phi_d &= \frac{\pi_d}{\text{prob}_d}\;.
 \end{align*}
-:::
-
-We integrate this from 0 to $T$ to obtain the quadratic variation @eq-itoquadraticvariation over that time period:^[In a more formal mathematical presentation, one normally writes $\mathrm{d]\langle X,X\rangle$ for what we are writing here as $(\mathrm{d} X)^2$.  This is the differential of the quadratic variation process, and the quadratic variation through date $T$ is
-$$\langle X,X\rangle (T) = \int_0^T \mathrm{d}\langle X,X\rangle(t) = \int_0^T \sigma^2(t)\,\mathrm{d} t\;.$$}
-$$
-\int_0^T (\mathrm{d} X(t))^2 = \int_0^T \sigma^2(t)\,\mathrm{d} t\;.
-$$ {#eq-itoquadraticvariation2}
-
-
-
-
-## Ito's Formula {#sec-s_itosformula}
-
-First we recall some facts of the ordinary calculus.  If $y=g(x)$ and $x = f(t)$ with $f$ and $g$ being continuously differentiable functions, then 
-$$\frac{\mathrm{d} y}{\mathrm{d} t} = \frac{\mathrm{d} y}{\mathrm{d} x}\times \frac{\mathrm{d} x}{\mathrm{d} t} = g'(x(t))f'(t)\; .$$
-Over a time period $[0,T]$, this implies that
-$$y(T) = y(0) + \int_0^T \frac{\mathrm{d} y}{\mathrm{d} t}\,\mathrm{d} t = y(0) + \int_0^T g'(x(t))f'(t)\,\mathrm{d} t\; .$$
-Substituting $\mathrm{d} x(t) = f'(t)\,\mathrm{d} t$, we can also write this as
-$$
-y(T) = y(0) + \int_0^T g'(x(t))\,\mathrm{d} x(t)\;.
-$$ {#eq-ordinarycalculus}
-
-
-We can contrast  @eq-ordinarycalculus  with a special case of Ito's formula for the calculus of Ito processes (the more general formula will be discussed in the next section).  If $B$ is a Brownian motion and $Y = g(B)$ for a twice-continuously differentiable function $g$, then \index{Ito's formula}
-$$
-Y(T) = Y(0) + \int_0^T g'(B(t))\,\mathrm{d} B(t) + \frac{1}{2}\int_0^T g''(B(t))\,\mathrm{d} t\;.
-$$ {#eq-itonew1}
-
-Thus, relative to the ordinary calculus, Ito's formula has an extra term involving the second derivative $g''$.  We can write @eq-itonew1 in differential form as
-$$dY(t) = \frac{1}{2}g''(B(t))\,\mathrm{d} t + g'(B(t))\,\mathrm{d} B(t).$$
-Thus, $Y=g(B)$ is an Ito process with drift $g''(B(t))/2$ and diffusion coefficient $g'(B(t))$.
-
-To gain some intuition for the extra term in Ito's formula, we return to the ordinary calculus.  Given dates $t<u$, the derivative defines a linear approximation of the change in $y$ over this time period; i.e., setting $\Delta x = x(u)-x(t)$ and $\Delta y = y(u) - y(t)$, we have the approximation
-$$\Delta y \approx g'(x(t)) \,\Delta x\; .$$
-A better approximation is given by the second-order Taylor series expansion
-$$\Delta y \approx g'(x(t))\,\Delta x + \frac{1}{2} g''(x(t))\,[\Delta x]^2\; .$$
-An interpretation of  @eq-ordinarycalculus is that the linear approximation works perfectly for infinitesimal time periods $\mathrm{d} t$, because we can compute the change in $y$ over the time period $[0,T]$ by summing up the infinitesimal changes $g'(x(t))\,\mathrm{d} x(t)$.  In other words, the second-order term $\frac{1}{2} g''(x(t))\,[\Delta x]^2$ vanishes when we consider very small time periods.
-
-The second-order Taylor series expansion in the case of $Y=g(B)$ is 
-$$\Delta Y \approx g'(B(t))\,\Delta B + \frac{1}{2} g''(B(t))\,[\Delta B]^2\; .$$
-For example, given a partition $0=t_0 < t_1 < \cdots < t_N=T$ of the time interval $[0,T]$, we have, with the same notation we have used earlier,
+Then @eq-binomialC2--@eq-binomialR2 can be written as
 
 $$
-Y(T) = Y(0) + \sum_{i=1}^N \Delta Y(t_i)  
-$$
-$$
-\approx Y(0) + \sum_{i=1}^N g'(B(t_{i-1}))\,\Delta B(t_i) + \frac{1}{2} \sum_{i=1}^N g''(B(t_{i-1}))\,[\Delta B(t_i)]^2\;.
-$$ {#eq-itonew2}
-
-
-If we make the time intervals $t_i-t_{i-1}$ shorter, letting $N \rightarrow \infty$, we cannot expect that the extra term here will disappear, leading to the result @eq-ordinarycalculus of the ordinary calculus, because we know that
-$$\lim_{N \rightarrow \infty} \sum_{i=1}^N [\Delta B(t_i)]^2 = T\; ,$$
-whereas for the continuously differentiable function $x(t) = f(t)$, the same limit is zero.  In fact it seems sensible to interpret the limit of $[\Delta B]^2$ as $(\mathrm{d} B)^2 =\mathrm{d} t$.
-This is perfectly consistent with Ito's formula: if we take the limit in @eq-itonew2, replacing the limit of $[\Delta B(t_i)]^2$ with $(\mathrm{d} B)^2 = \mathrm{d} t$, we obtain @eq-itonew1.
-
-The code below defines a function $g(x)=e^{x}$ (g'(x)=e^x$ and g''(x) = e^x$) and simulates the value $e^{B_t}$ in two ways.  The first way is to simulate the Ito expansion
-$$e^{B_t}=1 + \int_0^t e^{B_s} d B_s + \frac{1}{2}\int_0^t e^{B_s} ds$$
-using the discretization
-$$\Delta e^{B_t}= e^{B_t} \Delta B_t + \frac{1}{2} e^{B_t} \Delta t $$
-```{python}
-#| label: Simulated Ito Formula
-#| fig-cap: "Simulated Ito Formula"
-# Define a function and its first and second derivative
-G = lambda x: np.exp(x)
-DG = lambda x: np.exp(x)
-DDG = lambda x: np.exp(x)
-# Build G'(x)dB
-GdB = np.zeros(shape = (n, m))
-GdB[0] = np.repeat(DG(0), m) * inc[0]
-GdB[1:] = DG(Bt[0:n - 1]) * inc[1:]
-SI = np.zeros(shape = (n, m))
-# Stochastic Integral is cumulative sum of G'(B)dB plus initial
-SI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G(0)
-# Compare Ito's Lemma 
-plt.figure(figsize=(9,6))
-plt.plot(t[0:n], SI[:,0])
-```
-Below is the exact simulated solution $e^{B_t}$.  It is almost impossible to see a difference.
-```{python}
-#| label: Simulated Exact Solution
-#| fig-cap: "Simulated Exact Solution"
-#exact solution
-plt.figure(figsize=(9,6))
-plt.plot(t[0:n], G(Bt[1:n + 1, 0]))
-```
-Below we plot the $\int_0^t \frac{1}{2} g''(B_s) ds$ term.  Without this term the two plots above will not match.
-```{python}
-#| label: correction
-#| fig-cap: "Second Derivative Term in Ito's Formula"
-# Correction term in Ito formula
-QVV = np.zeros(shape = (n, m))
-QVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)
-plt.figure(figsize=(9,6))
-plt.plot(t[0:n], QVV[:,0])
-```
-
-## Multiple Ito Processes
-
-Now consider two Ito processes
-
+C = \text{prob}_u\phi_uC_u + \text{prob}_d\phi_dC_d\;,
+$$ {#eq-binomialC6}
 
 $$
-\mathrm{d} X(t) = \mu_x(t)\,\mathrm{d} t + \sigma_x(t)\,\mathrm{d} B_x(t)\;,
-$$ {#eq-itoprocess110}
+S = \text{prob}_u\phi_uS_u + \text{prob}_d\phi_dS_d\;,
+$$ {#eq-binomialS6}
 
 $$
-\mathrm{d} Y(t) = \mu_y(t)\,\mathrm{d} t + \sigma_y(t)\,\mathrm{d} B_y(t)\;,
-$$ {#eq-itoprocess111}
+R = \text{prob}_u\phi_uR_u + \text{prob}_d\phi_dR_d\;.
+$$ {#eq-binomialR6}
 
 
+The right-hand sides are expectations with respect to the actual probabilities.  For example, the right-hand side of @eq-binomialC6 is the expectation of the random variable that equals $\phi_uC_u$ in the up state and $\phi_dC_d$ in the down state.  The risk-neutral probabilities can be calculated from $\phi_u$ and $\phi_d$ as
+$p_u=\text{prob}_u\phi_uR_u/R$ and $p_d=\text{prob}_d\phi_dR_d/R$.  Likewise, the probabilities using the stock as the numeraire can be calculated from $\phi_u$ and $\phi_d$ as
+$q_u=\text{prob}_u\phi_uS_u/S$ and $q_d=\text{prob}_d\phi_dS_d/S$.  In the following section, we will assume (which can be shown to be true under some technical conditions) that relations such as @eq-binomialC6--@eq-binomialR6  hold in a general (non-binomial) model given the absence of arbitrage opportunities.  We will then show, using definitions analogous to the definitions of $p_u$, $p_d$, $q_u$, and $q_d$ in this paragraph, that relations analogous to @eq-binomialC4--@eq-binomialR4 and @eq-binomialC5--@eq-binomialR5 hold.
 
-where $B_x$ and $B_y$ can be different Brownian motions.  The relation between the two Brownian motions is determined by their covariance or correlation.  Given dates $t<u$, we know that both changes $B_x(u)-B_x(t)$ and $B_y(u)-B_y(t)$ are normally distributed with mean 0 and variance equal to $u-t$.  There will exist a (possibly random) process $\rho$ such that the covariance \index{covariance} of these two normally distributed random variables, given the information at date $t$, is 
-$$E_t \left[\int_t^u \rho(s)\,\mathrm{d} s\right]\; .$$
-The process $\rho$ is called the correlation coefficient of the two Brownian motions, \index{correlation coefficient} because when it is constant the correlation of the changes $B_x(u)-B_x(t)$ and $B_y(u)-B_y(t)$ is
-$$\frac{\text{covariance}}{\text{product of standard deviations}}  = \frac{\int_t^u \rho \,\mathrm{d} s}{\sqrt{u-t} \sqrt{u-t}} = \frac{(u-t)\rho}{u-t} = \rho\; .$$
-Moreover, given increasingly fine partitions $0=t_0 < \cdots < t_N=T$ of an interval $[0,T]$ as before, we will have
-$$\sum_{i=1}^N \Delta B_x(t_i) \times \Delta B_y(t_i) \rightarrow \int_0^T \rho(t)\,\mathrm{d} t$$
-as $N \rightarrow \infty$, with probability one.  
+## Asset Pricing with a Continuum of States
 
-We know that
-$$\sum _{i=1}^N [\Delta X(t_i)]^2 \rightarrow \int_0^T \sigma_x^2(t)\,\mathrm{d} t \quad \text{and}\quad  \sum _{i=1}^N [\Delta Y(t_i)]^2 \rightarrow \int_0^T\sigma_y^2(t)\,\mathrm{d} t\;.
-$$ {#eq-itoprocess112}
+In this section, we will define the concepts of state prices and probabilities corresponding to different numeraires in a more general framework than that of the preceding section.  This leads to what we will call the fundamental pricing equation, namely @eq-formula.  There are really no new concepts in this section, only a bit more mathematics.
 
-Furthermore, it can be shown that the sum of products satisfies
+Consider a non-dividend-paying security having the random price $S(T)$ at date $T$.  We call the contingencies that affect the price $S(T)$ the states of the world.  Our principle regarding state prices developed in the preceding section can in general be expressed as:^[We have proven this in the binomial model, but we will not prove it in general.  As is standard in the literature, we will simply adopt it as an assumption.  A general proof is in fact difficult and requires a definition of no arbitrage that is considerably more complicated than the simple assumption @eq-binomialnoarbitrage that is sufficient in the binomial model.] **if there are no arbitrage opportunities, there exists for each date $T$ a positive random variable $\phi(T)$ such that the value at date 0 of a non-dividend-paying security with price $S$ is **
 $$
-\sum_{i=1}^N \Delta X(t_i) \times \Delta Y(t_i) \rightarrow \int_0^T \sigma_x(t)\sigma_y(t)\rho(t)\,\mathrm{d} t\;.
-$$ {#eq-itoprocess113}
+S(0) = E[\phi(T)S(T)]\;.
+$$ {#eq-continuum1}
+
+Here, $E[\phi(T)S(T)]$ denotes the expectation of the random variable $\phi(T)S(T)$.  The random variable $\phi(T)$ is \index{state price density} called the state price density.^[The term density reflects the fact that in each state of the world $\phi(T)$ can be interpreted as the state price per unit of probability, just as the normal meaning of density is mass per unit of volume.]  In a binomial model (or in any model with only a finite number of states of the world), the concept of an expectation is clear: it is just a weighted average of outcomes, the weights being the probabilities.  In the binomial model, the right-hand side of @eq-binomialS6 is the same as the right-hand side of @eq-continuum1.^[
+In general the expectation (or mean) of a random variable is an intuitive concept, and an intuitive understanding will be sufficient for this book, so I will not give a formal definition.  It should be understood that we are assuming implicitly, whenever necessary, that the expectation exists (which is not always the case).  In this regard, it is useful to note in passing that a product of two random variables $XY$ has a finite mean whenever $X$ and $Y$ have finite variances.]  
 
 
-::: {.callout-tip}
-## 
-By adding the rule 
+To convert from state prices to probabilities corresponding to different numeraires, we follow the same procedure as at the end of the previous section: we multiply together (i) the probability of the state, (ii) the value of $\phi(T)$ in the state, and (iii)  the gross return of the numeraire in the state.  If there is a continuum of states, then the actual probability of any individual state will typically be zero, so this multiplication will produce a zero probability.  However, we can nevertheless add up these probabilities to define the probability of any event $A$, an event being a set of states of the world.  To do this, let $1_A$ denote the random variable that takes the value 1 when $A$ is true and which is zero otherwise.  Then the probability of $A$ using $S$ as the numeraire is defined as \index{change of measure} \index{change of numeraire}
 $$
-(\mathrm{d} B_x)(\mathrm{d} B_y) = \rho\,\mathrm{d} t 
-$$ {#eq-dBdB}
- to the rules @eq-dtsquared--@eq-dBsquared, we can compute the limit in @eq-itoprocess113 as
+E\left[1_A\phi(T)\frac{S(T)}{S(0)}\right]\;.
+$$ {#eq-probSnumeraire}
 
+This makes sense as a probability because it is nonnegative and because, if $A$ is the set of all states of the world, then its probability is  $E[\phi(T)S(T)/S(0)]$, which equals one by virtue of @eq-continuum1.  From @eq-probSnumeraire of the probability of any event $A$, it can be shown that the expectation of any random variable $X$ using $S$ as the numeraire is
 $$
-\lim_{N \rightarrow\infty} \sum_{i=1}^N \Delta X(t_i) \times \Delta Y(t_i)  = \int_0^T (\mathrm{d} X)(\mathrm{d} Y)
-$$
-$$
-= \int_0^T (\mu_x\,\mathrm{d} t +\sigma_x\,\mathrm{d} B_x)(\mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y)
-$$
-$$
-= \int_0^T\sigma_x(t)\sigma_y(t) \rho(t)\,\mathrm{d} t\;.
-$$ {#eq-itojointvariation}
+E\left[X\phi(T)\frac{S(T)}{S(0)}\right]\;.
+$$ {#eq-expSnumeraire}
 
 
+The use of the symbol $S$ to denote the price of the numeraire may be confusing, because $S$ is usually used to denote a stock price.  The numeraire here could be any non-dividend-paying asset.  For example, we can take $S(t)=\mathrm{e}^{rt}$, the price of the risk-free asset.  The definition of probabilities as
+$$
+E[1_A\phi(T)\mathrm{e}^{rT}]
+$$ {#eq-riskneutralprob00}
+
+will be called the risk-neutral probability measure or simply risk-neutral measure as before. \index{risk-neutral measure} \index{risk-neutral probability}
+
+Different numeraires lead to different probability measures and hence to different expectations.  To keep this straight, we will use the numeraire as a superscript on the expectation symbol: for example, $E^S$ will denote expectation with respect to the probability measure that corresponds to $S$ being the numeraire.  Also, we will use the symbol $\text{prob}^S(A)$ to denote the probability of an event $A$ when we use $S$ as the numeraire.  So, @eq-probSnumeraire and @eq-expSnumeraire will be written as 
+
+$$
+\text{prob}^S(A) = E\left[1_A\phi(T)\frac{S(T)}{S(0)}\right]\;,
+$$ {#eq-probSnumeraire2}
+
+$$
+E^S[X] = E\left[X\phi(T)\frac{S(T)}{S(0)}\right]\;.
+$$ {#eq-expSnumeraire2}
+
+
+
+Our key result in the preceding section was that the ratio of the price of any non-dividend paying asset to the price of the numeraire asset is not expected to change when we use the probability measure corresponding to the numeraire.  We will demonstrate the same result in this more general model.   Recall that $T$ denotes an arbitrary but fixed date at which we have defined the probabilities using $S$ as the numeraire in @eq-probSnumeraire.  At each date $t<T$, let $E^S_t$ denote the expectation given information at time $t$ and using $S$ as the numeraire (we will continue to write the expectation at date 0 without a subscript; i.e., $E^S$ has the same meaning as $E^S_0$).  Let $Y$ denote the price of another non-dividend-paying asset.  We will show that
+$$
+\frac{Y(t)}{S(t)} = E^S_t \left[\frac{Y(T)}{S(T)}\right]\;.
+$$ {#eq-preformula}
+
+Thus, the expected future (date--$T$) value of the ratio $Y/S$ always equals the current (date--$t$) value when we use $S$ as the numeraire.  As discussed in the preceding section, the mathematical term for a random variable whose expected future value always equals its current value is martingale.  Thus, we can express @eq-preformula as stating that the ratio $Y/S$ is a martingale when we compute expectations using the probability measure that corresponds to $S$ being the numeraire.
+
+The usefulness of @eq-preformula is that it gives us a formula for the asset price $Y(t)$ at any time $t$---and recall that this formula holds for every non-dividend paying asset.  The formula is obtained from @eq-preformula by multiplying through by $S(t)$:
+$$
+Y(t) = S(t)E^S_t \left[\frac{Y(T)}{S(T)}\right]\;.
+$$ {#eq-formula}
+
+**We will call @eq-formula** the fundamental pricing formula. \index{fundamental pricing formula}
+It is at the heart of modern pricing of derivative securities.  It is a present value relation: the value at time $t$ of the asset is the expectation of its value $Y(T)$ at time $T$ discounted by the (possibly random) factor $S(t)/S(T)$.  To emphasize that the numeraire can be any non-dividend-paying asset (and not necessarily a stock price, as the symbol $S$ might suggest), we can write @eq-formula in the equivalent form
+$$
+Y(t) = \text{num}(t)E^\text{num}_t \left[\frac{Y(T)}{\text{num}(T)}\right]\;,
+$$ {#eq-formula10}
+
+where now $\text{num}(t)$ denotes the price of the (non-dividend-paying) numeraire asset at time $t$.
+
+For example, letting $R(t)$ denote the value $\mathrm{e}^{rt}$ of the risk-free asset and using it as the numeraire, @eq-formula becomes
+$$
+Y(t) = \mathrm{e}^{rt}E^R_t\left[\frac{Y(T)}{\mathrm{e}^{rT}}\right] = \mathrm{e}^{-r(T-t)}E^R_t [Y(T)]\;,
+$$ {#eq-riskneutralformula}
+
+which means that the value $Y(t)$ is the expected value of $Y(T)$ discounted at the risk-free rate for the remaining time $T\!-\!t$, when the expectation is computed under the risk-neutral probability measure.
+
+We end this section with a proof of @eq-preformula, a proof that the reader may skip if desired.^[The proof is due to Harrison and Kreps [@HK].  See also Geman, El Karoui and Rochet [@GKR].  We omit here technical assumptions regarding the existence of expectations.]  
+
+::: {.callout-note}
+ ## 
+ Consider any time $t$ and any event $A$ that is distinguishable by time $t$.  Consider the trading strategy of buying one share of the asset with price $Y$ at time $t$ when $A$ has happened and financing this purchase by short selling $Y(t)/S(t)$ shares of the asset with price $S$.  Each share of this asset that you short brings in $S(t)$ dollars, so shorting $Y(t)/S(t)$ shares brings in $Y(t)$ dollars, exactly enough to purchase the desired share of the first asset.  Hold this portfolio until time $T$ and then liquidate it.  Liquidating it will generate 
+$$1_A\left(Y(T)-\frac{Y(t)}{S(t)}S(T)\right)$$
+dollars.  The multiplication by the random variable $1_A$ is because we only implement this strategy when $A$ occurs (i.e., when $1_A=1$).  Consider the security that pays this number of dollars at time $T$.  Because we obtained it with a trading strategy that required no investment at time $t$, its price at time 0 must be 0.  We already observed that we can represent the price in terms of state prices, so we conclude that
+$$E \left[\phi(T)1_A\left(Y(T)-\frac{Y(t)}{S(t)}S(T)\right)\right] = 0\;\;.$$
+When we divide by $S(0)$, this will still equal zero.  Factoring $S(T)$ outside the parentheses gives
+$$E \left[1_A\frac{S(T)}{S(0)}\phi(T)\left(\frac{Y(T)}{S(T)}-\frac{Y(t)}{S(t)}\right)\right] = 0\;\;.$$
+We see from @eq-expSnumeraire2 for expectations using $S$ as the numeraire that we can write this as
+$$E^S\left[1_A\left(\frac{Y(T)}{S(T)}-\frac{Y(t)}{S(t)}\right)\right]=0\;.$$
+This is true for any event $A$ distinguishable at time $t$, so the expectation of $Y(T)/S(T)-Y(t)/S(t)$ must be zero given any information at time $t$ when we use $S$ as the numeraire; i.e.,
+$$E^S_t\left[\frac{Y(T)}{S(T)}-\frac{Y(t)}{S(t)}\right]=0\; ,$$
+or, equivalently
+$$E^S_t\left[\frac{Y(T)}{S(T)}\right] = \frac{Y(t)}{S(t)}\;.$$
 :::
 
 
-The most general case of Ito's formula that we will need is for a function $Z(t) = g(t, X(t), Y(t))$ where $X$ and $Y$ are Ito processes as in @eq-itoprocess110 - @eq-itoprocess111.  In this case, Ito's formula is^[We need to assume $g(t,x,y)$ is continuously differentiable in $t$ and twice continuously differentiable in $(x,y)$ for @eq-itogeneralnew and @eq-itogeneralnew2 to be valid.  Note also that we are using a short-hand notation here.  The partial derivatives of $g$ will generally depend on $t$, $X(t)$ and $Y(t)$ just as $g$ does.]
+## Introduction to Option Pricing {#sec-s_introoptions}
+A complete development of derivative pricing requires the continuous-time mathematics to be covered in the next chapter.  However, we can present the basic ideas using the tools already developed.  Consider the problem of pricing a European call option.  Let $T$ denote the maturity of the option and $K$ its strike price, and let $S$ denote the price of the underlying.  We will assume for now that the underlying does not pay dividends, but we will make no assumptions about the distribution of its price $S(T)$ at the maturity of the option.  Assume there is a risk-free asset with constant interest rate $r$.
+
+Our convention will be that date 0 denotes the date at which we are attempting to value a derivative. 
+The value of the option at maturity is $\max(0,S(T)-K)$.  Consider a contract that pays $S(T)$ at date $T$ when $S(T) \geq K$ and that pays zero when $S(T)<K$, and consider another contract that pays $K$ at date $T$ when $S(T)\geq K$ and zero when $S(T)<K$.  In @sec-c_blackscholes, we will call the first contract a share digital \index{share digital} and the second contract a digital.  \index{digital} The call option is equivalent to a portfolio that is long the first contract and short the second, because the value of the call at maturity is $S(T)-K$ when $S(T)\geq K$ and it is zero otherwise.  So, we can value the call if we can value the share digital and the digital.  This splitting up of complex payoffs into simpler contracts is a key to analyzing many types of derivatives.
+
+### Pricing Share Digitals
+
+Consider first the problem of valuing the share digital.  Let $Y(t)$ denote its value at each date $t \leq T$.   We seek to find $Y(0)$.  Our fundamental pricing @eq-formula tells us that
+$$Y(0) = \text{num}(0) E^\text{num} \left[\frac{Y(T)}{\text{num}(T)}\right]\; ,$$
+for any numeraire with price $\text{num}(t)$.  We want to choose the numeraire to simplify the calculation of the expectation.  The expectation only involves the states of the world in which $S(T) \geq K$, because $Y(T)=0$ when $S(T)<K$.  In the states of the world in which $S(T) \geq K$, the value of the share digital is $S(T)$.  The calculation of the expectation would be simplified if the value were a constant when it was nonzero, because, if you are to receive a constant amount in a certain event, your expected payoff is the constant times the probability of the event (e.g., the expected payoff of a gamble that pays \$1 when a fair die rolls a 6 is 1/6).  This suggests we should use the stock as the numeraire, because then we will have
+$$\frac{Y(T)}{\text{num}(T)} = \frac{S(T)}{S(T)} = 1$$
+when $S(T) \geq K$, implying that
+$$E^\text{num} \left[\frac{Y(T)}{\text{num}(T)}\right] = \text{prob}^S\big(S(T)\geq K\big)\; ,$$
+where $\text{prob}^S$ denotes the probability using $S$ as the numeraire.  This implies that the value of the share digital is
+$$S(0) \times \text{prob}^S\big(S(T)\geq K\big)\;.$$
+The remaining question is obviously how to compute the probability.  We will **not** use @eq-probSnumeraire which expresses the probability in terms of an expectation involving state prices.  To attempt to do so would simply raise the question of how to compute the state prices.  Instead, we use the fundamental pricing formula again, this time replacing the derivative value $Y$ with the value of the risk-free asset.  This is exactly analogous to computing the $q$ probabilities from  @eq-binomialS5 and @eq-binomialR5 in @sec-s_oneperiodbinomial.  Recall that the fundamental formula holds for any non-dividend-paying asset, so it holds for $R(t)=\mathrm{e}^{rt}$, telling us that the ratio $R(t)/S(t)$ is a martingale when we use $S$ as the numeraire.  In a continuous-time model (at least until we introduce stochastic volatility) this will give us exactly the information we need to compute the distribution of $S(T)$ when we use $S$ as the numeraire, and from the distribution of $S(T)$ we can easily compute $\text{prob}^S\big(S(T)\geq K\big)$.  This calculation will be covered in @sec-c_blackscholes for the Black-Scholes model.
+
+### Pricing Digitals
+Now consider the problem of pricing the digital.  We will change notation to let $Y(t)$ denote now the value of the digital at time $t$.  Again we want to compute
+$$Y(0) = \text{num}(0) E^\text{num}\left[\frac{Y(T)}{\text{num}(T)}\right]\; ,$$
+and again this expectation only involves the states of the world in which $S(T) \geq K$.  In these states of the world, the value of the digital is already a constant $K$, so we should take the numeraire to have a constant value at $T$, so that the ratio $Y(T)/\text{num}(T)$ will be constant in the states in which $S(T) \geq K$.  This means that we should take the numeraire to be the risk-free asset.  For this numeraire, the pricing formula is
+$$Y(0) = \mathrm{e}^{-rT}E^R[Y(T)] = \mathrm{e}^{-rT}K\times \text{prob}^R \big(S(T)\geq K\big)\; ,$$
+so we need to compute the risk-neutral probability that $S(T) \geq K$.   We will do this by using the fact that $S(t)/R(t) = \mathrm{e}^{-rt}S(t)$ is a martingale under the risk-neutral probability measure.  This is analogous to computing the risk-neutral probabilities from  @eq-binomialS4 and @eq-binomialR4 in @sec-s_oneperiodbinomial.
+This calculation will also be covered in @sec-c_blackscholes for the Black-Scholes model.
+
+
+Readers familiar with the Black-Scholes formula may already have surmised that, under the Black-Scholes assumptions, 
+$$\text{prob}^S\big(S(T)\geq K\big) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^R\big(S(T)\geq K\big) = \mathrm{N}(d_2)\; ,$$ where $\mathrm{N}$ denotes the cumulative normal distribution function .  The numbers $d_1$ and $d_2$ are different, and hence these are different probabilities, even though they are both probabilities of the option finishing in the money ($S(T) \geq K$).  They are different probabilities because they are computed under different numeraires.  
+
+### A Remark
+
+It seems worthwhile here to step back a bit from the calculations and try to offer some perspectives on the methods developed in this chapter.  The change of numeraire technique probably seems mysterious.  Even though one may agree that it works after following the steps in the chapter, there is probably a lingering question about why it works.  The author's opinion is that it may be best to regard it simply as a computational trick.  Fundamentally it works because valuation is linear.  Linearity simply means that the value of a cash flow $X=X_1+X_2$ is the sum of the values of the cash flows $X_1$ and $X_2$ and the value of the cash flow $aX$ is $a$ times the value of $X$, for any constant $a$.  This linearity is manifested in the statement that the value of a cash flow is the sum across states of the world of the state prices multiplied by the size of the cash flow in each state.  The change of numeraire technique exploits the linearity to further simplify the valuation exercise.  There are other ways the linearity can be used (for example, it produces solvable partial differential equations) but the particular trick we have developed in this chapter seems the most useful to the author (and to others, though perhaps not to everyone).  After enough practice with it, it will seem as natural as other computational tricks one might have learned.
+
+## An Incomplete Markets Example {#sec-s_incomplete}
+
+In this section, we consider a more difficult valuation problem than the binomial model and discuss the general implications of this example.  We only need to make the problem slightly more difficult to see the issues.  Consider a trinomial model, \index{trinomial model} in which the asset price takes three possible values: $S_u > S_m > S_d$ ($m$ for middle, medium, median, ...).   We continue to make the no arbitrage assumption @eq-binomialnoarbitrage.  State prices $\pi_u$, $\pi_m$ and $\pi_m$ must satisfy equations analogous to @eq-binomialS2--@eq-binomialR2; specifically,
+
 
 $$
-Z(T) = Z(0) + \int_0^T \frac{\partial g}{\partial t}\,\mathrm{d} t + \int_0^T \frac{\partial g}{\partial x}\,\mathrm{d} X(t) + \int_0^T \frac{\partial g}{\partial y}\,\mathrm{d} Y(t) 
-$$
-$$
-+ \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X(t))^2 +  \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y(t))^2 
-$$
-$$
-+  \int_0^T \frac{\partial^2 g}{\partial x\partial y}\,(\mathrm{d} X(t))( \mathrm{d} Y(t))\;.
-$$ {#eq-itogeneralnew}
-
-
-In this equation, we apply the rules @eq-dtsquared--@eq-dBdB to compute
-\begin{align*}
-(\mathrm{d} X(t))^2&= \sigma_x^2(t)\,\mathrm{d} t\; ,\\
-(\mathrm{d} Y(t))^2 &= \sigma_y^2(t)\,\mathrm{d} t\; ,\\
-(\mathrm{d} X(t))( \mathrm{d} Y(t)) &= \sigma_x(t)\sigma_y(t)\rho(t)\,\mathrm{d} t\;.
-\end{align*}
-Ito's @eq-itogeneralnew appears a bit simpler (and easier to remember) if we write it in differential form."  We have:
-
-
-::: {.callout-tip}
-## 
-If $Z(t) = g(t, X(t), Y(t))$ where $X$ and $Y$ are Ito processes as in @eq-itoprocess110 - @eq-itoprocess111, then
+S = \pi_uS_u+\pi_mS_m+\pi_dS_d\;,
+$$ {#eq-binomialS10}
 
 $$
-\mathrm{d} Z =  \frac{\partial g}{\partial t}\,\mathrm{d} t + \frac{\partial g}{\partial x}\,\mathrm{d} X +  \frac{\partial g}{\partial y}\,\mathrm{d} Y + \frac{1}{2} \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X)^2 +  \frac{1}{2}  \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y)^2 
+1 = \pi_u\mathrm{e}^{rT} + \pi_m\mathrm{e}^{rT} +\pi_d \mathrm{e}^{rT}\;.
+$$ {#eq-binomialR10}
+
+
+In the binomial case, these equations can be solved for $\pi_u$ and $\pi_d$, as shown in @eq-binomialstateprices.  However, in the trinomial case, we have only two equations in three unknowns.  Thus, there exist many solutions.
+
+Given any particular solution $(\pi_u,\pi_m,\pi_d)$ of  @eq-binomialS10 - @eq-binomialR10, we can define the risk-neutral probabilities $p_u$, $p_m$ and $p_d$ as before---e.g., $p_u = \pi_u\mathrm{e}^{rT}$.  Likewise, we can define the probabilities using the stock as numeraire.  Thus, we can value calls and puts and other derivative securities.  However, the values we obtain will depend on the particular solution $(\pi_u,\pi_m,\pi_d)$.  There are many arbitrage-free values for a call option, one for each solution of @eq-binomialS10 - @eq-binomialR10.
+
+The reason that there are many arbitrage-free values for a call (or put) is that a call cannot be replicated in a trinomial model using the stock and risk-free asset; we can say equivalently that there is no delta hedge for a call option.  Recall that we first found the value of a call in the binomial model by finding the replicating portfolio and calculating its cost.  A similar analysis is impossible in the trinomial model.  To see this, consider a portfolio of $a$ dollars invested in the risk free asset and $b$ dollars invested in the stock.  The value of the portfolio at date $T$ will be $a\mathrm{e}^{rT} + bS_x/S$, where $x \in \{u,m,d\}$.  To replicate the call, we need $a$ and $b$ to satisfy
+
+$$
+a\mathrm{e}^{rT} + bS_u/S = \max(0,S_u-K)\; ,
 $$
 $$
-+ \frac{\partial^2 g}{\partial x\partial y}\,(\mathrm{d} X)(\mathrm{d} Y)\;.
-$$ {#eq-itogeneralnew2}
-
-
-
-:::
-
-
-## Examples of Ito's Formula {#sec-s_examples}
-The following are the applications of Ito's formula that will be used most frequently in the book.  They follow from the boxed formula at the end of the previous section by taking $g(x,y)=xy$ or $g(x,y)=y/x$ or $g(x)=e^x$ or $g(x) = \log x$.
-
-
-
-
-::: {.callout-tip}
-## 
-
-**Products.**\;
-If $Z=XY$, then $\mathrm{d} Z=X\,\mathrm{d} Y+Y\,\mathrm{d} X + (\mathrm{d} X)(\mathrm{d} Y)$.  We can write this as
-$$
-\frac{\mathrm{d} Z}{Z}=\frac{\mathrm{d} X}{X} + \frac{\mathrm{d} Y}{Y} + \left(\frac{\mathrm{d} X}{X}\right)\left(\frac{\mathrm{d} Y}{Y}\right)\;.
-$$ {#eq-rule2}
-
-
-:::
-
-
-
-
-::: {.callout-tip}
-## 
-
-**Ratios.**\;
-If $Z=Y/X$, then 
-$$\frac{\mathrm{d} Z}{Z} = \frac{\mathrm{d} Y}{Y} -\frac{\mathrm{d} X}{X} - \left(\frac{\mathrm{d} Y}{Y}\right)\left(\frac{\mathrm{d} X}{X}\right) + \left(\frac{\mathrm{d} X}{X}\right)^2\;.
-$$ {#eq-rule4}
-
-
-:::
-
-
-
-::: {.callout-tip}
-## 
-
-**Exponentials.**\;
-If $Z=\mathrm{e}^X$, then 
-$$\frac{\mathrm{d} Z}{Z}=\mathrm{d} X + \frac{(\mathrm{d} X)^2}{2}\;.
-$$ {#eq-rule5}
-
-
-:::
-
-
-
-::: {.callout-tip}
-## 
-
-**Logarithms.**\;
-If $Z=\log X$, then
-$$
-\mathrm{d} Z=\frac{\mathrm{d} X}{X} - \frac{1}{2}\left(\frac{\mathrm{d} X}{X}\right)^2\;.
-$$ {#eq-rule6}
-
-
-:::
-
-
-
-::: {.callout-tip}
-## 
-
-**Compounding/Discounting.**
-Let  
-$$Y(t) =\exp\left(\int_0^t q(s)\,\mathrm{d} s\right)$$
-for some (possibly random) process $q$ and define $Z=XY$ for any Ito process $X$.
-The usual calculus gives us 
-$\mathrm{d} Y(t)=q(t)Y(t)\,\mathrm{d} t$,
-and the product rule above implies
-$$
-\frac{\mathrm{d} Z}{Z}=q\,\mathrm{d} t + \frac{\mathrm{d} X}{X}\;.
-$$ {#eq-compdisc1}
-
-This is the same as in the usual calculus.  
-
-:::
-
-
-
-
-## Reinvesting Dividends {#sec-s_reinvestingdividends}
-
-Frequently, we will assume that the asset underlying a derivative security pays a constant dividend yield, \index{dividend yield} which we will denote by $q$.  This means, for an asset with price $S(t)$, that the dividend in an instant $\mathrm{d} t$ is $q S(t)\,\mathrm{d} t$.  If the dividends are reinvested in new shares, the number of shares will grow exponentially at rate $q$.  To see this, consider the portfolio starting with a single share of the asset and reinvesting dividends until some date $T$.  Let $X(t)$ denote the number of shares resulting from this strategy at any time $t\leq T$.  Then the dividend received at date $t$ is $q S(t)X(t)\,\mathrm{d} t$, which can be used to purchase $q X(t)\,\mathrm{d} t$ new shares.  This implies that $\mathrm{d} X(t)=q X(t)\,\mathrm{d} t$, or $\mathrm{d} X(t)/\mathrm{d} t = q X(t)$, and it is easy to check (and very well known) that this equation is solved by $X(t)=\mathrm{e}^{q t}X(0)$.  In our case, with $X(0)=1$, we have $X(t)=\mathrm{e}^{q t}$.
-
-The dollar value of the trading strategy just described will be $X(t)S(t) = \mathrm{e}^{q t}S(t)$.  Denote this by $V(t)$.  This is the value of a non-dividend-paying portfolio, because all dividends are reinvested.  From the Compounding/Discounting example in @sec-s_examples, we know that
-$$ 
-\frac{\mathrm{d} V}{V} = q\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\;.
-$$ {#eq-reinvestingdividends}
-
-This means that the rate of return on the portfolio is the dividend yield $q\,\mathrm{d} t$ plus the return $\mathrm{d} S/S$ due to capital gains.
-
-
-## Geometric Brownian Motion {#sec-s_geometricbrownianmotion}
-A random variable is lognormally distributed if it can be written as $\tilde{y}=  e^{\tilde{x}}$ where $\tilde{x}$ is distributed according to a normal distribution with mean $m$ and standard deviation $s$.  The expected value of $\tilde{y}$ is given by $E[\tilde{y}] = e^{m+\frac{s^2}{2}}$.
-
-::: {.callout-tip}
-## 
-
-**Lognormal Random Variable.**\;
-If $\tilde{x}$ is normally distributed with mean $m$ and standard deviation $s$, then $e^{\tilde{x}}$ is lognormally distributed and
-$$E[e^{\tilde{x}}]=e^{m + \frac{1}{2} s^2};.
-$$ {#eq-lognormal}
-
-
-:::
-
-An important stochastic process is the Geometric Brownian Motion given by
-$$
-S(t)=S(0)\exp\left(\mu t- \sigma^2 t/2 + \sigma B(t)\right)
-$$ {#eq-exponential1}
-
-for constants $\mu$ and $\sigma$, where $B$ is a Brownian motion.  Note that for each time $t$, geometric Brownian motion is a lognormal random variable.
-Using the product rule and the rule for exponentials, we obtain
-$$
-\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\;.
-$$ {#eq-Y}
-
-When we see an equation of the form @eq-Y, we should recognize @eq-exponential1 as the solution. 
-
-The process $S$ is called a geometric Brownian motion.  \index{geometric Brownian motion} In keeping with the discussion of @sec-s_itoprocesses, we interpret @eq-Y as stating that $\mu\,\mathrm{d} t$ is the expected rate of change of $S$ and $\sigma^2\,\mathrm{d} t$ is the variance of the rate of change in an instant $\mathrm{d} t$.  We call $\mu$ the drift and $\sigma$ the volatility.  \index{volatility} The geometric Brownian motion will grow at the average rate of $\mu$, in the sense that $E[S(t)] = \mathrm{e}^{\mu t}S(0)$;  one way to verify this uses the formula for the mean of a lognormal random variable.
-
-Taking the natural logarithm of @eq-exponential1 gives an equivalent form of the solution:
-$$
-\log S(t)= \log S(0)+\left(\mu -\frac{1}{2}\sigma^2\right)t + \sigma B(t)\;.
-$$ {#eq-exponential2}
-  This shows that $\log S(t) - \log S(0)$ is a $(\mu-\sigma^2/2,\sigma)$--Brownian motion.  Given information at time $t$, the logarithm of $S(u)$ for $u>t$ is normally \index{lognormal distribution}distributed with mean $(u-t)(\mu-\sigma^2/2)$ and variance $(u-t)\sigma^2$.  Because $S$ is the exponential of its logarithm, $S$ can never be negative.  For this reason, a geometric Brownian motion is a better model for stock prices than is a Brownian motion.
-
-The differential of @eq-exponential2 is
-$$
-\mathrm{d} \log S(t) = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B(t)\;.
-$$ {#eq-exponential3}
-
-We conclude:
-
-::: {.callout-tip}
-## 
-
-The  equation 
-$$\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B$$
-is equivalent to the equation
-$$\mathrm{d} \log S(t) = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B(t)\; .$$
-The solution of both equations is @eq-exponential1 or the equivalent @eq-exponential2.
-
-:::
-
-
-
-Over a discrete time interval $\Delta t$, @eq-exponential3 implies that the change in the logarithm of $S$ is 
-$$
-\Delta \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\Delta t+ \sigma\,\Delta B\;.
-$$ {#eq-exponential11}
-
-If $S$ is the price of a non-dividend-paying asset, then over the time period $t_{i-1}$ to $t_i$, with $t_i-t_{i-1}=\Delta t$, we have
-$$
-\Delta \log S = r_i\,\Delta t\;,
-$$ {#eq-exponential10}
-
-where $r_i$ is the  continuously compounded annualized rate of return \index{continuously compounded return} during the period $\Delta t$.  This follows from the definition of the continuously compounded rate of return as the constant rate over the time period $\Delta t$ that would cause $S$ to grow (or fall) from $S(t_{i-1})$ to $S(t_i)$.  To be precise, $r_i$ is defined by
-$$\frac{S(t_i)}{S(t_{i-1})} = \mathrm{e}^{r_i\Delta t}\; ,$$
-which is equivalent to @eq-exponential10.
-Thus, the geometric Brownian motion model @eq-Y implies that the continuously compounded annualized rate of return over a period of length $\Delta t$ is given by
-$$r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .$$
-This means that $r_i$ is normally distributed with mean $\mu-\sigma^2/2$ and variance $\sigma^2/\Delta t$.  Given historical data on the rates of return, the parameters $\mu$ and $\sigma$ can be estimated by standard methods (see @sec-c_stochasticvolatility).
-
-We can simulate a path of $S$ by simulating the changes $\Delta \log S$.  The random variable $\sigma \Delta B$  in  @eq-exponential11 has a normal distribution with zero mean and variance equal to $\sigma^2\Delta t$.  We simulate it as $\sigma\sqrt{\Delta t}$ multiplied by a standard normal.  The code below simulates $n=10000$ paths with $m=1000$ time steps. There are some features of the simulation which will prove useful later.  The drift $\mu$ is labelled the interest rate $r=0.1$.  Other parameters are $\sigma = 0.2$, and $T=0.5$.  The drift of the log stock price is labelled $drift=r-\frac{\sigma^2}{2}$.  The plot output is one of the simulated sample paths.  In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, $n=1$.  Given a simulated mean zero normal random variable, $z$, changing the sign to $-z$ is also a simulated normal random variable with zero mean and the same standard deviation.  As a result, we have two simulations for the stock price labelled $St$ and $St1$, but we only plot one sample path for $St$. 
-
-```{python}
-# Simulate Geometric Brownian Motion
-import numpy as np
-import matplotlib.pyplot as plt
-# number of paths
-n = 10000
-#number of divisions
-m = 1000
-# Interest rate (We set the drift equal to the interest rate)
-r = 0.1
-# Volatility
-sig = 0.2
-# Initial Stock Price
-S0 = 42
-# Maturity
-T = 0.5
-# Delta t
-dt = T/m
-# Drift
-drift = (r-0.5*sig**2)
-# Volatility
-vol = sig * np.sqrt(dt)
-
-t = np.array(range(0,m + 1,1)) * dt
-
-# seed for random generator
-seed= 2020
-# define a random generator
-np.random.seed(seed)
-inc = np.zeros(shape = (m + 1, n))
-inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))
-St = np.zeros(shape = (m + 1, n))
-St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
-St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
-plt.figure(figsize=(9,6))
-plt.plot(t,St[:,1])
-
-
-
-
-```
-The plot below is the distribution of the simulated stock price at $T$.
-```{python}
-plt.figure(figsize=(9,6))
-a=plt.hist(St[m,:], bins=100)
-```
-
-
-
-
-While Geometric Brownian Motion is an important stochastic process to model stock prices, the process with drift equal to zero given by
-$$X(t) = \exp\left(-\frac{\kappa^2}{2} + \kappa B_t\right)$$
-
-satisfies $E[X(t)]=1$ and $E[X(t)|X(s)]=X(s)$ and is an important example of a strictly positive martingale.  Again, these facts can be verified using the formula for the expected value of a lognormal random variable.  Notice we can write
-$$dX(t)= \kappa X(t) dB_t$$
-which agrees with the martingale characterization of $\int_0^t \sigma(X_t,t) dB_t$.
-
-## Numeraires and Probabilities {#sec-s_girsanov}
-When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  (Likewise, a martingale is unlikely to remain a martingale when we change probabilities.)  However, the Brownian motion $B$ will still be an Ito process under the new probability measure.  In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire) this will always be true for us.]  Changing probabilities only changes the drift of an Ito process.  
-
-In a sense, this should not be surprising.  It was noted in @sec-s_quadraticvariation that a Brownian motion $B$ can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval $[0,T]$ is equal to $T$.  Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in $B$) but it will not affect how each path jiggles. So, under the new probability measure, $B$ should still be like a Brownian motion but it may have a nonzero drift.  If we consider a general Ito process, the reasoning is the same.  The diffusion coefficient $\sigma$ determines how much each path jiggles, and this is unaffected by changing the probability measure.  Furthermore, instantaneous covariances---the $(\mathrm{d} X)(\mathrm{d} Y)$ terms---between Ito processes are unaffected by changing the probability measure.  Only the drifts are affected.
-
-As explained in @sec-s_introoptions, we need to know the distribution of the underlying under probability measures corresponding to different numeraires.  Let $S$ be the price of an asset that has a constant dividend yield $q$, and, as in @sec-s_reinvestingdividends, let $V(t)=\mathrm{e}^{qt}S(t)$.  This is the price of the portfolio in which all dividends are reinvested, and we have 
-$$\frac{\mathrm{d} V}{V} = q\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\; .$$
-Let $Y$ be the price of another another asset that does not pay dividends.  Let $r(t)$ denote the instantaneous risk-free rate at date $t$ and let $R(t) = \exp\left(\int_0^t r(s)\,\mathrm{d} s\right)$.  Assume
-\begin{align*}
- \frac{\mathrm{d} S}{S} &= \mu_s\,\mathrm{d} t+\sigma_s\,\mathrm{d} B_s\; ,\\
- \frac{\mathrm{d} Y}{Y} &= \mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y\;,
-\end{align*}
-where $B_s$ and $B_y$ are Brownian motions under the actual probability measure with correlation $\rho$, and where $\mu_s, \mu_y, \sigma_s, \sigma_y$ and $\rho$ can be quite general random pro\-cesses.  
-We consider the dynamics of the asset price $S$ under three different probability measures.  In each case, we follow the same steps: (i) we note that the ratio of an asset price to the numeraire asset price must be a martingale, (ii) we use Ito's formula to calculate the drift of this ratio, and (iii) we use the fact that the drift of a martingale must be zero to compute the drift of $\mathrm{d} S/S$.
-
-
-### Risk-Neutral Probabilities
-Under the risk-neutral measure, $Z(t)$ defined as 
-$$Z(t) = \frac{V(t)}{R(t)} = \exp\left(-\int_0^t r(s)\,\mathrm{d} s\right)V(t)$$
-is a martingale.  Using the compounding/discounting rule, we have
-$$\frac{\mathrm{d} Z}{Z} =-r\,\mathrm{d} t + \frac{\mathrm{d} V}{V} = (q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\; .$$
-For $Z$ to be a martingale, the drift ($\mathrm{d} t$ part) of $\mathrm{d} Z/Z$ must be zero.  Therefore, the drift of $\mathrm{d} S/S$ must be $(r-q)\,\mathrm{d} t$ under the risk-neutral measure.  Because the change of measure does not affect the volatility, this implies:
-
-::: {.callout-tip}
-## 
-$$
-\frac{\mathrm{d} S}{S} =( r-q)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
-$$ {#eq-riskneutral11}
-
-where $B^*_s$ is a Brownian motion under the risk-neutral measure. 
-:::
- 
-
-
-### Underlying as the Numeraire
-When $V$ is the numeraire, the process
-$Z(t)$ defined as 
-$$Z(t) = \frac{R(t)}{V(t)} = \frac{\exp\left(\int_0^t r(s)\,\mathrm{d} s\right)}{V(t)}$$
-is a martingale.  Using the rule for ratios, we have
-$$\frac{\mathrm{d} Z}{Z} =r\,\mathrm{d} t - \frac{\mathrm{d} V}{V} + \left(\frac{\mathrm{d} V}{V}\right)^2 = (r -q+ \sigma^2_s)\,\mathrm{d} t - \frac{\mathrm{d} S}{S}\; .$$
-Because the drift of $\mathrm{d} Z/Z$ must be zero, this implies that the drift of $\mathrm{d} S/
-S$ is $(r -q + \sigma^2_s)\,\mathrm{d} t$.  We conclude that:
-
-::: {.callout-tip}
-## 
-$$
-\frac{\mathrm{d} S}{S} = (r-q+ \sigma^2_s)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
-$$ {#eq-own11}
-
-where now $B^*_s$ denotes a Brownian motion when $V(t)=\mathrm{e}^{qt}S(t)$ is the numeraire.
-:::
-
-
-
-### Another Risky Asset as the Numeraire
-When $Y$ is the numeraire, $Z(t)$ defined as 
-$$Z(t) = \frac{V(t)}{Y(t)}$$ must be a martingale.  Using again the rule for ratios, we have
-\begin{align*}
-\frac{\mathrm{d} Z}{Z} &= \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y}- \left(\frac{\mathrm{d} V}{V}\right)\left(\frac{\mathrm{d} Y}{Y}\right) + \left(\frac{\mathrm{d} Y}{Y}\right)^2\\
-& = \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y} -\rho\sigma_s\sigma_y\,\mathrm{d} t+\sigma_y^2\,\mathrm{d} t\\
-&= \frac{\mathrm{d} S}{S} -\frac{\mathrm{d} Y}{Y} + (q-\rho\sigma_s\sigma_y\,\mathrm{d} t+\sigma_y^2)\,\mathrm{d} t\; .
-\end{align*}
-We can apply our previous example to compute the dynamics of $Y$ when $Y$ is the numeraire.  This shows that the drift of $\mathrm{d} Y/Y$ is $(r+ \sigma^2_y)\,\mathrm{d} t$.  Because the drift of $\mathrm{d} Z/Z$ must be zero, it follows that the drift of $\mathrm{d} S/S$ is
-$(r-q+ \rho\sigma_s\sigma_y)\,\mathrm{d} t$.  We conclude that:
-
-::: {.callout-tip}
-## 
-$$
-\frac{\mathrm{d} S}{S} = (r-q+ \rho\sigma_s\sigma_y)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
-$$ {#eq-other11}
-
-where  $B^*_s$ denotes a Brownian motion under the probability measure corresponding to the non-dividend-paying risky asset $Y$ being the numeraire, and where $\rho$ is the correlation of $S$ and $Y$.
-:::
-
-
-Notice that @eq-other11, while more complicated, is also more general than the others.  In fact, it includes the formulas @eq-riskneutral11 and @eq-own11 as special cases: (i) if $Y$ is the price of the instantaneously risk-free asset, then $\sigma_y=0$ and @eq-other11 simplifies to @eq-riskneutral11, and (ii) if $Y=
-V$, then $\sigma_y=\sigma_s$ and $\rho=1$, so @eq-other11 simplifies to @eq-own11.
-
-### Further Discussion
-
-It would be natural for one to ask at this point: what is the Brownian motion $B^*_s$ and where did it come from?  We have argued that once we know the drift, and the fact that the volatility does not change, we can immediately write down, for example, 
-$$\frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B^*_s$$
-for a Brownian motion $B^*_s$ under the risk-neutral measure.  To answer this question, we will give here the definition of $B^*_s$ under the risk-neutral measure.  The definition shows that we are justified in writing down  @eq-riskneutral11--@eq-other11, but we will not repeat the definition each time we make a statement of this sort.     
-
-We showed that $Z$ is a martingale under the risk-neutral measure, where $Z$ satisfies
-$$
-\frac{\mathrm{d} Z}{Z} = (q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = (q-r+\mu_s)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B_s\;.
-$$ {#eq-numeraire101}
-
-Define $B^*_s(0) = 0$ and
-$$
-\mathrm{d} B^*_s = \left(\frac{q-r+\mu_s}{\sigma_s}\right)\,\mathrm{d} t + \mathrm{d} B_s\;.
-$$ {#eq-numeraire102}
-
-Then 
-$$\mathrm{d} B^*_s = \frac{1}{\sigma_s}\left(\frac{\mathrm{d} Z}{Z}\right)$$
-and hence is a continuous martingale under the risk-neutral measure.  We can compute its quadratic variation as
-$$(\mathrm{d} B^*_s)^2 = \left(\frac{q-r+\mu_s}{\sigma_s}\right)^2(\mathrm{d} t)^2 + 2\left(\frac{q-r+\mu_s}{\sigma_s}\right)(\mathrm{d} t)(\mathrm{d} B_s) + (\mathrm{d} B_s)^2 = \mathrm{d} t\; .$$
-Therefore, by Levy's theorem (@sec-s_quadraticvariation), $B^*_s$ is a Brownian motion under the risk-neutral measure.   From  @eq-numeraire101 and @eq-numeraire102 we have
-$$(q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = \sigma_s\,\mathrm{d} B^*_s \quad \Longleftrightarrow \quad \frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B^*_s\;,$$
-as in  @eq-riskneutral11.
-
-## Tail Probabilities of Geometric Brownian Motions {#sec-s_tailprobs}
-
-For each of the numeraires discussed in the previous section, we have
-$$
-\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
-$$ {#eq-tailprob1}
-
-for some $\alpha$ and $\sigma$, where $B$ is a Brownian motion under the probability measure associated with the numeraire.  Specifically, $\sigma=\sigma_s$, $B=B^*_s$, and
-
-
-
-\renewcommand{\labelenumi}{(\arabic{enumi})}
-1. for the risk-neutral measure, $\alpha = r-q-\sigma_s^2/2$,
-2. when $\mathrm{e}^{qt}S(t)$ is the numeraire, $\alpha = r-q +\sigma_s^2/2$,
-3. when another risky asset price $Y$ is the numeraire, $\alpha = r-q+\rho\sigma_s\sigma_y-\sigma_s^2/2$.
-
-
-
-We will assume in this section that $\alpha$ and $\sigma$ are constants.
-The essential calculation in pricing options, as we will see in the next chapter and in @sec-c_exotics, is to compute $\text{prob}(S(T)>K)$ and $\text{prob}(S(T)<K)$ for a constant $K$ (the strike price of an option), where $\text{prob}$ denotes the probabilities at date 0 (the date we are pricing an option) associated with a particular numeraire.  
-
-Equation @eq-tailprob1 gives us
-$$\log S(T) = \log S(0) + \alpha T + \sigma B(T)\; .$$
-Given this, we deduce
-
-$$ 
-S(T) > K  \quad\Longleftrightarrow\quad \log S(T) > \log K
+a\mathrm{e}^{rT} + bS_m/S = \max(0,S_m-K)\; ,
 $$
 $$
- \quad\Longleftrightarrow\quad \sigma B(T) > \log K - \log S(0)-\alpha T
+a\mathrm{e}^{rT} + bS_d/S = \max(0,S_d-K)\;.
 $$
-$$
- \quad\Longleftrightarrow\quad \frac{B(T)}{\sqrt{T}} > \frac{\log K - \log S(0)-\alpha T}{\sigma\sqrt{T}}
-$$
-$$
- \quad\Longleftrightarrow\quad -\frac{B(T)}{\sqrt{T}} < \frac{\log S(0)-\log K + \alpha T}{\sigma\sqrt{T}}
-$$
-$$
- \quad\Longleftrightarrow\quad -\frac{B(T)}{\sqrt{T}} < \frac{\log \left(\frac{S(0)}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
-$$ {#eq-tailprob2}
+These are three linear equations in the two unknowns $a$ and $b$.  For any strike price $K$ between $S_d$ and $S_u$, none of the equations is redundant, and the system has no solution.  When there are state-contingent claims (such as the call option payoff) that cannot be replicated by trading in the marketed assets (the stock and risk-free asset in this case), one says that the market is incomplete.  Thus, the trinomial model is an example of an incomplete market. \index{incomplete market}
+
+To value derivative securities in this situation, we have to select some particular solution $(\pi_u,\pi_m,\pi_d)$ of  @eq-binomialS10 - @eq-binomialR10 and assume that the market uses that solution for valuation.  Equivalently, we can assume the market uses a particular set of risk-neutral probabilities $(p_u, p_m, p_d)$.  This type of valuation is often called equilibrium valuation, \index{equilibrium pricing} as opposed to arbitrage valuation, because to give a foundation for our particular choice of risk-neutral probabilities, we would have to assume something about the preferences and endowments of investors and the production possibilities.  We will encounter incomplete markets when we consider stochastic volatility in @sec-c_stochasticvolatility.
 
 
-The random variable on the left-hand side of @eq-tailprob2 has the standard normal distribution---it is normally distributed with mean equal to zero and variance equal to one.  As is customary, we will denote the probability that a standard normal is less than some number $d$ as $\mathrm{N}(d)$.  We conclude:
-
-::: {.callout-tip}
-## 
-Assume $\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B$, where $B$ is a Brownian motion.  Then, for any number $K$,
-$$
-\text{prob}(S(T)>K) = \mathrm{N}(d)\;,
-$$ {#eq-tailprob01}
-
-where
-$$
-d = \frac{\log \left(\frac{S(0)}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
-$$ {#eq-tailprob3}
-
-:::
-
-
-The  probability $\text{prob}(S(T)<K)$ can be calculated similarly, but the simplest way to derive it is to note that the events $S(T)>K$ and $S(T)<K$ are complementary---their probabilities sum to one (the event $S(T)=K$ having zero probability).  Therefore $\text{prob}(S(T)<K) = 1-\mathrm{N}(d)$.  This is the probability that a standard normal is greater than $d$, and by virtue of the symmetry of the standard normal distribution, it equals the probability that a standard normal is less than $-d$.  Therefore, we have:
-
-::: {.callout-tip}
-## 
-Assume $\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B$, where $B$ is a Brownian motion.  Then, for any number $K$,
-$$
-\text{prob}(S(T)<K) = \mathrm{N}(-d)\;,
-$$ {#eq-tailprob02}
-
-where $d$ is defined in @eq-tailprob3.
-:::
-
-
-
-## Volatilities {#sec-s_volatilities}
-
-As mentioned in @sec-s_geometricbrownianmotion, when we encounter an equation of the form 
-$$\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B$$
-where $B$ is a Brownian motion, we will say  ``$\sigma$ is the volatility of $S$.  For example, in the Black-Scholes model, the most important assumption is that the volatility of the underlying asset price is constant.  We will occasionally need to compute the volatilities of products or ratios of random processes.  These computations follow directly from Ito's formula.
-
-Suppose 
-$$\frac{\mathrm{d} X}{X} = \mu_x\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x \qquad \text{and} \qquad 
-\frac{\mathrm{d} Y}{Y} = \mu_y\,\mathrm{d} t + \sigma_y\,\mathrm{d} B_y\; ,$$
-where $B_x$ and $B_y$ are Brownian motions with correlation $\rho$, and $\mu_x$, $\mu_y$, $\sigma_x$, $\sigma_y$, and $\rho$ may be quite general random processes.  
-
-### Products
-If $Z=XY$, then @eq-rule2 gives us
-$$
-\frac{\mathrm{d} Z}{Z} = (\mu_x+\mu_y+\rho\sigma_x\sigma_y)\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x + \sigma_y\,\mathrm{d} B_y\;.
-$$ {#eq-volproduct1}
-
-The instantaneous variance of $\mathrm{d} Z/Z$ is calculated, using the rules for products of differentials, as
-\begin{align*}
-\left(\frac{\mathrm{d} Z}{Z}\right)^2 &= (\sigma_x\,\mathrm{d} B_x + \sigma_y\,\mathrm{d} B_y)^2\\
-&= (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
-\end{align*}
-As will be explained below, the volatility is the square root of the instantaneous variance (dropping the $\mathrm{d} t$).  This implies:
-
-::: {.callout-tip}
-## 
-The volatility of $XY$ is
-$$
-\sqrt{\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y}\;.
-$$ {#eq-volatilityproduct}
-
-:::
-
-
-
-### Ratios
-If $Z=Y/X$, then @eq-rule4 gives us
-$$
-\frac{\mathrm{d} Z}{Z} = (\mu_y-\mu_x-\rho\sigma_x\sigma_y+\sigma_x^2)\,\mathrm{d} t + \sigma_y\,\mathrm{d} B_y - \sigma_x\,\mathrm{d} B_x\;.
-$$ {#eq-ratioproduct1}
-
-The instantaneous variance of $\mathrm{d} Z/Z$ is therefore
-\begin{align*}
-\left(\frac{\mathrm{d} Z}{Z}\right)^2 &= (\sigma_y\,\mathrm{d} B_y - \sigma_x\,\mathrm{d} B_x)^2\\
-&= (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
-\end{align*}
-This implies:
-
-::: {.callout-tip}
-## 
-The volatility of $Y/X$ is  
-$$
-\sqrt{\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y}\;.
-$$ {#eq-volatilityratio}
-
-:::
-
-
-
-### Further Discussion
-To understand why taking the square root of $(\mathrm{d} Z/Z)^2$ (dropping the $\mathrm{d} t$) gives the volatility, consider for example the product case $Z=XY$.  Define a random process $B$ by $B(0)=0$ and 
-$$
-\mathrm{d} B = \frac{\sigma_x}{\sigma}\,\mathrm{d} B_x + \frac{\sigma_y}{\sigma}\,\mathrm{d} B_y\;,
-$$ {#eq-foreigndB}
-
-where $\sigma$ is the volatility defined in @eq-volatilityproduct.
-Then we can write  @eq-volproduct1 as
-$$
-\frac{\mathrm{d} Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;.$$ {#eq-volproduct2}
-
-From the discussion in @sec-s_itoprocesses, we know that $B$ is a continuous martingale.  We can compute its quadratic variation from
-\begin{align*}
-(\mathrm{d} B)^2 &= \left(\frac{\sigma_x\,\mathrm{d} B_x + \sigma_s\,\mathrm{d} B_s}{\sigma}\right)^2\\
-&= \frac{(\sigma_x^2 + \sigma_s^2 + 2\rho\sigma_x\sigma_s)\,\mathrm{d} t}{\sigma^2}\; ,\\
-&= \mathrm{d} t\;.
-\end{align*}
-By Levy's theorem (see @sec-s_quadraticvariation), any continuous martingale with this quadratic variation is necessarily a Brownian motion.  Therefore,  @eq-volproduct2 shows that $\sigma$ is the volatility of $Z$ as defined at the beginning of the section.
 
 ## Exercises
 
 
-::: {#exr-nolabel}
- Consider a discrete partition $0=t_0 < t_1 < \cdots t_N=T$ of the time interval $[0,T]$ with $t_i - t_{i-1} = \Delta t = T/N$ for each $i$.  Consider the function 
-$$X(t)=\mathrm{e}^t\; .$$
-Write a code, which computes and plots $\sum_{i=1}^N [\Delta X(t_i)]^2$, where 
-$$\Delta X(t_i) = X(t_i)-X(t_{i-1}) = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .$$
-<!-- Hint: The sum can be computed as follows.
-\begin{verbatim}
-sum = 0
-For i = 1 To N
-    DeltaX = Exp(i/N)-Exp((i-1)/N)
-    sum = sum + DeltaX * DeltaX
-Next i
-\end{verbatim} -->
-:::
-::: {#exr-nolabel}
- Repeat the previous problem for the function $X(t) = t^3$.  In both this and the previous problem, what happens to $\sum_{i=1}^N [\Delta X(t_i)]^2$ as $N \rightarrow \infty$?
-:::
-::: {#exr-nolabel}
- Either use the code provided or write a code to compute $\sum_{i=1}^N [\Delta B(t_i)]^2$, where $B$ is a simulated Brownian motion.  For a given $T$, what happens to the sum as $N \rightarrow \infty$?  
-:::
-::: {#exr-nolabel}
- Repeat the previous problem to compute $\sum_{i=1}^N [\Delta B(t_i)]^3$, where $B$ is a simulated Brownian motion.  For a given $T$, what happens to the sum as $N \rightarrow \infty$?  
-:::
-::: {#exr-nolabel}
- Repeat the previous problem, computing instead $\sum_{i=1}^N |\Delta B(t_i)|$ where $| \cdot |$ denotes the absolute value.  What happens to this sum as $N \rightarrow \infty$?
-:::
-::: {#exr-nolabel}
-Use Ito's Lemma to derive the stochastic differential equation for $S(t)^2$.  Argue that $S(t)^2$ is Geometric Brownian Motion and find $E[S(t)^2]$.
-::: 
-::: {#exr-nolabel}
-Ito's Lemma can be used in different ways to get the same answer.  For example, let $X(t) = a t + b B_t$ and use Ito's lemma on the function $e^{X(t)}$.  Alternatively, let $f(t, B_t) = e^{a t + bB_t}$.  Use Ito's lemma on $f(,)$.
-::: 
-::: {#exr-nolabel} 
-Use the facts $e^{x+y}=e^x \times e^y$ and $\frac{e^x}{e^y} = e^{x-y}$ to deduce the drift and volatility of the product and ratio of two Geometric Brownian motions.
-::: 
-::: {#exr-nolabel}
- Consider a discrete partition $0=t_0 < t_1 < \cdots t_N=T$ of the time interval $[0,T]$ with $t_i - t_{i-1} = \Delta t = T/N$ for each $i$.  Consider a geometric Brownian motion
-$$\frac{\mathrm{d} Z}{Z} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .$$
-An approximate path $\tilde{Z}(t)$ of the geometric Brownian motion can be simulated as
-$$
-\Delta \tilde{Z}(t_i) = \tilde{Z}(t_{i-1}) \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
-$$ {#eq-exponential111}
-Modify the code to generate both a path $Z(t)$ and an approximate path $\tilde{Z}(t)$ according to @eq-exponential111, using the same $\Delta B$  for both paths and taking $\tilde{Z}(0) = Z(0)$.  Plot both paths in the same figure.  How well does the approximation work for large $N$?   Warning:  
-For $N$ larger than about $100 T$, the approximation will look perfect---you won't be able to tell that there are two plots in the figure.  One reason this is true is an exact formula is 
-$$
- Z(t_i) = Z(t_{i-1}) \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
-$$ {#eq-exponential112}
-and using Taylor's Theorem for small $\Delta t$, $e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t$ and $e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2$ and $(dB_t)^2=\Delta t$.
-:::
-::: {#exr-nolabel}
-Use simulation to find  $E^*[e^{-r T}{\bf{1}}_{\{S(T) \ge K\}}]$ in the risk neutral measure where
-\begin{equation*}
-dS(t)= r S(t) dt + \sigma S(t) dB_t^*
-\end{equation*}
-Verify that $S(t)/e^{r t}$ is a martingale in the $*$ measure where $B^*$ is a Brownian motion.
-Then use simulation to find $S(0)E^S[\frac{1}{S(T)} {\bf{1}}_{\{S(T) \ge K\}}]$ in the pricing measure which uses the share as numeraire where 
-\begin{equation*}
-dS(t) = (r + \sigma^2) S(t) dt + \sigma S(t) dB_t^S
-\end{equation*}
-so the log satisfies
-\begin{equation*}
-\log(S(t)) = \log(S(0)) + (r + \frac{\sigma^2}{2})t + \sigma B_t^S
-\end{equation*}
-You should verify $e^{rt}/S(t)$ is a martingale in the $S$ measure where $B^S$ is a Brownian motion.
-Both estimates should be the same up to simulation error and give the time zero value of the random payoff ${\bf{1}}_{\{S(T) \ge K\}}$ which is a random variable equal to $1$ if $S(T)\ge K$ and $0$ otherwise.  You should choose the values for $r$, $\sigma$, $T$, and $K$.
-::: 
+::: {#exr-e_binomialcall}
+ 
+ 
+Create an Excel worksheet in which the user inputs $S$, $S_d$, $S_u$, $K$, $r$ and $T$.  Check that the no-arbitrage condition @eq-binomialnoarbitrage is satisfied.  Compute the value of a call option in each of the following ways:
 
 
+
+1. Compute the delta and use  @eq-C0.
+2. Compute the state prices and use  @eq-binomialC2.
+3. Compute the risk-neutral probabilities and use  @eq-binomialC3.
+4. Compute the probabilities using the stock as numeraire and use  @eq-binomialC5.
+
+
+Verify that all of these methods produce the same answer.
+:::
+
+::: {#exr-nolabel}
+ 
+In a binomial model, a put option is equivalent to $\delta_p$ shares of the stock, where $\delta_p = (P_u-P_d)/(S_u-S_d)$ (this will be negative, meaning a short position) and some money invested in the risk-free asset.  Derive the amount of money $x$ that should be invested in the risk-free asset to replicate the put option.  The value of the put at date~0 must  be $x+\delta_pS$.
+:::
+
+::: {#exr-nolabel}
+
+Using the result of the previous exercise, repeat Problem~\ref{e_binomialcall} for a put option.
+:::
+
+::: {#exr-nolabel}
+ Here is a chance to apply option pricing theory to real life.  Suppose you have a significant other who would marry you if you ask.  
+
+
+
+1. What type of option do you have on marriage?  Can you tell when it is in the money?
+2. Under what circumstances should you exercise this option early?  
+3. What is the put option in a marriage contract called?  
+:::

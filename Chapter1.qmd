@@ -1,27 +1,88 @@
-# Binomial Model and Changes of Measure {#sec-c_basics}
+# Calls and Puts {#sec-c_calls-puts}
 
-This chapter introduces the change of measure (or change of numeraire or martingale)  method for valuing derivative securities.  The method is introduced in a binomial model and then extended to more general (continuum of states) models.  Computations in the more general model require the continuous-time mathematics presented in @sec-c_continuoustime.  
+<a target="_blank" href="https://colab.research.google.com/github/math-finance-book/notebooks/blob/main/chapter1.ipynb">
+  <img src="images/Open in Colab.png" alt="Open Chapter Code In Colab" width="200" height="33"/>
+</a>  
 
-It should be noted that the pricing and hedging results in this book are not tied to any particular currency.  However, for specificity (and as a consequence of the author's habit) the discussion will generally be in terms of dollars.  Multiple currencies are addressed in @sec-c_foreignexchange.
+Financial options are rights to buy and sell assets at pre-specified prices.  The rights are traded on exchanges and also as private contracts (called over-the-counter or OTC).  A call option is a right to buy an asset.  A put option is a right to sell an asset.  The pre-specified price is called the exercise price, the strike price, or simply the strike.   The asset to which an option pertains is called the underlying asset, or, more briefly, the underlying.  
 
-## Fundamental Concepts {#sec-s_fundamentalconcepts}
+Here is a snapshot of market statistics regarding call options on Apple stock (AAPL) traded on the Chicago Board Options Exchange (CBOE).  We are accessing the data courtesy of Yahoo Finance.
 
-### Longs, Shorts, and Margin
+```{python filename="somename"}
+import pandas as pd
+import yfinance as yf
+from datetime import datetime
+import pytz
+from datetime import datetime
 
-In financial markets, the owner of an asset is said to be long the asset. \index{long}  If person A owes something to person B, the debt is an asset to person B but a liability to person A.  One also says that person A is short the asset.  \index{short} For example, if someone borrows money and invests the money in stocks, then the individual is short cash and long stocks.  
+est = pytz.timezone('US/Eastern')
+fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+now = datetime.today().astimezone(est).strftime(fmt)
 
-One must invest some of one's own money when borrowing money to buy stocks.  For example, an individual could invest \$600, borrow \$400, and buy \$1000 of stock.  The \$600 is called the margin \index{margin} posted by the investor, and buying stocks in this way is called buying on margin.  The investor, or the portfolio, is also said to be levered, because buying \$1000 of stock with only a \$600 investment amplifies the risk and return per dollar of investment.  \index{leverage} On a percentage basis, we would say the account has 60\% margin, the 60\% being the ratio of the equity (assets minus liabilities = \$1000 of stock minus \$400 debt) to the assets (\$1000 of stock).   If the value of the stock drops sufficiently far, then it may become doubtful whether the investor can repay the \$400.  In this case, the investor must either sell the stock or invest more of his own funds (i.e., he receives a margin call).  \index{margin call} In other words, in actual markets there are margin requirements, \index{margin requirement} that specify a minimum percent margin an investor must have initially (when borrowing money) and a minimum percent margin the investor must maintain.  
+ticker = "AAPL"          # ticker to pull
+kind = "call"           # call or put
+maturity = 4                # option maturity in order of maturities trading
 
-Rather than borrowing money to buy stocks, an investor can do the opposite---he can borrow stocks to buy money.  In this case, buying money means selling the borrowed stocks for cash.  Such an investor will be short stocks and long cash.  This is called short selling (or, more briefly, shorting) stocks.  \index{short selling} For example, suppose individual A borrows 100 shares of stock from individual B and then sells them to individual C.  Both B and C are long the 100 shares and A is short, so the net long position is $2 \times 100 - 100$, which is the original 100 shares that B was long.  A short seller of stocks must pay to the lender of the stocks any dividends that are paid on the stock.  In our example, both B and C own the 100 shares so both expect to receive dividends.  The company will pay dividends only to C, and A must pay the dividends to~B.
+tick = yf.Ticker(ticker.upper())
 
-Of course, investors always wish to buy low and sell high.  The usual method is to buy stocks and hope they rise.  An investor who short sells also wishes to buy low and sell high, but he reverses the order---he sells first and then hopes the stocks fall.  The risk is that the stocks will instead rise, which will increase the value of his liability (short stock position) without increasing the value of his assets (long cash position), thus putting him under water.  To shield the lender of the stocks from this risk, a short seller must also invest some of his own funds, and this amount is again called the investor's margin.  For example, an investor might invest \$600, and borrow and sell \$1000 of stock.  In this case, the investor will be long \$1600 cash and short \$1000 worth of stock.  His equity is \$600 and his percent margin is calculated as \$600/\$1000 = 60\%.  Again, there are typically both initial and maintenance margin requirements.  An additional feature of short selling for small individual investors is that they typically will not earn interest on the proceeds of the short sale (the \$1000 cash obtained from selling stocks in the above example).  
+# Pull last stock price
+close = tick.history().iloc[-1].Close
 
-In this book, we will assume there is a single risk-free rate at which one can both borrow and lend.  Moreover, we will assume that investors earn this rate on margin deposits, including the proceeds of short sales (and including any margin that may be required when buying and selling forward and futures contracts).  Thus, investors gain from buying on margin if the asset return is sure to exceed the risk-free rate, and they gain from short selling if the return on an asset is sure to be below the risk-free rate.   These assumptions are not reasonable for small individual investors, but they are fairly reasonable for institutional investors.  We will assume that no asset has a return that is certain to be above the risk-free rate nor certain to be below the risk-free rate, because institutional investors could arbitrage \index{arbitrage} such guaranteed high-return or guaranteed low-return assets.
+# Get maturity date
+date = tick.options[maturity]
 
-### Calls and Puts
+# Pull options data
+df = (
+    tick.option_chain(date).calls
+    if kind == "call"
+    else tick.option_chain(date).puts
+)
 
-Call and put options are the basic derivative securities and the building blocks of many others.  A derivative security is a security the value of which depends upon another security. \index{derivative security}
-A call option \index{call option} is the right to buy an asset at a pre-specified price.  The pre-specified price is called the exercise price, the strike price, or simply the strike.  \index{exercise price} \index{strike price} We will often call the asset a stock, but there are options on many other types of assets also, and everything we say will be applicable to those as well.^[One caveat is that by asset we mean something that can be stored; thus, for example, electricity is, practically speaking, not an asset.]  The asset to which the call option pertains is called the underlying asset, \index{underlying asset} or, more briefly, the underlying.  If the market value of the asset exceeds the exercise price, then we say the call option is in the money.  Buying a call option is a way to bet on the upside of the underlying asset.  
+df.lastTradeDate = df.lastTradeDate.map(
+    lambda x: x.astimezone(est).strftime(fmt)
+)
+
+# Formatting
+cols = [
+    "strike",
+    "bid",
+    "ask",
+    "lastPrice",
+    "change",
+    "percentChange",
+    "lastTradeDate",
+    "volume",
+    "openInterest",
+    "impliedVolatility",
+]
+df = df[cols]
+df["impliedVolatility"] = df["impliedVolatility"].map("{:.1%}".format)
+df["change"] = df["change"].round(2)
+df["percentChange"] = (df["percentChange"]/100).map("{:.1%}".format)
+df.columns = [
+    "Strike",
+    "Bid",
+    "Ask",
+    "Last Price",
+    "Change",
+    "% Change",
+    "Time of Last Trade",
+    "Volume",
+    "Open Interest",
+    "Implied Volatility",
+] 
+df = df.set_index("Strike")
+print(f"Code was executed at \t{now}")
+print(f"Last {ticker.upper()} price was \t${close:.2f}.")
+print(f'Maturity date of options:\t{date}')
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
+print(df)
+```
+
+
+If the market value of the asset exceeds the exercise price, then we say the call option is in the money.  Buying a call option is a way to bet on the upside of the underlying asset.  
 
 A put option \index{put option} is the right to sell an asset at a pre-specified (exercise, strike) price.  Buying a put is a way to bet on an asset price becoming low (similar to shorting).  A put option is in the money if the exercise price exceeds the value of the asset.  Both puts and calls are potentially valuable and hence the buyer of a put or call must pay the seller.  
 
