@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Pricing and Hedging Derivative Securities - 4&nbsp; Black-Scholes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./Chapter5.html" rel="next">
+<link href="./Chapter3.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter4.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Black-Scholes</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Pricing and Hedging Derivative Securities</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Calls and Puts</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Binomial Model and Changes of Measure</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Continuous-Time Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter4.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Estimating and Modelling Volatility</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Monte Carlo and Binomial Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Foreign Exchange</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forward, Futures, and Exchange Options</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter9.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Exotic Options</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">More on Monte Carlo and Binomial Valuation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Finite Difference Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Fixed Income Concepts</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Introduction to Fixed Income Derivatives</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Valuing Derivatives in the Extended Vasicek Model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">A Brief Survey of Term Structure Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./AppendixB.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Miscellaneous Facts about Continuous-Time Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Chapter contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#sec-s_digitals" id="toc-sec-s_digitals" class="nav-link active" data-scroll-target="#sec-s_digitals"><span class="header-section-number">4.1</span> Digital Options</a></li>
+  <li><a href="#sec-s_sharedigitals" id="toc-sec-s_sharedigitals" class="nav-link" data-scroll-target="#sec-s_sharedigitals"><span class="header-section-number">4.2</span> Share Digitals</a></li>
+  <li><a href="#sec-s_blackscholes" id="toc-sec-s_blackscholes" class="nav-link" data-scroll-target="#sec-s_blackscholes"><span class="header-section-number">4.3</span> Puts and Calls</a></li>
+  <li><a href="#greeks" id="toc-greeks" class="nav-link" data-scroll-target="#greeks"><span class="header-section-number">4.4</span> Greeks</a></li>
+  <li><a href="#sec-s_deltahedging" id="toc-sec-s_deltahedging" class="nav-link" data-scroll-target="#sec-s_deltahedging"><span class="header-section-number">4.5</span> Delta Hedging</a></li>
+  <li><a href="#sec-s_gammahedging" id="toc-sec-s_gammahedging" class="nav-link" data-scroll-target="#sec-s_gammahedging"><span class="header-section-number">4.6</span> Gamma Hedging</a></li>
+  <li><a href="#sec-s_impliedvolatility" id="toc-sec-s_impliedvolatility" class="nav-link" data-scroll-target="#sec-s_impliedvolatility"><span class="header-section-number">4.7</span> Implied Volatilities</a></li>
+  <li><a href="#sec-s_timevaryingvolatility" id="toc-sec-s_timevaryingvolatility" class="nav-link" data-scroll-target="#sec-s_timevaryingvolatility"><span class="header-section-number">4.8</span> Term Structure of Volatility</a></li>
+  <li><a href="#sec-s_smiles" id="toc-sec-s_smiles" class="nav-link" data-scroll-target="#sec-s_smiles"><span class="header-section-number">4.9</span> Smiles and Smirks</a></li>
+  <li><a href="#sec_blackscholes_python" id="toc-sec_blackscholes_python" class="nav-link" data-scroll-target="#sec_blackscholes_python"><span class="header-section-number">4.10</span> Calculations in Python</a></li>
+  <li><a href="#gamma" id="toc-gamma" class="nav-link" data-scroll-target="#gamma"><span class="header-section-number">4.11</span> Gamma</a></li>
+  <li><a href="#sec-blackscholes_implied" id="toc-sec-blackscholes_implied" class="nav-link" data-scroll-target="#sec-blackscholes_implied"><span class="header-section-number">4.12</span> Implied Volatility</a></li>
+  <li><a href="#example-replicating-portfolios-and-simulating-portfolio-insurance" id="toc-example-replicating-portfolios-and-simulating-portfolio-insurance" class="nav-link" data-scroll-target="#example-replicating-portfolios-and-simulating-portfolio-insurance"><span class="header-section-number">4.13</span> Example: Replicating Portfolios and Simulating Portfolio Insurance</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">4.14</span> Exercises</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-c_blackscholes" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In this chapter, we will study the value of European digital and share digital options and standard European puts and calls under the Black-Scholes assumptions. We will also explain how to calculate implied volatilities and the option Greeks. The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield <span class="math inline">\(q\)</span> and has price <span class="math inline">\(S\)</span> satisfying <span id="eq-bs1"><span class="math display">\[
+\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B
+\tag{4.1}\]</span></span></p>
+<p>for a Brownian motion B. Here <span class="math inline">\(\sigma\)</span> is assumed to be constant (though we will allow it to vary in a non-random way at the end of the chapter) and <span class="math inline">\(\mu\)</span> can be a quite general random process. It is also assumed that there is a constant continuously-compounded risk-free rate <span class="math inline">\(r\)</span>.</p>
+<p>Under these assumptions, we will complete the discussion of <a href="#sec-s_introoptions"><span class="quarto-unresolved-ref">sec-s_introoptions</span></a> to derive option pricing formulas. Recall that, to price a European call option, all that remains to be done is to calculate the probabilities of the option finishing in the money when we use the risk-free asset and the underlying asset as numeraires. We will do this using the results of <a href="#sec-s_girsanov"><span class="quarto-unresolved-ref">sec-s_girsanov</span></a>. As in <a href="#sec-s_introoptions"><span class="quarto-unresolved-ref">sec-s_introoptions</span></a>, we will approach the pricing of call and put options by first considering their basic building blocks: digitals and share digitals.</p>
+<section id="sec-s_digitals" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-s_digitals"><span class="header-section-number">4.1</span> Digital Options</h2>
+<p>A digital (or binary) option pays a fixed amount in a certain event and zero otherwise. Consider a digital that pays $1 at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S(T)&gt;K\)</span>, where <span class="math inline">\(K\)</span> is a number that is fixed by the contract. This means that the digital pays <span class="math inline">\(x\)</span> dollars at date <span class="math inline">\(T\)</span> where <span class="math inline">\(x\)</span> is defined as <span class="math display">\[\begin{equation*}
+x =  \begin{cases} 1 &amp; \text{if $S(T)&gt;K$}\; ,\\
+0 &amp; \text{otherwise}\;.
+\end{cases}
+\end{equation*}\]</span> Using the risk-neutral pricing <a href="#eq-riskneutralformula">Equation&nbsp;<span class="quarto-unresolved-ref">eq-riskneutralformula</span></a>, the value of the digital at date~0 is <span class="math inline">\(\mathrm{e}^{-rT}E^R[x]\)</span>. Note that <span class="math display">\[\begin{align*}
+E^R[x] \;&amp;=\; 1 \times \text{prob}^R(x=1)\; + \;0 \times \text{prob}^R(x\!\!=\!\!0) \\
+\;&amp;=\; \text{prob}^R(x=1)\\
+\;&amp;=\; \text{prob}^R\big(S(T) &gt; K\big)\;.
+\end{align*}\]</span> So we need to calculate this probability of the digital finishing in the money.</p>
+<p>In <a href="#sec-s_girsanov"><span class="quarto-unresolved-ref">sec-s_girsanov</span></a>—see <a href="#eq-riskneutral11">Equation&nbsp;<span class="quarto-unresolved-ref">eq-riskneutral11</span></a>—we learned that under the Black-Scholes assumption <a href="#eq-bs1">Equation&nbsp;<span class="quarto-unresolved-ref">eq-bs1</span></a> we have <span class="math display">\[\frac{\mathrm{d} S}{S} =( r-q)\,\mathrm{d} t+\sigma\,\mathrm{d} B^*\; ,\]</span> where <span class="math inline">\(B^*\)</span> is a Brownian motion under the risk-neutral measure.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> on the volatility coefficients and on <span class="math inline">\(B\)</span> and <span class="math inline">\(B^*\)</span> to distinguish the Brownian motion driving <span class="math inline">\(S\)</span> from the Brownian motion driving <span class="math inline">\(Y\)</span> and to distinguish their volatilities are not needed here. In <a href="#sec-s_geometricbrownianmotion"><span class="quarto-unresolved-ref">sec-s_geometricbrownianmotion</span></a>, we observed that this is equivalent to <span class="math display">\[\mathrm{d} \log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B^*\; .\]</span> Now using the formulas <a href="#eq-tailprob01">Equation&nbsp;<span class="quarto-unresolved-ref">eq-tailprob01</span></a>–<a href="#eq-tailprob3">Equation&nbsp;<span class="quarto-unresolved-ref">eq-tailprob3</span></a>, with <span class="math inline">\(\alpha = r-q-\sigma^2/2\)</span>, we have <span class="math inline">\(\text{prob}^R\big(S(T) &gt; K\big) = \mathrm{N}(d_2)\)</span> where <span id="eq-digital_d2"><span class="math display">\[
+d_2 = \frac{\log\left(\frac{S(0)}{K}\right)+\left(r-q-\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;.
+\tag{4.2}\]</span></span></p>
+<p>The notation <span class="math inline">\(d_2\)</span> is standard notation from the Black-Scholes formula, and we use it—rather than a simple <span class="math inline">\(d\)</span>—to distinguish the number <a href="#eq-digital_d2">Equation&nbsp;<span class="quarto-unresolved-ref">eq-digital_d2</span></a> from a similar number—to be called <span class="math inline">\(d_1\)</span> of course—that we will see in the next section.<br>
+We conclude:</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The value of a digital option that pays $1 when <span class="math inline">\(S(T)&gt;K\)</span> is <span class="math inline">\(\mathrm{e}^{-rT}\mathrm{N}(d_2)\)</span>, where <span class="math inline">\(d_2\)</span> is defined in <a href="#eq-digital_d2">Equation&nbsp;<span class="quarto-unresolved-ref">eq-digital_d2</span></a>.</p>
+</div>
+</div>
+<p>Consider now a digital that pays when the underlying asset price is low; i.e., consider a security that pays <span class="math inline">\(y\)</span> dollars at date <span class="math inline">\(T\)</span> where <span class="math display">\[\begin{equation*}
+y =  \begin{cases} 1 &amp; \text{if $S(T)&lt;K$}\; ,\\
+0 &amp; \text{otherwise}\;.
+\end{cases}
+\end{equation*}\]</span> Using risk-neutral pricing again, the value of this digital at date 0 is <span class="math display">\[\mathrm{e}^{-rT}E^R[y] = \mathrm{e}^{-rT}\text{prob}^R(y=1) = \mathrm{e}^{-rT}\text{prob}^R\big(S(T)&lt;K\big)\; .\]</span> From this fact and <a href="#eq-tailprob02">Equation&nbsp;<span class="quarto-unresolved-ref">eq-tailprob02</span></a>, we conclude:</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The value of a digital option that pays $1 when <span class="math inline">\(S(T)&lt;K\)</span> is <span class="math inline">\(\mathrm{e}^{-rT}\mathrm{N}(-d_2)\)</span>, where <span class="math inline">\(d_2\)</span> is defined in <a href="#eq-digital_d2">Equation&nbsp;<span class="quarto-unresolved-ref">eq-digital_d2</span></a>.</p>
+</div>
+</div>
+</section>
+<section id="sec-s_sharedigitals" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-s_sharedigitals"><span class="header-section-number">4.2</span> Share Digitals</h2>
+<p>Consider a derivative security that pays one share of the underlying asset at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S(T)&gt;K\)</span> and pays zero otherwise. This is called a share digital. As before, let <span class="math display">\[\begin{equation*}
+x =  \begin{cases} 1 &amp; \text{if $S(T)&gt;K$}\; ,\\
+0 &amp; \text{otherwise}\;.
+\end{cases}
+\end{equation*}\]</span> Then the payoff of the share digital at date <span class="math inline">\(T\)</span> is <span class="math inline">\(xS(T)\)</span>. Let <span class="math inline">\(Y(t)\)</span> denote the value of this claim for <span class="math inline">\(0\leq t\leq T\)</span>. We have <span class="math inline">\(Y(T)=xS(T)\)</span> and we want to find <span class="math inline">\(Y(0)\)</span>.</p>
+<p>From <a href="#sec-s_reinvestingdividends"><span class="quarto-unresolved-ref">sec-s_reinvestingdividends</span></a>, we know that <span class="math inline">\(V(t)=\mathrm{e}^{qt}S(t)\)</span> is the price of a non-dividend-paying portfolio. From our fundamental pricing <a href="#eq-formula">Equation&nbsp;<span class="quarto-unresolved-ref">eq-formula</span></a>, using <span class="math inline">\(V\)</span> as the numeraire, we have <span class="math display">\[\begin{align*}
+Y(0) &amp;= S(0) E^V \left[\frac{Y(T)}{\mathrm{e}^{q T}S(T)}\right]\\
+&amp;=\mathrm{e}^{-q T}S(0)E^V [x]\;.
+\end{align*}\]</span> As in the previous section, <span class="math inline">\(E^V[x] = \text{prob}^V\!(x=1)\)</span>, so we need to compute this probability of the option finishing in the money.</p>
+<p>We follow the same steps as in the previous section. From <a href="#eq-own11">Equation&nbsp;<span class="quarto-unresolved-ref">eq-own11</span></a> we have <span class="math display">\[
+\frac{\mathrm{d} S}{S} = (r-q+ \sigma^2)\,\mathrm{d} t+\sigma\,\mathrm{d} B^*,
+\]</span> where now <span class="math inline">\(B^*\)</span> denotes a Brownian motion when <span class="math inline">\(V\)</span> is the numeraire. This is equivalent to <span id="eq-new5"><span class="math display">\[
+\mathrm{d} \log S = \left(r-q+\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma \,\mathrm{d} B^*\;.
+\tag{4.3}\]</span></span></p>
+<p>Thus, from the formulas <a href="#eq-tailprob01">Equation&nbsp;<span class="quarto-unresolved-ref">eq-tailprob01</span></a>–<a href="#eq-tailprob3">Equation&nbsp;<span class="quarto-unresolved-ref">eq-tailprob3</span></a>, with <span class="math inline">\(\alpha = r-q+\sigma^2/2\)</span>, we have <span class="math display">\[\text{prob}^V\!\big(S(T)&gt;K\big) = \mathrm{N}(d_1)\; ,\]</span> where <span id="eq-sharedigital_d1"><span class="math display">\[
+d_1 = \frac{\log\left(\frac{S(0)}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;.
+\tag{4.4}\]</span></span></p>
+<p>This implies:</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The value of a share digital that pays one share when <span class="math inline">\(S(T)&gt;K\)</span> is <span class="math inline">\(\mathrm{e}^{-q T}S(0)\mathrm{N}(d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is defined in <a href="#eq-sharedigital_d1">Equation&nbsp;<span class="quarto-unresolved-ref">eq-sharedigital_d1</span></a>.</p>
+</div>
+</div>
+<p>Consider now a share digital that pays one share of the stock at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S(T)&lt;K\)</span>. Letting <span class="math display">\[\begin{equation*}
+y =  \begin{cases} 1 &amp; \text{if $S(T)&lt;K$}\; ,\\
+0 &amp; \text{otherwise}\;,
+\end{cases}
+\end{equation*}\]</span> the payoff of this option is <span class="math inline">\(yS(T)\)</span>. Its value at date 0 is <span class="math display">\[\begin{align*}
+\mathrm{e}^{-q T}S(0)E^V [y] &amp;= \mathrm{e}^{-q T}S(0)\times\text{prob}^V\!(y=1) \\
+&amp;= \mathrm{e}^{-q T}S(0)\times\text{prob}^V\!\big(S(T)&lt;K\big)\; ,
+\end{align*}\]</span> and from <a href="#eq-tailprob02">Equation&nbsp;<span class="quarto-unresolved-ref">eq-tailprob02</span></a> we have <span class="math display">\[\text{prob}^V\!\big(S(T)&lt;K\big) = \mathrm{N}(-d_1)\; .\]</span> We conclude:</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The value of a share digital that pays one share when <span class="math inline">\(S(T)&lt;K\)</span> is <span class="math inline">\(\mathrm{e}^{-q T}S(0)\mathrm{N}(-d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is defined in <a href="#eq-sharedigital_d1">Equation&nbsp;<span class="quarto-unresolved-ref">eq-sharedigital_d1</span></a>.</p>
+</div>
+</div>
+</section>
+<section id="sec-s_blackscholes" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="sec-s_blackscholes"><span class="header-section-number">4.3</span> Puts and Calls</h2>
+<p>A European call option pays <span class="math inline">\(S(T)-K\)</span> at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S(T)&gt;K\)</span> and 0 otherwise. Again letting <span class="math display">\[\begin{equation*}
+x =  \begin{cases} 1 &amp; \text{if $S(T)&gt;K$}\; ,\\
+0 &amp; \text{otherwise}\;,
+\end{cases}
+\end{equation*}\]</span> the payoff of the call can be written as <span class="math inline">\(xS(T)-xK\)</span>. This is equivalent to one share digital minus <span class="math inline">\(K\)</span> digitals, with the digitals paying in the event that <span class="math inline">\(S(T)&gt;K\)</span>. The share digital is worth <span class="math inline">\(\mathrm{e}^{-q T}S(0)\mathrm{N}(d_1)\)</span> at date 0 and each digital is worth <span class="math inline">\(\mathrm{e}^{-rT}\mathrm{N}(d_2)\)</span>. Note that equations <a href="#eq-digital_d2">Equation&nbsp;<span class="quarto-unresolved-ref">eq-digital_d2</span></a> and <a href="#eq-sharedigital_d1">Equation&nbsp;<span class="quarto-unresolved-ref">eq-sharedigital_d1</span></a> for <span class="math inline">\(d_1\)</span> and <span class="math inline">\(d_2\)</span> imply <span class="math inline">\(d_2 = d_1-\sigma{\sqrt{T}}\)</span>. Therefore, combining the results of the previous two sections yields the Black-Scholes formula: </p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The value of a European call option at date 0 is <span id="eq-blackscholescall"><span class="math display">\[
+\mathrm{e}^{-q T}S(0)\mathrm{N}(d_1)-\mathrm{e}^{-rT}K\mathrm{N}(d_2)\;,
+\tag{4.5}\]</span></span></p>
+<p>where <span class="math inline">\(d_1\)</span> is defined in <a href="#eq-sharedigital_d1">Equation&nbsp;<span class="quarto-unresolved-ref">eq-sharedigital_d1</span></a> and <span class="math inline">\(d_2 = d_1-\sigma{\sqrt{T}}\)</span>.</p>
+</div>
+</div>
+<p>A European put option pays <span class="math inline">\(K-S(T)\)</span> at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S(T)&lt;K\)</span> and 0 otherwise. As before, let <span class="math display">\[\begin{equation*}
+y =  \begin{cases} 1 &amp; \text{if $S(T)&lt;K$}\; ,\\
+0 &amp; \text{otherwise}\;.
+\end{cases}
+\end{equation*}\]</span> The payoff of the put option is <span class="math inline">\(yK-yS(T)\)</span>. This is equivalent to <span class="math inline">\(K\)</span> digitals minus one share digital, all of the digitals paying when <span class="math inline">\(S(T)&lt;K\)</span>. Thus, we have:</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The value of a European put option at date 0 is <span id="eq-blackscholesput"><span class="math display">\[
+\mathrm{e}^{-rT}K\mathrm{N}(-d_2)-\mathrm{e}^{-q T}S(0)\mathrm{N}(-d_1)\;,
+\tag{4.6}\]</span></span></p>
+<p>where <span class="math inline">\(d_1\)</span> is defined in <a href="#eq-sharedigital_d1">Equation&nbsp;<span class="quarto-unresolved-ref">eq-sharedigital_d1</span></a> and <span class="math inline">\(d_2 = d_1-\sigma{\sqrt{T}}\)</span>.</p>
+</div>
+</div>
+<p>Again, this is the Black-Scholes formula.</p>
+<p>The values of the European put and call satisfy put-call parity, and we can also find one from the other by^[The put-call parity relation follows from the fact that both the left and the right-hand sides are the prices of portfolios that have value <span class="math inline">\(\max(S(T),K)\)</span> at the maturity of the option. To see this for the left-hand side, note that <span class="math inline">\(\mathrm{e]^{-rT}K\)</span> is sufficient cash to accumulate to <span class="math inline">\(K\)</span> at date <span class="math inline">\(T\)</span>, allowing exercise of the call when it is in the money and retention of the cash <span class="math inline">\(K\)</span> otherwise. For the right-hand side, note that <span class="math inline">\(\mathrm{e}^{-q T}S(0)\)</span> is enough cash to buy <span class="math inline">\(\mathrm{e}^{-q T}\)</span> shares of the stock at date 0 which, with reinvestment of dividends, will accumulate to one share at date <span class="math inline">\(T\)</span>, enabling exercise of the put if it is in the money or retention of the share otherwise.} <span id="eq-putcallparity11"><span class="math display">\[
+\mathrm{e}^{-rT}K + \text{Call Price} = \mathrm{e}^{-q T}S(0)+ \text{Put Price}\;.
+\tag{4.7}\]</span></span></p>
+</section>
+<section id="greeks" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="greeks"><span class="header-section-number">4.4</span> Greeks</h2>
+<p>The derivatives (calculus derivatives, not financial derivatives!) of an option pricing formula with respect to the inputs are commonly called Greeks. The most important Greek is the option delta. This measures the sensitivity of the option value to changes in the value of the underlying asset. The following table shows the standard Greeks, with reference to the Black-Scholes pricing formula.</p>
+<p> The second line of the above shows <span class="math inline">\(\delta\)</span> as an input.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> Of course, it is not an input but instead is calculated. Gamma, the derivative of <span class="math inline">\(\delta\)</span>, is the second derivative of the option price with respect to the underlying asset price. The reason for calculating <span class="math inline">\(\Theta\)</span> as the derivative with respect to <span class="math inline">\(-T\)</span> instead of <span class="math inline">\(T\)</span> is that the time-to-maturity <span class="math inline">\(T\)</span> decreasing (<span class="math inline">\(-T\)</span> increasing) is equivalent to time passing, so <span class="math inline">\(\Theta\)</span> measures the change in the option value when time passes.</p>
+<p>We can calculate these from the Black-Scholes formula using the chain rule from differential calculus. The derivative of the normal distribution function <span class="math inline">\(\mathrm{N}\)</span> is the normal density function <span class="math inline">\(\mathrm{n}d\)</span> defined as <span class="math display">\[\mathrm{n}d(d) = \frac{1}{\sqrt{2\pi}}\mathrm{e}^{-d^2/2}\; .\]</span> One can easily verify directly that <span id="eq-greeksimplify"><span class="math display">\[
+\mathrm{e}^{-q T}S\mathrm{n}d(d_1)=\mathrm{e}^{-rT}K\mathrm{n}d(d_2)\;,
+\tag{4.8}\]</span></span></p>
+<p>which simplifies the calculations for the Black-Scholes call option pricing formula. For this formula, the Greeks are as follows: <span class="math display">\[\begin{align*}
+\delta &amp;= \mathrm{e}^{-q T}\mathrm{N}(d_1) + \mathrm{e}^{-q T}S\mathrm{n}d(d_1)\frac{\partial d_1}{\partial S} -\mathrm{e}^{-rT}K\mathrm{n}d(d_2)\frac{\partial d_2}{\partial S}\\
+&amp;= \mathrm{e}^{-q T}\mathrm{N}(d_1) + \mathrm{e}^{-q T}S\mathrm{n}d(d_1)\left(\frac{\partial d_1}{\partial S}-\frac{\partial d_2}{\partial S}\right)\\
+&amp;=\mathrm{e}^{-q T}\mathrm{N}(d_1)\;,\\
+\Gamma &amp;=\mathrm{e}^{-q T}\mathrm{n}d(d_1)\frac{\partial d_1}{\partial S}= \mathrm{e}^{-q T}\mathrm{n}d(d_1)\frac{1}{S\sigma\sqrt{T}}\;,
+\end{align*}\]</span> <span class="math display">\[\begin{align*}
+\Theta &amp;=-\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\frac{\partial d_1}{\partial T} +q \mathrm{e}^{-q T}S\mathrm{N}(d_1) \\
+&amp;\quad + \mathrm{e}^{-rT}K\mathrm{n}d(d_2)\frac{\partial d_2}{\partial T} -r\mathrm{e}^{-rT}K\mathrm{N}(d_2)\\
+&amp;=\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\left(\frac{\partial d_2}{\partial T}-\frac{\partial d_1}{\partial T}\right)\\
+&amp;\quad + q \mathrm{e}^{-q T}S\mathrm{N}(d_1)-r\mathrm{e}^{-rT}K\mathrm{N}(d_2)\\
+&amp;=-\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\frac{\sigma}{2\sqrt{T}}+ q \mathrm{e}^{-q T}S\mathrm{N}(d_1)-r\mathrm{e}^{-rT}K\mathrm{N}(d_2)\;,\\
+\cal{V}&amp;=\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\frac{\partial d_1}{\partial \sigma} - \mathrm{e}^{-rT}K\mathrm{n}d(d_2)\frac{\partial d_2}{\partial \sigma}\\
+&amp;=\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\left(\frac{\partial d_1}{\partial \sigma}-\frac{\partial d_2}{\partial \sigma}\right)\\
+&amp;=\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\sqrt{T}\;,\\
+\rho &amp;=\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\frac{\partial d_1}{\partial r} - \mathrm{e}^{-rT}K\mathrm{n}d(d_2)\frac{\partial d_2}{\partial r} +T\mathrm{e}^{-rT}K\mathrm{N}(d_2)\\
+&amp;=\mathrm{e}^{-q T}S\mathrm{n}d(d_1)\left(\frac{\partial d_1}{\partial r}-\frac{\partial d_2}{\partial r}\right)+T\mathrm{e}^{-rT}K\mathrm{N}(d_2)\\
+&amp;=T\mathrm{e}^{-rT}K\mathrm{N}(d_2)\;.
+\end{align*}\]</span></p>
+<p>We can calculate the Greeks of a European put option from the call option Greeks and put-call parity: <span class="math display">\[\text{Put Price} = \text{Call Price} +\mathrm{e}^{-rT}K- \mathrm{e}^{-q T}S(0)\; .\]</span> For example, the delta of a put is the delta of a call (with the same strike and maturity) minus <span class="math inline">\(\mathrm{e}^{-q T}\)</span>, and the gamma of a put is the same as the gamma of the corresponding call.</p>
+</section>
+<section id="sec-s_deltahedging" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="sec-s_deltahedging"><span class="header-section-number">4.5</span> Delta Hedging</h2>
+<p>The ability to create a fully hedged (risk-free) portfolio of the stock and an option is the essence of the arbitrage argument underlying the Black-Scholes formula, as we saw in <a href="#sec-c_basics"><span class="quarto-unresolved-ref">sec-c_basics</span></a> for the binomial model. For a call option, such a portfolio consists of delta shares of the underlying asset and a short call option, or a short position of delta shares of the underlying and a long call option. These portfolios have no instantaneous exposure to the price of the underlying. To create a perfect hedge, the portfolio must be adjusted continuously, because the delta changes when the price of the underlying changes and when time passes. In practice, any hedge will therefore be imperfect, even if the assumptions of the model are satisfied.</p>
+<p>We first consider the continuous-time hedging argument. Consider a European call option with maturity <span class="math inline">\(T\)</span>, and let <span class="math inline">\(C(S,t)\)</span> denote the value of the option at date <span class="math inline">\(t&lt;T\)</span> when the stock price is <span class="math inline">\(S\)</span> at date <span class="math inline">\(t\)</span>. Consider a portfolio that is short one call option and long <span class="math inline">\(\delta\)</span> shares of the underlying asset and that has a (short) cash position equal to <span class="math inline">\(C-\delta S\)</span>. This portfolio has zero value at date <span class="math inline">\(t\)</span>.</p>
+<p>The change in the value of the portfolio in an instant <span class="math inline">\(\mathrm{d} t\)</span> is <span id="eq-changeportfoliovalue"><span class="math display">\[
+-\mathrm{d} C + \delta \,\mathrm{d} S + q \delta S\,\mathrm{d} t+(C-\delta S)r\,\mathrm{d} t\;.
+\tag{4.9}\]</span></span></p>
+<p>The first term reflects the change in the value of the option, the second term is the capital gain or loss on <span class="math inline">\(\delta\)</span> shares of stock, the third term is the dividends received on <span class="math inline">\(\delta\)</span> shares of stock, and the fourth term is the interest expense on the short cash position.</p>
+<p>On the other hand, we know from Ito’s formula that</p>
+<p><span class="math display">\[
+\mathrm{d} C = \frac{\partial C}{\partial S}\,\mathrm{d} S + \frac{\partial C}{\partial t}\,\mathrm{d} t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\mathrm{d} S)^2  
+\]</span> <span id="eq-changeportfoliovalue2"><span class="math display">\[
+= \delta \,\mathrm{d} S + \Theta \,\mathrm{d} t + \frac{1}{2}\Gamma \sigma^2S^2\,\mathrm{d} t\;.
+\tag{4.10}\]</span></span></p>
+<p>Substituting <a href="#eq-changeportfoliovalue2">Equation&nbsp;<span class="quarto-unresolved-ref">eq-changeportfoliovalue2</span></a> into <a href="#eq-changeportfoliovalue">Equation&nbsp;<span class="quarto-unresolved-ref">eq-changeportfoliovalue</span></a> shows that the change in the value of the portfolio is <span id="eq-hedgeprofits"><span class="math display">\[
+-\Theta \,\mathrm{d} t - \frac{1}{2}\Gamma \sigma^2S^2\,\mathrm{d} t+ q \delta S\,\mathrm{d} t+(C-\delta S)r\,\mathrm{d} t\;.
+\tag{4.11}\]</span></span></p>
+<p>Several aspects of this are noteworthy. First, as noted earlier, the delta hedge (being long <span class="math inline">\(\delta\)</span> shares of the underlying) eliminates the exposure to changes in the price of the underlying—there is no <span class="math inline">\(\mathrm{d} S\)</span> term in <a href="#eq-hedgeprofits">Equation&nbsp;<span class="quarto-unresolved-ref">eq-hedgeprofits</span></a>. Second, <span class="math inline">\(\Theta\)</span> will be negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate <span class="math inline">\(-\Theta\)</span>. Third, this portfolio is short gamma. We can also say it is short convexity, the term convexity referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma). The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses. Finally, the portfolio is earning dividends but paying interest.</p>
+<p>It is straightforward to check, from the definitions of <span class="math inline">\(\Theta\)</span>, <span class="math inline">\(\Gamma\)</span> and <span class="math inline">\(\delta\)</span> in the preceding section, that the sum of the terms in <a href="#eq-hedgeprofits">Equation&nbsp;<span class="quarto-unresolved-ref">eq-hedgeprofits</span></a> is zero. The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest. Therefore, the delta hedge is a perfect hedge. The portfolio, which has a zero cost, neither earns nor loses money. This is true not only on average but for every possible change in the stock price.</p>
+<p>To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in <span class="math inline">\(S\)</span> over time and sum the gains and losses over discrete rebalancing periods. One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses. This is discussed further in <a href="#sec-blackscholes_python"><span class="quarto-unresolved-ref">sec-blackscholes_python</span></a>.</p>
+</section>
+<section id="sec-s_gammahedging" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="sec-s_gammahedging"><span class="header-section-number">4.6</span> Gamma Hedging</h2>
+<p>To attempt to improve the performance of a discretely rebalanced delta hedge, one can use another option to create a portfolio that is both delta and gamma neutral. Being delta neutral means hedged as in the previous section—the portfolio value has no exposure to changes in the underlying asset price. In other words, it means that the derivative of the portfolio value with respect to the price of the underlying (the portfolio delta) is zero. Being gamma neutral means that the delta of the portfolio has no exposure to changes in the underlying price, which is equivalent to the second derivative of the portfolio value with respect to the price of the underlying (the portfolio gamma) being zero. If the delta truly did not change, then there would be no need to rebalance continuously, and hence no hedging error introduced by only adjusting the portfolio at discrete times rather than continuously. However, there is certainly no guarantee that a discretely-rebalanced delta/gamma hedge will perform better than a discretely rebalanced delta hedge. </p>
+<p>A delta/gamma hedge can be constructed as follows. Suppose we have written (shorted) a call option and we want to hedge both the delta and gamma using the underlying asset and another option, for example, another call option with a different strike. In practice, one would want to use a liquid option for this purpose, which typically means that the strike of the option will be near the current value of the underlying (i.e., the option used to hedge would be approximately at the money).</p>
+<p>Let <span class="math inline">\(\delta\)</span> and <span class="math inline">\(\Gamma\)</span> denote the delta and gamma of the written option and let <span class="math inline">\(\delta'\)</span> and <span class="math inline">\(\Gamma'\)</span> denote the delta and gamma of the option used to hedge. Consider holding <span class="math inline">\(a\)</span> of shares of the stock and <span class="math inline">\(b\)</span> units of the option used to hedge in conjunction with the short option. The delta of the stock is one (<span class="math inline">\(\mathrm{d} S/\mathrm{d} S = 1\)</span>), so to obtain a zero portfolio delta we need</p>
+<p><span id="eq-portfoliodelta"><span class="math display">\[
+0 = - \delta + a + b\delta'.
+\tag{4.12}\]</span></span></p>
+<p>The gamma of the stock is zero (<span class="math inline">\(\mathrm{d}^2 S/\mathrm{d} S^2 = d\,1/\mathrm{d} S = 0\)</span>), so to obtain a zero portfolio gamma we need</p>
+<p><span id="eq-portfoliogamma"><span class="math display">\[
+0 = - \Gamma + b\Gamma'\;.
+\tag{4.13}\]</span></span></p>
+<p>Equation <a href="#eq-portfoliogamma">Equation&nbsp;<span class="quarto-unresolved-ref">eq-portfoliogamma</span></a> shows that we should hold enough of the second option to neutralize the gamma of the option we have shorted; i.e., <span class="math display">\[\
+b= \frac{\Gamma}{\Gamma'}
+\]</span> Equation <a href="#eq-portfoliodelta">Equation&nbsp;<span class="quarto-unresolved-ref">eq-portfoliodelta</span></a> shows that we should use the stock to delta hedge the portfolio of options; i.e., <span class="math display">\[
+a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
+\]</span></p>
+</section>
+<section id="sec-s_impliedvolatility" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="sec-s_impliedvolatility"><span class="header-section-number">4.7</span> Implied Volatilities</h2>
+<p>All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient <span class="math inline">\(\sigma\)</span>. We can estimate <span class="math inline">\(\sigma\)</span> from historical data (see <a href="#sec-c_stochasticvolatility"><span class="quarto-unresolved-ref">sec-c_stochasticvolatility</span></a>), or estimate it from the prices of other options. The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the <span class="math inline">\(\sigma\)</span> that is input, so one can take the price as given and infer <span class="math inline">\(\sigma\)</span> from the formula. The <span class="math inline">\(\sigma\)</span> computed in this way is called the implied volatility. The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option. The calculation of implied volatilities is discussed in <a href="#sec-blackscholes_implied"><span class="quarto-unresolved-ref">sec-blackscholes_implied</span></a>.</p>
+<p>Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small. Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity. To some extent, the implied volatility normalizes the price relative to the exercise price and maturity. Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!</p>
+</section>
+<section id="sec-s_timevaryingvolatility" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="sec-s_timevaryingvolatility"><span class="header-section-number">4.8</span> Term Structure of Volatility</h2>
+<p>The option pricing formulas in this chapter are derived from the fact that the natural logarithm of the stock price at maturity is normally distributed with a certain mean (depending on the numeraire) and variance equal to <span class="math inline">\(\sigma^2T\)</span>. It is not actually necessary that the volatility be constant. The formulas are still valid if <span class="math display">\[\frac{\mathrm{d} S(t)}{S(t)}= \mu(t)\,\mathrm{d} t + \sigma(t)\,\mathrm{d} B(t)\]</span> where <span class="math inline">\(\sigma(t)\)</span> is some non-random function of time (and again <span class="math inline">\(\mu\)</span> can be a quite general random process). In this case, the variance of <span class="math inline">\(\log S(T)\)</span> will be <span id="eq-totalvariance"><span class="math display">\[
+\int_0^T \sigma^2(t)\,\mathrm{d} t\;,
+\tag{4.14}\]</span></span></p>
+<p>which is essentially the sum of the instantaneous variances <span class="math inline">\(\sigma^2(t)\,\mathrm{d} t\)</span>. In the <span class="math inline">\(d_1\)</span>’s and <span class="math inline">\(d_2\)</span>’s in the option pricing formulas, <span class="math inline">\(\sigma^2T\)</span> should be replaced by <a href="#eq-totalvariance">Equation&nbsp;<span class="quarto-unresolved-ref">eq-totalvariance</span></a>. A convenient way of expressing this is as follows. Let <span class="math inline">\(\sigma_{\text{avg}}\)</span> be the positive number such that <span id="eq-sigmaavg100"><span class="math display">\[
+\sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2(t)\,\mathrm{d} t\;.
+\tag{4.15}\]</span></span></p>
+<p>Then we simply need to input <span class="math inline">\(\sigma_{\text{avg}}\)</span> as in our option pricing functions. We will call <span class="math inline">\(\sigma_{\text{avg}}\)</span> the average volatility, though note that it is not really the average of <span class="math inline">\(\sigma(t)\)</span> but instead is the square root of the average of <span class="math inline">\(\sigma^2(t)\)</span>.</p>
+<p>It is important to recognize that, throughout this chapter, date 0 means the date at which the option is being valued. It is not necessarily the date at which the option was first bought or sold. So <span class="math inline">\(\sigma_{\text{avg}}\)</span> is the average (in a sense) volatility during the remaining lifetime of the option, which need not be the same as the average during the option’s entire lifetime. It is this remaining volatility that is important for pricing and hedging. Moreover, it is a mistake at date 0 to use <span class="math inline">\(\sigma(0)\)</span> as the volatility to compute prices and hedges. Instead, prices and hedges should be based on <span class="math inline">\(\sigma_{\text{avg}}\)</span>.</p>
+<p>These considerations provide a way to address the following situation. If we compute implied volatilities for options with different maturities, we will normally get different numbers. For example, consider two at-the-money options with maturities <span class="math inline">\(T_1\)</span> and <span class="math inline">\(T_2\)</span> where <span class="math inline">\(T_2&gt;T_1\)</span>. Denote the implied volatilities by <span class="math inline">\(\hat{\sigma}_1\)</span> and <span class="math inline">\(\hat{\sigma}_2\)</span>. We want to interpret these as average volatilities for the time periods <span class="math inline">\([0,T_1]\)</span> and <span class="math inline">\([0,T_2]\)</span> respectively. This requires the existence of a function <span class="math inline">\(\sigma(t)\)</span> such that <span class="math display">\[\hat{\sigma}_1^2 = \frac{1}{T_1}\int_0^{T_1} \sigma^2(t)\,\mathrm{d} t \quad \text{and} \quad \hat{\sigma}_2^2 = \frac{1}{T_2}\int_0^{T_2} \sigma^2(t)\,\mathrm{d} t\; .\]</span> This would imply <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 = \int_{T_1}^{T_2} \sigma^2(t)\,\mathrm{d} t\; ,\]</span> which requires <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 \geq 0\; .\]</span> Equivalently, <span class="math display">\[\hat{\sigma}_2 \geq \sqrt{\frac{T_1}{T_2}} \hat{\sigma}_1\; .\]</span> Provided this last inequality is satisfied, we can easily construct the function <span class="math inline">\(\sigma(t)\)</span> as <span class="math display">\[\sigma(t) = \begin{cases} \hat{\sigma}_1 &amp; \quad\text{for $t\leq T_1$} \\
+\sqrt{\frac{\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1}{T_2-T_1}} &amp;\quad\text{for $T_1 &lt; t\leq T_2$}.
+\end{cases}\]</span> More generally, given a sequence of at-the-money options with maturities <span class="math inline">\(T_1&lt;T_2&lt;\cdots T_N\)</span> and implied volatilities <span class="math inline">\(\hat{\sigma}_1,\dots,\hat{\sigma}_N\)</span>, we define <span class="math display">\[\sigma(t) = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}\]</span> for <span class="math inline">\(T_i&lt;t\leq T_{i+1}\)</span>, provided the expression inside the square root symbol is positive. This <span class="math inline">\(\sigma(t)\)</span> is often called the term structure of (implied) volatilities. Generally, we may expect <span class="math inline">\(\sigma(t)\)</span> to be a decreasing function of time <span class="math inline">\(t\)</span> when the current market is especially volatile and to be an increasing function when the current market is especially quiet.</p>
+</section>
+<section id="sec-s_smiles" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="sec-s_smiles"><span class="header-section-number">4.9</span> Smiles and Smirks</h2>
+<p>If we compute implied volatilities for options with the same maturity but different strikes, we will again obtain different implied volatilities for different options. If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money). The implied volatility will then generally flatten out or increase slightly at higher strikes. The graph looks like a twisted smile (smirk). This pattern has been very pronounced in equity index option prices since the crash of 1987. In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model. It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed). We will return to this subject in <a href="#sec-s_smilesagain"><span class="quarto-unresolved-ref">sec-s_smilesagain</span></a>.</p>
+</section>
+<section id="sec_blackscholes_python" class="level2" data-number="4.10">
+<h2 data-number="4.10" class="anchored" data-anchor-id="sec_blackscholes_python"><span class="header-section-number">4.10</span> Calculations in Python</h2>
+<p>The following calculates the Black Scholes put or call price.</p>
+<pre><code>def blackscholes(S0, K, r, q, sig, T, call = True):
+    '''Calculate option price using B-S formula.
+    
+    Args:
+        S0 (num): initial price of underlying asset.
+        K (num): strick price.
+        r (num): risk free rate
+        q (num): dividend yield
+        sig (num): Black-Scholes volatility.
+        T (num): maturity.
+        call (bool): True returns call price, False returns put price.
+        
+    Returns:
+        num
+    '''
+    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+     &lt;!-- norm = sp.stats.norm --&gt;
+    norm = stats.norm
+    if call:
+        return np.exp(- q *T) * S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1) 
+    else:
+        return -np.exp(-q * T) * S0 * norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)</code></pre>
+</section>
+<section id="gamma" class="level2" data-number="4.11">
+<h2 data-number="4.11" class="anchored" data-anchor-id="gamma"><span class="header-section-number">4.11</span> Gamma</h2>
+<p>The following calculates the delta for a put or a call. From put-call parity we know they are the same for both options.</p>
+<pre><code>def blackscholes_gamma(S0, K, r, sig, T, call = True):
+    '''Calculate option price using B-S formula.
+
+    Args:
+        S0 (num): initial price of underlying asset.
+        K (num): strick price.
+        sig (num): Black-Scholes volatility.
+        T (num): maturity.
+        call (bool): True returns call price, False returns put price.
+
+    Returns:
+        num
+    '''
+    d1 = (np.log(S0/K) + (r + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+
+     &lt;!-- norm = sp.stats.norm --&gt;
+    norm = stats.norm
+    if type(call) == bool:
+        if call:
+            return np.exp(-q * T) * norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
+        else:
+            return np.exp(-q * T) *norm.pdf(d1,0,1)/(S0*sig*np.sqrt(T))
+    else:
+        print("Not a valid value for call")</code></pre>
+</section>
+<section id="sec-blackscholes_implied" class="level2" data-number="4.12">
+<h2 data-number="4.12" class="anchored" data-anchor-id="sec-blackscholes_implied"><span class="header-section-number">4.12</span> Implied Volatility</h2>
+<p>The following calculates the implied volatility for a call option.</p>
+<pre><code>def implied_vol(S0,K,r,q,T,price):
+    def dsquared(sig):
+        """Squared Difference between Black-Scholes and Market Price"""
+        d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+        d2 = d1 - sig*np.sqrt(T)
+        norm = stats.norm
+        call = np.exp(-q*T)*S0*norm.cdf(d1,0,1) - K*np.exp(-r*T)*norm.cdf(d2,0, 1)
+        return (call - price) ** 2
+    res = minimize_scalar(dsquared, bounds=(0, 1), method='bounded')
+    return res.x</code></pre>
+</section>
+<section id="example-replicating-portfolios-and-simulating-portfolio-insurance" class="level2" data-number="4.13">
+<h2 data-number="4.13" class="anchored" data-anchor-id="example-replicating-portfolios-and-simulating-portfolio-insurance"><span class="header-section-number">4.13</span> Example: Replicating Portfolios and Simulating Portfolio Insurance</h2>
+<p>Another derivation of the Black Scholes formula is provided by Merton. He asked the question whether by trading the stock and the risk free asset whether the payoff to a European call option can be replicated. Let <span class="math inline">\(\theta_t\)</span> be the number of shares of the stock held at time <span class="math inline">\(t\)</span> and <span class="math inline">\(\alpha_t\)</span> the number of shares of an initial investment of one dollar in the risk free asset. Then the portfolio is worth <span class="math inline">\(\alpha_t R_t + \theta_t S_t\)</span> where <span class="math inline">\(R_t= e^{rt}\)</span> is the time <span class="math inline">\(t\)</span> value of an initial time <span class="math inline">\(0\)</span> investment of one dollar in the risk free asset. The portfolio should start with an initial value, should not have any cash inflows or outflows and have a terminal value equal to a call payoff so the changes in value are completely dictated by the changes in the value of the assets. That is, assuming continuous trading, <span class="math display">\[  d W_t = \theta_t d S_t + \alpha_t  d R_t = \theta_t \left(\mu S_t dt + q S_t dt + \sigma S_t d B_t\right)  + \alpha_t r R_t dt\]</span> with terminal condition <span class="math display">\[ W_T = \alpha_T R_T + \theta_T S_T = (S_T - K)^{+} \]</span> The problem is to find <span class="math inline">\(\theta_t\)</span> and <span class="math inline">\(\alpha_t\)</span> for all times and states. If we can accomplish this, then by `no-arbitrage’ the call price must be the value of the initial investment. Assume the call price is a function of the stock price and time: <span class="math inline">\(C(t,S_t)\)</span>. Then by Ito’s Lemma <span class="math display">\[ d C(t,S_t) = \left(\frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2 \right) dt + \frac{\partial C}{\partial S} \sigma S_t dB_t \]</span> It should be apparent that we want to hold <span class="math inline">\(\theta = \frac{\partial C}{\partial S}\)</span>, which is the delta of the call option. By doing so, we match the diffusion term in thw change in wealth and the change in the call option. Then matching the drift terms in both expressions <span class="math display">\[ \frac{\partial C}{\partial S} \mu S_t + \alpha_t r R_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> which can be solved to give <span class="math display">\[ \alpha_t r R_t=r \left(W_t -\frac{\partial C}{\partial S} S_t\right)  = \frac{\partial C}{\partial t}-\frac{\partial C}{\partial S} q S_t  + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> which gives the equation <span class="math display">\[r W_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S}(r-q) S_t+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> with a boundary condition <span class="math inline">\(W_T = (S_T-K)^{+}\)</span>. However, no-arbitrage suggests <span class="math inline">\(W_t = C(t,S_t)\)</span> which gives us the partial differential equation <span class="math display">\[r C = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (r-q) S+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S^2\]</span> with a boundary condition <span class="math inline">\(C(T,S_T)= (S_T - K)^{+}\)</span>. This is a partial differential equation and a fairly tedious set of calcuations show the Black Scholes formula is a solution (in fact it is the only positive solution). Close observation of the right hand side we see this is the drift term of Ito expansion for <span class="math inline">\(C\)</span> if we work in the risk neutral measure. The right hand side then says in the risk neutral measure, the call option earns the risk free return.</p>
+<p>However, there is nothing special about a call option. The same argument will apply for any European style option. The only difference is the boundary condition. This procedure allows us to replicate the payoff of any European option even for those which might not be traded. This observation had a profound effect on practice. A particularly popular example is portfolio insurance.</p>
+<p>Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by <span class="math inline">\(\max(K,S_T)\)</span>. The reason for the name protective put is apparent since the position can pay off no less than <span class="math inline">\(K\)</span>. The cost of this insurance is the price of the put. However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously. The basic recipe is to start with inital wealth equal to that for a protective put position: <span class="math inline">\(W_0 = P(0,S_0)+S_0\)</span>. The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is <span class="math inline">\(N(d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is calculated at each point in time. However, in practice we cannot trade continuously. A simple discrete strategy would rebalance at intervals <span class="math inline">\(\Delta t\)</span>. The strategy calculates <span class="math inline">\(N(d_1)\)</span> at time 0 and holds <span class="math inline">\(P(0,S_0)+S_0 - N(d_1)S_0\)</span> dollars in the risk free asset and <span class="math inline">\(N(d_1)\)</span> shares of the asset. Thereafter these holdings are adjusted. The change in portfolio value over the interval <span class="math inline">\(\Delta t\)</span> is <span class="math display">\[\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} \]</span> <span class="math display">\[ = (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t}) \]</span> where <span class="math inline">\(N(d1-)\)</span> is the delta chosen at time <span class="math inline">\((i-1)\Delta t\)</span>. The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be? This is simulated in the following code:</p>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># from bsfunctions import *</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># incs = np.genfromtxt('incs.csv',delimiter=",",skip_header=1)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> blackscholes(S0, K, r, q, sig, T, call <span class="op">=</span> <span class="va">True</span>):</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Calculate option price using B-S formula.</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">        S0 (num): initial price of underlying asset.</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">        K (num): strick price.</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">        r (num): risk free rate.</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">        q (num): dividend yield</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">        sig (num): Black-Scholes volatility.</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">        T (num): maturity.</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">        call (bool): True returns call price, False returns put price.</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">        num</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S0<span class="op">/</span>K) <span class="op">+</span> (r <span class="op">-</span>q <span class="op">+</span> sig<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span> T)<span class="op">/</span>(sig<span class="op">*</span>np.sqrt(T))</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sig<span class="op">*</span>np.sqrt(T)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#     norm = sp.stats.norm</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    norm <span class="op">=</span> stats.norm</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> call:</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q<span class="op">*</span>T)<span class="op">*</span>S0 <span class="op">*</span> norm.cdf(d1,<span class="dv">0</span>,<span class="dv">1</span>) <span class="op">-</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(d2,<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q<span class="op">*</span>T)<span class="op">*</span>S0 <span class="op">*</span> <span class="op">-</span>norm.cdf(<span class="op">-</span>d1,<span class="dv">0</span>,<span class="dv">1</span>) <span class="op">+</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(<span class="op">-</span>d2,<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> blackscholes_delta(S0, K, r, q, sig, T, call <span class="op">=</span> <span class="va">True</span>):</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Calculate option price using B-S formula.</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">        S0 (num): initial price of underlying asset.</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">        K (num): strick price.</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">        r (num): risk free rate.</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">        q (num): dividend yield</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">        sig (num): Black-Scholes volatility.</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">        T (num): maturity.</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">        call (bool): True returns call price, False returns put price.</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">        num</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S0<span class="op">/</span>K) <span class="op">+</span> (r <span class="op">-</span>q <span class="op">+</span> sig<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span> T)<span class="op">/</span>(sig<span class="op">*</span>np.sqrt(T))</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sig<span class="op">*</span>np.sqrt(T)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co">#     norm = sp.stats.norm</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    norm <span class="op">=</span> stats.norm</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">type</span>(call) <span class="op">==</span> <span class="bu">bool</span>:</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> call:</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> np.exp(<span class="op">-</span>q<span class="op">*</span>T)<span class="op">*</span>norm.cdf(d1,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> np.exp(<span class="op">-</span>q<span class="op">*</span>T)<span class="op">*</span>norm.cdf(<span class="op">-</span>d1,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"Not a valid value for call"</span>)</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co"># n = incs.shape[1]</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100000</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="co"># number of divisions</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="co"># m = incs.shape[0]</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">.1</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="co"># dividend yield</span></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>q<span class="op">=</span><span class="fl">0.0</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="co"># true drift</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">.15</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">.2</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span> <span class="dv">1234</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>rg <span class="op">=</span> np.random.RandomState(seed)</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="co"># generate normal random vairables</span></span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>dt<span class="op">=</span> T<span class="op">/</span>m</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>vol<span class="op">=</span>sig<span class="op">*</span>np.sqrt(dt)</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>incs <span class="op">=</span> rg.normal(<span class="dv">0</span>,vol,[m,n])</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>tline <span class="op">=</span> np.linspace(<span class="dv">0</span>,T,m<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.zeros((m<span class="op">+</span><span class="dv">1</span>,n))</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a><span class="co">#St1 = np.zeros((m+1,n))</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>V_vec <span class="op">=</span> np.zeros((m<span class="op">+</span><span class="dv">1</span>,n))</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>delta <span class="op">=</span> np.zeros((m,n))</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>put<span class="op">=</span> blackscholes(S0,K,r, q, sig,T,call<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>incs_cumsum <span class="op">=</span>  np.concatenate((np.zeros((<span class="dv">1</span>,n)),incs),axis<span class="op">=</span><span class="dv">0</span>).cumsum(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>V_vec <span class="op">=</span> np.zeros((m<span class="op">+</span><span class="dv">1</span>,n))</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>t_mat <span class="op">=</span>  np.repeat(tline.reshape((m<span class="op">+</span><span class="dv">1</span>,<span class="dv">1</span>)), n, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>drift_cumsum <span class="op">=</span> (mu <span class="op">-</span>q <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> t_mat</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(incs_cumsum <span class="op">+</span> drift_cumsum)</span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>delta <span class="op">=</span> blackscholes_delta(St[:<span class="op">-</span><span class="dv">1</span>,:],K,r, q, sig,T<span class="op">-</span>t_mat[:<span class="op">-</span><span class="dv">1</span>,:])</span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>V_vec[<span class="dv">0</span>,:] <span class="op">=</span> S0 <span class="op">+</span> put</span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,m<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>    V_vec[i,:] <span class="op">=</span> V_vec[i<span class="op">-</span><span class="dv">1</span>,:] <span class="op">+</span> (np.exp(r<span class="op">*</span>dt)<span class="op">-</span><span class="dv">1</span>) <span class="op">*</span> (V_vec[i<span class="op">-</span><span class="dv">1</span>,:] <span class="op">-</span> delta[i<span class="op">-</span><span class="dv">1</span>,:] <span class="op">*</span> St[i<span class="op">-</span><span class="dv">1</span>,:])<span class="op">+</span> delta[i<span class="op">-</span><span class="dv">1</span>,:] <span class="op">*</span> (St[i,:]<span class="op">-</span>St[i<span class="op">-</span><span class="dv">1</span>,:])</span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="co"># Uses actual simulated changes in riskfree and stock price not the dt and dB approximations </span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="co"># plot ST versus VT</span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>plt.scatter(St[m,:],V_vec[m,:])</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Stock Price at Maturity'</span>)</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Value of Portfolio Insurance'</span>)</span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Chapter4_files/figure-html/cell-2-output-1.png" width="585" height="429"></p>
+</div>
+</div>
+<p>With <span class="math inline">\(m=100\)</span> rebalancing dates over <span class="math inline">\(T=0.5\)</span> for the parameters chosen the repliacting strategy does a pretty good job. The hedging errors occur when the stock price is close to the strike price. This is not surprising since the delta changes (measured by the gamma) fastest around this point. A gamma hedge would potentially improve the performance.</p>
+<p>The portfolio insurance rebalancing scheme involves sell stock and buying bonds when the stock price goes down and buying stocks and selling bonds when the stock price goes up. This can be destabilizing and was identified as a contributor to the 1987 stock market crash.</p>
+<!-- 
+## Calculations in VBA {#sec-s_blackscholes_vba}
+
+The Black-Scholes call and put formulas and Greeks can easily be calculated in an Excel worksheet, using the standard functions \verb!Exp!, \verb!Ln! and the cumulative normal distribution function, which  is provided in Excel as \verb!NormSDist!.  However, if these are to be used repeatedly, it is useful to create functions in VBA.   In VBA, the cumulative normal distribution function is called \verb!Application.NormSDist!.  Also, the natural logarithm function in VBA is \verb!Log! rather than \verb!Ln! and the square root function in VBA is \verb!Sqr! rather than \verb!Sqrt!.
+
+
+### Black-Scholes Call and Put Formulas
+The following function implements the Black-Scholes call pricing formula. For the sake of completeness, the function returns a value even when a volatility of zero is input, in which case @eq-blackscholescall is invalid (it involves division by zero in the calculation of $d_1$ and $d_2$).  If the volatility is zero, then the stock is riskless and should appreciate at rate $r-q$.  Moreover the option is riskless and its date--0 value should be the date--T value discounted at the risk-free rate.  This implies that the call value at date~0 is^[This result can be verified by a simple arbitrage argument.  For example, if the call value were less than this formula, then put-call parity would show that the put price is negative, which is impossible.  On the other hand, if the call price is greater than this formula (and hence positive), then put-call parity shows that the put price is positive, and it is impossible that both the put and call will finish in the money (so, given that they are riskless, only one should have a positive value).]
+$$\mathrm{e}^{-rT}\max\left(0,\mathrm{e}^{(r-q)T}S(0)-K\right) = \max \left(0, \mathrm{e}^{-qT}S(0)-\mathrm{e}^{-rT}K\right)\; .$$
+\addcontentsline{lof}{figure}{Black Scholes Call}
+\begin{verbatim}
+Function Black_Scholes_Call(S, K, r, sigma, q, T)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'
+Dim d1, d2, N1, N2
+If sigma = 0 Then
+    Black_Scholes_Call = Application.Max(0,Exp(-q*T)*S-Exp(-r*T)*K)
+Else
+    d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
+    d2 = d1 - sigma * Sqr(T)
+    N1 = Application.NormSDist(d1)
+    N2 = Application.NormSDist(d2)
+    Black_Scholes_Call = Exp(-q*T)*S*N1 - Exp(-r*T)*K*N2
+End If
+End Function
+\end{verbatim}
+
+
+ 
+It is useful to note that 
+
+\begin{center}
+\verb!Black_Scholes_Call(S,K,r,sigma,q,T)! 
+\end{center}
+
+gives the same result as 
+
+\begin{center}
+\verb!Black_Scholes_Call(exp(-q*T)*S,K,r,sigma,0,T)!.
+\end{center}
+
+In the latter formulation, we view the underlying asset as the portfolio which starts with $\mathrm{e}^{-qT}$ shares of the asset and reinvests dividends until date $T$.  This portfolio has value $S(T)$ at date $T$, so a European call option on this non-dividend-paying portfolio is equivalent to a European call option on the stock.  The initial value of the portfolio is $\mathrm{e}^{-qT}S(0)$, which is input as the asset price in the latter formulation.
+
+
+The Black-Scholes formula for the value of a European put option can be implemented as follows.
+\addcontentsline{lof}{figure}{Black Scholes Put}
+\begin{verbatim}
+Function Black_Scholes_Put(S, K, r, sigma, q, T)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'
+Dim d1, d2, N1, N2
+If sigma = 0 Then
+    Black_Scholes_Put = Application.Max(0,Exp(-r*T)*K-Exp(-q*T)*S)
+Else
+    d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
+    d2 = d1 - sigma * Sqr(T)
+    N1 = Application.NormSDist(-d1)
+    N2 = Application.NormSDist(-d2)
+    Black_Scholes_Put = Exp(-r*T)*K*N2 - Exp(-q*T)*S*N1
+End If
+End Function
+\end{verbatim}
+
+### Black-Scholes Greeks
+
+The delta and gamma of a European call option can be computed with the following functions.  The other Greeks are obviously calculated in a similar manner.  Note that the constant $\pi = 3.14159...$ is provided in Excel as the function \verb!Pi()! and can be accessed in Excel VBA as \verb!Application.Pi!. 
+\addcontentsline{lof}{figure}{Black Scholes Call Delta}
+\begin{verbatim}
+Function Black_Scholes_Call_Delta(S, K, r, sigma, q, T)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'
+Dim d1, d2, N1, N2
+d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
+d2 = d1 - sigma * Sqr(T)
+N1 = Application.NormSDist(d1)
+N2 = Application.NormSDist(d2)
+Black_Scholes_Call_Delta = Exp(-q*T)*N1
+End Function
+\end{verbatim}
+
+\addcontentsline{lof}{figure}{Black Scholes Call Gamma}
+\begin{verbatim}
+Function Black_Scholes_Call_Gamma(S, K, r, sigma, q, T)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            sigma = volatility
+'            q = dividend yield
+'            T = time to maturity
+'
+Dim d1, d2, N1, N2, nd1
+d1 = (Log(S/K) + (r-q+0.5*sigma*sigma)*T) / (sigma*Sqr(T))
+d2 = d1 - sigma * Sqr(T)
+N1 = Application.NormSDist(d1)
+N2 = Application.NormSDist(d2)
+nd1 = Exp(-d1 * d1 / 2) / Sqr(2 * Application.Pi)
+Black_Scholes_Call_Gamma = Exp(-q*T)*nd1/(S*sigma*Sqr(T))
+End Function
+\end{verbatim}
+
+
+
+### Implied Volatilities
+We could find an implied volatility using the Solver tool, but then we would have to re-run Solver each time we changed one of the input values.  We will need to solve similar problems on several occasions, so it seems worthwhile to program a Solver-like function in VBA.  We will write this in such a way that it can easily be applied in other contexts.  We will assume there is a single variable for which we want to solve, solving for multiple variables being  more difficult.
+
+Letting \verb!C! denote the market price of a European call option, the implied volatility is \verb!sigma! satisfying
+\begin{center}
+\verb! Black_Scholes_Call(S,K,r,sigma,q,T) - C = 0!.
+\end{center}
+The solution of this equation is called a root of the function \index{root}
+\begin{center}
+\verb! Black_Scholes_Call(S,K,r,sigma,q,T) - C!,
+\end{center}
+and the problem of finding roots of functions is a standard numerical problem.  Roots are found by what are essentially sophisticated trial-and-error methods.  The simplest method is to start with upper and lower bounds for $\sigma$ and repeatedly bisect the interval containing $\sigma$, each time finding a new upper or lower bound.  \index{bisection} The program below is a standard bisection routine.
+
+
+For there to be a volatility that equates the market price to the Black-Scholes price, it is necessary for the call option price to satisfy the arbitrage bound^[Note that by put-call parity---@eq-putcallparity11---the difference between the left and right-hand sides of this inequality is the value of the put with the same strike and maturity as the call.  Thus, the inequality is equivalent to the statement that the put value is nonnegative, which must be the case.] $C +\mathrm{e}^{-rT}K \geq \mathrm{e}^{-qT}S$.  We check this condition at the beginning of the program and supply an error message if it is violated.  
+
+We need to input  all of the inputs of \verb!Black_Scholes_Call! other than $\sigma$, and we need to input the call option price.  The following uses an error tolerance of $10^{-6}$. \index{error tolerance}
+Therefore, the value that is returned will equal the exact implied volatility to at least five decimal places.  The bisection is begun with a lower bound of $\sigma =0$.  An iterative procedure is used to find an upper bound, starting with $\sigma = 100$\%.
+
+
+
+This same algorithm can be used to find a real number $x$ such that $f(x)=0$ for any (continuous) function $f$.  The only changes necessary are in the right hand sides of the assignment statements for \verb!flower!, \verb!fupper!, and \verb!fguess! and in finding lower and upper bounds (and obviously one would not check the arbitrage bound in general).^[The key to the function  is checking each time whether the root is between the guess and the upper bound or between the guess and the lower bound.  If $\text{fupper] \times \text{fguess} < 0$, then there is a root between the guess and the upper bound.  In this case, we define the new lower bound to be the old  guess and define the new guess to be the midpoint of this new lower bound and the old upper bound.  We do the opposite if we find the root is between the guess and the lower bound.}  We will use this algorithm on several occasions to find roots of functions.
+
+\addcontentsline{lof}{figure}{Black Scholes Implied Vol}
+\begin{verbatim}
+Function Black_Scholes_Call_Implied_Vol(S, K, r, q, T, CallPrice)
+'
+' Inputs are S = initial stock price
+'            K = strike price
+'            r = risk-free rate
+'            q = dividend yield
+'            T = time to maturity
+'            CallPrice = call price
+'
+Dim tol, lower, flower, upper, fupper, guess, fguess
+If CallPrice < Exp(-q * T) * S - Exp(-r * T) * K Then
+    MsgBox ("Option price violates the arbitrage bound.")
+    Exit Function
+End If
+tol = 10 ^ -6
+lower = 0
+flower = Black_Scholes_Call(S, K, r, lower, q, T) - CallPrice
+upper = 1
+fupper = Black_Scholes_Call(S, K, r, upper, q, T) - CallPrice
+Do While fupper < 0       ' double upper until it is an upper bound
+    upper = 2 * upper
+    fupper = Black_Scholes_Call(S, K, r, upper, q, T) - CallPrice
+Loop
+guess = 0.5 * lower + 0.5 * upper
+fguess = Black_Scholes_Call(S, K, r, guess, q, T) - CallPrice
+Do While upper - lower > tol  ' until root is bracketed within tol
+    If fupper * fguess < 0 Then  ' root is between guess and upper
+        lower = guess            ' make guess the new lower bound
+        flower = fguess
+        guess = 0.5 * lower + 0.5 * upper  ' new guess = bi-section
+        fguess = Black_Scholes_Call(S,K,r,guess,q,T) - CallPrice
+    Else                         ' root is between lower and guess
+        upper = guess            ' make guess the new upper bound
+        fupper = fguess
+        guess = 0.5 * lower + 0.5 * upper  ' new guess = bi-section
+        fguess = Black_Scholes_Call(S,K,r,guess,q,T) - CallPrice
+    End If
+Loop
+Black_Scholes_Call_Implied_Vol = guess
+End Function
+\end{verbatim}
+
+To compute an implied volatility from a put option price, one can first compute a corresponding call option price from put-call parity and then run the above program.
+
+There are faster root-finding methods than bisection.  These use other methods to update the guess than just halving the distance between the prior guess and the upper or lower bound.  For example, one can use the vega (the derivative of the option formula with respect to $\sigma$) at the given guess for $\sigma$ and replace the bisection with
+\begin{center}
+\verb!guess = guess - call/vega!\;.
+\end{center}
+This amounts to approximating the Black-Scholes formula as being linear in $\sigma$ and using the root of the approximation as the updated guess.  This is the essence of the \emph{Newton-Raphson} method.  \index{Newton-Raphson method} A similar idea that does not require the computation of vega is to keep track of the two most recent (\verb!guess!, \verb!call!) pairs and to approximate \verb!vega! as: 
+\begin{center}
+\verb!vega = (call - prior_call) / (guess - prior_guess)!\;.
+ \end{center}
+This is the essence of the \emph{secant} method. \index{secant method} -->
+<section id="discretely-rebalanced-delta-hedges" class="level3">
+<h3 class="anchored" data-anchor-id="discretely-rebalanced-delta-hedges">Discretely-Rebalanced Delta Hedges</h3>
+<p>To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return <span class="math inline">\(\mu\)</span>. We consider adjusting the hedge at dates <span class="math inline">\(0=t_0&lt;t_1&lt;\cdots&lt;t_N=T\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. The changes in the natural logarithm of the stock price between successive dates <span class="math inline">\(t_{i-1}\)</span> and <span class="math inline">\(t_i\)</span> are simulated as <span class="math display">\[\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\Delta B\; ,\]</span> where <span class="math inline">\(\Delta B\)</span> is normally distributed with mean zero and variance <span class="math inline">\(\Delta t\)</span>. The random variables <span class="math inline">\(\Delta B\)</span> are simulated as standard normals multiplied by <span class="math inline">\(\sqrt{\Delta t}\)</span>. We begin with the portfolio that is short a call, long <span class="math inline">\(\delta\)</span> shares of the underlying, and short <span class="math inline">\(\delta S-C\)</span> in cash. After the stock price changes, say from <span class="math inline">\(S\)</span> to <span class="math inline">\(S'\)</span>, we compute the new delta <span class="math inline">\(\delta'\)</span>. The cash flow from adjusting the hedge is <span class="math inline">\((\delta-\delta')S'\)</span>. Accumulation (or payment) of interest on the cash position is captured by the factor <span class="math inline">\(e^{r\Delta t}\)</span>. Continuous payment of dividends is modelled similarly: the dividends earned during the period <span class="math inline">\(\Delta t\)</span> is taken to be <span class="math inline">\(\delta S\left(e^{q\Delta t}-1\right)\)</span>. The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge. At date <span class="math inline">\(T\)</span>, the value of the portfolio is the cash position less the intrinsic value of the option.</p>
+<p>To describe the distribution of gains and losses, we compute percentiles of the distribution. You should see that the hedge becomes more nearly perfect as the number of periods <span class="math inline">\(N\)</span> is increased. Note that this is true regardless of the <span class="math inline">\(\mu\)</span> that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Excel function.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+</section>
+<section id="exercises" class="level2" data-number="4.14">
+<h2 data-number="4.14" class="anchored" data-anchor-id="exercises"><span class="header-section-number">4.14</span> Exercises</h2>
+<div id="exr-problem4.1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.1 </strong></span>Create Python code which inputs <span class="math inline">\(K\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span> and <span class="math inline">\(T\)</span>. Compute the delta of a call option for stock prices <span class="math inline">\(S = .01K\)</span>, <span class="math inline">\(.02K\)</span>, , <span class="math inline">\(1.99K\)</span>, <span class="math inline">\(2K\)</span> (i.e., <span class="math inline">\(S = iK/100\)</span> for <span class="math inline">\(i=1, \ldots 200\)</span>) and plot the delta against the stock price.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.2 </strong></span>The delta of a digital option that pays $1 when <span class="math inline">\(S(T)&gt;K\)</span> is <span class="math display">\[\frac{\mathrm{e}^{-rT}\mathrm{n}d(d_2)}{\sigma S\sqrt{T}}\; .\]</span> Repeat the previous problem for the delta of this digital. Given that in reality it is costly to trade (due to commissions, the bid-ask spread and possible adverse price impacts for large trades), do you see any problems with delta hedging a short digital near maturity if it is close to being at the money?</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.3 </strong></span>Modify the Python code for replicating portfolio insurance to simulate a discrete replication of a digital option using the delta in the previous problem. Run the code for <span class="math inline">\(10,20,100,1000\)</span> rebalancing dates. When does the strategy do a good job and when does it fail?</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.4 </strong></span>Repeat <a href="#exr-problem4.1">Exercise&nbsp;<span class="quarto-unresolved-ref">exr-problem4.1</span></a> for the gamma of a call option.</p>
+</div>
+<!-- ::: {#exr-nolabel}
+ Use put-call parity to derive the Greeks of a put option, and write a VBA function that computes the value and Greeks.
+::: -->
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.5 </strong></span>Consider delta and gamma hedging a short call option, using the underlying and a put with the same strike and maturity as the call. Calculate the position in the underlying and the put that you should take, using the analysis in <a href="#sec-s_gammahedging"><span class="quarto-unresolved-ref">sec-s_gammahedging</span></a>. Will you ever need to adjust this hedge? Relate your result to put-call parity.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.6 </strong></span>The delta of a share digital that pays one share when <span class="math inline">\(S(T)&gt;K\)</span> is <span class="math display">\[\mathrm{e}^{-qT}\mathrm{N}(d_1) + \frac{\mathrm{e}^{-qT}\mathrm{n}d(d_1)}{\sigma \sqrt{T}}\; .\]</span> Repeat <a href="#exr-problem4.1">Exercise&nbsp;<span class="quarto-unresolved-ref">exr-problem4.1</span></a> for the delta of this share digital.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.7 </strong></span>Compute the value of an at-the-money call option (<span class="math inline">\(S=K\)</span>) using the Python code for volatilities <span class="math inline">\(\sigma = .01, .02, \ldots, 1.0\)</span>. Plot the call value against the volatility.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.8 </strong></span>Repeat the previous problem for <span class="math inline">\(S=1.2K\)</span> (an example of an in-the-money call option).</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.9 </strong></span>The file CBOEQuotes.txt (available at ) contains price data for call options on the S&amp;P 500 index. The options expired in February, 2003, and the prices were obtained on January 22, 2003. The first column lists various exercise prices. The second column gives the bid price and the third column the ask price. Import this data into an Excel worksheet and compute and plot the implied volatility against the exercise price using this data. Use the ask price as the market price for the option. The options have 30 days to maturity (so <span class="math inline">\(T=30/365\)</span>). At the time the quotes were downloaded, the S&amp;P 500 was at 884.25. According to the CBOE, the dividend yield on the S&amp;P 500 was 1.76%. Use 1.25% for the risk-free interest rate.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.10 </strong></span>Attempt to repeat the previous problem using the bid price as the market price of the option. If this doesn’t work, what is wrong? Does this indicate there is an arbitrage opportunity?</p>
+</div>
+<p>::: Suppose an investor invests in a portfolio with price <span class="math inline">\(S\)</span> and constant dividend yield <span class="math inline">\(q\)</span>. Assume the investor is charged a constant expense ratio <span class="math inline">\(\alpha\)</span> (which acts as a negative dividend) and at date <span class="math inline">\(T\)</span> receives either his portfolio value or his initial investment, whichever is higher. This is similar to a popular type of variable annuity. Letting <span class="math inline">\(D\)</span> denote the number of dollars invested in the contract, the contract pays <span id="eq-bsp1"><span class="math display">\[
+\max\left(D,\frac{D\mathrm{e}^{(q-\alpha)T}S(T)}{S(0)}\right)
+\tag{4.16}\]</span></span> at date <span class="math inline">\(T\)</span>.<br>
+We can rearrange the expression <a href="#eq-bsp1">Equation&nbsp;<span class="quarto-unresolved-ref">eq-bsp1</span></a> as</p>
+<p><span class="math display">\[
+\max\left(D,\frac{D\mathrm{e}^{(q-\alpha)T}S(T)}{S(0)}\right) = D + \max\left(0, \frac{D\mathrm{e}^{(q-\alpha)T}S(T)}{S(0)}-D\right)
+\]</span> <span id="eq-bsp2"><span class="math display">\[
+= D + \mathrm{e}^{-\alpha T}D\max\left(0,\frac{\mathrm{e}^{qT}S(T)}{S(0)}-\mathrm{e}^{\alpha T}\right)\;.
+\tag{4.17}\]</span></span></p>
+Thus, the contract payoff is equivalent to the amount invested plus a certain number of call options written on the gross holding period return <span class="math inline">\(\mathrm{e}^{qT}S(T)/S(0)\)</span>. Note that <span class="math inline">\(Z(t) = \mathrm{e}^{qt}S(t)/S(0)\)</span> is the date–<span class="math inline">\(t\)</span> value of the portfolio that starts with <span class="math inline">\(1/S(0)\)</span> units of the asset (i.e., with a $1 investment) and reinvests dividends. Thus, the call options are call options on a non-dividend paying portfolio with the same volatility as <span class="math inline">\(S\)</span> and initial price of $1. This implies that the date–0 value of the contract to the investor is <span class="math inline">\(\mathrm{e}^{-rT}D\)</span> plus
+<ol type="1">
+<li>Create a VBA function to compute the fair expense ratio; i.e., find <span class="math inline">\(\alpha\)</span> such that the date–0 value of the contract is equal to <span class="math inline">\(D\)</span>. Hint: Modify the
+function. You can use <span class="math inline">\(\alpha=0\)</span> as a lower bound. Because the value of the contract is decreasing as <span class="math inline">\(\alpha\)</span> increases, you can find an upper bound by iterating until the value of the contract is less than <span class="math inline">\(D\)</span>.</li>
+<li>How does the fair expense ratio vary with the maturity <span class="math inline">\(T\)</span>? Why?</li>
+</ol>
+::: ::: {#exr-nolabel} Modify the function to compute percentiles of gains and losses for an investor who writes a call option and constructs a delta and gamma hedge using the underlying asset and another call option. Include the exercise price of the call option used to hedge as an input, and assume it has the same time to maturity as the option that is written. Hint: In each period , the updated cash position can be calculated as
+where denotes the number of shares of the stock held, denotes the number of units held of the option that is used for hedging, and denotes the price of the option used for hedging (computed from the Black-Scholes formula each period). This expression embodies the interest earned (paid) on the cash position, the dividends received on the shares of stock and the cash inflows (outflows) from adjusting the hedge. At the final date , the value of the hedge is
+and the value of the overall portfolio is the value of the hedge less
+<p>where denotes the strike price of the option used to hedge and denotes the strike of the option that was written. :::</p>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>There is no other risky asset price <span class="math inline">\(Y\)</span> in this model, so the subscripts we used in <a href="#sec-s_girsanov"><span class="quarto-unresolved-ref">sec-s_girsanov</span></a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The delta is frequently denoted by the upper case <span class="math inline">\(\Delta\)</span>, but we will use the lower case, reserving the upper case for discrete changes, e.g., <span class="math inline">\(\Delta t\)</span>. One may have noticed also that the symbol for vega is a little different from the others; this reflects the fact that vega is not actually a Greek letter.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>If numsims = 11 and pct =0.1, the percentile function returns the second lowest element in the series. The logic is that 10% of the numbers, excluding the number returned, are below the number returned—i.e., 1 out of the other 10 are below—and 90% of the others are above. In particular, if pct = 0.5, the percentile function returns the median. When necessary, the function interpolates; for example, if numsims = 10 and pct=0.1, then the number returned is an interpolation between the lowest and second lowest numbers.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Chapter3.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Continuous-Time Models</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./Chapter5.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Estimating and Modelling Volatility</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
