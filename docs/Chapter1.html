@@ -255,7 +255,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Chapter contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#intrinsic-value-and-time-value" id="toc-intrinsic-value-and-time-value" class="nav-link active" data-scroll-target="#intrinsic-value-and-time-value"><span class="header-section-number">1.1</span> Intrinsic Value and Time Value</a></li>
+  <li><a href="#investing-in-options" id="toc-investing-in-options" class="nav-link" data-scroll-target="#investing-in-options"><span class="header-section-number">1.2</span> Investing in Options</a></li>
+  <li><a href="#hedging-with-options" id="toc-hedging-with-options" class="nav-link" data-scroll-target="#hedging-with-options"><span class="header-section-number">1.3</span> Hedging with Options</a></li>
+  <li><a href="#selling-options-for-income" id="toc-selling-options-for-income" class="nav-link" data-scroll-target="#selling-options-for-income"><span class="header-section-number">1.4</span> Selling Options for Income</a></li>
+  <li><a href="#option-spreads" id="toc-option-spreads" class="nav-link" data-scroll-target="#option-spreads"><span class="header-section-number">1.5</span> Option Spreads</a></li>
+  <li><a href="#put-call-parity" id="toc-put-call-parity" class="nav-link" data-scroll-target="#put-call-parity"><span class="header-section-number">1.6</span> Put-Call Parity</a></li>
+  <li><a href="#american-options" id="toc-american-options" class="nav-link" data-scroll-target="#american-options"><span class="header-section-number">1.7</span> American Options</a></li>
+  <li><a href="#dividends" id="toc-dividends" class="nav-link" data-scroll-target="#dividends"><span class="header-section-number">1.8</span> Dividends</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -277,10 +290,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p><a target="_blank" href="https://colab.research.google.com/github/math-finance-book/notebooks/blob/main/chapter1.ipynb"> <img src="images/Open in Colab.png" alt="Open Chapter Code In Colab" width="200" height="33"> </a></p>
+<p><a target="_blank" href="https://colab.research.google.com/github/math-finance-book/notebooks/blob/main/chapter1.ipynb"> <img src="images/Open in Colab.png" alt="Open Chapter Code In Colab" width="200" height="34"> </a></p>
 <p>Financial options are rights to buy and sell assets at pre-specified prices. The rights are traded on exchanges and also as private contracts (called over-the-counter or OTC). A call option is a right to buy an asset. A put option is a right to sell an asset. The pre-specified price is called the exercise price, the strike price, or simply the strike. The asset to which an option pertains is called the underlying asset, or, more briefly, the underlying.</p>
-<p>Here is a snapshot of market statistics regarding call options on Apple stock (AAPL) traded on the Chicago Board Options Exchange (CBOE). We are accessing the data courtesy of Yahoo Finance.</p>
-<div class="cell" data-tbl-cap="AAPL Call Option Data" data-execution_count="1">
+<p>Here is a snapshot of market statistics regarding call options on Apple stock (AAPL) traded on the Chicago Board Options Exchange (CBOE). We are accessing the data courtesy of Yahoo Finance. We will refer to this data throughout the chapter.</p>
+<div class="cell" data-execute="auto" data-execution_count="1">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -293,9 +306,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>fmt <span class="op">=</span> <span class="st">'%Y-%m-</span><span class="sc">%d</span><span class="st"> %H:%M:%S %Z%z'</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>now <span class="op">=</span> datetime.today().astimezone(est).strftime(fmt)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span>          <span class="co"># ticker to pull</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span>         <span class="co"># ticker to pull</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>kind <span class="op">=</span> <span class="st">"call"</span>           <span class="co"># call or put</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>maturity <span class="op">=</span> <span class="dv">4</span>                <span class="co"># option maturity in order of maturities trading</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>maturity <span class="op">=</span> <span class="dv">4</span>            <span class="co"># option maturity in order of maturities trading</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>tick <span class="op">=</span> yf.Ticker(ticker.upper())</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
@@ -355,46 +368,69 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Code was executed at    2024-07-29 11:44:46 EDT-0400
-Last AAPL price was     $217.14.
+<pre><code>Code was executed at    2024-07-29 17:02:06 EDT-0400
+Last AAPL price was     $218.24.
 Maturity date of options:   2024-08-30
            Bid     Ask  Last Price  Change % Change            Time of Last Trade  Volume  Open Interest Implied Volatility
 Strike                                                                                                                     
-100.0   117.05  118.00      118.50    0.00     0.0%  2024-07-25 11:10:43 EDT-0400     NaN              0             124.7%
-135.0    82.35   82.95       83.81    0.00     0.0%  2024-07-24 15:15:55 EDT-0400     1.0              1              84.3%
-140.0    77.25   78.05       78.98    0.00     0.0%  2024-07-24 14:28:06 EDT-0400     1.0              3              78.7%
-145.0    72.50   73.05       90.21    0.00     0.0%  2024-07-15 14:09:14 EDT-0400     1.0              1              76.2%
-150.0    67.45   68.05       74.34    0.00     0.0%  2024-07-22 12:06:00 EDT-0400     NaN              1              70.2%
-165.0    52.80   53.25       63.10    0.00     0.0%  2024-07-18 10:51:42 EDT-0400     3.0              6              59.1%
-170.0    47.75   48.40       50.00    0.00     0.0%  2024-07-24 11:06:46 EDT-0400     1.0              8              54.5%
-175.0    42.85   43.35       44.20    0.00     0.0%  2024-07-26 15:23:02 EDT-0400     1.0             11              52.5%
-180.0    38.00   38.50       40.50    0.00     0.0%  2024-07-26 13:30:02 EDT-0400     3.0             49              48.6%
-185.0    33.05   33.85       32.85    0.00     0.0%  2024-07-26 10:06:54 EDT-0400     2.0             23              46.1%
-190.0    28.45   29.10       30.69    0.00     0.0%  2024-07-26 13:33:11 EDT-0400     9.0            127              42.3%
-195.0    23.90   24.10       24.60    0.10     0.4%  2024-07-29 10:55:53 EDT-0400     1.0             40              36.5%
-200.0    19.50   19.80       20.28    0.03     0.1%  2024-07-29 10:56:38 EDT-0400    21.0           2064              34.7%
-205.0    15.55   15.80       16.10   -0.16    -1.0%  2024-07-29 10:07:58 EDT-0400    22.0             94              33.1%
-210.0    12.00   12.15       13.04    0.42     3.3%  2024-07-29 10:01:57 EDT-0400    30.0            297              31.6%
-215.0     8.85    8.95        8.90   -0.35    -3.8%  2024-07-29 11:20:37 EDT-0400    98.0            228              30.2%
-220.0     6.25    6.30        6.10   -0.75   -10.9%  2024-07-29 11:16:20 EDT-0400  1489.0           2028              29.2%
-225.0     4.10    4.20        4.07   -0.45   -10.0%  2024-07-29 11:24:28 EDT-0400   248.0            967              28.2%
-230.0     2.58    2.63        2.61   -0.39   -13.0%  2024-07-29 11:21:25 EDT-0400   492.0           2505              27.4%
-235.0     1.54    1.58        1.54   -0.24   -13.5%  2024-07-29 11:29:02 EDT-0400   173.0           1718              26.8%
-240.0     0.89    0.92        0.87   -0.19   -17.9%  2024-07-29 11:24:10 EDT-0400   118.0           2373              26.6%
-245.0     0.51    0.54        0.55   -0.10   -15.4%  2024-07-29 11:04:06 EDT-0400    28.0            668              26.7%
-250.0     0.31    0.33        0.31   -0.07   -18.4%  2024-07-29 11:23:52 EDT-0400   306.0           5042              27.2%
-255.0     0.20    0.21        0.20   -0.04   -16.7%  2024-07-29 11:10:56 EDT-0400   187.0            485              27.9%
-260.0     0.13    0.14        0.16   -0.01    -5.9%  2024-07-29 09:49:29 EDT-0400    45.0            268              28.8%
-265.0     0.09    0.10        0.11   -0.04   -26.7%  2024-07-29 10:57:53 EDT-0400    16.0            465              29.9%
-270.0     0.07    0.08        0.10    0.00     0.0%  2024-07-26 11:58:03 EDT-0400     4.0            224              31.3%
-275.0     0.06    0.07        0.07    0.00     0.0%  2024-07-26 10:44:44 EDT-0400     1.0            155              33.0%
-280.0     0.04    0.05        0.04   -0.01   -20.0%  2024-07-29 10:53:26 EDT-0400     1.0            121              33.8%
-285.0     0.03    0.04        0.05   -0.01   -16.7%  2024-07-29 09:31:57 EDT-0400     6.0             25              35.0%
-290.0     0.02    0.04        0.05    0.00     0.0%  2024-07-25 10:59:34 EDT-0400     6.0             36              36.9%
-295.0     0.02    0.03        0.02   -0.01   -33.3%  2024-07-25 14:28:38 EDT-0400     1.0             74              37.7%
-300.0     0.02    0.03        0.02   -0.03   -60.0%  2024-07-25 10:56:53 EDT-0400     1.0            117              39.5%</code></pre>
+100.0   118.15  119.85      118.50    0.00     0.0%  2024-07-25 11:10:43 EDT-0400     NaN              0             139.9%
+135.0    82.50   85.20       83.81    0.00     0.0%  2024-07-24 15:15:55 EDT-0400     1.0              1              87.7%
+140.0    77.55   80.15       78.98    0.00     0.0%  2024-07-24 14:28:06 EDT-0400     1.0              3              81.9%
+145.0    72.65   75.30       90.21    0.00     0.0%  2024-07-15 14:09:14 EDT-0400     1.0              1              79.1%
+150.0    67.65   70.20       74.34    0.00     0.0%  2024-07-22 12:06:00 EDT-0400     NaN              1              72.5%
+165.0    53.60   55.45       63.10    0.00     0.0%  2024-07-18 10:51:42 EDT-0400     3.0              6              65.2%
+170.0    48.70   50.40       49.18   -0.82    -1.6%  2024-07-29 14:14:05 EDT-0400     1.0              8              59.9%
+175.0    43.80   44.85       44.20    0.00     0.0%  2024-07-26 15:23:02 EDT-0400     1.0             11              52.0%
+180.0    38.85   39.90       40.50    0.00     0.0%  2024-07-26 13:30:02 EDT-0400     3.0             49              52.3%
+185.0    34.05   35.05       32.85    0.00     0.0%  2024-07-26 10:06:54 EDT-0400     2.0             23              47.9%
+190.0    29.35   30.25       30.69    0.00     0.0%  2024-07-26 13:33:11 EDT-0400     9.0            127              43.7%
+195.0    24.85   25.30       24.70    0.20     0.8%  2024-07-29 10:55:53 EDT-0400     3.0             40              38.3%
+200.0    20.55   20.75       20.80    0.55     2.7%  2024-07-29 14:10:12 EDT-0400   135.0           2064              35.0%
+205.0    16.45   16.80       16.75    0.49     3.0%  2024-07-29 15:56:47 EDT-0400    29.0             94              33.9%
+210.0    12.65   13.05       12.80    0.18     1.4%  2024-07-29 15:14:11 EDT-0400    55.0            297              32.3%
+215.0     9.50    9.80        9.73    0.48     5.2%  2024-07-29 15:55:00 EDT-0400   309.0            228              31.1%
+220.0     6.80    6.90        6.85    0.00     0.0%  2024-07-29 15:54:11 EDT-0400  2040.0           2028              29.5%
+225.0     4.55    4.70        4.67    0.15     3.3%  2024-07-29 15:54:11 EDT-0400   318.0            967              28.6%
+230.0     2.90    2.98        3.00    0.00     0.0%  2024-07-29 15:46:16 EDT-0400   615.0           2505              27.6%
+235.0     1.74    1.82        1.78    0.00     0.0%  2024-07-29 15:59:15 EDT-0400   331.0           1718              27.1%
+240.0     1.01    1.06        1.05   -0.01    -0.9%  2024-07-29 15:59:45 EDT-0400   663.0           2373              26.7%
+245.0     0.58    0.62        0.65    0.00     0.0%  2024-07-29 15:45:12 EDT-0400    78.0            668              26.7%
+250.0     0.35    0.37        0.40    0.02     5.3%  2024-07-29 15:49:01 EDT-0400   408.0           5042              27.0%
+255.0     0.22    0.23        0.23   -0.01    -4.2%  2024-07-29 14:12:02 EDT-0400   229.0            485              27.6%
+260.0     0.15    0.16        0.16   -0.01    -5.9%  2024-07-29 15:56:32 EDT-0400    64.0            268              28.7%
+265.0     0.10    0.12        0.11   -0.04   -26.7%  2024-07-29 12:25:16 EDT-0400    21.0            465              30.0%
+270.0     0.07    0.09        0.08   -0.02   -20.0%  2024-07-29 11:36:59 EDT-0400     6.0            224              31.2%
+275.0     0.06    0.07        0.06   -0.01   -14.3%  2024-07-29 15:49:17 EDT-0400    41.0            155              32.4%
+280.0     0.04    0.05        0.05    0.00     0.0%  2024-07-29 11:59:01 EDT-0400    53.0            121              33.2%
+285.0     0.04    0.05        0.05   -0.01   -16.7%  2024-07-29 09:31:57 EDT-0400     6.0             25              35.3%
+290.0     0.03    0.04        0.05    0.00     0.0%  2024-07-25 10:59:34 EDT-0400     6.0             36              36.3%
+295.0     0.02    0.03        0.02   -0.01   -33.3%  2024-07-25 14:28:38 EDT-0400     1.0             74              37.1%
+300.0     0.01    0.04        0.03   -0.02   -40.0%  2024-07-29 12:25:14 EDT-0400     2.0            117              40.0%</code></pre>
 </div>
 </div>
+<section id="intrinsic-value-and-time-value" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="intrinsic-value-and-time-value"><span class="header-section-number">1.1</span> Intrinsic Value and Time Value</h2>
+</section>
+<section id="investing-in-options" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="investing-in-options"><span class="header-section-number">1.2</span> Investing in Options</h2>
+</section>
+<section id="hedging-with-options" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="hedging-with-options"><span class="header-section-number">1.3</span> Hedging with Options</h2>
+</section>
+<section id="selling-options-for-income" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="selling-options-for-income"><span class="header-section-number">1.4</span> Selling Options for Income</h2>
+</section>
+<section id="option-spreads" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="option-spreads"><span class="header-section-number">1.5</span> Option Spreads</h2>
+</section>
+<section id="put-call-parity" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="put-call-parity"><span class="header-section-number">1.6</span> Put-Call Parity</h2>
+</section>
+<section id="american-options" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="american-options"><span class="header-section-number">1.7</span> American Options</h2>
+</section>
+<section id="dividends" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="dividends"><span class="header-section-number">1.8</span> Dividends</h2>
 <p>If the market value of the asset exceeds the exercise price, then we say the call option is in the money. Buying a call option is a way to bet on the upside of the underlying asset.</p>
 <p>A put option is the right to sell an asset at a pre-specified (exercise, strike) price. Buying a put is a way to bet on an asset price becoming low (similar to shorting). A put option is in the money if the exercise price exceeds the value of the asset. Both puts and calls are potentially valuable and hence the buyer of a put or call must pay the seller.</p>
 <p>A long put option provides insurance to someone who is long the underlying asset, because it guarantees that the asset can always be sold at the strike price of the put (of course, it can be sold at the market price, if that is higher than the strike of the put). Symmetrically, a long call option provides insurance to someone who is short the underlying asset. The terminology in option markets reflects the parallels between options and insurance contracts. In particular, the seller of an option is said to write the option and the compensation (price) he receives from the buyer is called the option premium, just as an insurance company writes insurance contracts in exchange for premium income. Calculating the price at which one should be willing to trade an option is the main topic of this book.</p>
@@ -419,6 +455,7 @@ Strike
 <p>In the last part of the book, we will drop the assumption that the risk-free asset earns a constant rate of return. In this case, we will still generally assume that there is a risk-free asset for very short-term investments (i.e., for investments with infinitesimal durations!). We will let <span class="math inline">\(r(t)\)</span> denote the risk-free rate for an instantaneous investment at date <span class="math inline">\(t\)</span>. This means that an investment of <span class="math inline">\(x(t)\)</span> dollars at date <span class="math inline">\(t\)</span> in the risk-free asset earns interest in an instant <span class="math inline">\(\mathrm{d} t\)</span> equal to <span class="math inline">\(x(t)r(t)\,\mathrm{d} t\)</span>. Consider again an investment of <span class="math inline">\(x(0)\)</span> dollars at date 0 in this instantaneously risk-free asset with interest reinvested and let <span class="math inline">\(x(t)\)</span> denote the account balance at date <span class="math inline">\(t\)</span>. Then <span class="math inline">\(x(t)\)</span> must satisfy the differential equation <span class="math display">\[\frac{\mathrm{d} x(t)}{\mathrm{d} t} = x(t)r(t)\;\;.\]</span> The solution of this differential equation is <span class="math display">\[x(t) = x(0)\exp\left(\int_0^t r(s)\,ds\right)\;\;.\]</span> The expression <span class="math inline">\(\int_0^t r(s)\,ds\)</span> can be interpreted as a continuous sum over time of the rates of interest <span class="math inline">\(r(s)\)</span> earned at times <span class="math inline">\(s\)</span> between 0 and <span class="math inline">\(t\)</span>. If these rates are all the same, say equal to <span class="math inline">\(r\)</span>, then <span class="math inline">\(\int_0^t r(s)\,ds = rt\)</span> and our compounding factor <span class="math inline">\(\exp\left(\int_0^t r(s)\,ds\right)\)</span> is <span class="math inline">\(\mathrm{e}^{rt}\)</span> as before.</p>
 
 
+</section>
 </section>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
