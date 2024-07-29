@@ -177,44 +177,66 @@ This means that our best estimate of the conditional variance, at some date far 
 
 The most interesting feature of the volatility equation is that large returns (in absolute value) lead to an increase in the variance and hence are likely to be followed by more large returns (whether positive or negative).  This is the phenomenon of volatility clustering, \index{volatility clustering} which is quite observable in actual markets.  This feature also implies that the distribution of returns will be fat tailed  (more technically, leptokurtic).  \index{leptokurtic} This means that the probability of extreme returns is higher than under a normal distribution with the same standard deviation.^[Conversely, the probability of returns very near the mean must also be higher than under a normal distribution with the same standard deviation---a fat-tailed distribution must also have a relatively narrow peak.]  It is well documented that daily and weekly returns in most markets have this fat-tailed property.
 
-We can simulate a path of an asset price that follows a GARCH process and the path of its volatility as follows.  The following macro produces three columns of data (with headings), the first column being time, the second  the asset price, and the third  the volatility.
+We can simulate a path of an asset price that follows a GARCH process and the path of its volatility as follows.  The following python code produces three columns of data (with headings), the first column being time, the second  the asset price, and the third  the volatility.
 
-\addcontentsline{lof}{figure}{Simulating GARCH}
-\begin{verbatim}
-Sub Simulating_GARCH()
-Dim S, sigma, r, q, dt, theta, kappa, lambda, LogS, Sqrdt
-Dim a, b, c, y, i, N
-S = InputBox("Enter initial stock price")
-sigma = InputBox("Enter initial volatility")
-r = InputBox("Enter risk-free rate")
-q = InputBox("Enter dividend yield")
-dt = InputBox("Enter length of each time period (Delta t)")
-N = InputBox("Enter number of time periods (N)")
-theta = InputBox("Enter theta")
-kappa = InputBox("Enter kappa")
-lambda = InputBox("Enter lambda")
-LogS = Log(S)
-Sqrdt = Sqr(dt)
-a = kappa * theta
-b = (1 - kappa) * (1 - lambda)
-c = (1 - kappa) * lambda
-ActiveCell.Value = "Time"
-ActiveCell.Offset(0, 1) = "Stock Price"
-ActiveCell.Offset(0, 2) = "Volatility"
-ActiveCell.Offset(1, 0) = 0               ' initial time
-ActiveCell.Offset(1, 1) = S               ' initial stock price
-ActiveCell.Offset(1, 2) = sigma           ' initial volatility
-For i = 1 To N
-    ActiveCell.Offset(i + 1, 0) = i * dt  ' next time
-    y = sigma * RandN()
-    LogS = LogS + (r - q - 0.5 * sigma * sigma) * dt + Sqrdt * y
-    S = Exp(LogS)
-    ActiveCell.Offset(i + 1, 1) = S       ' next stock price
-    sigma = Sqr(a + b * y ^ 2 + c * sigma ^ 2)
-    ActiveCell.Offset(i + 1, 2) = sigma   ' next volatility
-Next i
-End Sub
-\end{verbatim}
+```{python}
+
+import numpy as np
+import pandas as pd
+
+def simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd):
+    """
+    Inputs:
+    S = initial stock price
+    sigma = initial volatility
+    r = risk-free rate
+    q = dividend yield
+    dt = length of each time period (Delta t)
+    N = number of time periods
+    theta = theta parameter for GARCH
+    kappa = kappa parameter for GARCH
+    lambd = lambda parameter for GARCH
+    """
+    LogS = np.log(S)
+    Sqrdt = np.sqrt(dt)
+    a = kappa * theta
+    b = (1 - kappa) * (1 - lambd)
+    c = (1 - kappa) * lambd
+    
+    time = np.zeros(N + 1)
+    stock_price = np.zeros(N + 1)
+    volatility = np.zeros(N + 1)
+    
+    stock_price[0] = S
+    volatility[0] = sigma    
+    
+    for i in range(1, N + 1):
+        time[i] = i * dt
+        y = sigma * np.random.randn()
+        LogS = LogS + (r - q - 0.5 * sigma * sigma) * dt + Sqrdt * y
+        S = np.exp(LogS)
+        stock_price[i] = S
+        sigma = np.sqrt(a + b * y ** 2 + c * sigma ** 2)
+        volatility[i] = sigma
+
+    df_garch = pd.DataFrame({'Time': time, 'Stock Price': stock_price, 'Volatility': volatility})
+    df_garch.to_csv('garch_simulation.csv', index=False)
+    return df_garch
+
+# Example usage:
+S = 100       # Initial stock price
+sigma = 0.2   # Initial volatility
+r = 0.05      # Risk-free rate
+q = 0.02      # Dividend yield
+dt = 1/252    # Length of each time period (daily)
+N = 252       # Number of time periods (one year)
+theta = 0.1   # Theta parameter for GARCH
+kappa = 0.1   # Kappa parameter for GARCH
+lambd = 0.9   # Lambda parameter for GARCH
+
+df_garch = simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd)
+print(df_garch)
+```
 
 To price European options, we need to compute the usual probabilities 
 $\text{prob}^S(S(T)>K)$ and $\text{prob}^R(S(T) >K)$.
@@ -268,50 +290,208 @@ A simple way to simulate the changes $\Delta B_s$ and $\Delta B_v$ in the two co
 $$\Delta B_s = \sqrt{\Delta t}\,z \qquad \text{and} \qquad \Delta B_v = \sqrt{\Delta t}\,z^*\; ,$$
 where we define 
 $$z = z_1 \qquad \text{and} \qquad z^* = \rho z_1 + \sqrt{1-\rho^2}\,z_2\; .$$
-The random variable $z^*$ is also a standard normal, and the correlation between $z$ and $z^*$ is $\rho$.  
+The random variable $z^*$ is also a standard normal, and the correlation between $z$ and $z^*$ is $\rho$. 
 
-\addcontentsline{lof}{figure}{Simulating Stochastic Volatility}
-\begin{verbatim}
-Sub Simulating_Stochastic_Volatility()
-Dim S, sigma, r, q, dt, theta, kappa, Gamma, rho, LogS, var
-Dim Sqrdt, Sqrrho, z1, Z2, Zstar, i, N
-S = InputBox("Enter initial stock price")
-sigma = InputBox("Enter initial volatility")
-r = InputBox("Enter risk-free rate")
-q = InputBox("Enter dividend yield")
-dt = InputBox("Enter length of each time period (Delta t)")
-N = InputBox("Enter number of time periods (N)")
-theta = InputBox("Enter theta")
-kappa = InputBox("Enter kappa")
-Gamma = InputBox("Enter gamma")
-rho = InputBox("Enter rho")
-LogS = Log(S)
-var = sigma * sigma
-Sqrdt = Sqr(dt)
-Sqrrho = Sqr(1 - rho * rho)
-ActiveCell.Value = "Time"
-ActiveCell.Offset(0, 1) = "Stock Price"
-ActiveCell.Offset(0, 2) = "Volatility"
-ActiveCell.Offset(1, 0) = 0               ' initial time
-ActiveCell.Offset(1, 1) = S               ' initial stock price
-ActiveCell.Offset(1, 2) = sigma           ' initial volatility
-For i = 1 To N
-    ActiveCell.Offset(i + 1, 0) = i * dt  ' next time
-    z1 = RandN()
-    LogS = LogS + (r-q-0.5*sigma*sigma)*dt + sigma*Sqrdt*z1
-    S = Exp(LogS)
-    ActiveCell.Offset(i + 1, 1) = S       ' next stock price
-    Z2 = RandN()
-    Zstar = rho * z1 + Sqrrho * Z2
-    var = Application.Max(0, var+kappa*(theta-var)*dt _
-           +Gamma*sigma*Sqrdt*Zstar)
-    sigma = Sqr(var)
-    ActiveCell.Offset(i + 1, 2) = sigma   ' next volatility
-Next i
-End Sub
-\end{verbatim}
+As in the GARCH model, we can simulate a path of an asset price that follows a GARCH process and the path of its volatility as follows.  The following python code produces three columns of data (with headings), the first column being time, the second  the asset price, and the third  the volatility in the Heston model.
 
+```{python}
 
+import numpy as np
+import pandas as pd
+
+def simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho):
+    """
+    Inputs:
+    S = initial stock price
+    V0 = initial variance
+    r = risk-free rate
+    q = dividend yield
+    dt = length of each time period (Delta t)
+    N = number of time periods
+    theta = long-term variance (mean of variance)
+    kappa = rate of mean reversion of variance
+    sigma = volatility of variance
+    rho = correlation between the two Wiener processes
+    """
+    LogS = np.log(S)
+    Sqrdt = np.sqrt(dt)
+    
+    time = np.zeros(N + 1)
+    stock_price = np.zeros(N + 1)
+    volatility = np.zeros(N + 1)
+    
+    stock_price[0] = S
+    volatility[0] = V0    
+    
+    for i in range(1, N + 1):
+        time[i] = i * dt
+        Z1 = np.random.randn()
+        Z2 = np.random.randn()
+        W1 = Z1
+        W2 = rho * Z1 + np.sqrt(1 - rho**2) * Z2
+        
+        LogS = LogS + (r - q - 0.5 * volatility[i-1]**2) * dt + np.sqrt(volatility[i-1]**2 * dt) * W1
+        S = np.exp(LogS)
+        stock_price[i] = S
+        
+        volatility[i] = np.sqrt(np.maximum(volatility[i-1]**2 + kappa * (theta - volatility[i-1]**2) * dt + sigma * np.sqrt(volatility[i-1]**2 * dt) * W2, 0))
+
+    df_stochastic_vol = pd.DataFrame({'Time': time, 'Stock Price': stock_price, 'Volatility': volatility})
+    df_stochastic_vol.to_csv('stochastic_volatility_simulation.csv', index=False)
+    return df_stochastic_vol
+
+# Example usage:
+S = 100       # Initial stock price
+V0 = 0.04     # Initial variance
+r = 0.05      # Risk-free rate
+q = 0.02      # Dividend yield
+dt = 1/252    # Length of each time period (daily)
+N = 252       # Number of time periods (one year)
+theta = 0.04  # Long-term variance
+kappa = 2.0   # Rate of mean reversion of variance
+sigma = 0.3   # Volatility of variance
+rho = -0.7    # Correlation between the two Wiener processes
+
+df_stochastic_vol = simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho)
+print(df_stochastic_vol)
+```
+
+The following code plots the simulated stock price and the variance paths. 
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Heston model parameters
+S0 = 100     # Initial stock price
+V0 = 0.04    # Initial variance
+rho = -0.7   # Correlation between the two Wiener processes
+kappa = 2.0  # Rate of mean reversion of variance
+theta = 0.04 # Long-term variance
+sigma = 0.3  # Volatility of variance
+r = 0.05     # Risk-free rate
+T = 1.0      # Time to maturity
+N = 252      # Number of time steps
+dt = T / N   # Time step size
+n_simulations = 1000  # Number of simulations
+
+# Preallocate arrays
+S = np.zeros((N+1, n_simulations))
+V = np.zeros((N+1, n_simulations))
+S[0] = S0
+V[0] = V0
+
+# Simulate the paths
+for t in range(1, N+1):
+    Z1 = np.random.normal(size=n_simulations)
+    Z2 = np.random.normal(size=n_simulations)
+    W1 = Z1
+    W2 = rho * Z1 + np.sqrt(1 - rho**2) * Z2
+    
+    V[t] = np.maximum(V[t-1] + kappa * (theta - V[t-1]) * dt + sigma * np.sqrt(V[t-1] * dt) * W2, 0)
+    S[t] = S[t-1] * np.exp((r - 0.5 * V[t-1]) * dt + np.sqrt(V[t-1] * dt) * W1)
+
+# Plot the results
+plt.figure(figsize=(12, 6))
+for i in range(n_simulations):
+    plt.plot(S[:, i], lw=0.5, alpha=0.3)
+plt.title('Stock Price Paths with Stochastic Volatility (Heston Model)')
+plt.xlabel('Time Steps')
+plt.ylabel('Stock Price')
+plt.grid(True)
+plt.show()
+
+# Plot the volatility paths
+plt.figure(figsize=(12, 6))
+for i in range(n_simulations):
+    plt.plot(V[:, i], lw=0.5, alpha=0.3)
+plt.title('Variance Paths with Stochastic Volatility (Heston Model)')
+plt.xlabel('Time Steps')
+plt.ylabel('Variance')
+plt.grid(True)
+plt.show()
+```
+
+The following code shows that the stock returns under the stochastic volatility model display fat-tails with positive kurtosis. 
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import norm, kurtosis
+
+def simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho, n_simulations):
+    """
+    Inputs:
+    S = initial stock price
+    V0 = initial variance
+    r = risk-free rate
+    q = dividend yield
+    dt = length of each time period (Delta t)
+    N = number of time periods
+    theta = long-term variance (mean of variance)
+    kappa = rate of mean reversion of variance
+    sigma = volatility of variance
+    rho = correlation between the two Wiener processes
+    n_simulations = number of simulations
+    """
+    LogS = np.log(S)
+    Sqrdt = np.sqrt(dt)
+    
+    log_returns = []
+    
+    for _ in range(n_simulations):
+        stock_price = S
+        variance = V0
+        for _ in range(N):
+            Z1 = np.random.randn()
+            Z2 = np.random.randn()
+            W1 = Z1
+            W2 = rho * Z1 + np.sqrt(1 - rho**2) * Z2
+            
+            log_return = (r - q - 0.5 * variance) * dt + np.sqrt(variance * dt) * W1
+            LogS = np.log(stock_price) + log_return
+            stock_price = np.exp(LogS)
+            
+            variance = np.maximum(variance + kappa * (theta - variance) * dt + sigma * np.sqrt(variance * dt) * W2, 0)
+            
+            log_returns.append(log_return)
+    
+    return log_returns
+
+# Example usage:
+S = 100       # Initial stock price
+V0 = 0.04     # Initial variance
+r = 0.05      # Risk-free rate
+q = 0.02      # Dividend yield
+dt = 1/252    # Length of each time period (daily)
+N = 252       # Number of time periods (one year)
+theta = 0.04  # Long-term variance
+kappa = 0.2   # Rate of mean reversion of variance
+sigma = 0.3   # Volatility of variance
+rho = -0.7    # Correlation between the two Wiener processes
+n_simulations = 1000  # Number of simulations
+
+log_returns = simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho, n_simulations)
+
+# Plotting the distribution of log returns
+sns.histplot(log_returns, bins=100, kde=True, stat="density", color="blue", label="Simulated Log Returns")
+xmin, xmax = plt.xlim()
+x = np.linspace(xmin, xmax, 100)
+p = norm.pdf(x, np.mean(log_returns), np.std(log_returns))
+plt.plot(x, p, 'k', linewidth=2, label="Normal Distribution")
+plt.title('Distribution of Log Returns with Stochastic Volatility')
+plt.xlabel('Log Return')
+plt.ylabel('Density')
+plt.legend()
+
+# Display kurtosis
+kurt = kurtosis(log_returns)
+plt.figtext(0.15, 0.8, f'Kurtosis: {kurt:.2f}', fontsize=12)
+
+plt.show()
+```
 To price European options, we again need to compute 
 $$\text{prob}^S(S(T)>K) \qquad \text{and} \qquad \text{prob}^R(S(T)>K)\; .$$
 The virtue of modelling volatility as in @eq-heston2 is that these probabilities can be computed quite efficiently, as shown by Heston [@Heston].^[Further discussion can be found in Epps [@Epps].]  There are many other ways in which one could model volatility, but the computations may be more difficult.  For example, one could  replace @eq-heston2 by
