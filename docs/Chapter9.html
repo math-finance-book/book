@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -142,7 +176,7 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter3.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Continuous-Time Models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -154,7 +188,7 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter5.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Estimating and Modelling Volatility</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Estimating and Modeling Volatility</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -253,8 +287,7 @@ div.csl-indent {
   <li><a href="#sec-s_lookbacks" id="toc-sec-s_lookbacks" class="nav-link" data-scroll-target="#sec-s_lookbacks"><span class="header-section-number">9.7</span> Lookbacks</a></li>
   <li><a href="#sec-s_baskets" id="toc-sec-s_baskets" class="nav-link" data-scroll-target="#sec-s_baskets"><span class="header-section-number">9.8</span> Basket and Spread Options</a></li>
   <li><a href="#sec-s_asians" id="toc-sec-s_asians" class="nav-link" data-scroll-target="#sec-s_asians"><span class="header-section-number">9.9</span> Asian Options</a></li>
-  <li><a href="#sec-s_exotics_matlab" id="toc-sec-s_exotics_matlab" class="nav-link" data-scroll-target="#sec-s_exotics_matlab"><span class="header-section-number">9.10</span> Calculations in VBA</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.11</span> Exercises</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.10</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -308,7 +341,7 @@ Z(0)E^Z\left[ \frac{xS(T)}{Z(T')}\right] &amp;=
 d_1 = \frac{\left(r-q +\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}} =\frac{\left(r-q +\frac{1}{2}\sigma^2\right)\sqrt{T'-T}}{\sigma}\;.
 \tag{9.1}\]</span></span></p>
 <ol start="2" type="1">
-<li>To calculate the probability <span class="math inline">\(\text{prob}^Z(S(T')&gt;S(T))\)</span>, note that between <span class="math inline">\(T\)</span> and <span class="math inline">\(T'\)</span>, the portfolio with price <span class="math inline">\(Z\)</span> earns the risk-free rate <span class="math inline">\(r\)</span>. The same argument presented in <span class="quarto-unresolved-ref">?sec-s_girsanov</span> shows that between <span class="math inline">\(T\)</span> and <span class="math inline">\(T'\)</span> we have <span class="math display">\[\frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma\,\mathrm{d} B^*\; ,\]</span> where now <span class="math inline">\(B^*\)</span> denotes a Brownian motion when <span class="math inline">\(Z\)</span> is used as the numeraire. This implies as usual that <span class="math display">\[ \mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B^*\; ,\]</span> which means that <span class="math display">\[\log S(T') - \log S(T) = \left(r-q-\frac{1}{2}\sigma^2\right)(T'-T) + \sigma(B^*(T')-B^*(T))\; .\]</span> Hence, <span class="math inline">\(S(T')&gt;S(T)\)</span> if and only if <span class="math display">\[-\frac{B^*(T')-B^*(T)}{\sqrt{T'-T}} &lt; \frac{\left(r-q -\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}}\; .\]</span> As before, the random variable on the left hand side is a standard normal, so <span class="math display">\[\text{prob}^Z(S(T')&gt;S(T)) = \mathrm{N}(d_2)\; ,\]</span> where <span id="eq-forwardstart_d2"><span class="math display">\[
+<li>To calculate the probability <span class="math inline">\(\text{prob}^Z(S(T')&gt;S(T))\)</span>, note that between <span class="math inline">\(T\)</span> and <span class="math inline">\(T'\)</span>, the portfolio with price <span class="math inline">\(Z\)</span> earns the risk-free rate <span class="math inline">\(r\)</span>. The same argument presented in <a href="Chapter3.html#sec-s_girsanov"><span>Section&nbsp;3.10</span></a> shows that between <span class="math inline">\(T\)</span> and <span class="math inline">\(T'\)</span> we have <span class="math display">\[\frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma\,\mathrm{d} B^*\; ,\]</span> where now <span class="math inline">\(B^*\)</span> denotes a Brownian motion when <span class="math inline">\(Z\)</span> is used as the numeraire. This implies as usual that <span class="math display">\[ \mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B^*\; ,\]</span> which means that <span class="math display">\[\log S(T') - \log S(T) = \left(r-q-\frac{1}{2}\sigma^2\right)(T'-T) + \sigma(B^*(T')-B^*(T))\; .\]</span> Hence, <span class="math inline">\(S(T')&gt;S(T)\)</span> if and only if <span class="math display">\[-\frac{B^*(T')-B^*(T)}{\sqrt{T'-T}} &lt; \frac{\left(r-q -\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}}\; .\]</span> As before, the random variable on the left hand side is a standard normal, so <span class="math display">\[\text{prob}^Z(S(T')&gt;S(T)) = \mathrm{N}(d_2)\; ,\]</span> where <span id="eq-forwardstart_d2"><span class="math display">\[
 d_2 = \frac{\left(r-q -\frac{1}{2}\sigma^2\right)\sqrt{T'-T}}{\sigma}=d_1-\sigma\sqrt{T'-T}\;.
 \tag{9.2}\]</span></span></li>
 </ol>
@@ -347,8 +380,89 @@ d_2 = \frac{\left(r-q -\frac{1}{2}\sigma^2\right)\sqrt{T'-T}}{\sigma}=d_1-\sigma
 </div>
 <div class="callout-body-container callout-body">
 <p>Put-call parity for forward-start calls and puts is <span id="eq-fstrikeparity"><span class="math display">\[
-\text{Call Price} \;+\; \mathrm{e}^{-r(T'-T)-qT}S(0) = \text{Put Price} \;+\; \mathrm{e}^{-qT'}S(0)\;.
-\tag{9.4}\]</span></span></p>
+\text{Call Price} \;+\; \mathrm{e}^{-r(T'-T)-qT}S(0) = \text{Put Price} \;+\; \mathrm{e}^{-qT'}S(0)\;. \tag{9.4}\]</span></span></p>
+<p>The new features in the option pricing formulas in this chapter are the use of the bivariate normal distribution function and sometimes the need to compute a critical (at-the-money) value of the underlying asset price. We will compute the critical values by bisection, in the same way that we computed implied volatilities for the Black-Scholes formula in <a href="Chapter4.html"><span>Chapter&nbsp;4</span></a>.</p>
+<p>The following is a fast approximation of the bivariate cumulative normal distribution function, accurate to six decimal places, due to Drezner <span class="citation" data-cites="Drezner">(<a href="#ref-Drezner" role="doc-biblioref">Drezner 1978</a>)</span>). For given numbers <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, this function gives the probability that <span class="math inline">\(\xi_1&lt;a\)</span> and <span class="math inline">\(\xi_2&lt;b\)</span> where <span class="math inline">\(\xi_1\)</span> and <span class="math inline">\(\xi_2\)</span> are standard normal random variables with a given correlation <span class="math inline">\(\rho\)</span>, which we must input.</p>
+<div id="binormal_prob" class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binormal_prob(a, b, rho):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.array([<span class="fl">0.24840615</span>, <span class="fl">0.39233107</span>, <span class="fl">0.21141819</span>, <span class="fl">0.03324666</span>, <span class="fl">0.00082485334</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.array([<span class="fl">0.10024215</span>, <span class="fl">0.48281397</span>, <span class="fl">1.0609498</span>, <span class="fl">1.7797294</span>, <span class="fl">2.6697604</span>])</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    a1 <span class="op">=</span> a <span class="op">/</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> rho <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> b <span class="op">/</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> rho <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> a <span class="op">&lt;=</span> <span class="dv">0</span> <span class="kw">and</span> b <span class="op">&lt;=</span> <span class="dv">0</span> <span class="kw">and</span> rho <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        total_sum <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                z1 <span class="op">=</span> a1 <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> y[i] <span class="op">-</span> a1)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                Z2 <span class="op">=</span> b1 <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> y[j] <span class="op">-</span> b1)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                z3 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> rho <span class="op">*</span> (y[i] <span class="op">-</span> a1) <span class="op">*</span> (y[j] <span class="op">-</span> b1)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                total_sum <span class="op">+=</span> x[i] <span class="op">*</span> x[j] <span class="op">*</span> np.exp(z1 <span class="op">+</span> Z2 <span class="op">+</span> z3)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> total_sum <span class="op">*</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> np.pi</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> a <span class="op">&lt;=</span> <span class="dv">0</span> <span class="kw">and</span> b <span class="op">&gt;=</span> <span class="dv">0</span> <span class="kw">and</span> rho <span class="op">&gt;=</span> <span class="dv">0</span>:</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> norm.cdf(a) <span class="op">-</span> binormal_prob(a, <span class="op">-</span>b, <span class="op">-</span>rho)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> a <span class="op">&gt;=</span> <span class="dv">0</span> <span class="kw">and</span> b <span class="op">&lt;=</span> <span class="dv">0</span> <span class="kw">and</span> rho <span class="op">&gt;=</span> <span class="dv">0</span>:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> norm.cdf(b) <span class="op">-</span> binormal_prob(<span class="op">-</span>a, b, <span class="op">-</span>rho)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> a <span class="op">&gt;=</span> <span class="dv">0</span> <span class="kw">and</span> b <span class="op">&gt;=</span> <span class="dv">0</span> <span class="kw">and</span> rho <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        total_sum <span class="op">=</span> norm.cdf(a) <span class="op">+</span> norm.cdf(b)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> total_sum <span class="op">-</span> <span class="dv">1</span> <span class="op">+</span> binormal_prob(<span class="op">-</span>a, <span class="op">-</span>b, rho)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> a <span class="op">*</span> b <span class="op">*</span> rho <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        rho1 <span class="op">=</span> (rho <span class="op">*</span> a <span class="op">-</span> b) <span class="op">*</span> np.sign(a) <span class="op">/</span> np.sqrt(a <span class="op">**</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> rho <span class="op">*</span> a <span class="op">*</span> b <span class="op">+</span> b <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        rho2 <span class="op">=</span> (rho <span class="op">*</span> b <span class="op">-</span> a) <span class="op">*</span> np.sign(b) <span class="op">/</span> np.sqrt(a <span class="op">**</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> rho <span class="op">*</span> a <span class="op">*</span> b <span class="op">+</span> b <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        Delta <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> np.sign(a) <span class="op">*</span> np.sign(b)) <span class="op">/</span> <span class="dv">4</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> binormal_prob(a, <span class="dv">0</span>, rho1) <span class="op">+</span> binormal_prob(b, <span class="dv">0</span>, rho2) <span class="op">-</span> Delta</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"BiNormalProb:"</span>, binormal_prob(<span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>BiNormalProb: 0.3601084540357551</code></pre>
+</div>
+</div>
+<p>Notice that this function calls itself. This is an example of recursion.</p>
+<p>The forward-start call pricing formula is of the same form as the Black-Scholes, Margrabe, Black, and Merton formulas, as discussed in <span class="quarto-unresolved-ref">?sec-s_matlabimplementations</span>. We can compute it with our pricing function.</p>
+<div id="forward_start_call" class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generic_option(P1, P2, sigma, T):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">    P1 = present value of asset to be received</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">    P2 = present value of asset to be delivered</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> (np.log(P1 <span class="op">/</span> P2) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> x <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    N1 <span class="op">=</span> norm.cdf(x)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(y)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> P1 <span class="op">*</span> N1 <span class="op">-</span> P2 <span class="op">*</span> N2</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> forward_start_call(S, r, sigma, q, Tset, TCall):</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    P1 <span class="op">=</span> np.exp(<span class="op">-</span>q <span class="op">*</span> TCall) <span class="op">*</span> S</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    P2 <span class="op">=</span> np.exp(<span class="op">-</span>q <span class="op">*</span> Tset <span class="op">-</span> r <span class="op">*</span> (TCall <span class="op">-</span> Tset)) <span class="op">*</span> S</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> generic_option(P1, P2, sigma, TCall <span class="op">-</span> Tset)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>Div <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>TDiv <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>TCall <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Forward Start Call:"</span>, forward_start_call(S, r, sigma, q, <span class="fl">0.5</span>, TCall))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Forward Start Call: 6.244873136512808</code></pre>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -393,7 +507,7 @@ d_1 = \frac{\log\left(\frac{S(0)}{S^*}\right)+\left(r-q+\frac{1}{2}\sigma^2\righ
 d_1' = \frac{\log\left(\frac{S(0)}{K'}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T'}{\sigma\sqrt{T'}}\;,
 \qquad d_2'=d_1'-\sigma\sqrt{T'}\;.
 \tag{9.8}\]</span></span></p>
-<p>The two standard normal variables on the left-hand sides in <a href="#eq-new10">Equation&nbsp;<span>9.7</span></a> have a covariance equal to <span class="math display">\[\frac{1}{\sqrt{TT'}}\mathrm{cov}(B(T),B(T')) = \frac{1}{\sqrt{TT'}}\mathrm{cov}(B(T),B(T)) = \sqrt{\frac{T}{T'}}\; ,\]</span> the first equality following from the fact that <span class="math inline">\(B(T)\)</span> is independent of <span class="math inline">\(B(T')-B(T)\)</span> and the second from the fact that the covariance of a random variable with itself is its variance. Hence, <span class="math inline">\(\text{prob}^V\!(y=1)\)</span> is the probability that <span class="math inline">\(a\leq d_1\)</span> and <span class="math inline">\(b\leq d_1'\)</span>, where <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are standard normal random variables with covariance (= correlation coefficient) of <span class="math inline">\(\sqrt{T/T'}\)</span>. We will write this probability as <span class="math inline">\(\mathrm{M}\!\left(d_1,d_1',\sqrt{T/T'}\right)\)</span>. A program to approximate the bivariate normal distribution function <span class="math inline">\(\mathrm{M}\)</span> is provided in <a href="#sec-s_exotics_matlab"><span>Section&nbsp;9.10</span></a>.</p>
+<p>The two standard normal variables on the left-hand sides in <a href="#eq-new10">Equation&nbsp;<span>9.7</span></a> have a covariance equal to <span class="math display">\[\frac{1}{\sqrt{TT'}}\mathrm{cov}(B(T),B(T')) = \frac{1}{\sqrt{TT'}}\mathrm{cov}(B(T),B(T)) = \sqrt{\frac{T}{T'}}\; ,\]</span> the first equality following from the fact that <span class="math inline">\(B(T)\)</span> is independent of <span class="math inline">\(B(T')-B(T)\)</span> and the second from the fact that the covariance of a random variable with itself is its variance. Hence, <span class="math inline">\(\text{prob}^V\!(y=1)\)</span> is the probability that <span class="math inline">\(a\leq d_1\)</span> and <span class="math inline">\(b\leq d_1'\)</span>, where <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are standard normal random variables with covariance (= correlation coefficient) of <span class="math inline">\(\sqrt{T/T'}\)</span>. We will write this probability as <span class="math inline">\(\mathrm{M}\!\left(d_1,d_1',\sqrt{T/T'}\right)\)</span>. A program to approximate the bivariate normal distribution function <span class="math inline">\(\mathrm{M}\)</span> is provided in <span class="quarto-unresolved-ref">?sec-s_exotics_matlab</span>.</p>
 <ol start="2" type="1">
 <li>The calculation for <span class="math inline">\(\text{prob}^R(y=1)\)</span> is similar. The event <span class="math inline">\(y=1\)</span> is equivalent to <span class="math display">\[\log S(0) + \left(r-q+\frac{1}{2}\sigma^2\right)T+\sigma B^*(T) &gt; \log S^*\;,\]</span> and <span class="math display">\[\log S(0) + \left(r-q+\frac{1}{2}\sigma^2\right)T'+\sigma B^*(T') &gt; \log K'\; ,\]</span> where <span class="math inline">\(B^*\)</span> now denotes a Brownian motion under the risk-neutral measure. These are equivalent to $$</li>
 </ol>
@@ -458,6 +572,154 @@ Let <span class="math inline">\(S^*\)</span> again denote the critical value of 
 <p>where <span class="math inline">\(d_1\)</span> and <span class="math inline">\(d_2\)</span> are defined in <a href="#eq-calloncalld1d2">Equation&nbsp;<span>9.6</span></a> and <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-callcallds">Equation&nbsp;<span>9.8</span></a>.</p>
 </div>
 </div>
+<p>We will use bisection to find the critical price <span class="math inline">\(S^*\)</span>. We can use <span class="math inline">\(e^{q(T'-T)}(K+K')\)</span> as an upper bound for <span class="math inline">\(S^*\)</span> and 0 as a lower bound.^[We set the value of the call to be zero when the stock price is zero. The upper bound works because (by put-call parity and the fact that the put value is nonnegative) <span class="math inline">\(C(T,S) \geq e^{-q(T'-T)]S-e^{-r(T'-T)}K'\)</span>. Therefore, when <span class="math inline">\(S = e^{q(T'-T)}(K+K')\)</span>, we have <span class="math inline">\(C(T,S) \geq K + K' - e^{-r(T'-T)}K' &gt; K\)</span>. }<br>
+The following uses <span class="math inline">\(10^{-6}\)</span> as the error tolerance in the bisection.</p>
+<div id="call_on_call" class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call(S, K, r, sigma, q, T):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sigma <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        N1 <span class="op">=</span> norm.cdf(d1)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> N2</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> call_on_call(S, Kc, Ku, r, sigma, q, Tc, Tu):</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-6</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> np.exp(q <span class="op">*</span> (Tu <span class="op">-</span> Tc)) <span class="op">*</span> (Kc <span class="op">+</span> Ku)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    flower <span class="op">=</span> <span class="op">-</span>Kc</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    fupper <span class="op">=</span> black_scholes_call(upper, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    fguess <span class="op">=</span> black_scholes_call(guess, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> upper <span class="op">-</span> lower <span class="op">&gt;</span> tol:</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> fupper <span class="op">*</span> fguess <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>            lower <span class="op">=</span> guess</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>            flower <span class="op">=</span> fguess</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> black_scholes_call(guess, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>            upper <span class="op">=</span> guess</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>            fupper <span class="op">=</span> fguess</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> black_scholes_call(guess, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    Sstar <span class="op">=</span> guess</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> Sstar) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> Tc) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(Tc))</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(Tc)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    d1prime <span class="op">=</span> (np.log(S <span class="op">/</span> Ku) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> Tu) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(Tu))</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    d2prime <span class="op">=</span> d1prime <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(Tu)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>    rho <span class="op">=</span> np.sqrt(Tc <span class="op">/</span> Tu)</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    M1 <span class="op">=</span> binormal_prob(d1, d1prime, rho)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>    M2 <span class="op">=</span> binormal_prob(d2, d2prime, rho)</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>np.exp(<span class="op">-</span>r <span class="op">*</span> Tc) <span class="op">*</span> Kc <span class="op">*</span> N2 <span class="op">+</span> np.exp(<span class="op">-</span>q <span class="op">*</span> Tu) <span class="op">*</span> S <span class="op">*</span> M1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> Tu) <span class="op">*</span> Ku <span class="op">*</span> M2</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>Kc <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>Ku <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>Tc <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>Tu <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Call on Call:"</span>, call_on_call(S, Kc, Ku, r, sigma, q, Tc, Tu))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call on Call: 3.2568274676824167</code></pre>
+</div>
+</div>
+<p>The implementation of the call-on-a-put formula is of course very similar to that of a call-on-a-call. One difference is that there is no obvious upper bound for <span class="math inline">\(S^*\)</span>, so we start with <span class="math inline">\(2K'\)</span> (= ) and double this until the value of the put is below <span class="math inline">\(K\)</span>. We can take 0 again to be the lower bound. Recall that we assume <span class="math inline">\(K&lt;\mathrm{e}^{-r(T'-T)}K'\)</span> and the right-hand side of this is the value of the put at date <span class="math inline">\(T\)</span> when <span class="math inline">\(S(T)=0\)</span>.</p>
+<div id="call_on_put" class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_put(S, K, r, sigma, q, T):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sigma <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">-</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        N1 <span class="op">=</span> norm.cdf(<span class="op">-</span>d1)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        N2 <span class="op">=</span> norm.cdf(<span class="op">-</span>d2)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> N2 <span class="op">-</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> call_on_put(S, Kc, Ku, r, sigma, q, Tc, Tu):</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-6</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    flower <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> (Tu <span class="op">-</span> Tc)) <span class="op">*</span> Ku <span class="op">-</span> Kc</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> Ku</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    fupper <span class="op">=</span> black_scholes_put(upper, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> fupper <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        upper <span class="op">*=</span> <span class="dv">2</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        fupper <span class="op">=</span> black_scholes_put(upper, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    fguess <span class="op">=</span> black_scholes_put(guess, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> upper <span class="op">-</span> lower <span class="op">&gt;</span> tol:</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> fupper <span class="op">*</span> fguess <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>            lower <span class="op">=</span> guess</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>            flower <span class="op">=</span> fguess</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> black_scholes_put(guess, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>            upper <span class="op">=</span> guess</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>            fupper <span class="op">=</span> fguess</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> black_scholes_put(guess, Ku, r, sigma, q, Tu <span class="op">-</span> Tc) <span class="op">-</span> Kc</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    Sstar <span class="op">=</span> guess</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> Sstar) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> Tc) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(Tc))</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(Tc)</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    d1prime <span class="op">=</span> (np.log(S <span class="op">/</span> Ku) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> Tu) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(Tu))</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    d2prime <span class="op">=</span> d1prime <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(Tu)</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>    rho <span class="op">=</span> np.sqrt(Tc <span class="op">/</span> Tu)</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(<span class="op">-</span>d2)</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    M1 <span class="op">=</span> binormal_prob(<span class="op">-</span>d1, <span class="op">-</span>d1prime, rho)</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    M2 <span class="op">=</span> binormal_prob(<span class="op">-</span>d2, <span class="op">-</span>d2prime, rho)</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>np.exp(<span class="op">-</span>r <span class="op">*</span> Tc) <span class="op">*</span> Kc <span class="op">*</span> N2 <span class="op">+</span> np.exp(<span class="op">-</span>r <span class="op">*</span> Tu) <span class="op">*</span> Ku <span class="op">*</span> M2 <span class="op">-</span> np.exp(<span class="op">-</span>q <span class="op">*</span> Tu) <span class="op">*</span> S <span class="op">*</span> M1</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>Kc <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>Ku <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>Tc <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>Tu <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Call on Put:"</span>, call_on_put(S, Kc, Ku, r, sigma, q, Tc, Tu))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call on Put: 1.2998205534006573</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-s_discrete" class="level2" data-number="9.3">
@@ -467,7 +729,7 @@ Let <span class="math inline">\(S^*\)</span> again denote the critical value of 
 Z(t) = \begin{cases}S(t)-\mathrm{e}^{-r(T-t)}D &amp; \text{if $t \leq T$\;,}\\
 S(t) &amp; \text{if $t &gt; T$\;.}
 \end{cases}\]</span> Note that <span class="math inline">\(Z\)</span> is the price of the following non-dividend-paying portfolio: buy one unit of the asset at date 0, borrow <span class="math inline">\(\mathrm{e}^{-rT}D\)</span> at date 0 to help finance the purchase, and use the dividend <span class="math inline">\(D\)</span> at date <span class="math inline">\(T\)</span> to retire the debt.</p>
-<p>If we assume as usual that the asset price <span class="math inline">\(S\)</span> has a constant volatility, then, using <span class="quarto-unresolved-ref">?eq-exponential1</span> for a geometric Brownian motion and letting <span class="math inline">\(B^*\)</span> denote a Brownian motion under the risk-neutral measure, we have <span class="math display">\[\begin{align*}
+<p>If we assume as usual that the asset price <span class="math inline">\(S\)</span> has a constant volatility, then, using <a href="Chapter3.html#eq-exponential1">Equation&nbsp;<span>3.26</span></a> for a geometric Brownian motion and letting <span class="math inline">\(B^*\)</span> denote a Brownian motion under the risk-neutral measure, we have <span class="math display">\[\begin{align*}
 S(T') &amp;= [S(T)-D]\exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}\\
 &amp;= \left[S(0)\exp\left\{(r-\sigma^2/2)T+\sigma B^*(T)\right\}-D\right]\\
 &amp;\qquad \times \exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*(T')-\sigma B^*(T)\right\}\\
@@ -542,9 +804,69 @@ If <span class="math display">\[D-K \leq -\mathrm{e}^{-r(T'-T)}K\;,\]</span> the
 <p><span id="eq-americancall"><span class="math display">\[
 \begin{multline}
 [S(0)-\mathrm{e}^{-rT}D]\mathrm{N}(d_1) + \mathrm{e}^{-rT}(D-K)\mathrm{N}(d_2)\\ +[S(0)-\mathrm{e}^{-rT}D]\mathrm{M}\!\left(-d_1,d_1',-\sqrt{T/T'}\right) \\- \mathrm{e}^{-rT'}K\mathrm{M}\!\left(-d_2,d_2',-\sqrt{T/T'}\right)\;,
-\end{multline}
-\tag{9.17}\]</span></span></p>
+\end{multline} \tag{9.17}\]</span></span></p>
 <p>where <span class="math inline">\(d_1\)</span> and <span class="math inline">\(d_2\)</span> are defined in <a href="#eq-americancalld1star">Equation&nbsp;<span>9.11</span></a> - <a href="#eq-americancalld2star">Equation&nbsp;<span>9.12</span></a> and <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-americancalld1">Equation&nbsp;<span>9.14</span></a> - <a href="#eq-americancalld2">Equation&nbsp;<span>9.15</span></a>.</p>
+</div>
+</div>
+<p>To value an American call when there is one dividend payment before the option matures, we input the initial asset price <span class="math inline">\(S(0)\)</span> and then compute <span class="math inline">\(Z(0)=X(0)-\mathrm{e}^{-rT}D\)</span>. If <span class="math inline">\(D-K \leq -\mathrm{e}^{-r(T'-T)}K\)</span>, we return the Black-Scholes value of a European call written on <span class="math inline">\(Z\)</span>. Otherwise, we need to compute <span class="math inline">\(Z^*\)</span> and our bisection algorithm requires an upper bound for <span class="math inline">\(Z^*\)</span>, which would be any value of <span class="math inline">\(Z(T)\)</span> such that exercise at <span class="math inline">\(T\)</span> is optimal. It is not obvious what this should be, so we start with <span class="math inline">\(K\)</span> and keep doubling this until we obtain a value of <span class="math inline">\(Z(T)\)</span> at which exercise would be optimal. Then, we use the bisection algorithm to compute <span class="math inline">\(Z^*\)</span> and finally compute the option value <a href="#eq-americancall">Equation&nbsp;<span>9.17</span></a>.</p>
+<div id="american_call_dividend" class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> american_call_dividend(S, K, r, sigma, Div, TDiv, TCall):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    LessDiv <span class="op">=</span> S <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> TDiv) <span class="op">*</span> Div</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> Div <span class="op">/</span> K <span class="op">&lt;=</span> <span class="dv">1</span> <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> (TCall <span class="op">-</span> TDiv)):</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> black_scholes_call(LessDiv, K, r, sigma, <span class="dv">0</span>, TCall)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> K</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> upper <span class="op">+</span> Div <span class="op">-</span> K <span class="op">&lt;</span> black_scholes_call(upper, K, r, sigma, <span class="dv">0</span>, TCall <span class="op">-</span> TDiv):</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        upper <span class="op">*=</span> <span class="dv">2</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-6</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    flower <span class="op">=</span> Div <span class="op">-</span> K</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    fupper <span class="op">=</span> upper <span class="op">+</span> Div <span class="op">-</span> K <span class="op">-</span> black_scholes_call(upper, K, r, sigma, <span class="dv">0</span>, TCall <span class="op">-</span> TDiv)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    fguess <span class="op">=</span> guess <span class="op">+</span> Div <span class="op">-</span> K <span class="op">-</span> black_scholes_call(guess, K, r, sigma, <span class="dv">0</span>, TCall <span class="op">-</span> TDiv)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> upper <span class="op">-</span> lower <span class="op">&gt;</span> tol:</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> fupper <span class="op">*</span> fguess <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>            lower <span class="op">=</span> guess</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>            flower <span class="op">=</span> fguess</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> guess <span class="op">+</span> Div <span class="op">-</span> K <span class="op">-</span> black_scholes_call(guess, K, r, sigma, <span class="dv">0</span>, TCall <span class="op">-</span> TDiv)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>            upper <span class="op">=</span> guess</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>            fupper <span class="op">=</span> fguess</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> guess <span class="op">+</span> Div <span class="op">-</span> K <span class="op">-</span> black_scholes_call(guess, K, r, sigma, <span class="dv">0</span>, TCall <span class="op">-</span> TDiv)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    LessDivStar <span class="op">=</span> guess</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(LessDiv <span class="op">/</span> LessDivStar) <span class="op">+</span> (r <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> TDiv) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(TDiv))</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(TDiv)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    d1prime <span class="op">=</span> (np.log(LessDiv <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> TCall) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(TCall))</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    d2prime <span class="op">=</span> d1prime <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(TCall)</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    rho <span class="op">=</span> <span class="op">-</span>np.sqrt(TDiv <span class="op">/</span> TCall)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    N1 <span class="op">=</span> norm.cdf(d1)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    M1 <span class="op">=</span> binormal_prob(<span class="op">-</span>d1, d1prime, rho)</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    M2 <span class="op">=</span> binormal_prob(<span class="op">-</span>d2, d2prime, rho)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LessDiv <span class="op">*</span> N1 <span class="op">+</span> np.exp(<span class="op">-</span>r <span class="op">*</span> TDiv) <span class="op">*</span> (Div <span class="op">-</span> K) <span class="op">*</span> N2 <span class="op">+</span> LessDiv <span class="op">*</span> M1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> TCall) <span class="op">*</span> K <span class="op">*</span> M2</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">90</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>Div <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>TDiv <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>TCall <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"American Call with Dividend:"</span>, american_call_dividend(S, K, r, sigma, Div, TDiv, TCall))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>American Call with Dividend: 13.983999456433198</code></pre>
 </div>
 </div>
 </section>
@@ -611,6 +933,63 @@ d_{1c} = \frac{\log\left(\frac{S(0)}{K_c}\right)+\left(r-q+\frac{1}{2}\sigma^2\r
 \end{equation*}\]</span></p>
 </div>
 </div>
+<p>To implement the bisection to compute <span class="math inline">\(S^*\)</span>, we can take zero as a lower bound and <span class="math inline">\(K_c+K_p\)</span> as an upper bound.^[We take the call value to be zero and the put value to be <span class="math inline">\(\mathrm{e]^{-r(T_p-T)}K_p\)</span> at date <span class="math inline">\(T\)</span> when the stock price is zero. To see why the upper bound works, note that when the stock price is <span class="math inline">\(S\)</span> at date <span class="math inline">\(T\)</span>, the call is worth at least <span class="math inline">\(S^*-K_c\)</span> and the put is worth no more than <span class="math inline">\(K_p\)</span>; i.e, <span class="math inline">\(C \geq S-K_c\)</span> and <span class="math inline">\(P \leq K_p\)</span>. Therefore, <span class="math inline">\(C-P \geq S-K_c-K_p\)</span>. Hence when <span class="math inline">\(S=K_c+K_p\)</span>, we have <span class="math inline">\(C-P\geq 0\)</span>. }</p>
+<div id="choosers_option" class="cell" data-execution_count="6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-6</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> np.exp(q <span class="op">*</span> Tc) <span class="op">*</span> (Kc <span class="op">+</span> Kp)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> Kc <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> Kp</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    flower <span class="op">=</span> <span class="op">-</span>np.exp(<span class="op">-</span>r <span class="op">*</span> (Tp <span class="op">-</span> T)) <span class="op">*</span> Kp</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    fupper <span class="op">=</span> black_scholes_call(upper, Kc, r, sigma, q, Tc <span class="op">-</span> T) <span class="op">-</span> black_scholes_put(upper, Kp, r, sigma, q, Tp <span class="op">-</span> T)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    fguess <span class="op">=</span> black_scholes_call(guess, Kc, r, sigma, q, Tc <span class="op">-</span> T) <span class="op">-</span> black_scholes_put(guess, Kp, r, sigma, q, Tp <span class="op">-</span> T)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> upper <span class="op">-</span> lower <span class="op">&gt;</span> tol:</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> fupper <span class="op">*</span> fguess <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>            lower <span class="op">=</span> guess</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>            flower <span class="op">=</span> fguess</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> black_scholes_call(guess, Kc, r, sigma, q, Tc <span class="op">-</span> T) <span class="op">-</span> black_scholes_put(guess, Kp, r, sigma, q, Tp <span class="op">-</span> T)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>            upper <span class="op">=</span> guess</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>            fupper <span class="op">=</span> fguess</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>            guess <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> lower <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> upper</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>            fguess <span class="op">=</span> black_scholes_call(guess, Kc, r, sigma, q, Tc <span class="op">-</span> T) <span class="op">-</span> black_scholes_put(guess, Kp, r, sigma, q, Tp <span class="op">-</span> T)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    Sstar <span class="op">=</span> guess</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> Sstar) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    d1c <span class="op">=</span> (np.log(S <span class="op">/</span> Kc) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> Tc) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(Tc))</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    d2c <span class="op">=</span> d1c <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(Tc)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    d1p <span class="op">=</span> (np.log(S <span class="op">/</span> Kp) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> Tp) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(Tp))</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    d2p <span class="op">=</span> d1p <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(Tp)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    rhoc <span class="op">=</span> np.sqrt(T <span class="op">/</span> Tc)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    rhop <span class="op">=</span> np.sqrt(T <span class="op">/</span> Tp)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    M1c <span class="op">=</span> binormal_prob(d1, d1c, rhoc)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    M2c <span class="op">=</span> binormal_prob(d2, d2c, rhoc)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    M1p <span class="op">=</span> binormal_prob(<span class="op">-</span>d1, <span class="op">-</span>d1p, rhop)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    M2p <span class="op">=</span> binormal_prob(<span class="op">-</span>d2, <span class="op">-</span>d2p, rhop)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> Tc) <span class="op">*</span> S <span class="op">*</span> M1c <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> Tc) <span class="op">*</span> Kc <span class="op">*</span> M2c <span class="op">+</span> np.exp(<span class="op">-</span>r <span class="op">*</span> Tp) <span class="op">*</span> Kp <span class="op">*</span> M2p <span class="op">-</span> np.exp(<span class="op">-</span>q <span class="op">*</span> Tp) <span class="op">*</span> S <span class="op">*</span> M1p</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>Kc <span class="op">=</span> <span class="dv">80</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>Kp <span class="op">=</span> <span class="dv">80</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>Tc <span class="op">=</span> <span class="fl">1.5</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>Tp <span class="op">=</span> <span class="fl">1.5</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>T<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Chooser Option:"</span>, chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chooser Option: 24.965320659540296</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="options-on-the-max-or-min" class="level2" data-number="9.5">
@@ -632,7 +1011,7 @@ z&amp;= \begin{cases} 1 &amp; \text{if $S_1(T) &gt; K$ or $S_2(T)&gt; K$}\; ,\\
 <section id="calculating-probabilities-2" class="level3">
 <h3 class="anchored" data-anchor-id="calculating-probabilities-2">Calculating Probabilities</h3>
 <ol type="1">
-<li>We will begin by calculating <span class="math inline">\(\text{prob}^{V_1}(x=1)\)</span>. From the second and third examples in <span class="quarto-unresolved-ref">?sec-s_girsanov</span>, the asset prices satisfy <span class="math display">\[\begin{align*}
+<li>We will begin by calculating <span class="math inline">\(\text{prob}^{V_1}(x=1)\)</span>. From the second and third examples in <a href="Chapter3.html#sec-s_girsanov"><span>Section&nbsp;3.10</span></a>, the asset prices satisfy <span class="math display">\[\begin{align*}
 \frac{\mathrm{d} S_1}{S_1} &amp;= (r-q_1+\sigma^2_1)\,\mathrm{d} t + \sigma_1\,\mathrm{d} B^*_{1}\; ,\\
 \frac{\mathrm{d} S_2}{S_2} &amp;= (r-q_2+\rho\sigma_1\sigma_2)\,\mathrm{d} t + \sigma_2\,\mathrm{d} B^*_{2}\;,
 \end{align*}\]</span> where <span class="math inline">\(B^*_{1}\)</span> and <span class="math inline">\(B^*_{2}\)</span> are Brownian motions when we use <span class="math inline">\(V_1\)</span> as the numeraire. Thus, <span class="math display">\[\begin{align*}
@@ -699,6 +1078,44 @@ d_{21}=\frac{\log\left(\frac{S_2(0)}{K}\right)+\left(r-q_2+\frac{1}{2}\sigma_2^2
 \end{multline}
 \tag{9.28}\]</span></span></p>
 <p>where <span class="math inline">\(\sigma\)</span> is defined in <a href="#eq-max2a">Equation&nbsp;<span>9.22</span></a> and <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span>, <span class="math inline">\(d_{11}\)</span>, <span class="math inline">\(d_{12}\)</span>, <span class="math inline">\(d_{21}\)</span> and <span class="math inline">\(d_{22}\)</span> are defined in <a href="#eq-max4">Equation&nbsp;<span>9.23</span></a> - <a href="#eq-max3">Equation&nbsp;<span>9.24</span></a>.</p>
+</div>
+</div>
+<p>The following code shows how to compute the price of a Call on the Max.</p>
+<div id="call_on_max" class="cell" data-execution_count="7">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> call_on_max(S1, S2, K, r, sig1, sig2, rho, q1, q2, T):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    sigma <span class="op">=</span> np.sqrt(sig2 <span class="op">**</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> rho <span class="op">*</span> sig1 <span class="op">*</span> sig2 <span class="op">+</span> sig1 <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S1 <span class="op">/</span> S2) <span class="op">+</span> (q2 <span class="op">-</span> q1 <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    d11 <span class="op">=</span> (np.log(S1 <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q1 <span class="op">+</span> sig1 <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sig1 <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    d12 <span class="op">=</span> d11 <span class="op">-</span> sig1 <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    d21 <span class="op">=</span> (np.log(S2 <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q2 <span class="op">+</span> sig2 <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sig2 <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    d22 <span class="op">=</span> d21 <span class="op">-</span> sig2 <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    rho1 <span class="op">=</span> (sig1 <span class="op">-</span> rho <span class="op">*</span> sig2) <span class="op">/</span> sigma</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    rho2 <span class="op">=</span> (sig2 <span class="op">-</span> rho <span class="op">*</span> sig1) <span class="op">/</span> sigma</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    M1 <span class="op">=</span> binormal_prob(d11, d1, rho1)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    M2 <span class="op">=</span> binormal_prob(d21, <span class="op">-</span>d2, rho2)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    M3 <span class="op">=</span> binormal_prob(<span class="op">-</span>d12, <span class="op">-</span>d22, rho)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>q1 <span class="op">*</span> T) <span class="op">*</span> S1 <span class="op">*</span> M1 <span class="op">+</span> np.exp(<span class="op">-</span>q2 <span class="op">*</span> T) <span class="op">*</span> S2 <span class="op">*</span> M2 <span class="op">+</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> M3 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>S1 <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>S2<span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>sigma1 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>sigma2 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>q2<span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>T<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>rho<span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Call on Max:"</span>, call_on_max(S1, S2, K, r, sigma1, sigma2, rho, q1, q2, T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call on Max: 15.890779319201613</code></pre>
 </div>
 </div>
 </section>
@@ -777,13 +1194,44 @@ d_1' = \frac{\log\left(\frac{L}{S(0)}\right)+\left(r-q+\frac{1}{2}\sigma^2\right
 <p><span id="eq-downout100"><span class="math display">\[
 \begin{multline}
 \mathrm{e}^{-qT}S(0)\left[\mathrm{N}(d_1)-\left(\frac{L}{S(0)}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\right]\\ - \mathrm{e}^{-rT}K\left[\mathrm{N}(d_2) - \left(\frac{L}{S(0)}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\right]\;,
-\end{multline}
-\tag{9.37}\]</span></span></p>
+\end{multline} \tag{9.37}\]</span></span></p>
 <p>where</p>
 <ol type="1">
 <li>if <span class="math inline">\(K&gt;L\)</span>, <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span> , <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-casea3">Equation&nbsp;<span>9.30</span></a> - <a href="#eq-casea5">Equation&nbsp;<span>9.31</span></a>,</li>
 <li>if <span class="math inline">\(K\leq L\)</span>, <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span>, <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-caseb3">Equation&nbsp;<span>9.35</span></a> - <a href="#eq-caseb5">Equation&nbsp;<span>9.36</span></a>.</li>
 </ol>
+</div>
+</div>
+<p>The following code computes the price of a down and out call option.</p>
+<div id="down-and_out_call" class="cell" data-execution_count="8">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> down_and_out_call(S, K, r, sigma, q, T, Barrier):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> K <span class="op">&gt;</span> Barrier:</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        a <span class="op">=</span> S <span class="op">/</span> K</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        b <span class="op">=</span> Barrier <span class="op">*</span> Barrier <span class="op">/</span> (K <span class="op">*</span> S)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        a <span class="op">=</span> S <span class="op">/</span> Barrier</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        b <span class="op">=</span> Barrier <span class="op">/</span> S</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(a) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    d1prime <span class="op">=</span> (np.log(b) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    d2prime <span class="op">=</span> d1prime <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    N1 <span class="op">=</span> norm.cdf(d1)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    N1prime <span class="op">=</span> norm.cdf(d1prime)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    N2prime <span class="op">=</span> norm.cdf(d2prime)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> (r <span class="op">-</span> q) <span class="op">/</span> (sigma <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> x <span class="op">-</span> <span class="dv">2</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    q1 <span class="op">=</span> N1 <span class="op">-</span> (Barrier <span class="op">/</span> S) <span class="op">**</span> x <span class="op">*</span> N1prime</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    q2 <span class="op">=</span> N2 <span class="op">-</span> (Barrier <span class="op">/</span> S) <span class="op">**</span> y <span class="op">*</span> N2prime</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> q1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> q2</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Down and Out Call:"</span>, down_and_out_call(S, K, r, sigma, q, T, <span class="dv">80</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Down and Out Call: 9.133306436498117</code></pre>
 </div>
 </div>
 </section>
@@ -830,6 +1278,35 @@ d_1' = \frac{\log\left(\frac{S_{\text{min}}}{S(0)}\right)+\left(r-q+\frac{1}{2}\
 \end{multline}
 \tag{9.40}\]</span></span></p>
 <p>where <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span>, and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-fslc100a">Equation&nbsp;<span>9.38</span></a> - <a href="#eq-fslc100c">Equation&nbsp;<span>9.39</span></a>.</p>
+</div>
+</div>
+<p>The following program calculates the price of a floating strike lookback option.</p>
+<div id="floating_strike_lookback" class="cell" data-execution_count="9">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> floating_strike_call(S, r, sigma, q, T, SMin):</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> SMin) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    d2prime <span class="op">=</span> (np.log(SMin <span class="op">/</span> S) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    N1 <span class="op">=</span> norm.cdf(d1)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    N2prime <span class="op">=</span> norm.cdf(d2prime)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (r <span class="op">-</span> q) <span class="op">/</span> (sigma <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> SMin <span class="op">*</span> N2 <span class="op">+</span> (<span class="dv">1</span> <span class="op">/</span> x) <span class="op">*</span> (SMin <span class="op">/</span> S) <span class="op">**</span> x <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> SMin <span class="op">*</span> N2prime <span class="op">-</span> (<span class="dv">1</span> <span class="op">/</span> x) <span class="op">*</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> N1)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>T<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Floating Strike Call:"</span>, floating_strike_call(S, r, sigma, q, T, <span class="dv">90</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Floating Strike Call: 16.27191861732918</code></pre>
 </div>
 </div>
 </section>
@@ -950,58 +1427,31 @@ V(t) = \mathrm{e}^{-r(T-t)}E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log S
 \sum_{i=0}^{k}\big\{[\log S(t) + (t_{N-k+i}-t)\nu + \sigma [B(t_{N-k+i})-B(t)]\big\}\\
 =(k+1)\log S(t) + \sum_{i=0}^{k} (\varepsilon + i)\nu\Delta t + \sigma\sum_{i=0}^{k} [\Delta_0B + \Delta_1B + \cdots + \Delta_iB] \\
 =(k+1)\log S(t) + (k+1)\varepsilon\nu\Delta t + \frac{k(k+1)}{2}\nu\Delta t + \sigma\sum_{i=0}^{k} (k+1-i)\Delta_iB\;,
-\end{multline*}\]</span> where to obtain the last equality we used the fact that <span class="math inline">\(\sum_{i=0}^k i = k(k+1)/2\)</span>. The random variables <span class="math inline">\(\Delta_iB\)</span> are normally distributed with mean zero and variance <span class="math inline">\(\Delta t\)</span> (the variance is <span class="math inline">\(\varepsilon \Delta t\)</span> for <span class="math inline">\(i=0\)</span>). Thus, the sum of logarithms is a normally distributed random variable with mean <span class="math display">\[(k+1)\log S(t) + (k+1)\varepsilon\nu\Delta t + \frac{k(k+1)}{2}\nu\Delta t\]</span> and variance <span class="math display">\[(k+1)^2\sigma^2\varepsilon\Delta t + \sigma^2\sum_{i=1}^{k} (k+1-i)^2\Delta t = (k+1)^2\sigma^2\varepsilon\Delta t +\frac{k(k+1)(2k+1)\sigma^2}{6}\; ,\]</span> using the fact that <span class="math inline">\(\sum_{i=1}^k i^2 = k(k+1)(2k+1)/6\)</span>. The expectation of the exponential of a normally distributed random variable equals the exponential of its mean plus one-half of its variance, and the exponential of <span class="math inline">\((k+1)\log S(t)/N\)</span> is <span class="math inline">\(S(t)^{(k+1)/N}\)</span>. Therefore the conditional expectation in <a href="#eq-geometricaveragev3">Equation&nbsp;<span>9.48</span></a> is <span class="math display">\[S(t)^{\frac{k+1}{N}}\exp\left(\left[ \frac{(k+1)\varepsilon\nu}{N}+ \frac{k(k+1)\nu}{2N} + \frac{(k+1)^2\sigma^2\varepsilon}{2N^2}+\frac{k(k+1)(2k+1)\sigma^2}{12N^2} \right]\Delta t\right)\; ,\]</span> which implies <a href="#eq-geometricaveragev2">Equation&nbsp;<span>9.44</span></a>.</p>
+\end{multline*}\]</span> where to obtain the last equality we used the fact that <span class="math inline">\(\sum_{i=0}^k i = k(k+1)/2\)</span>. The random variables <span class="math inline">\(\Delta_iB\)</span> are normally distributed with mean zero and variance <span class="math inline">\(\Delta t\)</span> (the variance is <span class="math inline">\(\varepsilon \Delta t\)</span> for <span class="math inline">\(i=0\)</span>). Thus, the sum of logarithms is a normally distributed random variable with mean <span class="math display">\[(k+1)\log S(t) + (k+1)\varepsilon\nu\Delta t + \frac{k(k+1)}{2}\nu\Delta t\]</span> and variance <span class="math display">\[(k+1)^2\sigma^2\varepsilon\Delta t + \sigma^2\sum_{i=1}^{k} (k+1-i)^2\Delta t = (k+1)^2\sigma^2\varepsilon\Delta t +\frac{k(k+1)(2k+1)\sigma^2}{6}\; ,\]</span> using the fact that <span class="math inline">\(\sum_{i=1}^k i^2 = k(k+1)(2k+1)/6\)</span>. The expectation of the exponential of a normally distributed random variable equals the exponential of its mean plus one-half of its variance, and the exponential of <span class="math inline">\((k+1)\log S(t)/N\)</span> is <span class="math inline">\(S(t)^{(k+1)/N}\)</span>. Therefore the conditional expectation in <a href="#eq-geometricaveragev3">Equation&nbsp;<span>9.48</span></a> is <span class="math display">\[S(t)^{\frac{k+1}{N}}\exp\left(\left[ \frac{(k+1)\varepsilon\nu}{N}+ \frac{k(k+1)\nu}{2N} + \frac{(k+1)^2\sigma^2\varepsilon}{2N^2}+\frac{k(k+1)(2k+1)\sigma^2}{12N^2} \right]\Delta t\right)\; ,
+\]</span> which implies <a href="#eq-geometricaveragev2">Equation&nbsp;<span>9.44</span></a>.</p>
+</div>
+</div>
+<p>The following code computes the price of a geometric-average-price call.</p>
+<div id="geometric_average_price_calls" class="cell" data-execution_count="10">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> discrete_geom_average_price_call(S, K, r, sigma, q, T, N):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> N <span class="op">*</span> (N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> N <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">6</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> np.exp(((N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> nu <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> a <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> N <span class="op">**</span> <span class="dv">2</span>)) <span class="op">*</span> dt)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    sigavg <span class="op">=</span> sigma <span class="op">*</span> np.sqrt(a) <span class="op">/</span> (N <span class="op">**</span> <span class="fl">1.5</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> black_scholes_call(V, K, r, sigavg, <span class="dv">0</span>, T)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Discrete Geometric Average Price Call:"</span>, discrete_geom_average_price_call(S, K, r, sigma, q, T, N))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Discrete Geometric Average Price Call: 5.396254290824899</code></pre>
 </div>
 </div>
 </section>
-<section id="sec-s_exotics_matlab" class="level2" data-number="9.10">
-<h2 data-number="9.10" class="anchored" data-anchor-id="sec-s_exotics_matlab"><span class="header-section-number">9.10</span> Calculations in VBA</h2>
-<p>The new features in the option pricing formulas in this chapter are the use of the bivariate normal distribution function and sometimes the need to compute a critical (at-the-money) value of the underlying asset price. We will compute the critical values by bisection, in the same way that we computed implied volatilities for the Black-Scholes formula in <a href="Chapter4.html"><span>Chapter&nbsp;4</span></a>.</p>
-<section id="bivariate-normal-distribution-function" class="level3">
-<h3 class="anchored" data-anchor-id="bivariate-normal-distribution-function">Bivariate Normal Distribution Function</h3>
-<p>The following is a fast approximation of the bivariate cumulative normal distribution function, accurate to six decimal places, due to Drezner <span class="citation" data-cites="Drezner">(<a href="#ref-Drezner" role="doc-biblioref">Drezner 1978</a>)</span>). For given numbers <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, this function gives the probability that <span class="math inline">\(\xi_1&lt;a\)</span> and <span class="math inline">\(\xi_2&lt;b\)</span> where <span class="math inline">\(\xi_1\)</span> and <span class="math inline">\(\xi_2\)</span> are standard normal random variables with a given correlation <span class="math inline">\(\rho\)</span>, which we must input.</p>
-<p>Notice that this function calls itself. This is an example of recursion.</p>
-</section>
-<section id="forward-start-call" class="level3">
-<h3 class="anchored" data-anchor-id="forward-start-call">Forward-Start Call</h3>
-<p>The forward-start call pricing formula is of the same form as the Black-Scholes, Margrabe, Black, and Merton formulas, as discussed in <a href="Chapter8.html#sec-s_matlabimplementations"><span>Section&nbsp;8.5</span></a>. We can compute it with our pricing function.</p>
-</section>
-<section id="call-on-a-call" class="level3">
-<h3 class="anchored" data-anchor-id="call-on-a-call">Call on a Call</h3>
-<p>We will use bisection to find the critical price <span class="math inline">\(S^*\)</span>. We can use <span class="math inline">\(e^{q(T'-T)}(K+K')\)</span> as an upper bound for <span class="math inline">\(S^*\)</span> and 0 as a lower bound.^[We set the value of the call to be zero when the stock price is zero. The upper bound works because (by put-call parity and the fact that the put value is nonnegative) <span class="math inline">\(C(T,S) \geq e^{-q(T'-T)]S-e^{-r(T'-T)}K'\)</span>. Therefore, when <span class="math inline">\(S = e^{q(T'-T)}(K+K')\)</span>, we have <span class="math inline">\(C(T,S) \geq K + K' - e^{-r(T'-T)}K' &gt; K\)</span>. }<br>
-The following uses <span class="math inline">\(10^{-6}\)</span> as the error tolerance in the bisection.</p>
-</section>
-<section id="call-on-a-put" class="level3">
-<h3 class="anchored" data-anchor-id="call-on-a-put">Call on a Put</h3>
-<p>The implementation of the call-on-a-put formula is of course very similar to that of a call-on-a-call. One difference is that there is no obvious upper bound for <span class="math inline">\(S^*\)</span>, so we start with <span class="math inline">\(2K'\)</span> (= ) and double this until the value of the put is below <span class="math inline">\(K\)</span>. We can take 0 again to be the lower bound. Recall that we assume <span class="math inline">\(K&lt;\mathrm{e}^{-r(T'-T)}K'\)</span> and the right-hand side of this is the value of the put at date <span class="math inline">\(T\)</span> when <span class="math inline">\(S(T)=0\)</span>.</p>
-</section>
-<section id="american-calls-with-discrete-dividends" class="level3">
-<h3 class="anchored" data-anchor-id="american-calls-with-discrete-dividends">American Calls with Discrete Dividends</h3>
-To value an American call when there is one dividend payment before the option matures, we input the initial asset price <span class="math inline">\(S(0)\)</span> and then compute <span class="math inline">\(Z(0)=X(0)-\mathrm{e}^{-rT}D\)</span>. If <span class="math inline">\(D-K \leq -\mathrm{e}^{-r(T'-T)}K\)</span>, we return the Black-Scholes value of a European call written on <span class="math inline">\(Z\)</span>. Otherwise, we need to compute <span class="math inline">\(Z^*\)</span> and our bisection algorithm requires an upper bound for <span class="math inline">\(Z^*\)</span>, which would be any value of <span class="math inline">\(Z(T)\)</span> such that exercise at <span class="math inline">\(T\)</span> is optimal. It is not obvious what this should be, so we start with <span class="math inline">\(K\)</span> and keep doubling this until we obtain a value of <span class="math inline">\(Z(T)\)</span> at which exercise would be optimal. Then, we use the bisection algorithm to compute <span class="math inline">\(Z^*\)</span> and finally compute the option value <a href="#eq-americancall">Equation&nbsp;<span>9.17</span></a>.
-</section>
-<section id="choosers" class="level3">
-<h3 class="anchored" data-anchor-id="choosers">Choosers</h3>
-To implement the bisection to compute <span class="math inline">\(S^*\)</span>, we can take zero as a lower bound and <span class="math inline">\(K_c+K_p\)</span> as an upper bound.^[We take the call value to be zero and the put value to be <span class="math inline">\(\mathrm{e]^{-r(T_p-T)}K_p\)</span> at date <span class="math inline">\(T\)</span> when the stock price is zero. To see why the upper bound works, note that when the stock price is <span class="math inline">\(S\)</span> at date <span class="math inline">\(T\)</span>, the call is worth at least <span class="math inline">\(S^*-K_c\)</span> and the put is worth no more than <span class="math inline">\(K_p\)</span>; i.e, <span class="math inline">\(C \geq S-K_c\)</span> and <span class="math inline">\(P \leq K_p\)</span>. Therefore, <span class="math inline">\(C-P \geq S-K_c-K_p\)</span>. Hence when <span class="math inline">\(S=K_c+K_p\)</span>, we have <span class="math inline">\(C-P\geq 0\)</span>. }
-</section>
-<section id="call-on-the-max" class="level3">
-<h3 class="anchored" data-anchor-id="call-on-the-max">Call on the Max</h3>
-
-</section>
-<section id="down-and-out-calls" class="level3">
-<h3 class="anchored" data-anchor-id="down-and-out-calls">Down-and-Out Calls</h3>
-
-</section>
-<section id="floating-strike-lookbacks" class="level3">
-<h3 class="anchored" data-anchor-id="floating-strike-lookbacks">Floating-Strike Lookbacks</h3>
-
-</section>
-<section id="discretely-sampled-geometric-average-price-calls" class="level3">
-<h3 class="anchored" data-anchor-id="discretely-sampled-geometric-average-price-calls">Discretely-Sampled Geometric-Average-Price Calls</h3>
-
-</section>
-</section>
-<section id="exercises" class="level2" data-number="9.11">
-<h2 data-number="9.11" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.11</span> Exercises</h2>
+<section id="exercises" class="level2" data-number="9.10">
+<h2 data-number="9.10" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.10</span> Exercises</h2>
 <div id="exr-nolabel" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 9.1 </strong></span>Intuitively, the value of a forward-start call option should be lower the closer is the date <span class="math inline">\(T\)</span> at which the strike is set to the date <span class="math inline">\(T'\)</span> at which the option matures, because then the option has less time to maturity after being created at <span class="math inline">\(T\)</span>. Create an Excel worksheet to confirm this. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, and <span class="math inline">\(T'\)</span>. Compute and plot the value of the option for <span class="math inline">\(T=0.1T'\)</span>, <span class="math inline">\(T=0.2T'\)</span>, , <span class="math inline">\(T=0.9T'\)</span>.</p>
 </div>

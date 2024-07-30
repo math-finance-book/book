@@ -98,8 +98,94 @@ The amount of cash is the amount that will accumulate to the exercise price at m
 ## 
 Put-call parity for forward-start calls and puts is
 $$
-\text{Call Price} \;+\; \mathrm{e}^{-r(T'-T)-qT}S(0) = \text{Put Price} \;+\; \mathrm{e}^{-qT'}S(0)\;.
-$$ {#eq-fstrikeparity}
+\text{Call Price} \;+\; \mathrm{e}^{-r(T'-T)-qT}S(0) = \text{Put Price} \;+\; \mathrm{e}^{-qT'}S(0)\;.$$ {#eq-fstrikeparity}
+
+The new features in the option pricing formulas in this chapter are the use of the bivariate normal distribution function and sometimes the need to compute a critical (at-the-money) value of the underlying asset price.  We will compute the critical values by bisection, in the same way that we computed implied volatilities for the Black-Scholes formula in @sec-c_blackscholes.
+
+The following is a fast approximation of the bivariate \index{bivariate normal distribution function} cumulative normal distribution function, accurate to six decimal places, due to Drezner [@Drezner]).  For given numbers $a$ and $b$, this function gives the probability that $\xi_1<a$ and $\xi_2<b$ where $\xi_1$ and $\xi_2$ are standard normal random variables with a given correlation $\rho$, which we must input.  
+
+```{python}
+
+#| code-fold: true
+#| label: Binormal_Prob
+
+import numpy as np
+from scipy.stats import norm
+
+def binormal_prob(a, b, rho):
+    x = np.array([0.24840615, 0.39233107, 0.21141819, 0.03324666, 0.00082485334])
+    y = np.array([0.10024215, 0.48281397, 1.0609498, 1.7797294, 2.6697604])
+    a1 = a / np.sqrt(2 * (1 - rho ** 2))
+    b1 = b / np.sqrt(2 * (1 - rho ** 2))
+    if a <= 0 and b <= 0 and rho <= 0:
+        total_sum = 0
+        for i in range(5):
+            for j in range(5):
+                z1 = a1 * (2 * y[i] - a1)
+                Z2 = b1 * (2 * y[j] - b1)
+                z3 = 2 * rho * (y[i] - a1) * (y[j] - b1)
+                total_sum += x[i] * x[j] * np.exp(z1 + Z2 + z3)
+        return total_sum * np.sqrt(1 - rho ** 2) / np.pi
+    elif a <= 0 and b >= 0 and rho >= 0:
+        return norm.cdf(a) - binormal_prob(a, -b, -rho)
+    elif a >= 0 and b <= 0 and rho >= 0:
+        return norm.cdf(b) - binormal_prob(-a, b, -rho)
+    elif a >= 0 and b >= 0 and rho <= 0:
+        total_sum = norm.cdf(a) + norm.cdf(b)
+        return total_sum - 1 + binormal_prob(-a, -b, rho)
+    elif a * b * rho > 0:
+        rho1 = (rho * a - b) * np.sign(a) / np.sqrt(a ** 2 - 2 * rho * a * b + b ** 2)
+        rho2 = (rho * b - a) * np.sign(b) / np.sqrt(a ** 2 - 2 * rho * a * b + b ** 2)
+        Delta = (1 - np.sign(a) * np.sign(b)) / 4
+        return binormal_prob(a, 0, rho1) + binormal_prob(b, 0, rho2) - Delta
+print("BiNormalProb:", binormal_prob(0.1, 0.2, 0.3))
+```
+
+\noindent Notice that this function calls itself.  This is an example of recursion.
+
+
+The forward-start call pricing formula is of the same form as the Black-Scholes, Margrabe, Black, and Merton formulas, as discussed in @sec-s_matlabimplementations.  We can compute it with our \verb!Generic_Option! pricing function.
+
+```{python}
+
+#| code-fold: true
+#| label: forward_start_call
+
+def generic_option(P1, P2, sigma, T):
+    """
+    Inputs:
+    P1 = present value of asset to be received
+    P2 = present value of asset to be delivered
+    sigma = volatility
+    T = time to maturity
+    """
+    x = (np.log(P1 / P2) + 0.5 * sigma ** 2 * T) / (sigma * np.sqrt(T))
+    y = x - sigma * np.sqrt(T)
+    N1 = norm.cdf(x)
+    N2 = norm.cdf(y)
+    return P1 * N1 - P2 * N2
+
+def forward_start_call(S, r, sigma, q, Tset, TCall):
+    P1 = np.exp(-q * TCall) * S
+    P2 = np.exp(-q * Tset - r * (TCall - Tset)) * S
+    return generic_option(P1, P2, sigma, TCall - Tset)
+
+# Example usage
+S = 100
+K = 100
+r = 0.05
+sigma = 0.2
+q = 0.02
+T = 1
+Div = 5
+TDiv = 0.5
+TCall = 1
+N = 10
+
+print("Forward Start Call:", forward_start_call(S, r, sigma, q, 0.5, TCall))
+```
+
+
 
 :::
 
@@ -249,6 +335,158 @@ $$ {#eq-callonaput}
  where $d_1$ and  $d_2$ are defined in @eq-calloncalld1d2 and $d_1'$ and $d_2'$ are defined in @eq-callcallds.
 :::
 
+We will use bisection to find the critical price $S^*$.  We can use $e^{q(T'-T)}(K+K')$ as an upper bound for $S^*$ and 0 as a lower bound.^[We set the value of the call to be zero when the stock price is zero.  The upper bound works because (by put-call parity and the fact that the put value is nonnegative) $C(T,S) \geq e^{-q(T'-T)]S-e^{-r(T'-T)}K'$.  Therefore, when $S = e^{q(T'-T)}(K+K')$, we have 
+$C(T,S) \geq K + K' - e^{-r(T'-T)}K' > K$.
+}  
+The following uses $10^{-6}$ as the error tolerance in the bisection.
+
+```{python}
+
+#| code-fold: true
+#| label: call_on_call
+
+def black_scholes_call(S, K, r, sigma, q, T):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    """
+    if sigma == 0:
+        return max(0, np.exp(-q * T) * S - np.exp(-r * T) * K)
+    else:
+        d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = d1 - sigma * np.sqrt(T)
+        N1 = norm.cdf(d1)
+        N2 = norm.cdf(d2)
+        return np.exp(-q * T) * S * N1 - np.exp(-r * T) * K * N2
+
+
+def call_on_call(S, Kc, Ku, r, sigma, q, Tc, Tu):
+    tol = 1e-6
+    lower = 0
+    upper = np.exp(q * (Tu - Tc)) * (Kc + Ku)
+    guess = 0.5 * lower + 0.5 * upper
+    flower = -Kc
+    fupper = black_scholes_call(upper, Ku, r, sigma, q, Tu - Tc) - Kc
+    fguess = black_scholes_call(guess, Ku, r, sigma, q, Tu - Tc) - Kc
+    while upper - lower > tol:
+        if fupper * fguess < 0:
+            lower = guess
+            flower = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_call(guess, Ku, r, sigma, q, Tu - Tc) - Kc
+        else:
+            upper = guess
+            fupper = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_call(guess, Ku, r, sigma, q, Tu - Tc) - Kc
+    Sstar = guess
+
+    d1 = (np.log(S / Sstar) + (r - q + sigma ** 2 / 2) * Tc) / (sigma * np.sqrt(Tc))
+    d2 = d1 - sigma * np.sqrt(Tc)
+    d1prime = (np.log(S / Ku) + (r - q + sigma ** 2 / 2) * Tu) / (sigma * np.sqrt(Tu))
+    d2prime = d1prime - sigma * np.sqrt(Tu)
+    rho = np.sqrt(Tc / Tu)
+    N2 = norm.cdf(d2)
+    M1 = binormal_prob(d1, d1prime, rho)
+    M2 = binormal_prob(d2, d2prime, rho)
+
+    return -np.exp(-r * Tc) * Kc * N2 + np.exp(-q * Tu) * S * M1 - np.exp(-r * Tu) * Ku * M2
+
+# Example usage
+S = 100
+Kc = 10
+Ku = 100
+r = 0.05
+sigma = 0.2
+q = 0.02
+Tc = 0.5
+Tu = 1
+
+
+print("Call on Call:", call_on_call(S, Kc, Ku, r, sigma, q, Tc, Tu))
+```
+
+
+The implementation of the call-on-a-put formula is of course very similar to that of a call-on-a-call.  One difference is that there is no obvious upper bound for $S^*$, so we start with $2K'$ (= \verb!2*K2!) and double this until the value of the put is below $K$.  We can take 0 again to be the lower bound.  Recall that we assume $K<\mathrm{e}^{-r(T'-T)}K'$ and the right-hand side of this is the value of the put at date $T$ when $S(T)=0$.
+
+```{python}
+
+#| code-fold: true
+#| label: Call_On_Put
+
+def black_scholes_put(S, K, r, sigma, q, T):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    """
+    if sigma == 0:
+        return max(0, np.exp(-r * T) * K - np.exp(-q * T) * S)
+    else:
+        d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = d1 - sigma * np.sqrt(T)
+        N1 = norm.cdf(-d1)
+        N2 = norm.cdf(-d2)
+        return np.exp(-r * T) * K * N2 - np.exp(-q * T) * S * N1
+
+def call_on_put(S, Kc, Ku, r, sigma, q, Tc, Tu):
+    tol = 1e-6
+    lower = 0
+    flower = np.exp(-r * (Tu - Tc)) * Ku - Kc
+    upper = 2 * Ku
+    fupper = black_scholes_put(upper, Ku, r, sigma, q, Tu - Tc) - Kc
+    while fupper > 0:
+        upper *= 2
+        fupper = black_scholes_put(upper, Ku, r, sigma, q, Tu - Tc) - Kc
+
+    guess = 0.5 * lower + 0.5 * upper
+    fguess = black_scholes_put(guess, Ku, r, sigma, q, Tu - Tc) - Kc
+    while upper - lower > tol:
+        if fupper * fguess < 0:
+            lower = guess
+            flower = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_put(guess, Ku, r, sigma, q, Tu - Tc) - Kc
+        else:
+            upper = guess
+            fupper = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_put(guess, Ku, r, sigma, q, Tu - Tc) - Kc
+    Sstar = guess
+
+    d1 = (np.log(S / Sstar) + (r - q + sigma ** 2 / 2) * Tc) / (sigma * np.sqrt(Tc))
+    d2 = d1 - sigma * np.sqrt(Tc)
+    d1prime = (np.log(S / Ku) + (r - q + sigma ** 2 / 2) * Tu) / (sigma * np.sqrt(Tu))
+    d2prime = d1prime - sigma * np.sqrt(Tu)
+    rho = np.sqrt(Tc / Tu)
+    N2 = norm.cdf(-d2)
+    M1 = binormal_prob(-d1, -d1prime, rho)
+    M2 = binormal_prob(-d2, -d2prime, rho)
+
+    return -np.exp(-r * Tc) * Kc * N2 + np.exp(-r * Tu) * Ku * M2 - np.exp(-q * Tu) * S * M1
+# Example usage
+S = 100
+Kc = 10
+Ku = 100
+r = 0.05
+sigma = 0.2
+q = 0.02
+Tc = 0.5
+Tu = 1
+
+print("Call on Put:", call_on_put(S, Kc, Ku, r, sigma, q, Tc, Tu))
+
+```
+
 
 ## American Calls with Discrete Dividends {#sec-s_discrete}
 
@@ -388,12 +626,72 @@ then the value of the call is
 $$
 \begin{multline}
 [S(0)-\mathrm{e}^{-rT}D]\mathrm{N}(d_1) + \mathrm{e}^{-rT}(D-K)\mathrm{N}(d_2)\\ +[S(0)-\mathrm{e}^{-rT}D]\mathrm{M}\!\left(-d_1,d_1',-\sqrt{T/T'}\right) \\- \mathrm{e}^{-rT'}K\mathrm{M}\!\left(-d_2,d_2',-\sqrt{T/T'}\right)\;,
-\end{multline}
-$$ {#eq-americancall}
+\end{multline}$$ {#eq-americancall}
 
 where $d_1$ and $d_2$ are defined in @eq-americancalld1star - @eq-americancalld2star and $d_1'$ and $d_2'$ are defined in @eq-americancalld1 - @eq-americancalld2.
 :::
 
+To value an American call when there is one dividend payment before the option matures, we input the initial asset price $S(0)$ and then compute $Z(0)=X(0)-\mathrm{e}^{-rT}D$.  If $D-K \leq -\mathrm{e}^{-r(T'-T)}K$, we return the Black-Scholes value of a European call written on $Z$.  Otherwise, we need to compute $Z^*$ and our bisection algorithm requires an upper bound for $Z^*$, which would be any value of $Z(T)$ such that exercise at $T$ is optimal.  It is not obvious what this should be, so we start with $K$ and keep doubling this until we obtain a value of $Z(T)$ at which exercise would be optimal.  Then, we use the bisection algorithm to compute $Z^*$ and finally compute the option value @eq-americancall.
+
+```{python}
+
+#| code-fold: true
+#| label: American_Call_Dividend
+
+def american_call_dividend(S, K, r, sigma, Div, TDiv, TCall):
+    LessDiv = S - np.exp(-r * TDiv) * Div
+    if Div / K <= 1 - np.exp(-r * (TCall - TDiv)):
+        return black_scholes_call(LessDiv, K, r, sigma, 0, TCall)
+
+    upper = K
+    while upper + Div - K < black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv):
+        upper *= 2
+
+    tol = 1e-6
+    lower = 0
+    flower = Div - K
+    fupper = upper + Div - K - black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv)
+    guess = 0.5 * lower + 0.5 * upper
+    fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)
+    while upper - lower > tol:
+        if fupper * fguess < 0:
+            lower = guess
+            flower = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)
+        else:
+            upper = guess
+            fupper = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)
+    LessDivStar = guess
+
+    d1 = (np.log(LessDiv / LessDivStar) + (r + sigma ** 2 / 2) * TDiv) / (sigma * np.sqrt(TDiv))
+    d2 = d1 - sigma * np.sqrt(TDiv)
+    d1prime = (np.log(LessDiv / K) + (r + sigma ** 2 / 2) * TCall) / (sigma * np.sqrt(TCall))
+    d2prime = d1prime - sigma * np.sqrt(TCall)
+    rho = -np.sqrt(TDiv / TCall)
+    N1 = norm.cdf(d1)
+    N2 = norm.cdf(d2)
+    M1 = binormal_prob(-d1, d1prime, rho)
+    M2 = binormal_prob(-d2, d2prime, rho)
+
+    return LessDiv * N1 + np.exp(-r * TDiv) * (Div - K) * N2 + LessDiv * M1 - np.exp(-r * TCall) * K * M2
+
+# Example usage
+
+S = 100
+K = 90
+r = 0.05
+sigma = 0.2
+Div = 5
+TDiv = 0.5
+TCall = 1
+N = 10
+
+print("American Call with Dividend:", american_call_dividend(S, K, r, sigma, Div, TDiv, TCall))
+
+```
 
 
 
@@ -469,6 +767,63 @@ d_{1c} = \frac{\log\left(\frac{S(0)}{K_c}\right)+\left(r-q+\frac{1}{2}\sigma^2\r
 \end{equation*}
 :::
 
+To implement the bisection to compute $S^*$, we can take zero as a lower bound and $K_c+K_p$ as an upper bound.^[We take the call value to be zero and the put value to be $\mathrm{e]^{-r(T_p-T)}K_p$ at date $T$ when the stock price is zero.  To see why the upper bound works, note that when the stock price is $S$ at date $T$,  the call is worth at least $S^*-K_c$ and the put is worth no more than $K_p$; i.e, $C \geq S-K_c$ and $P \leq K_p$.  Therefore, $C-P \geq S-K_c-K_p$.  Hence when $S=K_c+K_p$, we have $C-P\geq 0$. }
+
+```{python}
+
+#| code-fold: true
+#| label: Choosers_Option
+
+def chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp):
+    tol = 1e-6
+    lower = 0
+    upper = np.exp(q * Tc) * (Kc + Kp)
+    guess = 0.5 * Kc + 0.5 * Kp
+    flower = -np.exp(-r * (Tp - T)) * Kp
+    fupper = black_scholes_call(upper, Kc, r, sigma, q, Tc - T) - black_scholes_put(upper, Kp, r, sigma, q, Tp - T)
+    fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
+    while upper - lower > tol:
+        if fupper * fguess < 0:
+            lower = guess
+            flower = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
+        else:
+            upper = guess
+            fupper = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
+    Sstar = guess
+
+    d1 = (np.log(S / Sstar) + (r - q + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    d1c = (np.log(S / Kc) + (r - q + sigma ** 2 / 2) * Tc) / (sigma * np.sqrt(Tc))
+    d2c = d1c - sigma * np.sqrt(Tc)
+    d1p = (np.log(S / Kp) + (r - q + sigma ** 2 / 2) * Tp) / (sigma * np.sqrt(Tp))
+    d2p = d1p - sigma * np.sqrt(Tp)
+    rhoc = np.sqrt(T / Tc)
+    rhop = np.sqrt(T / Tp)
+    M1c = binormal_prob(d1, d1c, rhoc)
+    M2c = binormal_prob(d2, d2c, rhoc)
+    M1p = binormal_prob(-d1, -d1p, rhop)
+    M2p = binormal_prob(-d2, -d2p, rhop)
+
+    return np.exp(-q * Tc) * S * M1c - np.exp(-r * Tc) * Kc * M2c + np.exp(-r * Tp) * Kp * M2p - np.exp(-q * Tp) * S * M1p
+
+# Example usage
+S = 100
+Kc = 80
+Kp = 80
+r = 0.05
+sigma = 0.2
+q = 0.02
+Tc = 1.5
+Tp = 1.5
+T=1
+
+print("Chooser Option:", chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp))
+
+```
 
 
 
@@ -608,6 +963,44 @@ $$ {#eq-callonmaxformula}
 where $\sigma$ is defined in @eq-max2a and  $d_1$, $d_2$, $d_{11}$, $d_{12}$, $d_{21}$ and $d_{22}$ are defined in @eq-max4 - @eq-max3.
 :::
 
+The following code shows how to compute the price of a Call on the Max.
+
+```{python}
+
+#| code-fold: true
+#| label: Call_On_Max
+
+def call_on_max(S1, S2, K, r, sig1, sig2, rho, q1, q2, T):
+    sigma = np.sqrt(sig2 ** 2 - 2 * rho * sig1 * sig2 + sig1 ** 2)
+    d1 = (np.log(S1 / S2) + (q2 - q1 + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    d11 = (np.log(S1 / K) + (r - q1 + sig1 ** 2 / 2) * T) / (sig1 * np.sqrt(T))
+    d12 = d11 - sig1 * np.sqrt(T)
+    d21 = (np.log(S2 / K) + (r - q2 + sig2 ** 2 / 2) * T) / (sig2 * np.sqrt(T))
+    d22 = d21 - sig2 * np.sqrt(T)
+    rho1 = (sig1 - rho * sig2) / sigma
+    rho2 = (sig2 - rho * sig1) / sigma
+    M1 = binormal_prob(d11, d1, rho1)
+    M2 = binormal_prob(d21, -d2, rho2)
+    M3 = binormal_prob(-d12, -d22, rho)
+
+    return np.exp(-q1 * T) * S1 * M1 + np.exp(-q2 * T) * S2 * M2 + np.exp(-r * T) * K * M3 - np.exp(-r * T) * K
+# Example usage
+
+S1 = 100
+S2= 100
+K = 100
+r = 0.05
+sigma1 = 0.2
+sigma2 = 0.2
+q1 = 0.02
+q2= 0.01
+T=1
+rho= 0.1
+
+print("Call on Max:", call_on_max(S1, S2, K, r, sigma1, sigma2, rho, q1, q2, T))
+```
+
 
 ## Barrier Options {#sec-s_barriers}
 
@@ -718,8 +1111,7 @@ The value of a continuously-sampled down-and-out call option with barrier $L$ is
 $$
 \begin{multline}
 \mathrm{e}^{-qT}S(0)\left[\mathrm{N}(d_1)-\left(\frac{L}{S(0)}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\right]\\ - \mathrm{e}^{-rT}K\left[\mathrm{N}(d_2) - \left(\frac{L}{S(0)}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\right]\;,
-\end{multline}
-$$ {#eq-downout100}
+\end{multline}$$ {#eq-downout100}
 
 where 
 
@@ -731,6 +1123,39 @@ where
 
 
 :::
+
+The following code computes the price of a down and out call option.
+
+```{python}
+
+#| code-fold: true
+#| label: Down-And_Out_Call
+
+def down_and_out_call(S, K, r, sigma, q, T, Barrier):
+    if K > Barrier:
+        a = S / K
+        b = Barrier * Barrier / (K * S)
+    else:
+        a = S / Barrier
+        b = Barrier / S
+
+    d1 = (np.log(a) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    d1prime = (np.log(b) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    d2prime = d1prime - sigma * np.sqrt(T)
+    N1 = norm.cdf(d1)
+    N2 = norm.cdf(d2)
+    N1prime = norm.cdf(d1prime)
+    N2prime = norm.cdf(d2prime)
+    x = 1 + 2 * (r - q) / (sigma ** 2)
+    y = x - 2
+    q1 = N1 - (Barrier / S) ** x * N1prime
+    q2 = N2 - (Barrier / S) ** y * N2prime
+
+    return np.exp(-q * T) * S * q1 - np.exp(-r * T) * K * q2
+print("Down and Out Call:", down_and_out_call(S, K, r, sigma, q, T, 80))
+
+```
 
 
 ## Lookbacks {#sec-s_lookbacks}
@@ -784,6 +1209,37 @@ $$ {#eq-fslc100}
 
 where $d_1$, $d_2$, and $d_2'$ are defined in @eq-fslc100a - @eq-fslc100c.
 :::
+
+The following program calculates the price of a floating strike lookback option. 
+
+```{python}
+
+#| code-fold: true
+#| label: Floating_Strike_Lookback
+
+def floating_strike_call(S, r, sigma, q, T, SMin):
+    d1 = (np.log(S / SMin) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    d2prime = (np.log(SMin / S) + (r - q - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    N1 = norm.cdf(d1)
+    N2 = norm.cdf(d2)
+    N2prime = norm.cdf(d2prime)
+    x = 2 * (r - q) / (sigma ** 2)
+    return np.exp(-q * T) * S * N1 - np.exp(-r * T) * SMin * N2 + (1 / x) * (SMin / S) ** x * np.exp(-r * T) * SMin * N2prime - (1 / x) * np.exp(-q * T) * S * (1 - N1)
+
+# Example usage
+
+S = 100
+r = 0.05
+sigma = 0.2
+q = 0.02
+T=1
+
+
+print("Floating Strike Call:", floating_strike_call(S, r, sigma, q, T, 90))
+
+```
+
 
 
 ## Basket and Spread Options {#sec-s_baskets}
@@ -975,487 +1431,28 @@ and variance
 $$(k+1)^2\sigma^2\varepsilon\Delta t + \sigma^2\sum_{i=1}^{k} (k+1-i)^2\Delta t = (k+1)^2\sigma^2\varepsilon\Delta t +\frac{k(k+1)(2k+1)\sigma^2}{6}\; ,$$
 using the fact that $\sum_{i=1}^k i^2 = k(k+1)(2k+1)/6$.
 The expectation of the exponential of a normally distributed random variable equals the exponential of its mean plus one-half of its variance, and the exponential of $(k+1)\log S(t)/N$ is $S(t)^{(k+1)/N}$.  Therefore the conditional expectation in @eq-geometricaveragev3 is
-$$S(t)^{\frac{k+1}{N}}\exp\left(\left[ \frac{(k+1)\varepsilon\nu}{N}+ \frac{k(k+1)\nu}{2N} + \frac{(k+1)^2\sigma^2\varepsilon}{2N^2}+\frac{k(k+1)(2k+1)\sigma^2}{12N^2} \right]\Delta t\right)\; ,$$
+$$S(t)^{\frac{k+1}{N}}\exp\left(\left[ \frac{(k+1)\varepsilon\nu}{N}+ \frac{k(k+1)\nu}{2N} + \frac{(k+1)^2\sigma^2\varepsilon}{2N^2}+\frac{k(k+1)(2k+1)\sigma^2}{12N^2} \right]\Delta t\right)\; ,
+$$
 which implies @eq-geometricaveragev2.
 :::
 
-## Calculations in VBA {#sec-s_exotics_matlab}
+The following code computes the price of a geometric-average-price call.
 
-The new features in the option pricing formulas in this chapter are the use of the bivariate normal distribution function and sometimes the need to compute a critical (at-the-money) value of the underlying asset price.  We will compute the critical values by bisection, in the same way that we computed implied volatilities for the Black-Scholes formula in @sec-c_blackscholes.
+```{python}
 
-### Bivariate Normal Distribution Function
+#| code-fold: true
+#| label: Geometric_Average_Price_Calls
 
-The following is a fast approximation of the bivariate \index{bivariate normal distribution function} cumulative normal distribution function, accurate to six decimal places, due to Drezner [@Drezner]).  For given numbers $a$ and $b$, this function gives the probability that $\xi_1<a$ and $\xi_2<b$ where $\xi_1$ and $\xi_2$ are standard normal random variables with a given correlation $\rho$, which we must input.  
+def discrete_geom_average_price_call(S, K, r, sigma, q, T, N):
+    dt = T / N
+    nu = r - q - 0.5 * sigma ** 2
+    a = N * (N + 1) * (2 * N + 1) / 6
+    V = np.exp(-r * T) * S * np.exp(((N + 1) * nu / 2 + sigma ** 2 * a / (2 * N ** 2)) * dt)
+    sigavg = sigma * np.sqrt(a) / (N ** 1.5)
+    return black_scholes_call(V, K, r, sigavg, 0, T)
 
-\addcontentsline{lof}{figure}{BiNormalProb}
-\begin{verbatim}
-Function BiNormalProb(a, b, rho)
-Dim a1, b1, sum, z1, Z2, z3, rho1, rho2, Delta, x, y, i, j
-x = Array(0.24840615, 0.39233107, 0.21141819, _
-        0.03324666, 0.00082485334)
-y = Array(0.10024215, 0.48281397, 1.0609498, _
-        1.7797294, 2.6697604)
-a1 = a / Sqr(2 * (1 - rho ^ 2))
-b1 = b / Sqr(2 * (1 - rho ^ 2))
-If a <= 0 & b <= 0 & rho <= 0 Then
-    sum = 0
-    For i = 0 To 4
-        For j = 0 To 4
-            z1 = a1 * (2 * y(i) - a1)
-            Z2 = b1 * (2 * y(j) - b1)
-            z3 = 2 * rho * (y(i) - a1) * (y(j) - b1)
-            sum = sum + x(i) * x(j) * Exp(z1 + Z2 + z3)
-        Next j
-    Next i
-    BiNormalProb = sum * Sqr(1 - rho ^ 2) / Application.Pi
-ElseIf a <= 0 & b >= 0 & rho >= 0 Then
-    BiNormalProb = Application.NormSDist(a)-BiNormalProb(a,-b,-rho)
-ElseIf a >= 0 & b <= 0 & rho >= 0 Then
-    BiNormalProb = Application.NormSDist(b)-BiNormalProb(-a,b,-rho)
-ElseIf a >= 0 & b >= 0 & rho <= 0 Then
-    sum = Application.NormSDist(a) + Application.NormSDist(b)
-    BiNormalProb = sum - 1 + BiNormalProb(-a, -b, rho)
-ElseIf a * b * rho > 0 Then
-    rho1 = (rho*a-b) * Sgn(a) / Sqr(a^ 2 - 2*rho*a*b + b^ 2)
-    rho2 = (rho*b-a) * Sgn(b) / Sqr(a^2 - 2*rho*a*b + b^ 2)
-    Delta = (1 - Sgn(a) * Sgn(b)) / 4
-    BiNormalProb = BiNormalProb(a,0,rho1) _
-                   +BiNormalProb(b,0,rho2) - Delta
-End If
-End Function
-\end{verbatim}
-
-\noindent Notice that this function calls itself.  This is an example of recursion.
-
-
-### Forward-Start Call
-
-The forward-start call pricing formula is of the same form as the Black-Scholes, Margrabe, Black, and Merton formulas, as discussed in @sec-s_matlabimplementations.  We can compute it with our \verb!Generic_Option! pricing function.
-
-\addcontentsline{lof}{figure}{Forward Start Call}
-\begin{verbatim}
-Function Forward_Start_Call(S, r, sigma, q, Tset, TCall)
-'
-' Inputs are S = initial stock price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            Tset = time until the strike is set
-'            TCall = time until call matures >= Tset
-'
-Dim P1, P2
-P1 = Exp(-q * TCall) * S
-P2 = Exp(-q * Tset - r * (TCall - Tset)) * S
-Forward_Start_Call = Generic_Option(P1, P2, sigma, TCall - Tset)
-End Function
-\end{verbatim}
-
-
-### Call on a Call
-
-We will use bisection to find the critical price $S^*$.  We can use $e^{q(T'-T)}(K+K')$ as an upper bound for $S^*$ and 0 as a lower bound.^[We set the value of the call to be zero when the stock price is zero.  The upper bound works because (by put-call parity and the fact that the put value is nonnegative) $C(T,S) \geq e^{-q(T'-T)]S-e^{-r(T'-T)}K'$.  Therefore, when $S = e^{q(T'-T)}(K+K')$, we have 
-$C(T,S) \geq K + K' - e^{-r(T'-T)}K' > K$.
-}  
-The following uses $10^{-6}$ as the error tolerance in the bisection.
-
-\addcontentsline{lof}{figure}{Call on Call}
-\begin{verbatim}
-Function Call_On_Call(S, Kc, Ku, r, sigma, q, Tc, Tu)
-Dim tol, lower, upper, guess, flower, fupper, fguess, Sstar
-Dim d1, d2, d1prime, d2prime, rho, N2, M1, M2
-'
-' Inputs are S = initial stock price
-'            Kc = strike price of compound call
-'            Ku = strike price of underlying call option
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            Tc = time to maturity of compound call
-'            Tu = time to maturity of underlying call >= Tc
-'
-' The first step is to find Sstar.
-'
-tol = 10 ^ -6
-lower = 0
-upper = exp(q * T) * (Kc + Ku)
-guess = 0.5 * lower + 0.5 * upper
-flower = -Kc
-fupper = Black_Scholes_Call(upper, Ku, r, sigma, q, Tu - Tc) - Kc
-fguess = Black_Scholes_Call(guess, Ku, r, sigma, q, Tu - Tc) - Kc
-Do While upper - lower > tol
-    If fupper * fguess < 0 Then
-        lower = guess
-        flower = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        guess = Black_Scholes_Call(guess,Ku,r,sigma,q,Tu-Tc)-Kc
-    Else
-        upper = guess
-        fupper = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        fguess = Black_Scholes_Call(guess,Ku,r,sigma,q,Tu-Tc)-Kc
-    End If
-Loop
-Sstar = guess
-'
-' Now we calculate the probabilities.
-'
-d1 = (Log(S/Sstar) + (r-q+sigma^2/2)*Tc) / (sigma*Sqr(Tc))
-d2 = d1 - sigma * Sqr(Tc)
-d1prime = (Log(S/Ku) + (r-q+sigma^2/2) * Tu) / (sigma*Sqr(Tu))
-d2prime = d1prime - sigma * Sqr(Tu)
-rho = Sqr(Tc / Tu)
-N2 = Application.NormSDist(d2)
-M1 = BiNormalProb(d1, d1prime, rho)
-M2 = BiNormalProb(d2, d2prime, rho)
-'
-' Now we calculate the option price.
-'
-Call_On_Call = -Exp(-r * Tc) * Kc * N2 + Exp(-q * Tu) * S * M1 _
-               -Exp(-r * Tu) * Ku * M2
-End Function
-\end{verbatim}
-
-### Call on a Put
-
-The implementation of the call-on-a-put formula is of course very similar to that of a call-on-a-call.  One difference is that there is no obvious upper bound for $S^*$, so we start with $2K'$ (= \verb!2*K2!) and double this until the value of the put is below $K$.  We can take 0 again to be the lower bound.  Recall that we assume $K<\mathrm{e}^{-r(T'-T)}K'$ and the right-hand side of this is the value of the put at date $T$ when $S(T)=0$.
-
-\addcontentsline{lof}{figure}{Call on Put}
-\begin{verbatim}
-Function Call_On_Put(S, Kc, Ku, r, sigma, q, Tc, Tu)
-Dim tol, lower, flower, upper, fupper, guess, fguess, Sstar
-Dim d1, d2, d1prime, d2prime, rho, N2, M1, M2
-'
-' Inputs are S = initial stock price
-'            Kc = strike price of compound call
-'            Ku = strike price of underlying put option
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            Tc = time to maturity of compound call
-'            Tu = time to maturity of underlying put >= Tc
-'
-tol = 10 ^ -6
-lower = 0
-flower = Exp(-r * (Tu - Tc)) * Ku - Kc
-upper = 2 * Ku
-'
-'  We double upper until the put value is below Kc
-'
-fupper = Black_Scholes_Put(upper,Ku,r,sigma,q,Tu-Tc)-Kc
-Do While fupper > 0
-    upper = 2 * upper
-    fupper = Black_Scholes_Put(upper,Ku,r,sigma,q,Tu-Tc)-Kc
-Loop
-'
-' Now we do the bisection to find Sstar
-'
-guess = 0.5 * lower + 0.5 * upper
-fguess = Black_Scholes_Put(guess,Ku,r,sigma,q,Tu-Tc)-Kc
-Do While upper - lower > tol
-    If fupper * fguess < 0 Then
-        lower = guess
-        flower = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        fguess = Black_Scholes_Put(guess,Ku,r,sigma,q,Tu-Tc)-Kc
-    Else
-        upper = guess
-        fupper = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        fguess = Black_Scholes_Put(guess,Ku,r,sigma,q,Tu-Tc)-Kc
-    End If
-Loop
-Sstar = guess
-'
-' Now we calculate the probabilities.
-'
-d1 = (Log(S/Sstar) + (r-q+sigma^2/2)*Tc) / (sigma*Sqr(Tc))
-d2 = d1 - sigma * Sqr(Tc)
-d1prime = (Log(S/Ku) + (r-q+sigma^2/2)*Tu) / (sigma*Sqr(Tu))
-d2prime = d1prime - sigma * Sqr(Tu)
-rho = Sqr(Tc / Tu)
-N2 = Application.NormSDist(-d2)
-M1 = BiNormalProb(-d1, -d1prime, rho)
-M2 = BiNormalProb(-d2, -d2prime, rho)
-'
-' Now we calculate the option price.
-'
-Call_On_Put = -Exp(-r * Tc) * Kc * N2 + Exp(-r * Tu) * Ku * M2 _
-            - Exp(-q * Tu) * S * M1
-End Function
-\end{verbatim}
-
-### American Calls with Discrete Dividends
-
-To value an American call when there is one dividend payment before the option matures, we input the initial asset price $S(0)$ and then compute $Z(0)=X(0)-\mathrm{e}^{-rT}D$.  If $D-K \leq -\mathrm{e}^{-r(T'-T)}K$, we return the Black-Scholes value of a European call written on $Z$.  Otherwise, we need to compute $Z^*$ and our bisection algorithm requires an upper bound for $Z^*$, which would be any value of $Z(T)$ such that exercise at $T$ is optimal.  It is not obvious what this should be, so we start with $K$ and keep doubling this until we obtain a value of $Z(T)$ at which exercise would be optimal.  Then, we use the bisection algorithm to compute $Z^*$ and finally compute the option value @eq-americancall.
-\addcontentsline{lof}{figure}{American Call Dividend}
-\begin{verbatim}
-Function American_Call_Dividend(S, K, r, sigma, Div, TDiv, TCall)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            Div = cash dividend
-'            TDiv = time until dividend payment
-'            TCall = time until option matures >= TDiv
-'
-Dim LessDiv, upper, tol, lower, flower, fupper, guess, fguess
-Dim LessDivStar, d1, d2, d1prime, d2prime, rho, N1, N2, M1, M2
-LessDiv = S - Exp(-r * TDiv) * Div          ' called Z in text
-If Div / K <= 1 - Exp(-r * (TCall - TDiv)) Then  
-    American_Call_Dividend = _
-       Black_Scholes_Call(LessDiv, K, r, sigma, 0, TCall)
-    Exit Function
-End If
-'
-' Now we find an upper bound for the bisection.
-'
-upper = K
-Do While upper + Div - K < _
-               Black_Scholes_Call(upper,K,r,sigma,0,TCall-TDiv)
-   upper = 2 * upper
-Loop
-'
-' Now we use bisection to compute Zstar = LessDivStar.
-'
-tol = 10 ^ -6
-lower = 0
-flower = Div - K
-fupper = upper + Div - K _
-         - Black_Scholes_Call(upper,K,r,sigma,0,TCall-TDiv)
-guess = 0.5 * lower + 0.5 * upper
-fguess = guess + Div - K _
-         - Black_Scholes_Call(guess,K,r,sigma,0,TCall-TDiv)
-Do While upper - lower > tol
-    If fupper * fguess < 0 Then
-        lower = guess
-        flower = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        fguess = guess + Div - K _
-               - Black_Scholes_Call(guess,K,r,sigma,0,TCall- Div)
-    Else
-        upper = guess
-        fupper = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        fguess = guess + Div - K _
-               - Black_Scholes_Call(guess,K,r,sigma,0,TCall-TDiv)
-    End If
-Loop
-LessDivStar = guess
-'
-' Now we calculate the probabilities and the option value.
-'
-d1 = (Log(LessDiv / LessDivStar) _
-   + (r + sigma ^ 2 / 2) * TDiv) / (sigma * Sqr(TDiv))
-d2 = d1 - sigma * Sqr(TDiv)
-d1prime = (Log(LessDiv / K) _
-        + (r + sigma ^ 2 / 2) * TCall) / (sigma * Sqr(TCall))
-d2prime = d1prime - sigma * Sqr(TCall)
-rho = -Sqr(TDiv / TCall)
-N1 = Application.NormSDist(d1)
-N2 = Application.NormSDist(d2)
-M1 = BiNormalProb(-d1, d1prime, rho)
-M2 = BiNormalProb(-d2, d2prime, rho)
-American_Call_Dividend = LessDiv*N1 + Exp(-r*TDiv)*(Div-K)*N2 _
-                       + LessDiv*M1 - Exp(-r*TCall)*K*M2
-End Function
-\end{verbatim}
-
-### Choosers
-
-To implement the bisection to compute $S^*$, we can take zero as a lower bound and $K_c+K_p$ as an upper bound.^[We take the call value to be zero and the put value to be $\mathrm{e]^{-r(T_p-T)}K_p$ at date $T$ when the stock price is zero.  To see why the upper bound works, note that when the stock price is $S$ at date $T$,  the call is worth at least $S^*-K_c$ and the put is worth no more than $K_p$; i.e, $C \geq S-K_c$ and $P \leq K_p$.  Therefore, $C-P \geq S-K_c-K_p$.  Hence when $S=K_c+K_p$, we have $C-P\geq 0$. }
-\addcontentsline{lof}{figure}{Chooser}
-\begin{verbatim}
-Function Chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp)
-'
-' Inputs are S = initial stock price
-'            Kc = strike price of call option
-'            Kp = strike price of put option
-'            r = risk-free rate
-'            sigma = volatility
-'            Div = cash dividend
-'            T = time until choice must be made
-'            Tc = time until call matures >= T
-'            Tp = time until put matures >= T
-'
-Dim tol, lower, upper, guess, flower, CallUpper, PutUpper
-Dim fupper, CallGuess, Putguess, fguess, Sstar, d1, d2
-Dim d1c, d2c, d1p, d2p, rhoc, rhop, M1c, M2c, M1p, M2p
-'
-' First we find Sstar by bisection.
-'
-tol = 10 ^ -6
-lower = 0
-upper = Kc + Kp
-guess = 0.5 * Kc + 0.5 * Kp
-flower = -Exp(-r * (Tp - T)) * Kp
-fupper = Black_Scholes_Call(upper,Kc,r,sigma,q,Tc-T) _
-       - Black_Scholes_Put(upper,Kp,r,sigma,q,Tp-T)
-fguess = Black_Scholes_Call(guess,Kc,r,sigma,q,Tc-T) _
-       - Black_Scholes_Put(guess,Kp,r,sigma,q,Tp-T)
-Do While upper - lower > tol
-    If fupper * fguess < 0 Then
-        lower = guess
-        flower = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        fguess = Black_Scholes_Call(guess,Kc,r,sigma,q,Tc-T) _
-               - Black_Scholes_Put(guess,Kp,r,sigma,q,Tp-T)
-    Else
-        upper = guess
-        fupper = fguess
-        guess = 0.5 * lower + 0.5 * upper
-        fguess = Black_Scholes_Call(guess,Kc,r,sigma,q,Tc-T) _
-               - Black_Scholes_Put(guess,Kp,r,sigma,q,Tp-T)
-    End If
-Loop
-Sstar = guess
-'
-' Now we compute the probabilities and option value.
-'
-d1 = (Log(S/Sstar) + (r-q+sigma^2/2)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-d1c = (Log(S/Kc) + (r-q+sigma^2/2)*Tc) / (sigma*Sqr(Tc))
-d2c = d1c - sigma * Sqr(Tc)
-d1p = (Log(S/Kp) + (r-q+sigma^2/2)*Tp) / (sigma*Sqr(Tp))
-d2p = d1p - sigma * Sqr(Tp)
-rhoc = Sqr(T / Tc)
-rhop = Sqr(T / Tp)
-M1c = BiNormalProb(d1, d1c, rhoc)
-M2c = BiNormalProb(d2, d2c, rhoc)
-M1p = BiNormalProb(-d1, -d1p, rhop)
-M2p = BiNormalProb(-d2, -d2p, rhop)
-Chooser = Exp(-q*Tc)*S*M1c - Exp(-r*Tc)*Kc*M2c _
-        + Exp(-r*Tp)*Kp*M2p - Exp(-q*Tp)*S*M1p
-End Function
-\end{verbatim}
-
-### Call on the Max
-
-\addcontentsline{lof}{figure}{Call on Max}
-\begin{verbatim}
-Function Call_On_Max(S1, S2, K, r, sig1, sig2, rho, q1, q2, T)
-'
-' Inputs are S1 = price of stock 1
-'            S2 = price of stock 2
-'            K = strike price
-'            r = risk-free rate
-'            sig1 = volatility of stock 1
-'            sig2 = volatility of stock 2
-'            rho = correlation
-'            q1 = dividend yield of stock 1
-'            q2 = dividend yield of stock 2
-'            T = time to maturity
-'
-Dim sigma, d1, d2, d11, d12, d21, d22, rho1, rho2, M1, M2, M3
-sigma = Sqr(sig2 ^ 2 - 2 * rho * sig1 * sig2 + sig1 ^ 2)
-d1 = (Log(S1/S2) + (q2-q1+sigma^2/2)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-d11 = (Log(S1/K) + (r-q1+sig1^2/2)*T) / (sig1*Sqr(T))
-d12 = d11 - sig1 * Sqr(T)
-d21 = (Log(S2/K) + (r-q2+sig2^2/2)*T) / (sig2*Sqr(T))
-d22 = d21 - sig2 * Sqr(T)
-rho1 = (sig1 - rho * sig2) / sigma
-rho2 = (sig2 - rho * sig1) / sigma
-M1 = BiNormalProb(d11, d1, rho1)
-M2 = BiNormalProb(d21, -d2, rho2)
-M3 = BiNormalProb(-d12, -d22, rho)
-Call_On_Max = Exp(-q1 * T) * S1 * M1 + Exp(-q2 * T) * S2 * M2 _
-            + Exp(-r * T) * K * M3 - Exp(-r * T) * K
-End Function
-\end{verbatim}
-
-\vfil\eject
-### Down-and-Out Calls
-
-\addcontentsline{lof}{figure}{Down And Out Call}
-\begin{verbatim}
-Function Down_And_Out_Call(S, K, r, sigma, q, T, Barrier)
-'
-' Inputs are S = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            Barrier = knock-out barrier < S
-'
-Dim a, b, d1, d2, d1prime, d2prime, N1, N2
-Dim N1prime, N2prime, x, y, q1, q2
-If K > Barrier Then
-    a = S / K
-    b = Barrier * Barrier / (K * S)
-Else
-    a = S / Barrier
-    b = Barrier / S
-End If
-d1 = (Log(a) + (r-q+0.5*sigma^2)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-d1prime = (Log(b) + (r-q+0.5*sigma^2)*T) / (sigma*Sqr(T))
-d2prime = d1prime - sigma * Sqr(T)
-N1 = Application.NormSDist(d1)
-N2 = Application.NormSDist(d2)
-N1prime = Application.NormSDist(d1prime)
-N2prime = Application.NormSDist(d2prime)
-x = 1 + 2 * (r - q) / (sigma ^ 2)
-y = x - 2
-q1 = N1 - (Barrier / S) ^ x * N1prime
-q2 = N2 - (Barrier / S) ^ y * N2prime
-Down_And_Out_Call = Exp(-q * T) * S * q1 - Exp(-r * T) * K * q2
-End Function
-\end{verbatim}
-
-### Floating-Strike Lookbacks
-
-\addcontentsline{lof}{figure}{Floating Strike Call}
-\begin{verbatim}
-Function Floating_Strike_Call(S, r, sigma, q, T, SMin)
-'
-' Inputs are S = initial stock price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            Smin = minimum during past life of contract
-'
-Dim d1, d2, d1prime, d2prime, N1, N2, N2prime, x, y
-d1 = (Log(S/SMin) + (r-q+0.5*sigma^2)*T) / (sigma*Sqr(T))
-d2 = d1 - sigma * Sqr(T)
-d2prime = (Log(SMin/S) + (r-q-0.5*sigma^2)*T) / (sigma*Sqr(T))
-N1 = Application.NormSDist(d1)
-N2 = Application.NormSDist(d2)
-N2prime = Application.NormSDist(d2prime)
-x = 2 * (r - q) / (sigma ^ 2)
-Floating_Strike_Call = Exp(-q*T)*S*N1 - Exp(-r*T)*SMin*N2 _
-                     + (1/x)*(SMin/S)^x * Exp(-r*T)*SMin*N2prime _
-                     - (1/x)*Exp(-q*T)*S*(1-N1)
-End Function
-\end{verbatim}
-
-
-### Discretely-Sampled Geometric-Average-Price Calls
-
-\addcontentsline{lof}{figure}{Discrete Geom Average Price Call}
-\begin{verbatim}
-Function Discrete_Geom_Average_Price_Call(S,K,r,sigma,q,T,N)
-'
-' Inputs are S = initial stock price
-'            K = stock price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            N = number of time periods
-'
-Dim dt, nu, a, V, sigavg
-dt = T / N
-nu = r - q - 0.5 * sigma ^ 2
-a = N * (N + 1) * (2 * N + 1) / 6
-V = Exp(-r*T)*S*Exp(((N+1)*nu/2 + sigma^2*a/(2*N^2))*dt)
-sigavg = sigma * Sqr(a) / (N ^ 1.5)
-Discrete_Geom_Average_Price_Call = _
-               Black_Scholes_Call(V, K, r, sigavg, 0, T)
-End Function
-\end{verbatim}
+print("Discrete Geometric Average Price Call:", discrete_geom_average_price_call(S, K, r, sigma, q, T, N))
+```
 
 
 ## Exercises
