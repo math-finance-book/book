@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -142,7 +176,7 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter3.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Continuous-Time Models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -154,7 +188,7 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter5.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Estimating and Modelling Volatility</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Estimating and Modeling Volatility</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -251,8 +285,7 @@ div.csl-indent {
   <li><a href="#european-options" id="toc-european-options" class="nav-link" data-scroll-target="#european-options"><span class="header-section-number">11.5</span> European Options</a></li>
   <li><a href="#american-options" id="toc-american-options" class="nav-link" data-scroll-target="#american-options"><span class="header-section-number">11.6</span> American Options</a></li>
   <li><a href="#sec-s_finitedifferencebarriers" id="toc-sec-s_finitedifferencebarriers" class="nav-link" data-scroll-target="#sec-s_finitedifferencebarriers"><span class="header-section-number">11.7</span> Barrier Options</a></li>
-  <li><a href="#sec-s_finitedifferences_matlab" id="toc-sec-s_finitedifferences_matlab" class="nav-link" data-scroll-target="#sec-s_finitedifferences_matlab"><span class="header-section-number">11.8</span> Calculations in VBA</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">11.9</span> Exercises</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">11.8</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -292,7 +325,7 @@ Since <span class="math inline">\(C\)</span> is a function of <span class="math 
 <p>On the other hand, under the risk-neutral measure, the instantaneous expected rate of return on the derivative is the risk-free rate, so <span class="math display">\[\frac{\mathrm{d} C}{C} =r\,\mathrm{d} t + \text{something}\,\,\mathrm{d} B\; .\]</span> where the something is the volatility of the derivative value. We can of course rearrange this as <span id="eq-1"><span class="math display">\[
 \mathrm{d} C = rC\,\mathrm{d} t+\text{something}\,\,C\,\mathrm{d} B\;.
 \tag{11.2}\]</span></span></p>
-<p>In order for both <a href="#eq-2">Equation&nbsp;<span>11.1</span></a> and <a href="#eq-1">Equation&nbsp;<span>11.2</span></a> to hold, the drifts on both right-hand sides must be equal.^[Suppose a process <span class="math inline">\(X\)</span> satisfies <span class="math inline">\(\mathrm{d] X=\alpha_1\,\mathrm{d} t+\sigma_1\,\mathrm{d} B = \alpha_2\,\mathrm{d} t+\sigma_2\,\mathrm{d} B\)</span> for coefficients <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\sigma_i\)</span>. This implies <span class="math inline">\((\alpha_1-\alpha_2)\,\mathrm{d} t=(\sigma_2-\sigma_2)\,\mathrm{d} B\)</span>. The right-hand side defines a (local) martingale and the left-hand side defines a continuous finite-variation process. As discussed in <span class="quarto-unresolved-ref">?sec-s_quadraticvariation</span>, the only continuous finite-variation martingales are constants, so the changes must be zero; i.e., <span class="math inline">\(\alpha_1=\alpha_2\)</span> and <span class="math inline">\(\sigma_1=\sigma_2\)</span>.} This implies <span id="eq-3"><span class="math display">\[
+<p>In order for both <a href="#eq-2">Equation&nbsp;<span>11.1</span></a> and <a href="#eq-1">Equation&nbsp;<span>11.2</span></a> to hold, the drifts on both right-hand sides must be equal.^[Suppose a process <span class="math inline">\(X\)</span> satisfies <span class="math inline">\(\mathrm{d] X=\alpha_1\,\mathrm{d} t+\sigma_1\,\mathrm{d} B = \alpha_2\,\mathrm{d} t+\sigma_2\,\mathrm{d} B\)</span> for coefficients <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\sigma_i\)</span>. This implies <span class="math inline">\((\alpha_1-\alpha_2)\,\mathrm{d} t=(\sigma_2-\sigma_2)\,\mathrm{d} B\)</span>. The right-hand side defines a (local) martingale and the left-hand side defines a continuous finite-variation process. As discussed in <a href="Chapter3.html#sec-s_quadraticvariation"><span>Section&nbsp;3.3</span></a>, the only continuous finite-variation martingales are constants, so the changes must be zero; i.e., <span class="math inline">\(\alpha_1=\alpha_2\)</span> and <span class="math inline">\(\sigma_1=\sigma_2\)</span>.} This implies <span id="eq-3"><span class="math display">\[
 rC = \frac{\partial C}{\partial t}+ \nu\frac{\partial C}{\partial X}+ \frac{1}{2}\sigma^2\frac{\partial^2 C}{\partial X^2}\;.
 \tag{11.3}\]</span></span></p>
 <p>This equation is the fundamental pde. It is an equation that we want to solve for the function <span class="math inline">\(C\)</span>. Every derivative written on <span class="math inline">\(S\)</span> satisfies this same equation. Different derivatives have different values because of boundary conditions. The boundary conditions are the intrinsic value at maturity, optimality conditions for early exercise, barriers and the like.</p>
@@ -367,8 +400,7 @@ rC^{\text{mid}} = \frac{C'-C}{\Delta t}+ \nu\left(\frac{C^{\text{mid}}_{\text{up
 \tag{11.14}\]</span></span></p>
 <p>We can also write this as <span id="eq-crank3"><span class="math display">\[
 a_1C - a_2C_{\text{up}} - a_3C_{\text{down}}
-= a_4C' + a_2C'_{\text{up}} + a_3C'_{\text{down}}\;,
-\tag{11.15}\]</span></span></p>
+= a_4C' + a_2C'_{\text{up}} + a_3C'_{\text{down}}\;, \tag{11.15}\]</span></span></p>
 <p>where the constants <span class="math inline">\(a_i\)</span> are the factors in parentheses in <a href="#eq-crank2">Equation&nbsp;<span>11.14</span></a>.</p>
 <p>As before, we start at the final date <span class="math inline">\(t_N\)</span> and define the call value at that date by its intrinsic value. Consider a grid point <span class="math inline">\((t_{N-1},x_j)\)</span>. Forcing <a href="#eq-3">Equation&nbsp;<span>11.3</span></a> to hold at the midpoint <span class="math inline">\((t_{N-1}+\Delta t/2,x_j)\)</span> leads us to <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a>. In this equation, <span class="math inline">\(C'\)</span>, <span class="math inline">\(C'_{\text{up}}\)</span> and <span class="math inline">\(C'_{\text{down}}\)</span> are known from the intrinsic value at maturity, and we need to solve for <span class="math inline">\(C\)</span>, <span class="math inline">\(C_{\text{up}}\)</span> and <span class="math inline">\(C_{\text{down}}\)</span>. There are <span class="math inline">\(2M-1\)</span> linear equations of this type and we will add linear equations at the upper and lower boundaries of the grid and solve the resulting system of <span class="math inline">\(2M+1\)</span> linear equations for the <span class="math inline">\(2M+1\)</span> call values. After finding the call values at date <span class="math inline">\(t_{N-1}\)</span>, we then repeat the calculation at <span class="math inline">\(t_{N-2}\)</span> and continue backing up in this way until we reach the initial date.</p>
 <p>Notice that the Crank-Nicolson equations <a href="#eq-crank2">Equation&nbsp;<span>11.14</span></a> are similar to the equations <a href="#eq-implicit">Equation&nbsp;<span>11.11</span></a> in the implicit method, but more information is used in each step of the Crank-Nicolson method than is used in each step of the implicit method. Equation <a href="#eq-crank2">Equation&nbsp;<span>11.14</span></a> links the call values <span class="math inline">\(C\)</span>, <span class="math inline">\(C_{\text{up}}\)</span> and <span class="math inline">\(C_{\text{down}}\)</span> to the previously calculated <span class="math inline">\(C'\)</span>, <span class="math inline">\(C'_{\text{up}}\)</span> and <span class="math inline">\(C'_{\text{down}}\)</span>, whereas in the implicit method they were linked only to <span class="math inline">\(C'\)</span> (which we called <span class="math inline">\(C_{\text{right}}\)</span>).</p>
@@ -390,20 +422,6 @@ C - C_{\text{up}} = \lambda_0 (S - S_{\text{up}})
 C-C_{\text{down}} = \lambda_\infty(S-S_{\text{down}})\;.
 \tag{11.18}\]</span></span></p>
 <p>These two linear equations in the values at time <span class="math inline">\(t_i\)</span> augment the <span class="math inline">\(2M-1\)</span> equations already described to form a system of <span class="math inline">\(2M+1\)</span> linear equations to be solved for the derivative values at the <span class="math inline">\(2M+1\)</span> grid points at time <span class="math inline">\(t_i\)</span>.</p>
-</section>
-<section id="american-options" class="level2" data-number="11.6">
-<h2 data-number="11.6" class="anchored" data-anchor-id="american-options"><span class="header-section-number">11.6</span> American Options</h2>
-<p>The explicit method is easily adapted to American options. As in a binomial model, we compute the option value at each node as the larger of its discounted expected value and its intrinsic value. To be somewhat more precise, we replace the trinomial value <a href="#eq-fdtrinomial">Equation&nbsp;<span>11.10</span></a> with <span class="math display">\[C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC_{\text{down}}\big), \text{intrinsic value}\right)\; .\]</span> In the Crank-Nicolson method, one can in similar fashion compute the value of the derivative at each space node at any date by solving the system of equations <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a> and then replace the computed values by the intrinsic value when that is higher. However, because the values at the different space nodes are linked (i.e., the method is an implicit-type method), this one-at-a-time replacement of values by intrinsic values is not the most efficient method. See Wilmott <span class="citation" data-cites="Wilmott">(<a href="#ref-Wilmott" role="doc-biblioref">Wilmott 2000</a>)</span> for more details (and for VBA code implementing the projected successive over-relaxation method).</p>
-</section>
-<section id="sec-s_finitedifferencebarriers" class="level2" data-number="11.7">
-<h2 data-number="11.7" class="anchored" data-anchor-id="sec-s_finitedifferencebarriers"><span class="header-section-number">11.7</span> Barrier Options</h2>
-<p>Finite-difference methods work well for valuing discretely-sampled barrier options. For a down-and-out option, one should place the bottom of the grid at the knock-out boundary. For an up-and-out option, one should place the top of the grid at the knock-out boundary. As discussed in <a href="Chapter9.html"><span>Chapter&nbsp;9</span></a>, knock-in options can be valued as standard options minus knock-out options.</p>
-<p>For barrier options, the boundary information <a href="#eq-cn_boundary">Equation&nbsp;<span>11.16</span></a> can be replaced by assigning a value of zero at the knock-out boundary. For example, for a down-and-out option, the condition <a href="#eq-crank4a">Equation&nbsp;<span>11.17</span></a> can be replaced by <span class="math inline">\(C=0\)</span>. If the contract specifies that a rebate is to be paid to the buyer when the option is knocked out, then condition <a href="#eq-crank4a">Equation&nbsp;<span>11.17</span></a> should be replaced by <span class="math inline">\(C=\)</span> Rebate.</p>
-</section>
-<section id="sec-s_finitedifferences_matlab" class="level2" data-number="11.8">
-<h2 data-number="11.8" class="anchored" data-anchor-id="sec-s_finitedifferences_matlab"><span class="header-section-number">11.8</span> Calculations in VBA</h2>
-<section id="crank-nicolson-1" class="level3">
-<h3 class="anchored" data-anchor-id="crank-nicolson-1">Crank-Nicolson</h3>
 <p>We will create a program that solves a system of equations of the form <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a>, <a href="#eq-crank4a">Equation&nbsp;<span>11.17</span></a> and <a href="#eq-crank4b">Equation&nbsp;<span>11.18</span></a>. We input the vector <span class="math inline">\(a\)</span> of coefficients, a vector <span class="math inline">\(y\)</span> of dimension <span class="math inline">\(2M+1\)</span> containing the estimated values of the derivative at any date <span class="math inline">\(t_{i+1}\)</span>, an integer <span class="math inline">\(L\)</span> from which <span class="math inline">\(M\)</span> is defined as <span class="math inline">\(M=(L-1)/2\)</span> (i.e., <span class="math inline">\(L=2M+1\)</span>). The function will return the vector of values at date <span class="math inline">\(t_i\)</span>.</p>
 <p>We will write the boundary conditions <a href="#eq-crank4a">Equation&nbsp;<span>11.17</span></a> and <a href="#eq-crank4b">Equation&nbsp;<span>11.18</span></a>, respectively, in the more general forms</p>
 <p><span id="eq-crank4aa"><span class="math display">\[
@@ -413,7 +431,7 @@ C = z_1 + b_1C_{\text{up}}\;,
 C = z_L + b_LC_{\text{down}}\;,
 \tag{11.20}\]</span></span></p>
 <p>where <span class="math inline">\(z_1\)</span>, <span class="math inline">\(b_1\)</span>, <span class="math inline">\(z_L\)</span> and <span class="math inline">\(b_L\)</span> are numbers to be calculated or input by the user. The equations <a href="#eq-crank4a">Equation&nbsp;<span>11.17</span></a> and <a href="#eq-crank4b">Equation&nbsp;<span>11.18</span></a> are the special cases in which <span class="math inline">\(z_1 = \lambda_0(S-S_{\text{up}})\)</span>, <span class="math inline">\(b_1 = 1\)</span>, <span class="math inline">\(z_L = \lambda_\infty(S-S_{\text{down}})\)</span>, and <span class="math inline">\(b_L=1\)</span>. The additional generality in allowing <span class="math inline">\(b_1\)</span> and <span class="math inline">\(b_L\)</span> to be different from one is important for many purposes, and we will see an example of it in the valuation of barrier options.</p>
-<p>The system of equations that we want to solve is therefore $$ {#eq-page_cn}</p>
+<p>The system of equations that we want to solve is therefore </p>
 <span class="math display">\[\begin{pmatrix}
 1 &amp; -b_1 &amp; 0 &amp; 0 &amp; 0  &amp; \cdots  &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
 -a_3 &amp; a_1 &amp; - a_2 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
@@ -430,9 +448,17 @@ C_3\\
 C_{L-2}\\
 C_{L-1}\\
 C_L
-\end{pmatrix}\]</span>
+\end{pmatrix}
+\begin{matrix}
+\phantom\\
+\phantom\\
+\phantom\\
 =
-<span class="math display">\[\begin{pmatrix}
+\phantom\\
+\phantom\\
+\phantom\\
+\end{matrix}
+\begin{pmatrix}
 z_1 \\
 z_2\\
 z_3\\
@@ -441,7 +467,7 @@ z_{L-2}\\
 z_{L-1}\\
 z_L
 \end{pmatrix}\]</span>
-<p>$$ where we are denoting the derivative values to be determined at date <span class="math inline">\(t_i\)</span> across the <span class="math inline">\(L\)</span> (<span class="math inline">\(=2M+1\)</span>) space nodes as <span class="math inline">\(C_1, \ldots, C_L\)</span>. The coefficients <span class="math inline">\(a_i\)</span> are defined in <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a>. The numbers <span class="math inline">\(z_2, \ldots, z_{L-1}\)</span> are the right-hand sides of <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a> and are determined by the coefficients <span class="math inline">\(a_i\)</span> and the derivative values <span class="math inline">\(y_1, \ldots, y_{L}\)</span> at date <span class="math inline">\(t_{i+1}\)</span>. The system of equations that must be solved to implement the implicit method is of this same form.</p>
+<p>where we are denoting the derivative values to be determined at date <span class="math inline">\(t_i\)</span> across the <span class="math inline">\(L\)</span> (<span class="math inline">\(=2M+1\)</span>) space nodes as <span class="math inline">\(C_1, \ldots, C_L\)</span>. The coefficients <span class="math inline">\(a_i\)</span> are defined in <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a>. The numbers <span class="math inline">\(z_2, \ldots, z_{L-1}\)</span> are the right-hand sides of <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a> and are determined by the coefficients <span class="math inline">\(a_i\)</span> and the derivative values <span class="math inline">\(y_1, \ldots, y_{L}\)</span> at date <span class="math inline">\(t_{i+1}\)</span>. The system of equations that must be solved to implement the implicit method is of this same form.</p>
 <p>The first equation in this array (<a href="#eq-crank4aa">Equation&nbsp;<span>11.19</span></a>) can be written as</p>
 <p><span class="math display">\[
 C_1 = u_1 + b_1C_2\;,
@@ -455,40 +481,161 @@ u_j &amp;= \frac{z_j + a_3u_{j-1}}{a_1-a_3b_{j-1}} \;,\\
 b_j &amp;= \frac{a_2}{a_1-a_3b_{j-1}}\;.
 \end{align*}\]</span> This establishes that <a href="#eq-crank101">Equation&nbsp;<span>11.21</span></a> holds for each <span class="math inline">\(j = 2, \ldots, L\)</span>.</p>
 <p>The last equation in the array (<a href="#eq-crank4bb">Equation&nbsp;<span>11.20</span></a>) is <span id="eq-crankC_L"><span class="math display">\[
-C_L = z_L + b_LC_{L-1}\; .
-\tag{11.22}\]</span></span> Our induction argument gives us <span class="math display">\[C_{L-1} = u_{L-1} + b_{L-1}C_{L}\; ,\]</span> and when we combine these we have two equations in two unknowns and can solve for <span class="math inline">\(C_L\)</span> as <span class="math display">\[C_L = \frac{z_L+ b_Lu_{L-1}}{1-b_Lb_{L-1}}\; .\]</span> We then successively obtain <span class="math inline">\(C_{L-1}, C_{L-2}, \ldots, C_1\)</span> from <a href="#eq-crank101">Equation&nbsp;<span>11.21</span></a>.</p>
-</section>
-<section id="crank-nicolson-for-european-options" class="level3">
-<h3 class="anchored" data-anchor-id="crank-nicolson-for-european-options">Crank-Nicolson for European Options</h3>
+C_L = z_L + b_LC_{L-1}\; . \tag{11.22}\]</span></span> Our induction argument gives us <span class="math display">\[C_{L-1} = u_{L-1} + b_{L-1}C_{L}\; ,\]</span> and when we combine these we have two equations in two unknowns and can solve for <span class="math inline">\(C_L\)</span> as <span class="math display">\[C_L = \frac{z_L+ b_Lu_{L-1}}{1-b_Lb_{L-1}}\; .\]</span> We then successively obtain <span class="math inline">\(C_{L-1}, C_{L-2}, \ldots, C_1\)</span> from <a href="#eq-crank101">Equation&nbsp;<span>11.21</span></a>.</p>
 <p>We will demonstrate the Crank-Nicolson method by valuing a European call. Any other path-independent European derivative is valued in the same way, by appropriately redefining the value of the derivative at the final date and redefining the constants <span class="math inline">\(z_1\)</span> and <span class="math inline">\(z_L\)</span> in the boundary conditions <a href="#eq-crank4aa">Equation&nbsp;<span>11.19</span></a> - <a href="#eq-crank4bb">Equation&nbsp;<span>11.20</span></a> at the bottom and top of the grid.</p>
 <p>As elsewhere in this chapter, <span class="math inline">\(N\)</span> denotes the number of time periods, and <span class="math inline">\(2M+1\)</span> will be the number of <span class="math inline">\(x\)</span> values on the grid. We use the symbol <span class="math inline">\(D\)</span> to denote the distance of the top (or bottom) of the grid from <span class="math inline">\(\log S(0)\)</span>. In other words, <span class="math inline">\(D = x_M-x_0\)</span>. A reasonable value for <span class="math inline">\(D\)</span> would be three standard deviations for <span class="math inline">\(\log S\)</span>, which would mean <span class="math inline">\(D = |\nu|T +3 \sigma\sqrt{T}\)</span>. For example, for a one-year option on a stock with a volatility of 30%, it should suffice to input <span class="math inline">\(D=1\)</span>.</p>
 <p>As should be clear, the program is conceptually very similar to a binomial model. The difference is that the backing up procedure, which involves node-by-node discounting in a binomial model, here is accomplished via the Crank-Nicolson algorithm.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>The following code illustrates how to use the Crank_Nicolson method to vale a European call option.</p>
+<div id="crak_nicolson" class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> crank_nicolson(a, y, L, z1, b1, zL, bL):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    u[<span class="dv">0</span>] <span class="op">=</span> z1</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    b[<span class="dv">0</span>] <span class="op">=</span> b1</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        z[j] <span class="op">=</span> a[<span class="dv">3</span>] <span class="op">*</span> y[j] <span class="op">+</span> a[<span class="dv">1</span>] <span class="op">*</span> y[j <span class="op">+</span> <span class="dv">1</span>] <span class="op">+</span> a[<span class="dv">2</span>] <span class="op">*</span> y[j <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        u[j] <span class="op">=</span> (a[<span class="dv">2</span>] <span class="op">*</span> u[j <span class="op">-</span> <span class="dv">1</span>] <span class="op">+</span> z[j]) <span class="op">/</span> (a[<span class="dv">0</span>] <span class="op">-</span> a[<span class="dv">2</span>] <span class="op">*</span> b[j <span class="op">-</span> <span class="dv">1</span>])</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        b[j] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">/</span> (a[<span class="dv">0</span>] <span class="op">-</span> a[<span class="dv">2</span>] <span class="op">*</span> b[j <span class="op">-</span> <span class="dv">1</span>])</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    c[<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> (zL <span class="op">+</span> bL <span class="op">*</span> u[<span class="op">-</span><span class="dv">2</span>]) <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> bL <span class="op">*</span> b[<span class="op">-</span><span class="dv">2</span>])</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(L <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        c[j] <span class="op">=</span> u[j] <span class="op">+</span> b[j] <span class="op">*</span> c[j <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist):</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> Dist <span class="op">/</span> M</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    dx2 <span class="op">=</span> dx <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(dx)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    sig2 <span class="op">=</span> sigma <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> sig2 <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    St <span class="op">=</span> S0 <span class="op">*</span> np.exp(Dist)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    Sb <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>Dist)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.zeros(<span class="dv">4</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">0</span>] <span class="op">=</span> r <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span> <span class="op">/</span> dt <span class="op">+</span> sig2 <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx2)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">1</span>] <span class="op">=</span> sig2 <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx2) <span class="op">+</span> nu <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">2</span>] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">-</span> nu <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">3</span>] <span class="op">=</span> <span class="op">-</span>a[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">/</span> dt</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> M <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> Sb</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    y[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L):</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        S <span class="op">*=</span> u</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        y[j] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    z1 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    zL <span class="op">=</span> St <span class="op">-</span> St <span class="op">/</span> u</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    bL <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    CallV <span class="op">=</span> crank_nicolson(a, y, L, z1, b1, zL, bL)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        CallV <span class="op">=</span> crank_nicolson(a, CallV, L, z1, b1, zL, bL)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CallV[M]</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">90</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>Dist <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>Bar <span class="op">=</span> <span class="dv">85</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"European Call Crank-Nicolson:"</span>, european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>European Call Crank-Nicolson: 15.113207926084973</code></pre>
+</div>
+</div>
 </section>
-<section id="crank-nicolson-for-barrier-options" class="level3">
-<h3 class="anchored" data-anchor-id="crank-nicolson-for-barrier-options">Crank-Nicolson for Barrier Options</h3>
+<section id="american-options" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="american-options"><span class="header-section-number">11.6</span> American Options</h2>
+<p>The explicit method is easily adapted to American options. As in a binomial model, we compute the option value at each node as the larger of its discounted expected value and its intrinsic value. To be somewhat more precise, we replace the trinomial value <a href="#eq-fdtrinomial">Equation&nbsp;<span>11.10</span></a> with <span class="math display">\[C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC_{\text{down}}\big), \text{intrinsic value}\right)\; .\]</span> In the Crank-Nicolson method, one can in similar fashion compute the value of the derivative at each space node at any date by solving the system of equations <a href="#eq-crank3">Equation&nbsp;<span>11.15</span></a> and then replace the computed values by the intrinsic value when that is higher. However, because the values at the different space nodes are linked (i.e., the method is an implicit-type method), this one-at-a-time replacement of values by intrinsic values is not the most efficient method. See Wilmott <span class="citation" data-cites="Wilmott">(<a href="#ref-Wilmott" role="doc-biblioref">Wilmott 2000</a>)</span> for more details (and for VBA code implementing the projected successive over-relaxation method).</p>
+</section>
+<section id="sec-s_finitedifferencebarriers" class="level2" data-number="11.7">
+<h2 data-number="11.7" class="anchored" data-anchor-id="sec-s_finitedifferencebarriers"><span class="header-section-number">11.7</span> Barrier Options</h2>
+<p>Finite-difference methods work well for valuing discretely-sampled barrier options. For a down-and-out option, one should place the bottom of the grid at the knock-out boundary. For an up-and-out option, one should place the top of the grid at the knock-out boundary. As discussed in <a href="Chapter9.html"><span>Chapter&nbsp;9</span></a>, knock-in options can be valued as standard options minus knock-out options.</p>
+<p>For barrier options, the boundary information <a href="#eq-cn_boundary">Equation&nbsp;<span>11.16</span></a> can be replaced by assigning a value of zero at the knock-out boundary. For example, for a down-and-out option, the condition <a href="#eq-crank4a">Equation&nbsp;<span>11.17</span></a> can be replaced by <span class="math inline">\(C=0\)</span>. If the contract specifies that a rebate is to be paid to the buyer when the option is knocked out, then condition <a href="#eq-crank4a">Equation&nbsp;<span>11.17</span></a> should be replaced by <span class="math inline">\(C=\)</span> Rebate.</p>
 <p>To price a down-and-out (or up-and-out option), we put the bottom (or top) of the grid at the boundary. The boundary condition that we use is that the value at the boundary is zero. We will consider the example of a down-and-out call option. In this case, the boundary condition at the bottom of the grid is <a href="#eq-crank4aa">Equation&nbsp;<span>11.19</span></a> with <span class="math inline">\(z_1=0\)</span> and <span class="math inline">\(b_1 = 0\)</span>. The boundary condition at the top is the same as for an ordinary call. We can easily handle a rebate paid when the option is knocked out by inputting the value of the rebate as <span class="math inline">\(z_1\)</span>.</p>
 <p>The main new issue that we encounter in valuing barriers is locating the boundary of the grid at the barrier. For the down-and-out, we will input the value of the stock price at which the option is knocked out as . We want the bottom of the grid to lie at the natural logarithm of this number. This will influence our choice of the space step <span class="math inline">\(\Delta x\)</span>, because we want to have an integer number of steps between the bottom of the grid and <span class="math inline">\(\log S(0)\)</span>. We assume that the value <span class="math inline">\(M\)</span> input by the user represents the desired number of space steps above <span class="math inline">\(\log S(0)\)</span>. We start with <span class="math inline">\(\Delta x=D/M\)</span> as an initial estimate of the size of the space step. We then decrease it, if necessary, to ensure that the distance between and <span class="math inline">\(\log S(0)\)</span> is an integer multiple of <span class="math inline">\(\Delta x\)</span>. We then increase <span class="math inline">\(M\)</span>, if necessary, to ensure that the top of the grid will still be at or above <span class="math inline">\(D+\log S(0)\)</span>. Finally, we define the top of the grid to be at <span class="math inline">\(\log S(0) +M \cdot \Delta x\)</span>.</p>
+<div id="my_code_block" class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> Dist <span class="op">/</span> M</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    DistBot <span class="op">=</span> np.log(S0) <span class="op">-</span> np.log(Bar)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    NumBotSteps <span class="op">=</span> <span class="bu">int</span>(np.ceil(DistBot <span class="op">/</span> dx))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> DistBot <span class="op">/</span> NumBotSteps</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    NumTopSteps <span class="op">=</span> <span class="bu">int</span>(np.ceil(Dist <span class="op">/</span> dx))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    DistTop <span class="op">=</span> NumTopSteps <span class="op">*</span> dx</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> NumBotSteps <span class="op">+</span> NumTopSteps <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    dx2 <span class="op">=</span> dx <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(dx)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    sig2 <span class="op">=</span> sigma <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> sig2 <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    St <span class="op">=</span> S0 <span class="op">*</span> np.exp(DistTop)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.zeros(<span class="dv">4</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">0</span>] <span class="op">=</span> r <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span> <span class="op">/</span> dt <span class="op">+</span> sig2 <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx2)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">1</span>] <span class="op">=</span> sig2 <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx2) <span class="op">+</span> nu <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">2</span>] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">-</span> nu <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">3</span>] <span class="op">=</span> <span class="op">-</span>a[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">/</span> dt</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.zeros(L)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> Bar</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    y[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L):</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        S <span class="op">*=</span> u</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        y[j] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    z1 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    zL <span class="op">=</span> St <span class="op">-</span> St <span class="op">/</span> u</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    bL <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    CallV <span class="op">=</span> crank_nicolson(a, y, L, z1, b1, zL, bL)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        CallV <span class="op">=</span> crank_nicolson(a, CallV, L, z1, b1, zL, bL)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CallV[NumBotSteps]</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Down and Out Call CN:"</span>, down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Down and Out Call CN: 13.780367670052469</code></pre>
+</div>
+</div>
 </section>
-</section>
-<section id="exercises" class="level2" data-number="11.9">
-<h2 data-number="11.9" class="anchored" data-anchor-id="exercises"><span class="header-section-number">11.9</span> Exercises</h2>
+<section id="exercises" class="level2" data-number="11.8">
+<h2 data-number="11.8" class="anchored" data-anchor-id="exercises"><span class="header-section-number">11.8</span> Exercises</h2>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.1 </strong></span>Create an Excel worksheet to compare the estimates of the value of a discretely sampled barrier option given by the functions created in <a href="Chapter10.html#exr-e_knockoutmc">Exercise&nbsp;<span>10.9</span></a> and the function . Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above <span class="math inline">\(\log S(0)\)</span> in the Crank-Nicolson algorithm.</p>
+<p><span class="theorem-title"><strong>Exercise 11.1 </strong></span>Create a python program to compare the estimates of the value of a discretely sampled barrier option given by the functions Down_And_Out_Call_MC created in <a href="Chapter10.html#exr-e_knockoutmc">Exercise&nbsp;<span>10.9</span></a> and the function Down_And_Out_Call_CN. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above <span class="math inline">\(\log S(0)\)</span> in the Crank-Nicolson algorithm.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.2 </strong></span>Create a VBA function to value an up-and-out put option by the Crank-Nicolson method.</p>
+<p><span class="theorem-title"><strong>Exercise 11.2 </strong></span>Create a python function Up_And_Out_Put_CN to value an up-and-out put option by the Crank-Nicolson method.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.3 </strong></span>Create a VBA function that uses the explicit method <a href="#eq-fdtrinomial">Equation&nbsp;<span>11.10</span></a> to value a European call option.</p>
+<p><span class="theorem-title"><strong>Exercise 11.3 </strong></span>Create a python function European_Call_Explicit that uses the explicit method <a href="#eq-fdtrinomial">Equation&nbsp;<span>11.10</span></a> to value a European call option.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.4 </strong></span>Write the system of equations <a href="#eq-implicit">Equation&nbsp;<span>11.11</span></a> for the implicit method, together with boundary conditions of the form <a href="#eq-crank4aa">Equation&nbsp;<span>11.19</span></a> - <a href="#eq-crank4bb">Equation&nbsp;<span>11.20</span></a> as a matrix system and solve for <span class="math inline">\(u_j\)</span> and <span class="math inline">\(b_j\)</span> in <a href="#eq-crank101">Equation&nbsp;<span>11.21</span></a> - <a href="#eq-crankC_L">Equation&nbsp;<span>11.22</span></a>, as in the subsection that defines the function .</p>
+<p><span class="theorem-title"><strong>Exercise 11.4 </strong></span>Write the system of equations <a href="#eq-implicit">Equation&nbsp;<span>11.11</span></a> for the implicit method, together with boundary conditions of the form <a href="#eq-crank4aa">Equation&nbsp;<span>11.19</span></a> - <a href="#eq-crank4bb">Equation&nbsp;<span>11.20</span></a> as a matrix system and solve for <span class="math inline">\(u_j\)</span> and <span class="math inline">\(b_j\)</span> in <a href="#eq-crank101">Equation&nbsp;<span>11.21</span></a> - <a href="#eq-crankC_L">Equation&nbsp;<span>11.22</span></a>, as in the subsection that defines the function CrankNicolson.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.5 </strong></span>Create a VBA function that solves the system of equations in the preceding exercise.</p>
+<p><span class="theorem-title"><strong>Exercise 11.5 </strong></span>Create a python function Implicit that solves the system of equations in the preceding exercise.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.6 </strong></span>Create a VBA function that uses the implicit method to value a European call option.</p>
+<p><span class="theorem-title"><strong>Exercise 11.6 </strong></span>Create a python function European_Call_Implicit that uses the implicit method to value a European call option.</p>
 </div>
 
 

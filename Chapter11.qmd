@@ -166,14 +166,14 @@ $$ {#eq-crank2}
 We can also write this as
 $$
 a_1C - a_2C_{\text{up}} - a_3C_{\text{down}} 
-= a_4C' + a_2C'_{\text{up}} + a_3C'_{\text{down}}\;,
-$$ {#eq-crank3}
+= a_4C' + a_2C'_{\text{up}} + a_3C'_{\text{down}}\;,$$ {#eq-crank3}
 
 where the constants $a_i$ are the factors in parentheses in @eq-crank2.
 
 As before, we start at the final date $t_N$ and define the call value at that date by its intrinsic value.  Consider a grid point $(t_{N-1},x_j)$.  Forcing  @eq-3 to hold at the midpoint $(t_{N-1}+\Delta t/2,x_j)$ leads us to @eq-crank3.  In this equation, $C'$, $C'_{\text{up}}$ and $C'_{\text{down}}$ are known from the intrinsic value at maturity, and we need to solve for $C$, $C_{\text{up}}$ and $C_{\text{down}}$.  There are $2M-1$ linear equations of this type and we will add linear equations at the upper and lower boundaries of the grid and solve the resulting system of $2M+1$ linear equations for the $2M+1$ call values.  After finding the call values at date $t_{N-1}$, we then repeat the calculation at $t_{N-2}$ and continue backing up in this way until we reach the initial date.
 
 Notice that the Crank-Nicolson equations @eq-crank2 are similar to the equations @eq-implicit in the implicit method, but more information is used in each step of the Crank-Nicolson method than is used in each step of the implicit method. Equation @eq-crank2 links the call values $C$, $C_{\text{up}}$ and $C_{\text{down}}$ to the previously calculated $C'$, $C'_{\text{up}}$ and $C'_{\text{down}}$, whereas in the implicit method they were linked only to $C'$ (which we called $C_{\text{right}}$).
+
 
 ## European  Options
 
@@ -203,32 +203,7 @@ $$ {#eq-crank4b}
 
 
 
-These two linear equations in the values at time $t_i$ augment the $2M-1$ equations already described to form a system of $2M+1$ linear equations to be solved for the derivative values at the $2M+1$ grid points at time $t_i$.  
-
-## American Options
-
-The explicit method is easily adapted to American options.  As in a binomial model, we compute the option value at each node as the larger of its discounted expected value and its intrinsic value.  To be somewhat more precise, we replace the trinomial value @eq-fdtrinomial with
-$$C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC_{\text{down}}\big), \text{intrinsic value}\right)\; .$$
-In the Crank-Nicolson method, one can in similar fashion compute the value of the derivative at each space node at any date by solving the system of equations @eq-crank3 and then replace the computed values by the intrinsic value when that is higher.  However, because the values at the different space nodes are linked (i.e., the method is an implicit-type method), this one-at-a-time replacement of values by intrinsic values is not the most efficient method.  See Wilmott [@Wilmott] for more details (and for VBA code implementing the projected successive over-relaxation method).
-
-## Barrier Options {#sec-s_finitedifferencebarriers}
-
-
-\index{barrier option}\index{down-and-out option}\index{down-and-in option}\index{knock-out option}\index{knock-in option}Finite-difference methods work well for valuing discretely-sampled barrier options.  For a down-and-out option, one should place the bottom of the grid at the knock-out boundary.  For an up-and-out option, one should place the top of the grid at the knock-out boundary.  As discussed in @sec-c_exotics, knock-in options can be valued as standard options minus knock-out options.  
-
-For barrier options, the boundary information @eq-cn_boundary can be replaced by assigning a value of zero at the knock-out boundary.  For example, for a down-and-out option, the condition @eq-crank4a can be replaced by $C=0$.  If the contract specifies that a rebate is to be paid to the buyer when the option is knocked out, then condition @eq-crank4a should be replaced by $C=$ Rebate.  
-
-
-
-
-
-
-
-
-
-## Calculations in VBA {#sec-s_finitedifferences_matlab}
-
-### Crank-Nicolson
+These two linear equations in the values at time $t_i$ augment the $2M-1$ equations already described to form a system of $2M+1$ linear equations to be solved for the derivative values at the $2M+1$ grid points at time $t_i$. 
 
 We will create a program that solves a system of equations of the form @eq-crank3, @eq-crank4a and @eq-crank4b.  We input the vector $a$ of coefficients, a vector $y$ of dimension $2M+1$ containing the estimated values of the derivative at any date $t_{i+1}$, an integer $L$ from which $M$ is defined as $M=(L-1)/2$ (i.e., $L=2M+1$).  The function will return the vector of values at date $t_i$.  
 
@@ -249,7 +224,6 @@ where $z_1$, $b_1$, $z_L$ and $b_L$ are numbers to be calculated or input by the
 
 The system of equations that we want to solve is therefore 
 \setcounter{MaxMatrixCols}{11}
-$$ {#eq-page_cn}
 
 \begin{pmatrix} 
 1 & -b_1 & 0 & 0 & 0  & \cdots  & 0 & 0 & 0 & 0 & 0\\
@@ -268,7 +242,15 @@ C_{L-2}\\
 C_{L-1}\\
 C_L
 \end{pmatrix}
+\begin{matrix}
+\phantom\\
+\phantom\\
+\phantom\\
 = 
+\phantom\\
+\phantom\\
+\phantom\\
+\end{matrix}
 \begin{pmatrix}
 z_1 \\
 z_2\\
@@ -277,7 +259,10 @@ z_3\\
 z_{L-2}\\
 z_{L-1}\\
 z_L
-\end{pmatrix}$$
+\end{pmatrix}
+
+
+
 where we are denoting the derivative values to be determined at date $t_i$ across the $L$ ($=2M+1$) space nodes as $C_1, \ldots, C_L$.  The coefficients $a_i$ are defined in  @eq-crank3.  The numbers $z_2, \ldots, z_{L-1}$ are the right-hand sides of  @eq-crank3 and are determined by the coefficients $a_i$ and the derivative values $y_1, \ldots, y_{L}$ at date $t_{i+1}$.  The system of equations that must be solved to implement the implicit method is of this same form.
 
 The first equation in this array (@eq-crank4aa) can be written as
@@ -305,47 +290,12 @@ This establishes that @eq-crank101 holds for each $j = 2, \ldots, L$.
 
 The last equation in the array (@eq-crank4bb) is 
 $$
-C_L = z_L + b_LC_{L-1}\; .
-$$ {#eq-crankC_L}
+C_L = z_L + b_LC_{L-1}\; .$$ {#eq-crankC_L}
 Our induction argument gives us
 $$C_{L-1} = u_{L-1} + b_{L-1}C_{L}\; ,$$
 and when we combine these we have two equations in two unknowns and can solve for $C_L$ as
 $$C_L = \frac{z_L+ b_Lu_{L-1}}{1-b_Lb_{L-1}}\; .$$
 We then successively obtain $C_{L-1}, C_{L-2}, \ldots, C_1$ from  @eq-crank101.
-
- 
-\addcontentsline{lof}{figure}{CrankNicolson}
-\begin{verbatim}
-Function CrankNicolson(a, y, L, z1, b1, zL, bL)
-'
-' Inputs are a = 4-vector of coefficients
-'            y = L-vector of function values at a point in time
-'            L = number of space points in the grid 
-'            z1 = constant for bottom boundary condition
-'            b1 = coefficient for bottom boundary condition
-'            zL = constant for top boundary condition
-'            bL = coefficient for top boundary condition
-'
-' This returns a row vector of function values 
-'
-Dim c(), b(), u(), z(), j
-ReDim c(1 To L), b(1 To L), u(1 To L), z(1 To L)
-u(1) = z1
-b(1) = b1
-For j = 2 To L - 1
-    z(j) = a(4) * y(j) + a(2) * y(j + 1) + a(3) * y(j - 1)
-    u(j) = (a(3) * u(j - 1) + z(j)) / (a(1) - a(3) * b(j - 1))
-    b(j) = a(2) / (a(1) - a(3) * b(j - 1))
-Next j
-c(L) = (zL + bL * u(L - 1)) / (1 - bL * b(L - 1))
-For j = L - 1 To 1 Step -1
-    c(j) = u(j) + b(j) * c(j + 1)
-Next j
-CrankNicolson = c
-End Function
-\end{verbatim}
-
-### Crank-Nicolson for European Options
 
 We will demonstrate the Crank-Nicolson method by valuing a European call.  Any other path-independent European derivative is valued in the same way, by appropriately redefining the value of the derivative at the final date and redefining the constants $z_1$ and $z_L$ in the boundary conditions @eq-crank4aa - @eq-crank4bb at the bottom and top of the grid.  
 
@@ -353,149 +303,166 @@ As elsewhere in this chapter, $N$ denotes the number of time periods, and $2M+1$
 
 As should be clear, the program is conceptually very similar to a binomial model.  The difference is that the backing up procedure, which involves node-by-node discounting in a binomial model, here is accomplished via the Crank-Nicolson algorithm.^[We use a different variable ($y$) for the call values at the final date---and consequently need to separate the first step of backing up (to the penultimate date) and the other steps of backing up (to date zero)---because element-by-element definition of an array and assignment of an array to a variable require different variable types in VBA.  See Appendix~A for more discussion.]  
 
-\addcontentsline{lof}{figure}{European Call CrankNicolson}
-\begin{verbatim}
-Function European_Call_CrankNicolson(S0,K,r,sigma,q,T,N,M,Dist)
-'
-' Inputs are S0 = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            N = number of time periods
-'            M = number of space points above (or below) log(S0)
-'            Dist = distance of boundary of grid from log(S0)
-'
-Dim dt, dx, dx2, u, sig2, nu, St, Sb, S, z1, b1, zL, bL, i, j, L
-Dim CallV, y(), a(1 To 4)
-L = 2 * M + 1          ' number of space points in the grid
-ReDim y(1 To L)
-'
-' First we define parameters
-'
-dt = T / N             ' size of each time step
-dx = Dist / M          ' size of each space step
-dx2 = dx * dx
-u = Exp(dx)            ' up parameter, same as in binomial model
-sig2 = sigma * sigma
-nu = r - q - sig2 / 2  ' risk-neutral drift
-St = S0 * Exp(Dist)    ' stock price at the top nodes
-Sb = S0 * Exp(-Dist)   ' stock price at the bottom nodes
-a(1) = r / 2 + 1 / dt + sig2 / (2 * dx2)
-a(2) = sig2 / (4 * dx2) + nu / (4 * dx)
-a(3) = a(2) - nu / (2 * dx)
-a(4) = -a(1) + 2 / dt
-'
-' Now we compute the call value at the final date
-'
-S = Sb
-y(1) = Application.Max(S - K, 0)
-For j = 2 To L         ' loop over nodes at last date
-    S = S * u
-    y(j) = Application.Max(S - K, 0)
-Next j
-'
-' Now we calculate the call value at the penultimate date
-'
-z1 = 0                ' constant for bottom boundary condition
-b1 = 1                ' coefficient for bottom boundary condition
-zL = St - St / u      ' constant for top boundary condition
-bL = 1                ' coefficient for top boundary condition
-CallV = CrankNicolson(a, y, L, z1, b1, zL, bL)
-'
-' Now we back up to date 0
-'
-For i = (N - 2) To 0 Step -1
-    CallV = CrankNicolson(a, CallV, L, z1, b1, zL, bL)
-Next i
-European_Call_CrankNicolson = CallV(M + 1)  ' value at middle node
-End Function
-\end{verbatim}
+The following code illustrates how to  use the Crank_Nicolson method to vale a European call option. 
+
+```{python}
+
+#| code-fold: true
+#| label: Crak_Nicolson
+
+import numpy as np
+
+def crank_nicolson(a, y, L, z1, b1, zL, bL):
+    u = np.zeros(L)
+    b = np.zeros(L)
+    c = np.zeros(L)
+    z = np.zeros(L)
+
+    u[0] = z1
+    b[0] = b1
+    for j in range(1, L - 1):
+        z[j] = a[3] * y[j] + a[1] * y[j + 1] + a[2] * y[j - 1]
+        u[j] = (a[2] * u[j - 1] + z[j]) / (a[0] - a[2] * b[j - 1])
+        b[j] = a[1] / (a[0] - a[2] * b[j - 1])
+    c[-1] = (zL + bL * u[-2]) / (1 - bL * b[-2])
+    for j in range(L - 2, -1, -1):
+        c[j] = u[j] + b[j] * c[j + 1]
+    return c
+
+def european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist):
+    dt = T / N
+    dx = Dist / M
+    dx2 = dx ** 2
+    u = np.exp(dx)
+    sig2 = sigma ** 2
+    nu = r - q - sig2 / 2
+    St = S0 * np.exp(Dist)
+    Sb = S0 * np.exp(-Dist)
+    a = np.zeros(4)
+    a[0] = r / 2 + 1 / dt + sig2 / (2 * dx2)
+    a[1] = sig2 / (4 * dx2) + nu / (4 * dx)
+    a[2] = a[1] - nu / (2 * dx)
+    a[3] = -a[0] + 2 / dt
+
+    L = 2 * M + 1
+    y = np.zeros(L)
+    S = Sb
+    y[0] = max(S - K, 0)
+    for j in range(1, L):
+        S *= u
+        y[j] = max(S - K, 0)
+
+    z1 = 0
+    b1 = 1
+    zL = St - St / u
+    bL = 1
+    CallV = crank_nicolson(a, y, L, z1, b1, zL, bL)
+
+    for _ in range(N - 2, -1, -1):
+        CallV = crank_nicolson(a, CallV, L, z1, b1, zL, bL)
+    return CallV[M]
+
+# Example usage
+S0 = 100
+K = 90
+r = 0.05
+sigma = 0.2
+q = 0.02
+T = 1
+N = 100
+M = 50
+Dist = 3
+Bar = 85
+
+print("European Call Crank-Nicolson:", european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist))
+```
+
+## American Options
+
+The explicit method is easily adapted to American options.  As in a binomial model, we compute the option value at each node as the larger of its discounted expected value and its intrinsic value.  To be somewhat more precise, we replace the trinomial value @eq-fdtrinomial with
+$$C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC_{\text{down}}\big), \text{intrinsic value}\right)\; .$$
+In the Crank-Nicolson method, one can in similar fashion compute the value of the derivative at each space node at any date by solving the system of equations @eq-crank3 and then replace the computed values by the intrinsic value when that is higher.  However, because the values at the different space nodes are linked (i.e., the method is an implicit-type method), this one-at-a-time replacement of values by intrinsic values is not the most efficient method.  See Wilmott [@Wilmott] for more details (and for VBA code implementing the projected successive over-relaxation method).
+
+## Barrier Options {#sec-s_finitedifferencebarriers}
 
 
+\index{barrier option}\index{down-and-out option}\index{down-and-in option}\index{knock-out option}\index{knock-in option}Finite-difference methods work well for valuing discretely-sampled barrier options.  For a down-and-out option, one should place the bottom of the grid at the knock-out boundary.  For an up-and-out option, one should place the top of the grid at the knock-out boundary.  As discussed in @sec-c_exotics, knock-in options can be valued as standard options minus knock-out options.  
 
-### Crank-Nicolson for Barrier Options
+For barrier options, the boundary information @eq-cn_boundary can be replaced by assigning a value of zero at the knock-out boundary.  For example, for a down-and-out option, the condition @eq-crank4a can be replaced by $C=0$.  If the contract specifies that a rebate is to be paid to the buyer when the option is knocked out, then condition @eq-crank4a should be replaced by $C=$ Rebate.  
 
 To price a down-and-out (or up-and-out option), we put the bottom (or top) of the grid at the boundary.  The boundary condition that we use is that the value at the boundary is zero.   We will consider the example of a down-and-out call option.  In this case, the boundary condition at the bottom of the grid is @eq-crank4aa with $z_1=0$ and $b_1 = 0$.  The boundary condition at the top is the same as for an ordinary call.  We can easily handle a rebate paid when the option is knocked out by inputting the value of the rebate as $z_1$.  
 
 The main new issue that we encounter in valuing barriers is locating the boundary of the grid at the barrier.  For the down-and-out, we will input the value of the stock price at which the option is knocked out as \verb!Bar!.  We want the bottom of the grid to lie at the natural logarithm of this number.  This will influence our choice of the space step $\Delta x$, because we want to have an integer number of steps between the bottom of the grid and $\log S(0)$.  We assume that the value $M$ input by the user represents the desired number of space steps above $\log S(0)$.  We start with $\Delta x=D/M$ as an initial estimate of the size of the space step.  We then decrease it, if necessary, to ensure that the distance between \verb!Bar! and $\log S(0)$ is an integer multiple of $\Delta x$.  We then increase $M$, if necessary, to ensure that the top of the grid will still be at or above $D+\log S(0)$.  Finally, we define the top of the grid to be at $\log S(0) +M \cdot \Delta x$.  
 
-\addcontentsline{lof}{figure}{Down And Out Call CN}
-\begin{verbatim}
-Function Down_And_Out_Call_CN(S0,K,r,sigma,q,T,N,M,Dist,Bar)
-'
-' Inputs are S0 = initial stock price
-'            K = strike price
-'            r = risk-free rate
-'            sigma = volatility
-'            q = dividend yield
-'            T = time to maturity
-'            N = number of time periods
-'            M = number of space points above log(S0)
-'            Dist = distance of top of grid from log(S0)
-'            Bar = knock-out barrier < S0
-'
-Dim dx, DistBot, DistTop, dt, dx2, u, sig2, nu, St, S, z1, b1
-Dim zL, bL, CallV, y(), a(4), i, j, L, NumBotSteps, NumTopSteps
-dx = Dist / M                  ' first guess at size of space step
-DistBot = Log(S0) - Log(Bar)   ' dist of log(S0) from bottom of grid
-NumBotSteps = Application.Ceiling(DistBot / dx, 1)
-dx = DistBot / NumBotSteps     ' new (smaller) space step
-NumTopSteps = Application.Ceiling(Dist / dx, 1)
-DistTop = NumTopSteps * dx     ' dist of log S(0) from top of grid
-L = NumBotSteps + NumTopSteps + 1  ' number of space points
-ReDim y(L)
-dt = T / N                         ' size of time step
-dx2 = dx * dx
-u = Exp(dx)                        ' up parameter, as in binomial
-sig2 = sigma * sigma
-nu = r - q - sig2 / 2
-St = S0 * Exp(DistTop)             ' stock price at top node
-a(1) = r / 2 + 1 / dt + sig2 / (2 * dx2)
-a(2) = sig2 / (4 * dx2) + nu / (4 * dx)
-a(3) = a(2) - nu / (2 * dx)
-a(4) = -a(1) + 2 / dt
-S = Bar                            ' stock price at bottom node
-y(1) = Application.Max(S - K, 0)
-For j = 2 To L                     ' loop over nodes at last date
-    S = S * u
-    y(j) = Application.Max(S - K, 0)
-Next j
-z1 = 0                             ' constant for bottom boundary
-b1 = 0                           ' coefficient for bottom boundary
-zL = St - St / u                 ' constant for top boundary
-bL = 1                           ' coefficient for top boundary
-CallV = CrankNicolson(a, y, L, z1, b1, zL, bL)
-For i = N - 2 To 0 Step -1            ' back up to date 0
-    CallV = CrankNicolson(a, CallV, L, z1, b1, zL, bL)
-Next i
-Down_And_Out_Call_CN = CallV(NumBotSteps + 1)
-End Function
-\end{verbatim}
+```{python}
+
+#| code-fold: true
+#| label: my_code_block
+
+def down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar):
+    dx = Dist / M
+    DistBot = np.log(S0) - np.log(Bar)
+    NumBotSteps = int(np.ceil(DistBot / dx))
+    dx = DistBot / NumBotSteps
+    NumTopSteps = int(np.ceil(Dist / dx))
+    DistTop = NumTopSteps * dx
+    L = NumBotSteps + NumTopSteps + 1
+    dt = T / N
+    dx2 = dx ** 2
+    u = np.exp(dx)
+    sig2 = sigma ** 2
+    nu = r - q - sig2 / 2
+    St = S0 * np.exp(DistTop)
+    a = np.zeros(4)
+    a[0] = r / 2 + 1 / dt + sig2 / (2 * dx2)
+    a[1] = sig2 / (4 * dx2) + nu / (4 * dx)
+    a[2] = a[1] - nu / (2 * dx)
+    a[3] = -a[0] + 2 / dt
+
+    y = np.zeros(L)
+    S = Bar
+    y[0] = max(S - K, 0)
+    for j in range(1, L):
+        S *= u
+        y[j] = max(S - K, 0)
+
+    z1 = 0
+    b1 = 0
+    zL = St - St / u
+    bL = 1
+    CallV = crank_nicolson(a, y, L, z1, b1, zL, bL)
+
+    for _ in range(N - 2, -1, -1):
+        CallV = crank_nicolson(a, CallV, L, z1, b1, zL, bL)
+    return CallV[NumBotSteps]
+
+print("Down and Out Call CN:", down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar))
+
+```
+
 
 
 ## Exercises
 
 ::: {#exr-nolabel}
- Create an Excel worksheet to compare the estimates of the value of a discretely sampled barrier option given by the functions \verb!Down_And_Out_Call_MC! created in @exr-e_knockoutmc and the function \verb!Down_And_Out_Call_CN!.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above $\log S(0)$ in the Crank-Nicolson algorithm.  
+ Create a python program to compare the estimates of the value of a discretely sampled barrier option given by the functions Down_And_Out_Call_MC created in @exr-e_knockoutmc and the function Down_And_Out_Call_CN.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above $\log S(0)$ in the Crank-Nicolson algorithm.  
 :::
 ::: {#exr-nolabel}
- Create a VBA function \verb!Up_And_Out_Put_CN! to value an up-and-out put option by the Crank-Nicolson method.
+ Create a python function Up_And_Out_Put_CN to value an up-and-out put option by the Crank-Nicolson method.
 :::
 ::: {#exr-nolabel}
-Create a VBA function \verb!European_Call_Explicit! that uses the explicit method @eq-fdtrinomial to value a European call option.
-:::
-
-::: {#exr-nolabel}
-
-Write the system of equations @eq-implicit for the implicit method, together with boundary conditions of the form @eq-crank4aa - @eq-crank4bb as a matrix system and solve for $u_j$ and $b_j$ in @eq-crank101 - @eq-crankC_L, as in the subsection that defines the function \verb!CrankNicolson!.
+Create a python function European_Call_Explicit that uses the explicit method @eq-fdtrinomial to value a European call option.
 :::
 
 ::: {#exr-nolabel}
-Create a VBA function \verb!Implicit! that solves the system of equations in the preceding exercise.
+
+Write the system of equations @eq-implicit for the implicit method, together with boundary conditions of the form @eq-crank4aa - @eq-crank4bb as a matrix system and solve for $u_j$ and $b_j$ in @eq-crank101 - @eq-crankC_L, as in the subsection that defines the function CrankNicolson.
+:::
+
+::: {#exr-nolabel}
+Create a python function Implicit that solves the system of equations in the preceding exercise.
 :::
 ::: {#exr-nolabel}
 
-Create a VBA function \verb!European_Call_Implicit! that uses the implicit method to value a European call option.
+Create a python function European_Call_Implicit that uses the implicit method to value a European call option.
 :::

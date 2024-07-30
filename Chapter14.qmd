@@ -427,8 +427,7 @@ d_1 = \frac{\log P^{\text{mkt}}(0,u) - \log\left(P^{\text{mkt}}(0,T)K\right) +\f
 $$ {#eq-vasicekdiscountcall_d1}
 
 $$
-d_2 = d_1 - \sigma_{\text{avg}}\sqrt{T}\;. 
-$$ {#eq-vasicekdiscountcall_d2}
+d_2 = d_1 - \sigma_{\text{avg}}\sqrt{T}\;. $$ {#eq-vasicekdiscountcall_d2}
 
 
 
@@ -439,6 +438,48 @@ The volatility $\sigma_{\text{avg}}$ is defined as $\sigma_{\text{avg}} = (u-T)\
 \noindent As our notation indicates, the discount bond prices  appearing in these formulas  should be taken to be the \emph{market} prices of the bonds at the date the options are valued, rather than the \emph{model} prices.  Of course, if we have fit the model to the market prices of discount bonds, there is no distinction.    Using model prices that are different from market prices would be similar to inputting a stock price in the Black-Scholes formula obtained from a discounted-cash-flow analysis rather than using the market price of the stock.  This is not something that one would normally do.  
 
 Because the discount bond volatilities are the same in the continuous-time Ho-Lee model as in the basic Vasicek model with $\kappa=0$ and are the same in the Hull-White model as in the basic Vasicek model with $\kappa>0$, the formulas for the values of discount bond options are the same in the corresponding models.  These extensions of the basic Vasicek model permit one to match model bond prices to market bond prices, but they have no effect on the values of discount bond options, provided we remember to use the market prices in  @eq-vasicekdiscountcall - @eq-vasicekdiscountcall_d2.
+
+Rather than calculating $\sigma_{\text{avg}}$ from the volatility $\sigma$ of the short rate and the constant $\kappa$ or function $\kappa(t)$, we will treat $\sigma_{\text{avg}}$ as an input into the option pricing formulas.  This is necessary if one wants to use (i.e., invert) the following functions to imply $\sigma_{\text{avg}}$ from market prices and then used the implied $\sigma_{\text{avg}}$ to calibrate the model.
+
+```{python}
+
+#| code-fold: true
+#| label: Discount_Bond_Option
+
+
+import numpy as np
+from scipy.stats import norm
+
+def black_call(F, K, P, sigma, T):
+    d1 = (np.log(F / K) + 0.5 * sigma ** 2 * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    return P * (F * norm.cdf(d1) - K * norm.cdf(d2))
+
+def black_put(F, K, P, sigma, T):
+    d1 = (np.log(F / K) + 0.5 * sigma ** 2 * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    return P * (K * norm.cdf(-d2) - F * norm.cdf(-d1))
+
+def vasicek_discount_bond_call(Underlying, K, MatDisc, sigavg, T):
+    F = Underlying / MatDisc
+    return black_call(F, K, MatDisc, sigavg, T)
+
+def vasicek_discount_bond_put(Underlying, K, MatDisc, sigavg, T):
+    F = Underlying / MatDisc
+    return black_put(F, K, MatDisc, sigavg, T)
+
+
+# Example usage
+Underlying = 0.9
+K = 0.9
+MatDisc = 0.88
+sigavg = 0.2
+T = 1
+
+
+print("Vasicek Discount Bond Call:", vasicek_discount_bond_call(Underlying, K, MatDisc, sigavg, T))
+print("Vasicek Discount Bond Put:", vasicek_discount_bond_put(Underlying, K, MatDisc, sigavg, T))
+```
 
 
 As noted before, these option pricing formulas can be used to value caplets and floorlets.  \index{caplet}\index{floorlet}A caplet with reset date $t_i$ and payment date $t_{i+1}$ is equivalent, as discussed in @sec-s_caps2, to $1+\bar{R}\,\Delta$ put options maturing at $t_i$ on the discount bond maturing at $t_{i+1}$, with the exercise price of each option being $1/(1+\bar{R}\,\Delta t)$.  When we make these substitutions in the above formulas (and the same for floorlets) we obtain the following.
@@ -487,7 +528,40 @@ of the discount bond corresponding to the caplet with payment date $t_{i+1}$ has
 $$R_i(t) = \frac{P(t,t_i)}{P(t,t_{i+1})} - 1 = \frac{1}{F(t)}-1\; .$$
 If the forward price has a non-random volatility, then the forward rate is the sum of a variable ($1/F(t)$) with a constant volatility and a constant ($-1$) and hence will have a random volatility.  Likewise, if the forward rate has a non-random volatility, then the forward price will have a random volatility.  Therefore, the assumptions of the two models are inconsistent.
 
+```{python}
 
+#| code-fold: true
+#| label: Vasicek_Cap
+
+
+def vasicek_cap(P0, P, rbar, sigavg, N, t0, dt):
+    K = 1 / (1 + rbar * dt)
+    if t0 == 0:
+        cap_value = P[0] * max(0, 1 / P[0] - 1 - rbar * dt)
+    else:
+        MatDisc = P0
+        Underlying = P[0]
+        cap_value = vasicek_discount_bond_put(Underlying, K, MatDisc, sigavg[0], t0)
+    
+    for i in range(1, N):
+        MatDisc = P[i - 1]
+        Underlying = P[i]
+        mat = t0 + i * dt
+        cap_value += vasicek_discount_bond_put(Underlying, K, MatDisc, sigavg[i], mat)
+    
+    return (1 + rbar * dt) * cap_value
+
+# Example
+
+P0 = 0.95
+P = [0.92, 0.89, 0.85, 0.80]
+rbar = 0.03
+N = 4
+t0 = 0.5
+dt = 0.5
+
+print("Vasicek Cap:", vasicek_cap(P0, P, rbar, [0.2, 0.18, 0.15, 0.12], N, t0, dt))
+```
 
 ## Coupon Bond Options and Swaptions {#sec-s_vasicek_swaptions}
 
@@ -563,7 +637,115 @@ $$
 \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s\right) = \exp\left\{a(t_i)-a(T) + [b(t_i)-b(T)]r(0)\right\}\frac{P^{\text{mkt}}(0,t_i)}{P^{\text{mkt}}(0,T)}\;.
 $$ {#eq-swaptions104}
 
+```{python}
 
+#| code-fold: true
+#| label: HW_Coupon_Bond_Call
+
+
+def hwa(sigma, kappa, tau):
+    return -sigma ** 2 * (2 * kappa * tau - np.exp(-2 * kappa * tau) + 4 * np.exp(-kappa * tau) - 3) / (4 * kappa ** 3)
+
+def hwb(kappa, tau):
+    return (1 - np.exp(-kappa * tau)) / kappa
+
+def hwsigavg(sigma, kappa, T, u):
+    return max((sigma * (np.exp(-kappa * T) - np.exp(-kappa * u)) / kappa) * np.sqrt((np.exp(2 * kappa * T) - 1) / (2 * kappa * T)),0.001)
+
+def hw_coup_bond(Coup, N, t1, dt, Cal, r, sigma, kappa, T):
+    x = 0
+    for i in range(N - 1):
+        tau = t1 + i * dt - T
+        a = hwa(sigma, kappa, tau)
+        b = hwb(kappa, tau)
+        x += Coup * Cal[i] * np.exp(-a - b * r)
+    
+    tau = t1 + (N - 1) * dt - T
+    a = hwa(sigma, kappa, tau)
+    b = hwb(kappa, tau)
+    x += (1 + Coup) * Cal[N - 1] * np.exp(-a - b * r)
+    
+    return x
+
+def hw_coup_bond_call(Coup, N, t1, dt, K, MatDisc, P, r, sigma, kappa, T):
+    tol = 1e-8
+    Cal = np.zeros(N)
+    
+    aT = hwa(sigma, kappa, T)
+    bT = hwb(kappa, T)
+    for i in range(N):
+        tau = t1 + i * dt
+        a = hwa(sigma, kappa, tau)
+        b = hwb(kappa, tau)
+        Cal[i] = np.exp(a - aT + (b - bT) * r) * P[i] / MatDisc
+    
+    lower = 0
+    flower = hw_coup_bond(Coup, N, t1, dt, Cal, lower, sigma, kappa, T) - K
+    while flower < 0:
+        lower -= 1
+        flower = hw_coup_bond(Coup, N, t1, dt, Cal, lower, sigma, kappa, T) - K
+    
+    upper = 1
+    fupper = hw_coup_bond(Coup, N, t1, dt, Cal, upper, sigma, kappa, T) - K
+    while fupper > 0:
+        upper += 1
+        fupper = hw_coup_bond(Coup, N, t1, dt, Cal, upper, sigma, kappa, T) - K
+    
+    guess = 0.5 * (lower + upper)
+    fguess = hw_coup_bond(Coup, N, t1, dt, Cal, guess, sigma, kappa, T) - K
+    while upper - lower > tol:
+        if fupper * fguess < 0:
+            lower = guess
+            flower = fguess
+        else:
+            upper = guess
+            fupper = fguess
+        guess = 0.5 * (lower + upper)
+        fguess = hw_coup_bond(Coup, N, t1, dt, Cal, guess, sigma, kappa, T) - K
+    
+    rstar = guess
+    x = 0
+    
+    for i in range(N - 1):
+        tau = t1 + i * dt - T
+        a = hwa(sigma, kappa, tau)
+        b = hwb(kappa, tau)
+        strike = Cal[i] * np.exp(-a - b * rstar)
+        sigavg = hwsigavg(sigma, kappa, T, T + tau)
+        x += Coup * vasicek_discount_bond_call(P[i], strike, MatDisc, sigavg, T)
+    
+    tau = t1 + (N - 1) * dt - T
+    a = hwa(sigma, kappa, tau)
+    b = hwb(kappa, tau)
+    strike = Cal[N - 1] * np.exp(-a - b * rstar)
+    sigavg = hwsigavg(sigma, kappa, T, T + tau)
+    x += (1 + Coup) * vasicek_discount_bond_call(P[N - 1], strike, MatDisc, sigavg, T)
+    
+    return x
+
+# Example usage
+
+Underlying = 0.95
+K = 0.9
+MatDisc = 0.88
+sigavg = 0.2
+T = 1
+
+P0 = 0.95
+P = [0.92, 0.89, 0.85, 0.80]
+rbar = 0.03
+N = 4
+t0 = 0.5
+dt = 0.5
+
+Coup = 0.03
+r = 0.02
+sigma = 0.1
+kappa = 0.1
+
+
+print("HW Coupon Bond Call:", hw_coup_bond_call(Coup, N, t0, dt, K, MatDisc, P, r, sigma, kappa, T))
+```
 
 
 ## Captions and Floortions {#sec-s_captions}
@@ -750,39 +932,9 @@ determined by $\kappa_1,\ldots,\kappa_i$ and the $\sigma$ function.  Therefore, 
 ## Calculations in VBA
 
 ### Discount Bond Options
-Rather than calculating $\sigma_{\text{avg}}$ from the volatility $\sigma$ of the short rate and the constant $\kappa$ or function $\kappa(t)$, we will treat $\sigma_{\text{avg}}$ as an input into the option pricing formulas.  This is necessary if one wants to use (i.e., invert) the following functions to imply $\sigma_{\text{avg}}$ from market prices and then used the implied $\sigma_{\text{avg}}$ to calibrate the model.
 
-\addcontentsline{lof}{figure}{Vasicek Discount Bond Call}
-\begin{verbatim}
-Function Vasicek_Discount_Bond_Call(Underlying,K,MatDisc,sigavg,T)
-'
-' Inputs are Underlying = price of underlying discount bond
-'            K = strike price
-'            MatDisc = price of bond maturing when option matures
-'            sigavg = average volatility of the forward bond price
-'            T = time to maturity
-'
-Dim F
-F = Underlying / MatDisc  ' forward price of the underlying
-Vasicek_MatDisc_Bond_Call = Black_Call(F, K, MatDisc, sigavg, T)
-End Function
-\end{verbatim}
 
-\addcontentsline{lof}{figure}{Vasicek Discount Bond Put}
-\begin{verbatim}
-Function Vasicek_Discount_Bond_Put(Underlying,K,MatDisc,sigavg,T)
-'
-' Inputs are Underlying = price of underlying discount bond
-'            K = strike price
-'            MatDisc = price of bond maturing when option matures
-'            sigavg = average volatility of the forward bond price
-'            T = time to maturity
-'
-Dim F
-F = Underlying / MatDisc  ' forward price of the underlying
-Vasicek_Discount_Bond_Put = Black_Put(F, K, MatDisc, sigavg, T)
-End Function
-\end{verbatim}
+
 
 ### Caps
  We input the first reset date $t_0$, the time between payments $\Delta t$, the total number of payments $N$ and the cap rate $\bar{\mathcal{R}}$.  As in @sec-s_fixedincomederivatives_matlab, we input the price of the discount bond maturing at $t_0$ as \verb!P0!, and we input a vector \verb!P! containing the $N$ discount bond prices $P(0,t_1),\ldots,P(0,t_{N})$.  We will allow different volatilities for the different caplets.  The input \verb!sigavg! should have elements 1 through $N$, with \verb!sigavg(i)! being the average volatility of the forward price of the discount bond maturing at $t_i$, where the forward contract matures at $t_{i-1}$, and the average volatility is computed from date~0 to date $t_{i-1}$, according to the formulas in @sec-s_vasicek_discounts.  Specifically, \verb!sigavg(i)! should be $\sigma\,\Delta t$ for the continuous-time Ho-Lee model, and \verb!sigavg(i)! should be

@@ -110,6 +110,59 @@ $\bar{\mathcal{R}}\,\Delta t P(t,t_{i+1})$.  The value at at any date $t\leq t_i
 $S_i(t) =P(t,t_i)-P(t,t_{i+1})$.  We conclude that
 $$\text{ Value of Caplet} \;+ \;\bar{\mathcal{R}}\,\Delta t P(t,t_{i+1}) = \text{Value of Floorlet} \;+\; P(t,t_i)-P(t,t_{i+1})\; .$$
 
+We will compute the value of each caplet with the Black_Call function.
+In the Black_Call function, we input the forward price for the caplet with reset date $t_i$ as
+$$
+F_i(0) = \mathcal{R}_i(0)\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
+$$ {#eq-capletforwardprice}
+
+as given in equations @eq-forward2 and @eq-F_i.  The exercise price of each caplet is $K=\bar{\mathcal{R}}\,\Delta t$.  We also need to input the discounting factor $P(0,t_{i+1})$.
+The discount bond prices $P(0,t_1)$, \ldots, $P(0, t_N)$ are input as a vector \verb!P!.  The discount bond price $P(0,t_0)$ is input as \verb!P0!.^[The reason for separating the bond maturing at $t_0$ is that vectors input as arrays from Excel worksheets are automatically indexed beginning with the index 1.  To keep the indexing consistent with our notation, we want the first element of the input vector to be $P(0,t_1)$, the second element to be $P(0,t_2)$, etc.  This consistency is convenient, though obviously not essential.]  We will assume the same volatility for each forward rate.
+
+
+```{python}
+
+#| code-fold: true
+#| label: Market_Model_Cap
+
+
+
+import numpy as np
+from scipy.stats import norm
+
+def black_call(F, K, P, sigma, T):
+    d1 = (np.log(F / K) + 0.5 * sigma ** 2 * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    return P * (F * norm.cdf(d1) - K * norm.cdf(d2))
+
+def market_model_cap(P0, P, rbar, sigma, N, t0, dt):
+    K = rbar * dt
+    if t0 == 0:
+        return P[0] * max(0, 1 / P[0] - 1 - rbar * dt)
+    else:
+        F = P0 / P[0] - 1
+        cap_value = black_call(F, K, P[0], sigma, t0)
+    
+    for i in range(1, N):
+        F = P[i - 1] / P[i] - 1
+        cap_value += black_call(F, K, P[i], sigma, t0 + i * dt)
+    
+    return cap_value
+
+# Example usage
+P0 = 0.95
+P = [0.92, 0.89, 0.85, 0.80]
+rbar = 0.03
+sigma = 0.2
+N = 4
+t0 = 0.5
+dt = 0.5
+T = 2
+
+print("Market Model Cap:", market_model_cap(P0, P, rbar, sigma, N, t0, dt))
+
+```
+
 ## The Market Model for European Swaptions {#sec-s_swaptions}
 
 The owner of a European swaption \index{swaption} has an option to enter into a swap at the maturity date of the swaption.  A payer swaption \index{payer swaption} gives the owner of the option the right to enter into a swap as a fixed-rate payer, for a given swap rate (not necessarily a rate that makes the swap have zero value at any date).  The owner of a receiver swaption \index{receiver swaption} has the right to enter into the swap as a fixed-rate receiver.  The values of payer swaptions and receiver swaptions are linked by put-call parity.  
@@ -180,6 +233,42 @@ P(t,t_0)- P(t,t_N) \;+ \;\text{Value of Receiver Swaption}.
 \end{multline}
 $$ {#eq-swaptionparity}
 
+The following code uses the Margrabe formula to price a European swaption.
+
+```{python}
+
+#| code-fold: true
+#| label: Payer_Swaption
+
+
+def margrabe(S1, S2, sigma, q1, q2, T):
+    sigma2 = sigma ** 2 * T
+    d1 = (np.log(S1 / S2) + 0.5 * sigma2) / np.sqrt(sigma2)
+    d2 = d1 - np.sqrt(sigma2)
+    return S1 * norm.cdf(d1) - S2 * norm.cdf(d2)
+
+def market_model_payer_swaption(P0, P, rbar, sigma, N, T, dt):
+    floating_leg_value = P0 - P[N - 1]
+    fixed_leg_value = P[0]
+    for i in range(1, N):
+        fixed_leg_value += P[i]
+    fixed_leg_value *= rbar * dt
+    
+    return margrabe(floating_leg_value, fixed_leg_value, sigma, 0, 0, T)
+
+
+# Example usage
+P0 = 0.95
+P = [0.92, 0.89, 0.85, 0.80]
+rbar = 0.03
+sigma = 0.2
+N = 4
+t0 = 0.5
+dt = 0.5
+T = 2
+
+print("Market Model Payer Swaption:", market_model_payer_swaption(P0, P, rbar, sigma, N, T, dt))
+```
 
 ## A Comment on Consistency {#sec-s_consistency}
 It is well known that it is inconsistent to assume both that the forward rates $\mathcal{R}_i(t)$ and 
@@ -224,46 +313,8 @@ Typically, $t_0=T$ (the swap starts at the swaption maturity), in which case $P(
 
 ### Valuing Caps with Black's Formula
 
-We will compute the value of each caplet with the \verb!Black_Call! function.
-In the \verb!Black_Call! function, we input the forward price for the caplet with reset date $t_i$ as
-$$
-F_i(0) = \mathcal{R}_i(0)\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
-$$ {#eq-capletforwardprice}
 
-as given in equations @eq-forward2 and @eq-F_i.  The exercise price of each caplet is $K=\bar{\mathcal{R}}\,\Delta t$.  We also need to input the discounting factor $P(0,t_{i+1})$.
-The discount bond prices $P(0,t_1)$, \ldots, $P(0, t_N)$ are input as a vector \verb!P!.  The discount bond price $P(0,t_0)$ is input as \verb!P0!.^[The reason for separating the bond maturing at $t_0$ is that vectors input as arrays from Excel worksheets are automatically indexed beginning with the index 1.  To keep the indexing consistent with our notation, we want the first element of the input vector to be $P(0,t_1)$, the second element to be $P(0,t_2)$, etc.  This consistency is convenient, though obviously not essential.]  We will assume the same volatility for each forward rate.
 
-\addcontentsline{lof}{figure}{MarketModel Cap}
-\begin{verbatim}
-Function MarketModel_Cap(P0, P, rbar, sigma, N, t0, dt)
-'
-' Inputs are P0 = price of discount bond maturing at t0
-'            P = N-vector of discount bond prices, from t1 to tN
-'            rbar = fixed rate in the cap
-'            sigma = volatility of the forward LIBOR rates
-'            N = number of reset (or payment) dates
-'            t0 = time until first reset date
-'            dt = time between reset (or payment) dates
-'
-Dim K, F, i
-K = rbar * dt        ' strike prices of caplets
-If t0 = 0 Then
-'
-'   if valuing at the reset date of the first caplet,
-'   the caplet value is its intrinsic value
-'
-    MarketModel_Cap = P(1)*Application.Max(0,1/P(1)-1-rbar*dt)
-Else                 ' if valuing prior to maturity of first caplet
-    F = P0 / P(1) - 1
-    MarketModel_Cap = Black_Call(F, K, P(1), sigma, t0)
-End If
-For i = 1 To N - 1   ' adds caplets with reset dates t1, ..., t(N-1)
-    F = P(i) / P(i + 1) - 1
-    MarketModel_Cap = MarketModel_Cap _
-                     + Black_Call(F,K,P(i+1),sigma,t0+i*dt)
-Next i
-End Function
-\end{verbatim}
 
 ### Valuing Swaptions with Margrabe's Formula
 
