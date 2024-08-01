@@ -506,9 +506,111 @@ This implies a lognormal volatility and is simpler to simulate than @eq-heston2-
 
 One way to implement the GARCH or stochastic volatility model is to imply both the initial volatility $\sigma(0)$ and the constants $\kappa$, $\theta$ and $\lambda$ or $\kappa$, $\theta$, $\gamma$ and $\rho$ from observed option prices.  These four (or five) constants can be computed by forcing the model prices of four (or five) options to equal the observed market prices.  Or, a larger set of prices can be used and the constants can be chosen to minimize the average squared error or some other measure of goodness-of-fit between the model and market prices.
 
+## Jump Diffusion Models {#sec-s_jumpdiffusion}
+
+In the classical Black-Scholes model, stock prices are assumed to follow a geometric Brownian motion, which is characterized by continuous paths and normally distributed returns. While this model has been widely used due to its simplicity and analytical tractability, it fails to capture certain empirical phenomena observed in financial markets, such as sudden and significant price changes (jumps) and the heavy tails of return distributions.
+
+To address these shortcomings, the jump diffusion model was introduced by Robert C. Merton in 1976. This model extends the Black-Scholes framework by incorporating jumps into the stock price dynamics, thereby allowing for discontinuous price paths. The jump diffusion model is better suited to describe the behavior of financial assets that exhibit sudden price changes due to news, earnings announcements, or other market events.
+
+In a jump diffusion model, the stock price $S_t$ is governed by the following stochastic differential equation (SDE):
+
+$$
+dS_t = \mu S_t \, dt + \sigma S_t \, dW_t + S_t \, dJ_t
+$$
+
+where $\mu$ is the drift rate, $\sigma$ is the volatility, $B_t$ is a standard Brownian motion, $J_t$ is a jump process.
+
+The jump process $J_t$ is typically modeled as a compound Poisson process:
+
+$$
+J_t = \sum_{i=1}^{N_t} (Y_i - 1)
+$$
+
+where $N_t$ is a Poisson process with intensity $\lambda$, $Y_i$ are i.i.d. random variables representing the relative jump sizes, with $Y_i - 1$ being the actual jump size.
+
+The jump diffusion model introduces several important implications for the behavior of stock prices and the pricing of derivative securities:
+
+1. **Heavy Tails**: The inclusion of jumps leads to a return distribution with heavier tails compared to the normal distribution, aligning better with empirical observations.
+2. **Volatility Smile**: The model can generate implied volatility smiles, where implied volatility varies with strike price and maturity, a feature commonly observed in market data.
+3. **Risk Management**: Understanding the jump component is crucial for risk management, as it affects the likelihood of extreme price movements and the potential for large losses.
+
+The following python code simulates the stock price that evolves as a jump diffusion. 
+
+```{python}
+
+#| code-fold: true
+#| label: Simulate_Jump_Diffusion
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def simulate_jump_diffusion(S0, mu, sigma, lamb, m, delta, T, N):
+    """
+    Simulate a jump diffusion process.
+    
+    Parameters:
+    S0     : float - initial stock price
+    mu     : float - drift rate
+    sigma  : float - volatility
+    lamb   : float - intensity of the Poisson process
+    m      : float - mean of the jump size distribution
+    delta  : float - standard deviation of the jump size distribution
+    T      : float - total time
+    N      : int   - number of time steps
+    
+    Returns:
+    t      : numpy array - time points
+    S      : numpy array - simulated stock prices
+    """
+    dt = T / N
+    t = np.linspace(0, T, N + 1)
+    S = np.zeros(N + 1)
+    S[0] = S0
+    
+    for i in range(1, N + 1):
+        Z = np.random.normal(0, 1)  # Normal random variable for the diffusion part
+        J = np.random.poisson(lamb * dt)  # Poisson random variable for jumps
+        
+        # Sum of log-normal distributed jumps
+        Y = np.sum(np.random.normal(m, delta, J))
+        
+        # Update stock price
+        S[i] = S[i - 1] * np.exp((mu - 0.5 * sigma ** 2) * dt + sigma * np.sqrt(dt) * Z + Y)
+    
+    return t, S
+
+# Parameters
+S0 = 100         # Initial stock price
+mu = 0.1         # Drift rate
+sigma = 0.2      # Volatility
+lamb = 0.75      # Intensity of the Poisson process (average number of jumps per unit time)
+m = 0.02         # Mean of the jump size distribution (log-normal)
+delta = 0.1      # Standard deviation of the jump size distribution (log-normal)
+T = 1.0          # Total time (1 year)
+N = 1000         # Number of time steps
+
+# Simulate the jump diffusion process
+t, S = simulate_jump_diffusion(S0, mu, sigma, lamb, m, delta, T, N)
+
+# Plot the simulated stock prices
+plt.figure(figsize=(10, 6))
+plt.plot(t, S, label='Jump Diffusion Process')
+plt.title('Simulated Stock Price using Jump Diffusion Model')
+plt.xlabel('Time (years)')
+plt.ylabel('Stock Price')
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+The jump diffusion model offers a more realistic framework for modeling stock prices by incorporating the possibility of sudden jumps. This enhancement over the classical Black-Scholes model allows for better capturing the empirical characteristics of financial markets, thereby improving the accuracy of option pricing and risk management practices.
+
+
 ## Smiles and Smirks Again {#sec-s_smilesagain}
 
-As mentioned before, the GARCH and stochastic volatility models can generate  fat-tailed distributions for the asset price $S(T)$.  Thus, they can be more nearly consistent with the option smiles \index{smile}discussed in @sec-s_smiles than is the Black-Scholes model (though it appears that one must include jumps in asset prices as well as stochastic volatility in order to duplicate market prices with an option pricing formula).  To understand the relation, let $\sigma_\text{am}$ denote the implied volatility from an at-the-money call option, i.e., a call option with strike $K=S(0)$.  The characteristic of a smile is that implied volatilities from options of the same maturity with strike prices significantly above and below $S(0)$ are higher than $\sigma_\text{am}$.  
+As mentioned before, the GARCH, stochastic volatility and jump diffusion models can generate  fat-tailed distributions for the asset price $S(T)$.  Thus, they can be more nearly consistent with the option smiles \index{smile}discussed in @sec-s_smiles than is the Black-Scholes model (though it appears that one must include jumps in asset prices as well as stochastic volatility in order to duplicate market prices with an option pricing formula).  To understand the relation, let $\sigma_\text{am}$ denote the implied volatility from an at-the-money call option, i.e., a call option with strike $K=S(0)$.  The characteristic of a smile is that implied volatilities from options of the same maturity with strike prices significantly above and below $S(0)$ are higher than $\sigma_\text{am}$.  
 
 A strike price higher than $S(0)$  corresponds to an out-of-the money call option.  The high implied volatility means that the market is pricing the right to buy at $K>S(0)$ above the Black-Scholes price computed from the volatility $\sigma_\text{am}$; thus, the market must attach a higher probability to stock prices $S(T)>S(0)$ than the  volatility $\sigma_\text{am}$ would suggest.  
 
