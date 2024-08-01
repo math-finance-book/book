@@ -1449,11 +1449,393 @@ def discrete_geom_average_price_call(S, K, r, sigma, q, T, N):
     a = N * (N + 1) * (2 * N + 1) / 6
     V = np.exp(-r * T) * S * np.exp(((N + 1) * nu / 2 + sigma ** 2 * a / (2 * N ** 2)) * dt)
     sigavg = sigma * np.sqrt(a) / (N ** 1.5)
-    return black_scholes_call(V, K, r, sigavg, 0, T)
+    return black_scholes_call(V, K, r, sigavg, q, T)
 
 print("Discrete Geometric Average Price Call:", discrete_geom_average_price_call(S, K, r, sigma, q, T, N))
 ```
 
+
+## Monte Carlo Models for Path-Dependent Options
+A derivative is said to be path dependent \index{path-dependent option} if its value depends on the path of the underlying asset price rather than just on the  price at the time of exercise.  Examples of path-dependent options are lookbacks, barrier options, and Asians.
+To value a path-dependent option by Monte Carlo, we need to simulate an approximate path of the stock price.  We do this by considering time periods of length $\Delta t = T/N$ for some integer $N$.  Under the risk-neutral measure, the logarithm of the stock price changes over such a time period by
+$$
+\Delta \log S = \nu\,\Delta t + \sigma\sqrt{\Delta t}\,z\;,
+$$ {#eq-pathdependent}
+
+where $\nu = r-q-\sigma^2/2$ and $z$ is a standard normal.  Given that there are $N$ time periods of length $\Delta t$, we need to generate $N$ standard normals to generate a stock price path.  If we generate $M$ paths to obtain a sample of $M$ option values, then we will need to generate $MN$ standard normals.  
+
+
+Consider for example a floating-strike lookback call. \index{lookback option} The formula for this option given in @sec-s_lookbacks assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price.  In practice, the minimum will be computed by recording the price at a discrete number of dates.  We can value the discretely sampled lookback using Monte-Carlo by choosing $\Delta t$ to be the interval of time (e.g., a day or week) at which the price is recorded.  For example, if the contract calls for weekly observation, we will attain maximum precision by setting $N$ to be the number of weeks before the option matures.
+
+For most path dependent options, a possible starting point is to generate an array of $n$ paths but since we want the entire path we choose the number of time steps that is appropriate for our application.  We can use the same code as in Section @#sec-s_mc_europeans if we are working in a Black Scholes setting.
+
+```{python}
+# Simulate Geometric Brownian Motion
+import numpy as np
+import matplotlib.pyplot as plt
+# number of paths
+n = 1000
+#number of divisions
+m = 1000
+# Interest rate (We set the drift equal to the interest rate for the risk neutral measure)
+r = 0.1
+# Dividend yield
+q=0.0
+# Volatility
+sig = 0.2
+# Initial Stock Price
+S0 = 42
+# Maturity
+T = 0.5
+#Strike Price
+K=40
+# Delta t
+dt = T/m
+# Drift
+drift = (r-q-0.5*sig**2)
+# Volatility
+vol = sig * np.sqrt(dt)
+
+t = np.array(range(0,m + 1,1)) * dt
+
+# seed for random generator
+seed= 2024
+# define a random generator
+np.random.seed(seed)
+inc = np.zeros(shape = (m + 1, n))
+inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))
+St = np.zeros(shape = (m + 1, n))
+St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
+St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
+
+```
+
+As before this code generates two samples the original and the antithetic.  The output is an array of $n$ sample paths with $m$ time steps.  The sample can also be used to find the value of a floating strike lookback call.
+
+```{python}
+
+Stmin=St[m:]-np.minimum(np.min(St,axis=0),S0)
+St1min=St1[m:]-np.minimum(np.min(St1,axis=0),S0)
+floatlkbk=np.exp(-r*T)*np.mean(Stmin)
+floatlkbk1=np.exp(-r*T)*np.mean(St1min)
+
+print('The first estimate is=',floatlkbk)
+print('The second estimate is=',floatlkbk1)
+print('The average estimate is=',(floatlkbk+floatlkbk1)/2)
+print('The exact formula is=',floating_strike_call(S0, r, sigma, 0, T, S0))
+
+```
+
+To value the fixed strike lookback call option with time $T$ payoff $\max(\max_{0\le t \le T} S_t.0)$, we simply add the following 
+```{python}
+Stmax=np.maximum(np.max(St,axis=0)-K,0)
+St1max=np.maximum(np.max(St1,axis=0)-K,0)
+lookbck = np.exp(-r*T) *np.mean(Stmax)
+lookbck1=np.exp(-r * T)*np.mean(St1max)
+print('The first estimate is=',lookbck)
+print('The second estimate is=',lookbck1)
+print('The average estimate is=', (lookbck + lookbck1)/2)
+
+```
+
+
+Asian and barrier options are also subject to discrete rather than continuous sampling and can be valued by Monte-Carlo in the same way as lookbacks. 
+
+
+As another example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date 0 is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A(0)$ computed up to date 0, assuming this average includes the price $S(0)$ at date 0.  The average price at date $T$ will be 
+$$A(T) = \frac{\tau}{T+\tau}A(0) + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S(t_i)}{N}\right)\; .$$
+The average-price call pays $\max(0,A(T)-K)$ at its maturity $T$, and we can write this as
+\begin{align*}
+\max(A(T)-K,0) &= \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S(t_i)}{N}\right) - \left(K - \frac{\tau}{T+\tau}A(0)\right), 0\right)\\
+&= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;,
+\end{align*}
+where 
+$$K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A(0)\; .$$
+Therefore, the value at date 0 of the discretely-sampled average-price call is
+$$\frac{T}{T+\tau} \,\mathrm{e}^{-rT} E^R\left[\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\right]\; .$$
+In terms of the discussion above, the random variable  the mean of which we want to estimate is
+$$x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\; .$$
+A random variable $y$ that will be closely correlated to $x$ is
+$$y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S(t_i)/N} - K^*,0\right)\; .$$
+The mean $\phi$ of $y$ under the risk-neutral measure is given in the pricing @eq-disc_geom_avg_call. 
+We can use the sample mean of $y$ and its known mean $\phi$ to adjust the sample mean of $x$ as an estimator of the value of the average-price call.  Generally, the estimated adjustment coefficient $\hat{\beta}$ will be quite close to 1.
+
+Again we can get a sample of payoffs using our stock price samples.
+
+```{python}
+average = np.mean(St,axis=0)
+average1 = np.mean(St1,axis=0)
+dpayoff=np.exp(-r*T)*np.mean(np.maximum(average-K,0))
+dpayoff1=np.exp(-r*T)*np.mean(np.maximum(average1-K,0))
+print('The first estimate is=',dpayoff)
+print('The second estimate is=',dpayoff1)
+print('The average of the estimates=',(dpayoff+dpayoff1)/2)
+
+```
+
+We now construct a control variate, the geometric asian option which has a known formula for its value.
+
+```{python}
+geom=np.exp((np.mean(np.log(St),axis=0)))
+geom1=np.exp((np.mean(np.log(St1),axis=0)))
+geomavgpo=np.maximum(geom-K,0)
+geomavg1po=np.maximum(geom1-K,0)
+value=np.mean(geomavgpo)*np.exp(-r*T)
+value1=np.mean(geomavg1po)*np.exp(-r*T)
+tga=discrete_geom_average_price_call(S0, K, r, sigma, q, T, m)
+error =tga-value
+error1=tga-value1
+print('The estimate from the first sample=',value)
+print('The estimate from the second sample=',value1)
+print('The average of the two estimates is=',(value+value1)/2)
+print('The value from the exact formula=',tga)
+print('The error in the first estimate=',error)
+print('The error in the second estimate=',error1)
+
+```
+
+Next we estimate the beta.  As discussed before, we could simply set beta=1. Alternatively, if we estimate beta from the  simulated sample, then our update could be biased.  Instead we compute an independent sample from which we estimate beta.  We then estimate the updated estimate for both samples from the formula
+$$ \text{new estimate} = \text{original estimate} + \beta * \text{error}$$
+
+```{python}
+incpre = np.zeros(shape = (m + 1, n))
+incpre[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))
+Stpre = np.zeros(shape = (m + 1, n))
+St1pre=np.zeros(shape = (m + 1, n))
+Stpre = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
+St1pre = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
+
+amean=np.mean(Stpre,axis=0)
+amean1=np.mean(St1pre,axis=0)
+apo = np.maximum(amean-K,0)
+a1po=np.maximum(amean1-K,0)
+gmean=np.exp(np.mean(np.log(St),axis=0))
+g1mean=np.exp(np.mean(np.log(St1),axis=0))
+gpo=np.maximum(gmean-K,0)
+g1po=np.maximum(g1mean-K,0)
+beta=np.cov(gpo,apo)[0,1]/np.cov(gpo,apo)[1,1]
+beta1=np.cov(g1po,a1po)[0,1]/np.cov(g1po,a1po)[1,1]
+update=dpayoff +beta*error
+update1=dpayoff1+beta1*error1
+
+print('The updated estimate for the first sample=',update)
+print('The updated value for the second sample=',update1)
+print('The average of the updated values is=',(update +update1)/2)
+```
+
+
+## Monte Carlo Valuation of Basket and Spread Options {#sec-montecarlomultiple}
+
+\index{basket option} \index{spread option} \index{Monte Carlo} In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method.  As noted in @sec-s_baskets, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. 
+Discounting the average terminal value gives the estimate of the option value as usual.  
+
+The difference between binomial and Monte Carlo methods for options written on multiple assets can be understood as follows.  Both methods attempt to estimate the discounted expected value of the option (under the risk-neutral measure).  In an $N$--period model, the binomial model produces $N+1$ values for the terminal price of each underlying asset.  Letting $k$ denote the number of underlying assets, this produces $(N+1)^k$ combinations of asset prices.  Of course, each combination has an associated probability.  In contrast, the Monte Carlo method produces $M$ combinations of terminal prices, where $M$ is the number of simulations.  Each combination is given the same weight ($1/M$) when estimating the expected value.  
+
+With a single underlying asset, the binomial model is more efficient, as discussed in @sec-s_introbinomial, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices.  However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets.  The reason is that many of the $(N+1)^k$ combinations of prices in the binomial model will have very low probabilities.  For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest.  It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value.  On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation.  Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations.  However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy---even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.
+
+To implement Monte Carlo valuation of options on multiple assets, we must first explain how to simulate correlated asset prices.
+As observed in @sec-s_stochasticvolatility, we can simulate the changes in two Brownian motions $B_1$ and $B_2$ that have correlation $\rho$ by generating two independent standard normals $Z_1$ and $Z_2$ and defining
+$$\Delta B_1 = \sqrt{\Delta t}\,Z_1\;, \qquad \text{and} \qquad \Delta B_2 = \sqrt{\Delta t}\,Z\; ,$$
+where $Z$ is defined as 
+$$Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\; .$$
+The random variable $Z$ is also a standard normal, and the correlation between $Z_1$ and $Z$ is $\rho$.  
+
+```{python}
+# Simulate 2 Geometric Brownian Motions
+import numpy as np
+import matplotlib.pyplot as plt
+# number of paths
+n = 1000
+#number of divisions
+m = 1000
+# Interest rate (We set the drift equal to the interest rate for the risk neutral measure)
+r = 0.1
+# Dividend yield
+q1=0.0
+q2=0
+# Volatility
+sig1 = 0.2
+sig2=.3
+# correlation
+rho=0.5
+# Initial Stock Price
+S0 = 42
+V0 = 50
+# Maturity
+T = 0.5
+
+# Delta t
+dt = T/m
+# Drift
+drift1 = (r-q1-0.5*sig1**2)
+drift2 = (r-q2-0.5*sig2**2)
+# Volatility
+vol = np.sqrt(dt)
+
+t = np.array(range(0,m + 1,1)) * dt
+
+# seed for random generator
+seed= 2024
+# define a random generator
+np.random.seed(seed)
+inc = np.zeros(shape = (m + 1, n))
+inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))
+inc1 = np.zeros(shape = (m + 1, n))
+inc1[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))
+incr = np.zeros(shape = (m + 1, n))
+incr = rho*inc + np.sqrt(1-rho**2)*inc1
+```
+
+Thus, we can simulate the changes in the logarithms of two correlated asset prices as
+\begin{align*}
+\Delta \log S_1 &= \nu_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,\\
+\Delta \log S_2 &= \nu_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
+\end{align*}
+where $\nu_i = r-q_1-\sigma_i^2/2$ and the $Z_i$ are independent standard normals. 
+
+```{python}
+
+St1 = np.zeros(shape = (m + 1, n))
+St2 = np.zeros(shape = (m + 1, n))
+St1 = S0 * np.exp(sig1*np.cumsum(inc,axis=0) + (drift1 * t[0:m + 1])[:,None])
+St2 = V0 * np.exp(sig2*np.cumsum(incr,axis=0) + (drift2 * t[0:m + 1])[:,None])
+
+```
+
+We can also construct antithetic variables.
+
+```{python}
+
+St1a = np.zeros(shape = (m + 1, n))
+St2a = np.zeros(shape = (m + 1, n))
+St1a = S0 * np.exp(-sig1*np.cumsum(inc,axis=0) + (drift1 * t[0:m + 1])[:,None])
+St2a = V0 * np.exp(-sig2*np.cumsum(incr,axis=0) + (drift2 * t[0:m + 1])[:,None])
+
+```
+
+Given this sample, we can estimate the value of a best of 2 option with payoff $\max(S_{1T},S_{2T})$.
+
+```{python}
+payoff = np.maximum(St1[m,:],St2[m,:])
+payoffa = np.maximum(St1a[m,:],St2a[m,:])
+value= np.exp(-r*T)*np.mean(payoff)
+valuea= np.exp(-r*T)*np.mean(payoffa)
+
+print('The first estmate is =',value)
+print('The second estimate is =',valuea)
+print('The avergae of the estimates is=',(value+valuea)/2)
+```
+
+To generalize this idea to more than two assets, we introduce some additional notation.  The simulation for the case of two assets can be written as
+
+
+$$
+\Delta \log S_1 = \nu_1\Delta t + a_{11}\sqrt{\Delta t}Z_1 + a_{12}\sqrt{\Delta t}Z_2\;,
+$$ {#eq-mc_twoa}
+
+$$
+\Delta \log S_2 = \nu_2\Delta t + a_{21}\sqrt{\Delta t}Z_1 + a_{22}\sqrt{\Delta t}Z_2\;,
+$$ {#eq-mc_twob}
+
+
+
+where
+$$\begin{array}{rclcrcl}
+a_{11}&=&\sigma_1\;, &\qquad & a_{12}&=&0\; ,\\
+a_{21}&=&\sigma_2\rho\;, &\qquad & a_{22} &= &\sigma_2\sqrt{1-\rho^2}\;.
+\end{array}$$
+These are not the only possible choices for the constants $a_{ij}$.  Given that $Z_1$ and $Z_2$ are independent standard normals, the conditions the $a_{ij}$ must satisfy in order to match the variances $\sigma_i^2\Delta t$ and correlation $\rho$ of the changes in the logarithms are
+
+
+$$
+a_{11}^2+a_{12}^2 =\sigma_1^2\;,
+$$ {#eq-a1}
+
+$$
+a_{21}^2+a_{22}^2 =\sigma_2^2\;,
+$$ {#eq-a2}
+
+$$
+a_{11}a_{21}+a_{12}a_{22} = \sigma_1\sigma_2\rho\;.
+$$ {#eq-a3}
+
+
+
+These three equations in the four coefficients $a_{ij}$ leave one degree of freedom.  We choose to take $a_{12}=0$ and then solve for the other three.
+
+In matrix notation, the system @eq-a1 - @eq-a3 plus the condition $a_{12}=0$ can be written as the equation
+$$\begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}\begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}^\top = \begin{pmatrix}\sigma_1^2 & \rho\sigma_1\sigma_2 \\\rho\sigma_1\sigma_2 & \sigma_2^2\end{pmatrix}\; ,$$
+where $^\top$ denotes the matrix transpose.  The matrix on the right hand side is the covariance matrix \index{covariance matrix} of the continuously-compounded annual returns (changes in log asset prices).  Choosing the $a_{ij}$ so that the lower triangular matrix \index{lower triangular matrix}
+$$A \equiv \begin{pmatrix}a_{11} & 0 \\a_{21} & a_{22}\end{pmatrix}$$
+satisfies 
+$$AA^\top = \text{covariance matrix}$$
+is called the \index{Cholesky decomposition}
+the Cholesky decomposition of the covariance matrix.  Given any number $L$ of assets, provided none of the assets is redundant (perfectly correlated with a portfolio of the  others), the Cholesky decomposition of the $L\times L$ covariance matrix always exists. An algorithm for computing the Cholesky decomposition in numpy is np.linalg.cholesky. 
+
+We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoa - @eq-mc_twob.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in @sec-s_mc_europeans.  The value of a basket call option at its maturity $T$ is 
+$$\max\left(0,\;\sum_{i=1}^L w_iS_i(T)-K\right)\; ,$$
+where $L$ is the number of assets in the basket (portfolio) and $w_i$ is the weight of the $i$--th asset in the basket.
+The logarithm of the $i$--th asset price at maturity is simulated as
+$$\log S_i(T) = \log S_i(0) +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,$$
+where the $Z_j$ are independent standard normals.  Given the simulated values of the $\log S_i(T)$, the value at maturity of the basket option is readily computed.  The estimate of the date--0 value is then computed as the discounted average of the simulated values at maturity.  
+
+For our two asset example we compute the value of a call otption on an equally weighted porfotlio.
+
+```{python}
+w=0.5
+K=45
+basketpo=np.maximum(w*St1[m,:]+(1-w)*St2[m,:]-K,0)
+basketpoa=np.maximum(w*St1a[m,:]+(1-w)*St2a[m,:]-K,0)
+estimate=np.exp(-r*T)*np.mean(basketpo)
+estimatea=np.exp(-r*T)*np.mean(basketpoa)
+print('The first estimate is =',estimate)
+print('The second estimate is =',estimatea)
+print('The average of the estimates=',(estimate+estimatea)/2)
+
+```
+
+## Binomial Valuation of Basket and Spread Options {#sec-s_curse}
+
+\index{basket option} \index{spread option} \index{binomial model} By combining binomial models, we can  value options or other derivatives on multiple assets.  We will illustrate for an option on two assets.  This is the most important case, and the extension to more than two assets is straightforward.
+
+Consider two stocks with constant dividend yields $q_i$ and constant volatilities $\sigma_i$.  Suppose the two Brownian motions driving the two stocks have a constant correlation coefficient $\rho$.  We will denote the price of stock $i$ ($i=1,2$) in the up state in each period by $u_iS_i$ and the price in the down state by $d_iS_i$, where $S_i$ is the price at the beginning of the period, and $u_i$ and $d_i$ are parameters to be specified.  In each period, there are four possible combinations of returns on the two stocks:  up for both stocks, up for stock 1 and down for stock~2, down for stock 1 and up for stock 2, and down for both stocks.  Denote the probabilities of these four combinations by $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$ respectively.  Thus, there are eight parameters in the binomial model: the number $N$ of periods (which defines the length of each period as $\Delta t=T/N$ where $T$ is the option maturity), the up and down parameters $u_i$ and $d_i$ for each stock, and three probabilities (the fourth probability being determined by the condition that the probabilities sum to one).
+
+Given the period length $\Delta t$, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns $\Delta S_i/S_i$ or the continuously-compounded returns $\Delta \log S_i$.  There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters.  As in @sec-c_introcomputation, it is convenient to take $d_i = 1/u_i$, leaving five restrictions and five free parameters.
+
+As discussed in @sec-s_binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
+Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s_binomialparameters,
+\begin{align*}
+\log u_i&=\sqrt{\sigma_i^2\Delta t + \nu_i^2(\Delta t)^2}\; ,\\
+p_i &= \frac{1}{2}+\frac{\nu_i\Delta t}{2\log u_i}\;.
+\end{align*}
+where $\nu_i=r-q_i-\sigma_i^2/2$.
+In terms of the notation $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$, the probability of the up state for stock 1 is $p_1=p_{uu}+p_{ud}$ and the probability of the up state for stock 2 is $p_2=p_{uu}+p_{du}$.  Therefore,
+
+
+$$
+p_{uu}+p_{ud} = \frac{1}{2}+\frac{\nu_1\Delta t}{2\log u_1}\;,
+$$ {#eq-prob1}
+
+$$
+p_{uu}+p_{du} = \frac{1}{2}+\frac{\nu_2\Delta t}{2\log u_2}\;.
+$$ {#eq-prob2}
+
+
+
+In the continuous time model, over a discrete time period $\Delta t$, the covariance of $\Delta \log S_1$ and $\Delta \log S_2$ is $\rho\sigma_1\sigma_2\Delta t$.  In the binomial model, with $d_i=1/u_i$, we have
+$$E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\; .$$  Given that $E[\Delta\log S_i] =\nu_i\Delta t$, this implies a covariance of
+$$(p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \nu_1\nu_2(\Delta t)^2\; .$$
+Matching the covariance in the binomial model to the covariance in the continuous-time model therefore implies
+$$
+p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \nu_1\nu_2(\Delta t)^2}{\log u_1\log u_2}\;.
+$$ {#eq-prob3}
+
+
+
+We can solve the system @eq-prob1 - @eq-prob3, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a VBA function for valuing an American spread call option are given in @sec-s_montecarlo_matlab.  This function operates much like the binomial valuation of American options described in @sec-c_introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
+The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.  
+
+Likewise, in an $N$--period model for a basket option written on three assets, there are $(n+1)^3$ combinations of nodes to be considered at date $n$; if there are five assets, there are $(n+1)^5$ combinations, etc.  Thus, the computation time required increases exponentially with the number of assets.  This can be a serious problem.  For example, with five assets and $N=99$, we would have $100^5$ (10 billion) combinations.  As this suggests, problems with multiple assets quickly become intractable in a binomial framework.  This is called the curse of dimensionality. \index{curse of dimensionality}
 
 ## Exercises
 

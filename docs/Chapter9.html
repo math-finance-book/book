@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Pricing and Hedging Derivative Securities - 9&nbsp; Exotic Options</title>
+<title>Pricing and Hedging Derivative Securities: Theory and Methods - 9&nbsp; Exotic Options</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -145,7 +145,7 @@ div.csl-indent {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Pricing and Hedging Derivative Securities</a> 
+      <a href="./">Pricing and Hedging Derivative Securities: Theory and Methods</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -287,7 +287,10 @@ div.csl-indent {
   <li><a href="#sec-s_lookbacks" id="toc-sec-s_lookbacks" class="nav-link" data-scroll-target="#sec-s_lookbacks"><span class="header-section-number">9.7</span> Lookbacks</a></li>
   <li><a href="#sec-s_baskets" id="toc-sec-s_baskets" class="nav-link" data-scroll-target="#sec-s_baskets"><span class="header-section-number">9.8</span> Basket and Spread Options</a></li>
   <li><a href="#sec-s_asians" id="toc-sec-s_asians" class="nav-link" data-scroll-target="#sec-s_asians"><span class="header-section-number">9.9</span> Asian Options</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.10</span> Exercises</a></li>
+  <li><a href="#monte-carlo-models-for-path-dependent-options" id="toc-monte-carlo-models-for-path-dependent-options" class="nav-link" data-scroll-target="#monte-carlo-models-for-path-dependent-options"><span class="header-section-number">9.10</span> Monte Carlo Models for Path-Dependent Options</a></li>
+  <li><a href="#sec-montecarlomultiple" id="toc-sec-montecarlomultiple" class="nav-link" data-scroll-target="#sec-montecarlomultiple"><span class="header-section-number">9.11</span> Monte Carlo Valuation of Basket and Spread Options</a></li>
+  <li><a href="#sec-s_curse" id="toc-sec-s_curse" class="nav-link" data-scroll-target="#sec-s_curse"><span class="header-section-number">9.12</span> Binomial Valuation of Basket and Spread Options</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.13</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -1441,17 +1444,355 @@ V(t) = \mathrm{e}^{-r(T-t)}E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log S
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> N <span class="op">*</span> (N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> N <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">6</span></span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> np.exp(((N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> nu <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> a <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> N <span class="op">**</span> <span class="dv">2</span>)) <span class="op">*</span> dt)</span>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    sigavg <span class="op">=</span> sigma <span class="op">*</span> np.sqrt(a) <span class="op">/</span> (N <span class="op">**</span> <span class="fl">1.5</span>)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> black_scholes_call(V, K, r, sigavg, <span class="dv">0</span>, T)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> black_scholes_call(V, K, r, sigavg, q, T)</span>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Discrete Geometric Average Price Call:"</span>, discrete_geom_average_price_call(S, K, r, sigma, q, T, N))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Discrete Geometric Average Price Call: 5.396254290824899</code></pre>
+<pre><code>Discrete Geometric Average Price Call: 4.375035678935298</code></pre>
 </div>
 </div>
 </section>
-<section id="exercises" class="level2" data-number="9.10">
-<h2 data-number="9.10" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.10</span> Exercises</h2>
+<section id="monte-carlo-models-for-path-dependent-options" class="level2" data-number="9.10">
+<h2 data-number="9.10" class="anchored" data-anchor-id="monte-carlo-models-for-path-dependent-options"><span class="header-section-number">9.10</span> Monte Carlo Models for Path-Dependent Options</h2>
+<p>A derivative is said to be path dependent if its value depends on the path of the underlying asset price rather than just on the price at the time of exercise. Examples of path-dependent options are lookbacks, barrier options, and Asians. To value a path-dependent option by Monte Carlo, we need to simulate an approximate path of the stock price. We do this by considering time periods of length <span class="math inline">\(\Delta t = T/N\)</span> for some integer <span class="math inline">\(N\)</span>. Under the risk-neutral measure, the logarithm of the stock price changes over such a time period by <span id="eq-pathdependent"><span class="math display">\[
+\Delta \log S = \nu\,\Delta t + \sigma\sqrt{\Delta t}\,z\;,
+\tag{9.49}\]</span></span></p>
+<p>where <span class="math inline">\(\nu = r-q-\sigma^2/2\)</span> and <span class="math inline">\(z\)</span> is a standard normal. Given that there are <span class="math inline">\(N\)</span> time periods of length <span class="math inline">\(\Delta t\)</span>, we need to generate <span class="math inline">\(N\)</span> standard normals to generate a stock price path. If we generate <span class="math inline">\(M\)</span> paths to obtain a sample of <span class="math inline">\(M\)</span> option values, then we will need to generate <span class="math inline">\(MN\)</span> standard normals.</p>
+<p>Consider for example a floating-strike lookback call. The formula for this option given in <a href="#sec-s_lookbacks"><span>Section&nbsp;9.7</span></a> assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price. In practice, the minimum will be computed by recording the price at a discrete number of dates. We can value the discretely sampled lookback using Monte-Carlo by choosing <span class="math inline">\(\Delta t\)</span> to be the interval of time (e.g., a day or week) at which the price is recorded. For example, if the contract calls for weekly observation, we will attain maximum precision by setting <span class="math inline">\(N\)</span> to be the number of weeks before the option matures.</p>
+<p>For most path dependent options, a possible starting point is to generate an array of <span class="math inline">\(n\)</span> paths but since we want the entire path we choose the number of time steps that is appropriate for our application. We can use the same code as in Section @#sec-s_mc_europeans if we are working in a Black Scholes setting.</p>
+<div class="cell" data-execution_count="11">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk neutral measure)</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend yield</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>q<span class="op">=</span><span class="fl">0.0</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="co">#Strike Price</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">40</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>m</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>drift <span class="op">=</span> (r<span class="op">-</span>q<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> sig <span class="op">*</span> np.sqrt(dt)</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>,m <span class="op">+</span> <span class="dv">1</span>,<span class="dv">1</span>)) <span class="op">*</span> dt</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span> <span class="dv">2024</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>As before this code generates two samples the original and the antithetic. The output is an array of <span class="math inline">\(n\)</span> sample paths with <span class="math inline">\(m\)</span> time steps. The sample can also be used to find the value of a floating strike lookback call.</p>
+<div class="cell" data-execution_count="12">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Stmin<span class="op">=</span>St[m:]<span class="op">-</span>np.minimum(np.<span class="bu">min</span>(St,axis<span class="op">=</span><span class="dv">0</span>),S0)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>St1min<span class="op">=</span>St1[m:]<span class="op">-</span>np.minimum(np.<span class="bu">min</span>(St1,axis<span class="op">=</span><span class="dv">0</span>),S0)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>floatlkbk<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(Stmin)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>floatlkbk1<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(St1min)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is='</span>,floatlkbk)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is='</span>,floatlkbk1)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average estimate is='</span>,(floatlkbk<span class="op">+</span>floatlkbk1)<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The exact formula is='</span>,floating_strike_call(S0, r, sigma, <span class="dv">0</span>, T, S0))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The first estimate is= 5.45244209168367
+The second estimate is= 5.468030697490039
+The average estimate is= 5.460236394586854
+The exact formula is= 5.5418069098303775</code></pre>
+</div>
+</div>
+<p>To value the fixed strike lookback call option with time <span class="math inline">\(T\)</span> payoff <span class="math inline">\(\max(\max_{0\le t \le T} S_t.0)\)</span>, we simply add the following</p>
+<div class="cell" data-execution_count="13">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Stmax<span class="op">=</span>np.maximum(np.<span class="bu">max</span>(St,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>St1max<span class="op">=</span>np.maximum(np.<span class="bu">max</span>(St1,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>lookbck <span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T) <span class="op">*</span>np.mean(Stmax)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>lookbck1<span class="op">=</span>np.exp(<span class="op">-</span>r <span class="op">*</span> T)<span class="op">*</span>np.mean(St1max)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is='</span>,lookbck)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is='</span>,lookbck1)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average estimate is='</span>, (lookbck <span class="op">+</span> lookbck1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The first estimate is= 7.716467940991822
+The second estimate is= 7.769558237964809
+The average estimate is= 7.743013089478316</code></pre>
+</div>
+</div>
+<p>Asian and barrier options are also subject to discrete rather than continuous sampling and can be valued by Monte-Carlo in the same way as lookbacks.</p>
+<p>As another example, consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call as a control variate. Let <span class="math inline">\(\tau\)</span> denote the amount of time that has elapsed since the call was issued and <span class="math inline">\(T\)</span> the amount of time remaining before maturity, so the total maturity of the call is <span class="math inline">\(T+\tau\)</span>. To simplify somewhat, assume date 0 is the beginning of a period between observations. Let <span class="math inline">\(t_1, \ldots, t_N\)</span> denote the remaining sampling dates, with <span class="math inline">\(t_1 = \Delta t\)</span>, <span class="math inline">\(t_i-t_{i-1}=\Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>, and <span class="math inline">\(t_N=T\)</span>. We will input the average price <span class="math inline">\(A(0)\)</span> computed up to date 0, assuming this average includes the price <span class="math inline">\(S(0)\)</span> at date 0. The average price at date <span class="math inline">\(T\)</span> will be <span class="math display">\[A(T) = \frac{\tau}{T+\tau}A(0) + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S(t_i)}{N}\right)\; .\]</span> The average-price call pays <span class="math inline">\(\max(0,A(T)-K)\)</span> at its maturity <span class="math inline">\(T\)</span>, and we can write this as <span class="math display">\[\begin{align*}
+\max(A(T)-K,0) &amp;= \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S(t_i)}{N}\right) - \left(K - \frac{\tau}{T+\tau}A(0)\right), 0\right)\\
+&amp;= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;,
+\end{align*}\]</span> where <span class="math display">\[K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A(0)\; .\]</span> Therefore, the value at date 0 of the discretely-sampled average-price call is <span class="math display">\[\frac{T}{T+\tau} \,\mathrm{e}^{-rT} E^R\left[\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\right]\; .\]</span> In terms of the discussion above, the random variable the mean of which we want to estimate is <span class="math display">\[x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\; .\]</span> A random variable <span class="math inline">\(y\)</span> that will be closely correlated to <span class="math inline">\(x\)</span> is <span class="math display">\[y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S(t_i)/N} - K^*,0\right)\; .\]</span> The mean <span class="math inline">\(\phi\)</span> of <span class="math inline">\(y\)</span> under the risk-neutral measure is given in the pricing <a href="#eq-disc_geom_avg_call">Equation&nbsp;<span>9.47</span></a>. We can use the sample mean of <span class="math inline">\(y\)</span> and its known mean <span class="math inline">\(\phi\)</span> to adjust the sample mean of <span class="math inline">\(x\)</span> as an estimator of the value of the average-price call. Generally, the estimated adjustment coefficient <span class="math inline">\(\hat{\beta}\)</span> will be quite close to 1.</p>
+<p>Again we can get a sample of payoffs using our stock price samples.</p>
+<div class="cell" data-execution_count="14">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>average <span class="op">=</span> np.mean(St,axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>average1 <span class="op">=</span> np.mean(St1,axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>dpayoff<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(np.maximum(average<span class="op">-</span>K,<span class="dv">0</span>))</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>dpayoff1<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(np.maximum(average1<span class="op">-</span>K,<span class="dv">0</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is='</span>,dpayoff)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is='</span>,dpayoff1)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the estimates='</span>,(dpayoff<span class="op">+</span>dpayoff1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The first estimate is= 3.231154315344899
+The second estimate is= 3.296876297130776
+The average of the estimates= 3.2640153062378374</code></pre>
+</div>
+</div>
+<p>We now construct a control variate, the geometric asian option which has a known formula for its value.</p>
+<div class="cell" data-execution_count="15">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>geom<span class="op">=</span>np.exp((np.mean(np.log(St),axis<span class="op">=</span><span class="dv">0</span>)))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>geom1<span class="op">=</span>np.exp((np.mean(np.log(St1),axis<span class="op">=</span><span class="dv">0</span>)))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>geomavgpo<span class="op">=</span>np.maximum(geom<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>geomavg1po<span class="op">=</span>np.maximum(geom1<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>value<span class="op">=</span>np.mean(geomavgpo)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>value1<span class="op">=</span>np.mean(geomavg1po)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>tga<span class="op">=</span>discrete_geom_average_price_call(S0, K, r, sigma, q, T, m)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>error <span class="op">=</span>tga<span class="op">-</span>value</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>error1<span class="op">=</span>tga<span class="op">-</span>value1</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The estimate from the first sample='</span>,value)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The estimate from the second sample='</span>,value1)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the two estimates is='</span>,(value<span class="op">+</span>value1)<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The value from the exact formula='</span>,tga)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The error in the first estimate='</span>,error)</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The error in the second estimate='</span>,error1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The estimate from the first sample= 3.172076049997697
+The estimate from the second sample= 3.236566795172543
+The average of the two estimates is= 3.20432142258512
+The value from the exact formula= 3.1804170589762464
+The error in the first estimate= 0.00834100897854917
+The error in the second estimate= -0.05614973619629682</code></pre>
+</div>
+</div>
+<p>Next we estimate the beta. As discussed before, we could simply set beta=1. Alternatively, if we estimate beta from the simulated sample, then our update could be biased. Instead we compute an independent sample from which we estimate beta. We then estimate the updated estimate for both samples from the formula <span class="math display">\[ \text{new estimate} = \text{original estimate} + \beta * \text{error}\]</span></p>
+<div class="cell" data-execution_count="16">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>incpre <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>incpre[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>Stpre <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>St1pre<span class="op">=</span>np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>Stpre <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>St1pre <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>amean<span class="op">=</span>np.mean(Stpre,axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>amean1<span class="op">=</span>np.mean(St1pre,axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>apo <span class="op">=</span> np.maximum(amean<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>a1po<span class="op">=</span>np.maximum(amean1<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>gmean<span class="op">=</span>np.exp(np.mean(np.log(St),axis<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>g1mean<span class="op">=</span>np.exp(np.mean(np.log(St1),axis<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>gpo<span class="op">=</span>np.maximum(gmean<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>g1po<span class="op">=</span>np.maximum(g1mean<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>beta<span class="op">=</span>np.cov(gpo,apo)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(gpo,apo)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>beta1<span class="op">=</span>np.cov(g1po,a1po)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(g1po,a1po)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>update<span class="op">=</span>dpayoff <span class="op">+</span>beta<span class="op">*</span>error</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>update1<span class="op">=</span>dpayoff1<span class="op">+</span>beta1<span class="op">*</span>error1</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The updated estimate for the first sample='</span>,update)</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The updated value for the second sample='</span>,update1)</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the updated values is='</span>,(update <span class="op">+</span>update1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The updated estimate for the first sample= 3.239338189254849
+The updated value for the second sample= 3.24174435394373
+The average of the updated values is= 3.2405412715992896</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-montecarlomultiple" class="level2" data-number="9.11">
+<h2 data-number="9.11" class="anchored" data-anchor-id="sec-montecarlomultiple"><span class="header-section-number">9.11</span> Monte Carlo Valuation of Basket and Spread Options</h2>
+<p> In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method. As noted in <a href="#sec-s_baskets"><span>Section&nbsp;9.8</span></a>, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. Discounting the average terminal value gives the estimate of the option value as usual.</p>
+<p>The difference between binomial and Monte Carlo methods for options written on multiple assets can be understood as follows. Both methods attempt to estimate the discounted expected value of the option (under the risk-neutral measure). In an <span class="math inline">\(N\)</span>–period model, the binomial model produces <span class="math inline">\(N+1\)</span> values for the terminal price of each underlying asset. Letting <span class="math inline">\(k\)</span> denote the number of underlying assets, this produces <span class="math inline">\((N+1)^k\)</span> combinations of asset prices. Of course, each combination has an associated probability. In contrast, the Monte Carlo method produces <span class="math inline">\(M\)</span> combinations of terminal prices, where <span class="math inline">\(M\)</span> is the number of simulations. Each combination is given the same weight (<span class="math inline">\(1/M\)</span>) when estimating the expected value.</p>
+<p>With a single underlying asset, the binomial model is more efficient, as discussed in <a href="Chapter6.html#sec-s_introbinomial"><span>Section&nbsp;6.5</span></a>, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices. However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets. The reason is that many of the <span class="math inline">\((N+1)^k\)</span> combinations of prices in the binomial model will have very low probabilities. For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest. It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value. On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation. Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations. However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy—even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.</p>
+<p>To implement Monte Carlo valuation of options on multiple assets, we must first explain how to simulate correlated asset prices. As observed in <a href="Chapter5.html#sec-s_stochasticvolatility"><span>Section&nbsp;5.5</span></a>, we can simulate the changes in two Brownian motions <span class="math inline">\(B_1\)</span> and <span class="math inline">\(B_2\)</span> that have correlation <span class="math inline">\(\rho\)</span> by generating two independent standard normals <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z_2\)</span> and defining <span class="math display">\[\Delta B_1 = \sqrt{\Delta t}\,Z_1\;, \qquad \text{and} \qquad \Delta B_2 = \sqrt{\Delta t}\,Z\; ,\]</span> where <span class="math inline">\(Z\)</span> is defined as <span class="math display">\[Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\; .\]</span> The random variable <span class="math inline">\(Z\)</span> is also a standard normal, and the correlation between <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z\)</span> is <span class="math inline">\(\rho\)</span>.</p>
+<div class="cell" data-execution_count="17">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate 2 Geometric Brownian Motions</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk neutral measure)</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend yield</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>q1<span class="op">=</span><span class="fl">0.0</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>q2<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>sig1 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>sig2<span class="op">=</span><span class="fl">.3</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>rho<span class="op">=</span><span class="fl">0.5</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>m</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>drift1 <span class="op">=</span> (r<span class="op">-</span>q1<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig1<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>drift2 <span class="op">=</span> (r<span class="op">-</span>q2<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig2<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> np.sqrt(dt)</span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>,m <span class="op">+</span> <span class="dv">1</span>,<span class="dv">1</span>)) <span class="op">*</span> dt</span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span> <span class="dv">2024</span></span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>inc1 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>inc1[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> rho<span class="op">*</span>inc <span class="op">+</span> np.sqrt(<span class="dv">1</span><span class="op">-</span>rho<span class="op">**</span><span class="dv">2</span>)<span class="op">*</span>inc1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Thus, we can simulate the changes in the logarithms of two correlated asset prices as <span class="math display">\[\begin{align*}
+\Delta \log S_1 &amp;= \nu_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,\\
+\Delta \log S_2 &amp;= \nu_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
+\end{align*}\]</span> where <span class="math inline">\(\nu_i = r-q_1-\sigma_i^2/2\)</span> and the <span class="math inline">\(Z_i\)</span> are independent standard normals.</p>
+<div class="cell" data-execution_count="18">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>St2 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(sig1<span class="op">*</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift1 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>St2 <span class="op">=</span> V0 <span class="op">*</span> np.exp(sig2<span class="op">*</span>np.cumsum(incr,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift2 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We can also construct antithetic variables.</p>
+<div class="cell" data-execution_count="19">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>St2a <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>sig1<span class="op">*</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift1 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>St2a <span class="op">=</span> V0 <span class="op">*</span> np.exp(<span class="op">-</span>sig2<span class="op">*</span>np.cumsum(incr,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift2 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Given this sample, we can estimate the value of a best of 2 option with payoff <span class="math inline">\(\max(S_{1T},S_{2T})\)</span>.</p>
+<div class="cell" data-execution_count="20">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(St1[m,:],St2[m,:])</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>payoffa <span class="op">=</span> np.maximum(St1a[m,:],St2a[m,:])</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>value<span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(payoff)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>valuea<span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(payoffa)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estmate is ='</span>,value)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is ='</span>,valuea)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The avergae of the estimates is='</span>,(value<span class="op">+</span>valuea)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The first estmate is = 50.11374784508302
+The second estimate is = 51.46596027225067
+The avergae of the estimates is= 50.78985405866685</code></pre>
+</div>
+</div>
+<p>To generalize this idea to more than two assets, we introduce some additional notation. The simulation for the case of two assets can be written as</p>
+<p><span id="eq-mc_twoa"><span class="math display">\[
+\Delta \log S_1 = \nu_1\Delta t + a_{11}\sqrt{\Delta t}Z_1 + a_{12}\sqrt{\Delta t}Z_2\;,
+\tag{9.50}\]</span></span></p>
+<p><span id="eq-mc_twob"><span class="math display">\[
+\Delta \log S_2 = \nu_2\Delta t + a_{21}\sqrt{\Delta t}Z_1 + a_{22}\sqrt{\Delta t}Z_2\;,
+\tag{9.51}\]</span></span></p>
+<p>where <span class="math display">\[\begin{array}{rclcrcl}
+a_{11}&amp;=&amp;\sigma_1\;, &amp;\qquad &amp; a_{12}&amp;=&amp;0\; ,\\
+a_{21}&amp;=&amp;\sigma_2\rho\;, &amp;\qquad &amp; a_{22} &amp;= &amp;\sigma_2\sqrt{1-\rho^2}\;.
+\end{array}\]</span> These are not the only possible choices for the constants <span class="math inline">\(a_{ij}\)</span>. Given that <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z_2\)</span> are independent standard normals, the conditions the <span class="math inline">\(a_{ij}\)</span> must satisfy in order to match the variances <span class="math inline">\(\sigma_i^2\Delta t\)</span> and correlation <span class="math inline">\(\rho\)</span> of the changes in the logarithms are</p>
+<p><span id="eq-a1"><span class="math display">\[
+a_{11}^2+a_{12}^2 =\sigma_1^2\;,
+\tag{9.52}\]</span></span></p>
+<p><span id="eq-a2"><span class="math display">\[
+a_{21}^2+a_{22}^2 =\sigma_2^2\;,
+\tag{9.53}\]</span></span></p>
+<p><span id="eq-a3"><span class="math display">\[
+a_{11}a_{21}+a_{12}a_{22} = \sigma_1\sigma_2\rho\;.
+\tag{9.54}\]</span></span></p>
+<p>These three equations in the four coefficients <span class="math inline">\(a_{ij}\)</span> leave one degree of freedom. We choose to take <span class="math inline">\(a_{12}=0\)</span> and then solve for the other three.</p>
+<p>In matrix notation, the system <a href="Chapter10.html#eq-a1">Equation&nbsp;<span>10.7</span></a> - <a href="Chapter10.html#eq-a3">Equation&nbsp;<span>10.9</span></a> plus the condition <span class="math inline">\(a_{12}=0\)</span> can be written as the equation <span class="math display">\[\begin{pmatrix}a_{11} &amp; 0 \\a_{21} &amp; a_{22}\end{pmatrix}\begin{pmatrix}a_{11} &amp; 0 \\a_{21} &amp; a_{22}\end{pmatrix}^\top = \begin{pmatrix}\sigma_1^2 &amp; \rho\sigma_1\sigma_2 \\\rho\sigma_1\sigma_2 &amp; \sigma_2^2\end{pmatrix}\; ,\]</span> where <span class="math inline">\(^\top\)</span> denotes the matrix transpose. The matrix on the right hand side is the covariance matrix of the continuously-compounded annual returns (changes in log asset prices). Choosing the <span class="math inline">\(a_{ij}\)</span> so that the lower triangular matrix <span class="math display">\[A \equiv \begin{pmatrix}a_{11} &amp; 0 \\a_{21} &amp; a_{22}\end{pmatrix}\]</span> satisfies <span class="math display">\[AA^\top = \text{covariance matrix}\]</span> is called the the Cholesky decomposition of the covariance matrix. Given any number <span class="math inline">\(L\)</span> of assets, provided none of the assets is redundant (perfectly correlated with a portfolio of the others), the Cholesky decomposition of the <span class="math inline">\(L\times L\)</span> covariance matrix always exists. An algorithm for computing the Cholesky decomposition in numpy is np.linalg.cholesky.</p>
+<p>We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> If there were some path dependency in the option value, we would simulate the paths of the asset prices as in <a href="Chapter10.html#eq-mc_twoa">Equation&nbsp;<span>10.5</span></a> - <a href="Chapter10.html#eq-mc_twob">Equation&nbsp;<span>10.6</span></a>. However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date <span class="math inline">\(T\)</span>, as in <a href="Chapter6.html#sec-s_mc_europeans"><span>Section&nbsp;6.1</span></a>. The value of a basket call option at its maturity <span class="math inline">\(T\)</span> is <span class="math display">\[\max\left(0,\;\sum_{i=1}^L w_iS_i(T)-K\right)\; ,\]</span> where <span class="math inline">\(L\)</span> is the number of assets in the basket (portfolio) and <span class="math inline">\(w_i\)</span> is the weight of the <span class="math inline">\(i\)</span>–th asset in the basket. The logarithm of the <span class="math inline">\(i\)</span>–th asset price at maturity is simulated as <span class="math display">\[\log S_i(T) = \log S_i(0) +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,\]</span> where the <span class="math inline">\(Z_j\)</span> are independent standard normals. Given the simulated values of the <span class="math inline">\(\log S_i(T)\)</span>, the value at maturity of the basket option is readily computed. The estimate of the date–0 value is then computed as the discounted average of the simulated values at maturity.</p>
+<p>For our two asset example we compute the value of a call otption on an equally weighted porfotlio.</p>
+<div class="cell" data-execution_count="21">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>w<span class="op">=</span><span class="fl">0.5</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">45</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>basketpo<span class="op">=</span>np.maximum(w<span class="op">*</span>St1[m,:]<span class="op">+</span>(<span class="dv">1</span><span class="op">-</span>w)<span class="op">*</span>St2[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>basketpoa<span class="op">=</span>np.maximum(w<span class="op">*</span>St1a[m,:]<span class="op">+</span>(<span class="dv">1</span><span class="op">-</span>w)<span class="op">*</span>St2a[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>estimate<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(basketpo)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>estimatea<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(basketpoa)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is ='</span>,estimate)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is ='</span>,estimatea)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the estimates='</span>,(estimate<span class="op">+</span>estimatea)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The first estimate is = 4.4030641748675095
+The second estimate is = 4.945665333101932
+The average of the estimates= 4.674364753984721</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-s_curse" class="level2" data-number="9.12">
+<h2 data-number="9.12" class="anchored" data-anchor-id="sec-s_curse"><span class="header-section-number">9.12</span> Binomial Valuation of Basket and Spread Options</h2>
+<p> By combining binomial models, we can value options or other derivatives on multiple assets. We will illustrate for an option on two assets. This is the most important case, and the extension to more than two assets is straightforward.</p>
+<p>Consider two stocks with constant dividend yields <span class="math inline">\(q_i\)</span> and constant volatilities <span class="math inline">\(\sigma_i\)</span>. Suppose the two Brownian motions driving the two stocks have a constant correlation coefficient <span class="math inline">\(\rho\)</span>. We will denote the price of stock <span class="math inline">\(i\)</span> (<span class="math inline">\(i=1,2\)</span>) in the up state in each period by <span class="math inline">\(u_iS_i\)</span> and the price in the down state by <span class="math inline">\(d_iS_i\)</span>, where <span class="math inline">\(S_i\)</span> is the price at the beginning of the period, and <span class="math inline">\(u_i\)</span> and <span class="math inline">\(d_i\)</span> are parameters to be specified. In each period, there are four possible combinations of returns on the two stocks: up for both stocks, up for stock 1 and down for stock~2, down for stock 1 and up for stock 2, and down for both stocks. Denote the probabilities of these four combinations by <span class="math inline">\(p_{uu}\)</span>, <span class="math inline">\(p_{ud}\)</span>, <span class="math inline">\(p_{du}\)</span>, and <span class="math inline">\(p_{dd}\)</span> respectively. Thus, there are eight parameters in the binomial model: the number <span class="math inline">\(N\)</span> of periods (which defines the length of each period as <span class="math inline">\(\Delta t=T/N\)</span> where <span class="math inline">\(T\)</span> is the option maturity), the up and down parameters <span class="math inline">\(u_i\)</span> and <span class="math inline">\(d_i\)</span> for each stock, and three probabilities (the fourth probability being determined by the condition that the probabilities sum to one).</p>
+<p>Given the period length <span class="math inline">\(\Delta t\)</span>, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns <span class="math inline">\(\Delta S_i/S_i\)</span> or the continuously-compounded returns <span class="math inline">\(\Delta \log S_i\)</span>. There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters. As in <a href="Chapter6.html"><span>Chapter&nbsp;6</span></a>, it is convenient to take <span class="math inline">\(d_i = 1/u_i\)</span>, leaving five restrictions and five free parameters.</p>
+<p>As discussed in <a href="Chapter6.html#sec-s_binomialparameters"><span>Section&nbsp;6.6</span></a>, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased. As an example, we will describe here the suggestion of Trigeorgis <span class="citation" data-cites="Trigeorgis">(<a href="#ref-Trigeorgis" role="doc-biblioref">Trigeorgis 1991</a>)</span>, which matches the means, variances and covariance of the continuously-compounded returns. Letting <span class="math inline">\(p_i\)</span> denote the probability of the up state for stock <span class="math inline">\(i\)</span>, matching the means and variances implies, as in <a href="Chapter6.html#sec-s_binomialparameters"><span>Section&nbsp;6.6</span></a>, <span class="math display">\[\begin{align*}
+\log u_i&amp;=\sqrt{\sigma_i^2\Delta t + \nu_i^2(\Delta t)^2}\; ,\\
+p_i &amp;= \frac{1}{2}+\frac{\nu_i\Delta t}{2\log u_i}\;.
+\end{align*}\]</span> where <span class="math inline">\(\nu_i=r-q_i-\sigma_i^2/2\)</span>. In terms of the notation <span class="math inline">\(p_{uu}\)</span>, <span class="math inline">\(p_{ud}\)</span>, <span class="math inline">\(p_{du}\)</span>, and <span class="math inline">\(p_{dd}\)</span>, the probability of the up state for stock 1 is <span class="math inline">\(p_1=p_{uu}+p_{ud}\)</span> and the probability of the up state for stock 2 is <span class="math inline">\(p_2=p_{uu}+p_{du}\)</span>. Therefore,</p>
+<p><span id="eq-prob1"><span class="math display">\[
+p_{uu}+p_{ud} = \frac{1}{2}+\frac{\nu_1\Delta t}{2\log u_1}\;,
+\tag{9.55}\]</span></span></p>
+<p><span id="eq-prob2"><span class="math display">\[
+p_{uu}+p_{du} = \frac{1}{2}+\frac{\nu_2\Delta t}{2\log u_2}\;.
+\tag{9.56}\]</span></span></p>
+<p>In the continuous time model, over a discrete time period <span class="math inline">\(\Delta t\)</span>, the covariance of <span class="math inline">\(\Delta \log S_1\)</span> and <span class="math inline">\(\Delta \log S_2\)</span> is <span class="math inline">\(\rho\sigma_1\sigma_2\Delta t\)</span>. In the binomial model, with <span class="math inline">\(d_i=1/u_i\)</span>, we have <span class="math display">\[E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\; .\]</span> Given that <span class="math inline">\(E[\Delta\log S_i] =\nu_i\Delta t\)</span>, this implies a covariance of <span class="math display">\[(p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \nu_1\nu_2(\Delta t)^2\; .\]</span> Matching the covariance in the binomial model to the covariance in the continuous-time model therefore implies <span id="eq-prob3"><span class="math display">\[
+p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \nu_1\nu_2(\Delta t)^2}{\log u_1\log u_2}\;.
+\tag{9.57}\]</span></span></p>
+<p>We can solve the system <a href="Chapter10.html#eq-prob1">Equation&nbsp;<span>10.2</span></a> - <a href="Chapter10.html#eq-prob3">Equation&nbsp;<span>10.4</span></a>, together with the condition that the probabilities sum to one, to obtain the probabilities <span class="math inline">\(p_{uu}\)</span>, <span class="math inline">\(p_{ud}\)</span>, <span class="math inline">\(p_{du}\)</span>, and <span class="math inline">\(p_{dd}\)</span>. This solution and a VBA function for valuing an American spread call option are given in <a href="Chapter10.html#sec-s_montecarlo_matlab"><span>Section&nbsp;10.7</span></a>. This function operates much like the binomial valuation of American options described in <a href="Chapter6.html"><span>Chapter&nbsp;6</span></a>. The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices. In an <span class="math inline">\(N\)</span>–period model, there are <span class="math inline">\(N+1\)</span> nodes at the final date for each of the two stocks, and hence <span class="math inline">\((N+1)^2\)</span> possible combinations of nodes. In fact, at each date <span class="math inline">\(n\)</span> (<span class="math inline">\(n=0,\ldots,N\)</span>) there are <span class="math inline">\((n+1)^2\)</span> combinations of nodes to be considered.<br>
+The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.</p>
+<p>Likewise, in an <span class="math inline">\(N\)</span>–period model for a basket option written on three assets, there are <span class="math inline">\((n+1)^3\)</span> combinations of nodes to be considered at date <span class="math inline">\(n\)</span>; if there are five assets, there are <span class="math inline">\((n+1)^5\)</span> combinations, etc. Thus, the computation time required increases exponentially with the number of assets. This can be a serious problem. For example, with five assets and <span class="math inline">\(N=99\)</span>, we would have <span class="math inline">\(100^5\)</span> (10 billion) combinations. As this suggests, problems with multiple assets quickly become intractable in a binomial framework. This is called the curse of dimensionality. </p>
+</section>
+<section id="exercises" class="level2" data-number="9.13">
+<h2 data-number="9.13" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.13</span> Exercises</h2>
 <div id="exr-nolabel" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 9.1 </strong></span>Intuitively, the value of a forward-start call option should be lower the closer is the date <span class="math inline">\(T\)</span> at which the strike is set to the date <span class="math inline">\(T'\)</span> at which the option matures, because then the option has less time to maturity after being created at <span class="math inline">\(T\)</span>. Create an Excel worksheet to confirm this. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, and <span class="math inline">\(T'\)</span>. Compute and plot the value of the option for <span class="math inline">\(T=0.1T'\)</span>, <span class="math inline">\(T=0.2T'\)</span>, , <span class="math inline">\(T=0.9T'\)</span>.</p>
 </div>
@@ -1543,6 +1884,9 @@ Musiela, M., and M. Rutkowski. 1997. <em>Martingale Methods in Financial Modelin
 <div id="ref-Stulz" class="csl-entry" role="listitem">
 Stulz, R. 1982. <span>“Options on the Minimum or Maximum of Two Risky Assets: Analysis and Applications.”</span> <em>Journal of Financial Economics</em> 10: 161–85.
 </div>
+<div id="ref-Trigeorgis" class="csl-entry" role="listitem">
+Trigeorgis, A. 1991. <span>“A Log-Transformed Binomial Analysis Method for Valuing Complex Multi-Option Investments.”</span> <em>Journal of Financial and Quantitative Analysis</em> 26: 309–26.
+</div>
 <div id="ref-Zhang" class="csl-entry" role="listitem">
 Zhang, P. G. 1998. <em>Exotic Options</em>. A Guide to Second Generation Options, 2nd ed., World Scientific Publishing, Singapore.
 </div>
@@ -1552,6 +1896,7 @@ Zhang, P. G. 1998. <em>Exotic Options</em>. A Guide to Second Generation Options
 <hr>
 <ol>
 <li id="fn1"><p>The only difference is that here <span class="math inline">\(Z\)</span> is the price of a non-dividend-paying portfolio, so, in the notation of the previous section, we have <span class="math inline">\(V(t)=Z(t)\)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For a spread option, take <span class="math inline">\(L=2\)</span>, <span class="math inline">\(w_1=1\)</span> and <span class="math inline">\(w_2=-1\)</span>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
