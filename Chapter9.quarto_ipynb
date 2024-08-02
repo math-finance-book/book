@@ -110,7 +110,7 @@
         "\n",
         "The following is a fast approximation of the bivariate \\index{bivariate normal distribution function} cumulative normal distribution function, accurate to six decimal places, due to Drezner [@Drezner]).  For given numbers $a$ and $b$, this function gives the probability that $\\xi_1<a$ and $\\xi_2<b$ where $\\xi_1$ and $\\xi_2$ are standard normal random variables with a given correlation $\\rho$, which we must input.  \n"
       ],
-      "id": "44675ee0"
+      "id": "b60c7063"
     },
     {
       "cell_type": "code",
@@ -163,7 +163,7 @@
         "\n",
         "The forward-start call pricing formula is of the same form as the Black-Scholes, Margrabe, Black, and Merton formulas, as discussed in @sec-s_matlabimplementations.  We can compute it with our \\verb!Generic_Option! pricing function.\n"
       ],
-      "id": "ab31c28a"
+      "id": "45c35cd4"
     },
     {
       "cell_type": "code",
@@ -366,7 +366,7 @@
         "}  \n",
         "The following uses $10^{-6}$ as the error tolerance in the bisection.\n"
       ],
-      "id": "6c9c5b10"
+      "id": "96f6c3c1"
     },
     {
       "cell_type": "code",
@@ -450,7 +450,7 @@
       "source": [
         "The implementation of the call-on-a-put formula is of course very similar to that of a call-on-a-call.  One difference is that there is no obvious upper bound for $S^*$, so we start with $2K'$ (= \\verb!2*K2!) and double this until the value of the put is below $K$.  We can take 0 again to be the lower bound.  Recall that we assume $K<\\mathrm{e}^{-r(T'-T)}K'$ and the right-hand side of this is the value of the put at date $T$ when $S(T)=0$.\n"
       ],
-      "id": "6a1da798"
+      "id": "977b1472"
     },
     {
       "cell_type": "code",
@@ -678,7 +678,7 @@
         "\n",
         "To value an American call when there is one dividend payment before the option matures, we input the initial asset price $S(0)$ and then compute $Z(0)=X(0)-\\mathrm{e}^{-rT}D$.  If $D-K \\leq -\\mathrm{e}^{-r(T'-T)}K$, we return the Black-Scholes value of a European call written on $Z$.  Otherwise, we need to compute $Z^*$ and our bisection algorithm requires an upper bound for $Z^*$, which would be any value of $Z(T)$ such that exercise at $T$ is optimal.  It is not obvious what this should be, so we start with $K$ and keep doubling this until we obtain a value of $Z(T)$ at which exercise would be optimal.  Then, we use the bisection algorithm to compute $Z^*$ and finally compute the option value @eq-americancall.\n"
       ],
-      "id": "11219584"
+      "id": "8cf6972a"
     },
     {
       "cell_type": "code",
@@ -821,7 +821,7 @@
         "\n",
         "To implement the bisection to compute $S^*$, we can take zero as a lower bound and $K_c+K_p$ as an upper bound.^[We take the call value to be zero and the put value to be $\\mathrm{e]^{-r(T_p-T)}K_p$ at date $T$ when the stock price is zero.  To see why the upper bound works, note that when the stock price is $S$ at date $T$,  the call is worth at least $S^*-K_c$ and the put is worth no more than $K_p$; i.e, $C \\geq S-K_c$ and $P \\leq K_p$.  Therefore, $C-P \\geq S-K_c-K_p$.  Hence when $S=K_c+K_p$, we have $C-P\\geq 0$. }\n"
       ],
-      "id": "213bcb15"
+      "id": "864a9c0c"
     },
     {
       "cell_type": "code",
@@ -1025,7 +1025,7 @@
         "\n",
         "The following code shows how to compute the price of a Call on the Max.\n"
       ],
-      "id": "8b41a1e3"
+      "id": "897aab87"
     },
     {
       "cell_type": "code",
@@ -1196,7 +1196,7 @@
         "\n",
         "The following code computes the price of a down and out call option.\n"
       ],
-      "id": "95eb372a"
+      "id": "83ad4bd5"
     },
     {
       "cell_type": "code",
@@ -1291,7 +1291,7 @@
         "\n",
         "The following program calculates the price of a floating strike lookback option. \n"
       ],
-      "id": "180da947"
+      "id": "87c68833"
     },
     {
       "cell_type": "code",
@@ -1525,7 +1525,7 @@
         "\n",
         "The following code computes the price of a geometric-average-price call.\n"
       ],
-      "id": "53ec98d1"
+      "id": "c51764ca"
     },
     {
       "cell_type": "code",
@@ -1566,7 +1566,7 @@
         "\n",
         "For most path dependent options, a possible starting point is to generate an array of $n$ paths but since we want the entire path we choose the number of time steps that is appropriate for our application.  We can use the same code as in Section @#sec-s_mc_europeans if we are working in a Black Scholes setting.\n"
       ],
-      "id": "46f9d378"
+      "id": "7dc23a4f"
     },
     {
       "cell_type": "code",
@@ -1610,7 +1610,7 @@
         "St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\n",
         "St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])"
       ],
-      "id": "5f09a9c7",
+      "id": "a6b8ee8c",
       "execution_count": null,
       "outputs": []
     },
@@ -1620,7 +1620,7 @@
       "source": [
         "As before this code generates two samples the original and the antithetic.  The output is an array of $n$ sample paths with $m$ time steps.  The sample can also be used to find the value of a floating strike lookback call.\n"
       ],
-      "id": "dc771270"
+      "id": "d2abccbc"
     },
     {
       "cell_type": "code",
@@ -1636,7 +1636,7 @@
         "print('The average estimate is=',(floatlkbk+floatlkbk1)/2)\n",
         "print('The exact formula is=',floating_strike_call(S0, r, sigma, 0, T, S0))"
       ],
-      "id": "e86f5db8",
+      "id": "6bc03997",
       "execution_count": null,
       "outputs": []
     },
@@ -1646,7 +1646,7 @@
       "source": [
         "To value the fixed strike lookback call option with time $T$ payoff $\\max(\\max_{0\\le t \\le T} S_t.0)$, we simply add the following \n"
       ],
-      "id": "0ed5d605"
+      "id": "275b37d4"
     },
     {
       "cell_type": "code",
@@ -1660,7 +1660,7 @@
         "print('The second estimate is=',lookbck1)\n",
         "print('The average estimate is=', (lookbck + lookbck1)/2)"
       ],
-      "id": "57e65673",
+      "id": "2b220507",
       "execution_count": null,
       "outputs": []
     },
@@ -1691,7 +1691,7 @@
         "\n",
         "Again we can get a sample of payoffs using our stock price samples.\n"
       ],
-      "id": "5b4e7927"
+      "id": "42594555"
     },
     {
       "cell_type": "code",
@@ -1705,7 +1705,7 @@
         "print('The second estimate is=',dpayoff1)\n",
         "print('The average of the estimates=',(dpayoff+dpayoff1)/2)"
       ],
-      "id": "6886d235",
+      "id": "4dbb1363",
       "execution_count": null,
       "outputs": []
     },
@@ -1715,7 +1715,7 @@
       "source": [
         "We now construct a control variate, the geometric asian option which has a known formula for its value.\n"
       ],
-      "id": "60935f36"
+      "id": "86f61fed"
     },
     {
       "cell_type": "code",
@@ -1737,7 +1737,7 @@
         "print('The error in the first estimate=',error)\n",
         "print('The error in the second estimate=',error1)"
       ],
-      "id": "9879485b",
+      "id": "996f58c6",
       "execution_count": null,
       "outputs": []
     },
@@ -1748,7 +1748,7 @@
         "Next we estimate the beta.  As discussed before, we could simply set beta=1. Alternatively, if we estimate beta from the  simulated sample, then our update could be biased.  Instead we compute an independent sample from which we estimate beta.  We then estimate the updated estimate for both samples from the formula\n",
         "$$ \\text{new estimate} = \\text{original estimate} + \\beta * \\text{error}$$\n"
       ],
-      "id": "04bcce4b"
+      "id": "3d89a123"
     },
     {
       "cell_type": "code",
@@ -1778,7 +1778,7 @@
         "print('The updated value for the second sample=',update1)\n",
         "print('The average of the updated values is=',(update +update1)/2)"
       ],
-      "id": "8bce156f",
+      "id": "f657c93b",
       "execution_count": null,
       "outputs": []
     },
@@ -1802,7 +1802,7 @@
         "$$Z = \\rho Z_1 + \\sqrt{1-\\rho^2}\\,Z_2\\; .$$\n",
         "The random variable $Z$ is also a standard normal, and the correlation between $Z_1$ and $Z$ is $\\rho$.  \n"
       ],
-      "id": "307b1cd0"
+      "id": "d8e37fa8"
     },
     {
       "cell_type": "code",
@@ -1852,7 +1852,7 @@
         "incr = np.zeros(shape = (m + 1, n))\n",
         "incr = rho*inc + np.sqrt(1-rho**2)*inc1"
       ],
-      "id": "277dc86b",
+      "id": "aadeb259",
       "execution_count": null,
       "outputs": []
     },
@@ -1867,7 +1867,7 @@
         "\\end{align*}\n",
         "where $\\nu_i = r-q_1-\\sigma_i^2/2$ and the $Z_i$ are independent standard normals. \n"
       ],
-      "id": "becbd810"
+      "id": "a0a4608b"
     },
     {
       "cell_type": "code",
@@ -1878,7 +1878,7 @@
         "St1 = S0 * np.exp(sig1*np.cumsum(inc,axis=0) + (drift1 * t[0:m + 1])[:,None])\n",
         "St2 = V0 * np.exp(sig2*np.cumsum(incr,axis=0) + (drift2 * t[0:m + 1])[:,None])"
       ],
-      "id": "cf682ebe",
+      "id": "bbac6bf0",
       "execution_count": null,
       "outputs": []
     },
@@ -1888,7 +1888,7 @@
       "source": [
         "We can also construct antithetic variables.\n"
       ],
-      "id": "bd5e8a3b"
+      "id": "16a280b7"
     },
     {
       "cell_type": "code",
@@ -1899,7 +1899,7 @@
         "St1a = S0 * np.exp(-sig1*np.cumsum(inc,axis=0) + (drift1 * t[0:m + 1])[:,None])\n",
         "St2a = V0 * np.exp(-sig2*np.cumsum(incr,axis=0) + (drift2 * t[0:m + 1])[:,None])"
       ],
-      "id": "a2461f11",
+      "id": "14c16681",
       "execution_count": null,
       "outputs": []
     },
@@ -1909,7 +1909,7 @@
       "source": [
         "Given this sample, we can estimate the value of a best of 2 option with payoff $\\max(S_{1T},S_{2T})$.\n"
       ],
-      "id": "78b9dfb6"
+      "id": "733a0174"
     },
     {
       "cell_type": "code",
@@ -1924,7 +1924,7 @@
         "print('The second estimate is =',valuea)\n",
         "print('The avergae of the estimates is=',(value+valuea)/2)"
       ],
-      "id": "9ec4bc65",
+      "id": "02e5087f",
       "execution_count": null,
       "outputs": []
     },
@@ -1987,7 +1987,7 @@
         "\n",
         "For our two asset example we compute the value of a call otption on an equally weighted porfotlio.\n"
       ],
-      "id": "bb399ecd"
+      "id": "14c84e42"
     },
     {
       "cell_type": "code",
@@ -2003,7 +2003,7 @@
         "print('The second estimate is =',estimatea)\n",
         "print('The average of the estimates=',(estimate+estimatea)/2)"
       ],
-      "id": "6e4187b8",
+      "id": "79c14966",
       "execution_count": null,
       "outputs": []
     },
@@ -2141,7 +2141,7 @@
         "\n",
         "This formula allows us to compute the fair strike price of a variance swap using the prices of European call and put options. The following code provides an example of this computation using data from Yahoo finance for Apple.\n"
       ],
-      "id": "a36f31d1"
+      "id": "0dfcfa43"
     },
     {
       "cell_type": "code",
@@ -2291,7 +2291,7 @@
         "\\end{multline*}\n",
         ":::\n"
       ],
-      "id": "fc984546"
+      "id": "a88e55f0"
     }
   ],
   "metadata": {
