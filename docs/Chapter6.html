@@ -369,7 +369,7 @@ window.Quarto = {
 <section id="monte-carlo-valuation-of-a-european-call" class="level3">
 <h3 class="anchored" data-anchor-id="monte-carlo-valuation-of-a-european-call">Monte Carlo Valuation of a European Call</h3>
 <p>We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions. We will also estimate the delta by each of the methods described in <a href="#sec-s_montecarlogreeks1" class="quarto-xref"><span>Section 6.3</span></a> and~<span class="math inline">\(\ref{s_montecarlogreeks2}\)</span>. Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates. We use the code in Chapter <span class="citation" data-cites="#sec-c_continuoustime">(<a href="#ref-#sec-c_continuoustime" role="doc-biblioref"><strong>#sec-c_continuoustime?</strong></a>)</span>. In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process. Therefore we set <span class="math inline">\(m=1\)</span>. However, we use a large number of paths, <span class="math inline">\(n=10000\)</span> to get a large sample of terminal stock prices.</p>
-<div id="645f4bd1" class="cell" data-execution_count="1">
+<div id="b77e0bfe" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
@@ -410,7 +410,7 @@ window.Quarto = {
 </details>
 </div>
 <p>As before, this code generates two samples <span class="math inline">\(St\)</span>, which adds the simulated standard (zero mean) normal random variable, and <span class="math inline">\(St1\)</span> which subtracts the simulated (zero mean) standard normal random variable. Each sample produces and estimate for the Black-Scholes European call option.</p>
-<div id="98e4ef67" class="cell" data-execution_count="2">
+<div id="7c2538b0" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cc<span class="op">=</span>np.maximum(St[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
@@ -430,7 +430,7 @@ The average of the two estimates= 4.739635467026771</code></pre>
 </div>
 </div>
 <p>The true call price is given by</p>
-<div id="4c0dda6d" class="cell" data-execution_count="3">
+<div id="1ec94b2b" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
@@ -481,7 +481,7 @@ The average of the two estimates= 4.739635467026771</code></pre>
 <h2 data-number="6.2" class="anchored" data-anchor-id="sec-s_controlvariates"><span class="header-section-number">6.2</span> Control Variates in Monte Carlo</h2>
 <p> Another approach to increasing the efficiency of the Monte Carlo method is to adjust the estimated mean (option value) based on the known mean of another related variable. We can explain this in terms of linear regression in statistics. Suppose we have a random sample <span class="math inline">\(\{x_1,\ldots,x_M\}\)</span> of a variable <span class="math inline">\(x\)</span> with unknown mean <span class="math inline">\(\mu\)</span>, and suppose we have a corresponding sample <span class="math inline">\(\{y_1,\ldots,y_M\}\)</span> of another variable <span class="math inline">\(y\)</span> with known mean <span class="math inline">\(\phi\)</span>. Then an efficient estimate of <span class="math inline">\(\mu\)</span> is <span class="math inline">\(\hat{\mu} = \bar{x} + \hat{\beta} (\phi-\bar{y})\)</span>, where <span class="math inline">\(\bar{x}\)</span> and <span class="math inline">\(\bar{y}\)</span> denote the sample means of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, and where <span class="math inline">\(\hat{\beta}\)</span> is the coefficient of <span class="math inline">\(y\)</span> in the linear regression of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span> (i.e., the estimate of <span class="math inline">\(\beta\)</span> in the linear model <span class="math inline">\(x = \alpha +\beta y + \varepsilon\)</span>). The standard Monte Carlo method, which we have described thus far, simply estimates the mean of <span class="math inline">\(x\)</span> as <span class="math inline">\(\bar{x}\)</span>. The control variate method adjusts the estimate by adding <span class="math inline">\(\hat{\beta} (\phi-\bar{y})\)</span>. To understand this correction, assume for example that the true <span class="math inline">\(\beta\)</span> is positive. If the random sample is such that <span class="math inline">\(\bar{y}&lt;\phi\)</span>, then it must be that small values of <span class="math inline">\(y\)</span> were over-represented in the sample. Since <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> tend to move up and down together (this is the meaning of a positive <span class="math inline">\(\beta\)</span>) it is likely that small values of <span class="math inline">\(x\)</span> were also over-represented in the sample. Therefore, one should adjust the sample mean of <span class="math inline">\(x\)</span> upwards in order to estimate <span class="math inline">\(\mu\)</span>. The best adjustment will take into account the extent to which small values of <span class="math inline">\(y\)</span> were over-represented (i.e., the difference between <span class="math inline">\(\bar{y}\)</span> and <span class="math inline">\(\phi\)</span>) and the strength of the relation between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> (which the estimate <span class="math inline">\(\hat{\beta}\)</span> represents). The efficient correction of this sort is also the simplest: just add <span class="math inline">\(\hat{\beta}(\phi-\bar{y})\)</span> to <span class="math inline">\(\bar{x}\)</span>. In practice, the estimation of <span class="math inline">\(\hat{\beta}\)</span> may be omitted and one may simply take <span class="math inline">\(\hat{\beta}=1\)</span>, if the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> can be assumed to be one-for-one. If <span class="math inline">\(\beta\)</span> is to be estimated, the estimate (by ordinary least squares) is <span class="math display">\[\hat{\beta} = \frac{\sum_{i=1}^M x_iy_i - M\bar{x}\bar{y}}{\sum_{i=1}^M y_i^2 - M\bar{y}^2}\; .\]</span> In general, the correction term <span class="math inline">\(\hat{\beta}(\phi-\bar{y})\)</span> will have a nonzero mean, which introduces a bias in the estimate of <span class="math inline">\(\mu\)</span>. To eliminate the bias, one can compute <span class="math inline">\(\hat{\beta}\)</span> from a pre-sample of <span class="math inline">\(\{x,y\}\)</span> values.</p>
 <p>As an example of a control variate, in our simulation code to estimate the Black Scholes price for a call option we can use the stock price itself. The known stock price is the inout price <span class="math inline">\(S0\)</span>. The simulation also produces an estimate for the stock price as the dicsounted expected value of the terminal stock price <span class="math inline">\(\hat{S}=\sum_{i=1}^{n} e^{- r T } St(m,i)\)</span> where <span class="math inline">\(St(m,i)\)</span> is the <span class="math inline">\(i\)</span>th simulated stock price at time <span class="math inline">\(T\)</span>. Theoretically these should be the same umber, but due to error they typically wil not be the same.</p>
-<div id="29d50bfa" class="cell" data-execution_count="4">
+<div id="e71d6036" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>SS<span class="op">=</span>np.mean(St[m,:])<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
@@ -496,7 +496,7 @@ The error is = -0.058999995779316805</code></pre>
 </div>
 </div>
 <p>The error is <span class="math inline">\(S0-\hat{S}\)</span> which corresponds to <span class="math inline">\(\phi-y\)</span> above. We then compute <span class="math inline">\(\hat{\beta}\)</span> and comute the improved estimate <span class="math display">\[ \text{new estimate}= \text{original estimate} +\hat{\beta}(S0-\hat{S}) \]</span> In the code below we do this procedure for both samples and average the updates.</p>
-<div id="468ffc8e" class="cell" data-execution_count="5">
+<div id="3f9aa8e2" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hatbeta<span class="op">=</span> np.cov(St[m,:],cc)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(St[m,],cc)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
@@ -522,7 +522,7 @@ The average of the updated estimates = 4.751969152451551</code></pre>
 </div>
 </div>
 <p>We can compare this to the exact Black Scholes formula from before.</p>
-<div id="a922affd" class="cell" data-execution_count="6">
+<div id="a6f9f374" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The exact Black Scholes Price is='</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -667,7 +667,7 @@ d = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t - \sigma\sqrt{\Delta
 <h3 class="anchored" data-anchor-id="binomial-valuation-of-european-options">Binomial Valuation of European Options</h3>
 The binomial model for path-independent European options can be implemented as follows. We will use the Cox-Ross-Rubinstein parameters. To value a different type of European option in a binomial model, one would only have to change the formula
 <p>in the following. We first define the binomial parameters and some useful constants, denoting the probability <span class="math inline">\(p\,\)</span> of an up move as <span class="math inline">\(pu\)</span> and the probability <span class="math inline">\(1-p\)</span> of a down move as <span class="math inline">\(pd\)</span>. The routine below uses the combinatoric function comb(N,i) to compute the term <span class="math inline">\(\frac{N !}{i! (N-i)!}\)</span>.</p>
-<div id="3baadc98" class="cell" data-execution_count="7">
+<div id="2c574b9d" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -702,7 +702,7 @@ The binomial model for path-independent European options can be implemented as f
 </div>
 </div>
 <p>The Black Scholes value is shown below.</p>
-<div id="fd7c71fd" class="cell" data-execution_count="8">
+<div id="666f3ef2" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
@@ -739,7 +739,7 @@ The binomial model for path-independent European options can be implemented as f
 </div>
 </div>
 <p>An alternative way to calculate te value of the call is to use a loop. This takes longer to run but is perhaps easier to understand.</p>
-<div id="b9613443" class="cell" data-execution_count="9">
+<div id="286eca74" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(times<span class="op">+</span><span class="dv">1</span>):</span>
@@ -775,7 +775,7 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 <section id="binomial-valuation-of-american-options" class="level3">
 <h3 class="anchored" data-anchor-id="binomial-valuation-of-american-options">Binomial Valuation of American Options</h3>
 <p>We will consider an American put. It may also be optimal to exercise an American call early, if there is a positive dividend yield, and the same procedure can be used for American calls. We begin as in the previous subsection by defining the binomial parameters, some useful constants, and the stock price at the last date. We also record the value of the lowest stock price where we exercise at the last date <span class="math inline">\(ex[n]\)</span>.</p>
-<div id="982dc3fb" class="cell" data-execution_count="10">
+<div id="e2f3a125" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -822,7 +822,7 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 </details>
 </div>
 <p>Now we do the backward induction. Note that a period is the time period between successive dates. In a one-period model, there are two dates (the beginning and end) and in general there are <span class="math inline">\(N+1\)</span> dates in an <span class="math inline">\(N\)</span>–period model. We index the dates as <span class="math inline">\(i=0,\ldots,N\)</span>. At each date we start by defining the stock price at the bottom node. At date <span class="math inline">\(i\)</span> there have been <span class="math inline">\(i\)</span> past periods, so the bottom node corresponds to <span class="math inline">\(i\)</span> down moves. The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value). Having already dealt with the bottom node (<span class="math inline">\(j=0\)</span>) we loop over the nodes <span class="math inline">\(j=1,\ldots,i\)</span> at each date <span class="math inline">\(i\)</span>, increasing the stock price by a factor of <span class="math inline">\(u^2\)</span> each time. When we have backed up to date 0, we return the put value <span class="math inline">\(AP(0)\)</span>, the value at the bottom node, which is the only node at date~0.</p>
-<div id="66aec718" class="cell" data-execution_count="11">
+<div id="3ab6df51" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
@@ -865,7 +865,7 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 </div>
 </div>
 <p>The above code runs slowly due to the loops and looping is inefficient in Python. Below we provide a code which generatee the same answer except one of the loops is replaced by vector calculations. The program creates the stock price for each time in a vector and uses vector comparisons to calcualte the maximum of the early exercise and waiting. To understand the code, it is probably a good idea to print out vec1 and vec to see how the exponents are calulated at each node. This procedure is necessary to speed up the execution since loops are inefficient in Python.</p>
-<div id="4128a3a1" class="cell" data-execution_count="12">
+<div id="4a5e2135" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -979,7 +979,7 @@ p = \frac{1}{2}+\frac{\mathrm{n}u\Delta t}{2\log u}\;.
 <p><span class="math display">\[p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2}{2}\right)~~~p_m =2/3~~p_d= \frac{1}{6} - \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2}{2}\right)\]</span></p>
 <p>While there are many choices for the parameterization they are not completely arbitrary. The probability <span class="math inline">\(p_m =2/3\)</span> roughly corresponds to plus or minus one standard devation of a normal distribution and the up and down probabilities capture the tails. There are other parameterizations which can work ust as well.</p>
 <p>Conceptually, although there are three states and only two assets and the market is incomplete, the model converges to the Black Scholes model but there is no direct replication strategy. Nevertheless, we are modelling the price in a risk neutral measure. More importantly it does potentially give a better estimate of derivative prices.</p>
-<div id="3ef0acf5" class="cell" data-execution_count="13">
+<div id="dd8937dd" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1055,7 +1055,7 @@ p = \frac{1}{2}+\frac{\mathrm{n}u\Delta t}{2\log u}\;.
 </div>
 </div>
 <p>We again provide a program which does the same calculation using loops. It is much slower. We use the same parametrs and preamble as before and just outline the steps. As in the binomial model, we start at the last date and build <span class="math inline">\(2n+1\)</span> terminal stock prices. We also keep track of the highest stock price which we exercise.</p>
-<div id="8550c2e5" class="cell" data-execution_count="14">
+<div id="f2c70fc8" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1098,7 +1098,7 @@ p = \frac{1}{2}+\frac{\mathrm{n}u\Delta t}{2\log u}\;.
 </details>
 </div>
 <p>We then move backwards. There are two loops. The inner loop builds the stock price, the value, and exercise boundary at each time and the outer loop moves backwards in time.</p>
-<div id="91e8e302" class="cell" data-execution_count="15">
+<div id="4fa31d19" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
