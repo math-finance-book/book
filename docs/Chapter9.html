@@ -290,7 +290,8 @@ div.csl-indent {
   <li><a href="#monte-carlo-models-for-path-dependent-options" id="toc-monte-carlo-models-for-path-dependent-options" class="nav-link" data-scroll-target="#monte-carlo-models-for-path-dependent-options"><span class="header-section-number">9.10</span> Monte Carlo Models for Path-Dependent Options</a></li>
   <li><a href="#sec-montecarlomultiple" id="toc-sec-montecarlomultiple" class="nav-link" data-scroll-target="#sec-montecarlomultiple"><span class="header-section-number">9.11</span> Monte Carlo Valuation of Basket and Spread Options</a></li>
   <li><a href="#sec-s_curse" id="toc-sec-s_curse" class="nav-link" data-scroll-target="#sec-s_curse"><span class="header-section-number">9.12</span> Binomial Valuation of Basket and Spread Options</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.13</span> Exercises</a></li>
+  <li><a href="#variance-swaps" id="toc-variance-swaps" class="nav-link" data-scroll-target="#variance-swaps"><span class="header-section-number">9.13</span> Variance Swaps</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.14</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -1785,14 +1786,131 @@ p_{uu}+p_{ud} = \frac{1}{2}+\frac{\nu_1\Delta t}{2\log u_1}\;,
 p_{uu}+p_{du} = \frac{1}{2}+\frac{\nu_2\Delta t}{2\log u_2}\;.
 \tag{9.56}\]</span></span></p>
 <p>In the continuous time model, over a discrete time period <span class="math inline">\(\Delta t\)</span>, the covariance of <span class="math inline">\(\Delta \log S_1\)</span> and <span class="math inline">\(\Delta \log S_2\)</span> is <span class="math inline">\(\rho\sigma_1\sigma_2\Delta t\)</span>. In the binomial model, with <span class="math inline">\(d_i=1/u_i\)</span>, we have <span class="math display">\[E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\; .\]</span> Given that <span class="math inline">\(E[\Delta\log S_i] =\nu_i\Delta t\)</span>, this implies a covariance of <span class="math display">\[(p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \nu_1\nu_2(\Delta t)^2\; .\]</span> Matching the covariance in the binomial model to the covariance in the continuous-time model therefore implies <span id="eq-prob3"><span class="math display">\[
-p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \nu_1\nu_2(\Delta t)^2}{\log u_1\log u_2}\;.
-\tag{9.57}\]</span></span></p>
+p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \nu_1\nu_2(\Delta t)^2}{\log u_1\log u_2}\;. \tag{9.57}\]</span></span></p>
 <p>We can solve the system <a href="Chapter10.html#eq-prob1">Equation&nbsp;<span>10.2</span></a> - <a href="Chapter10.html#eq-prob3">Equation&nbsp;<span>10.4</span></a>, together with the condition that the probabilities sum to one, to obtain the probabilities <span class="math inline">\(p_{uu}\)</span>, <span class="math inline">\(p_{ud}\)</span>, <span class="math inline">\(p_{du}\)</span>, and <span class="math inline">\(p_{dd}\)</span>. This solution and a VBA function for valuing an American spread call option are given in <a href="Chapter10.html#sec-s_montecarlo_matlab"><span>Section&nbsp;10.7</span></a>. This function operates much like the binomial valuation of American options described in <a href="Chapter6.html"><span>Chapter&nbsp;6</span></a>. The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices. In an <span class="math inline">\(N\)</span>–period model, there are <span class="math inline">\(N+1\)</span> nodes at the final date for each of the two stocks, and hence <span class="math inline">\((N+1)^2\)</span> possible combinations of nodes. In fact, at each date <span class="math inline">\(n\)</span> (<span class="math inline">\(n=0,\ldots,N\)</span>) there are <span class="math inline">\((n+1)^2\)</span> combinations of nodes to be considered.<br>
 The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.</p>
 <p>Likewise, in an <span class="math inline">\(N\)</span>–period model for a basket option written on three assets, there are <span class="math inline">\((n+1)^3\)</span> combinations of nodes to be considered at date <span class="math inline">\(n\)</span>; if there are five assets, there are <span class="math inline">\((n+1)^5\)</span> combinations, etc. Thus, the computation time required increases exponentially with the number of assets. This can be a serious problem. For example, with five assets and <span class="math inline">\(N=99\)</span>, we would have <span class="math inline">\(100^5\)</span> (10 billion) combinations. As this suggests, problems with multiple assets quickly become intractable in a binomial framework. This is called the curse of dimensionality. </p>
 </section>
-<section id="exercises" class="level2" data-number="9.13">
-<h2 data-number="9.13" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.13</span> Exercises</h2>
+<section id="variance-swaps" class="level2" data-number="9.13">
+<h2 data-number="9.13" class="anchored" data-anchor-id="variance-swaps"><span class="header-section-number">9.13</span> Variance Swaps</h2>
+<p>Variance swaps are a type of futures contracts that allows investors to trade future realized volatility against current option implied variance. Unlike traditional futures, which provide a payoff based on the difference between the underlying asset’s price and the futures price, variance swaps provide a payoff based on the difference between the realized variance of the underlying asset and the predetermined variance level (termed ``Strike’’ in practice), which is the futures price in variance unit.</p>
+<p>Variance swaps have gained popularity due to their ability to provide pure exposure to the volatility of an underlying asset, independent of its price movements. Unlike traditional options, variance swaps allow investors to speculate on or hedge against changes in volatility without the need for constant delta hedging. This makes them an effective tool for managing volatility risk and for executing volatility arbitrage strategies, as they simplify the trading of variance and offer a more straightforward payoff structure based on realized versus implied volatility.</p>
+<section id="payoff-of-a-variance-swap" class="level3">
+<h3 class="anchored" data-anchor-id="payoff-of-a-variance-swap">Payoff of a Variance Swap</h3>
+<p>A variance swap is a future contract on future realized variance. Its main components include:</p>
+<ul>
+<li><strong>Notional Amount</strong>: Specifies the amount of money to be paid for each unit of variance difference.</li>
+<li><strong>Strike</strong>: The predetermined level of variance agreed upon at the inception of the swap.</li>
+<li><strong>Realized Variance</strong>: Calculated from the returns of the underlying asset over the life of the swap.</li>
+</ul>
+<p>The payoff of a variance swap is given by:</p>
+<p><span class="math display">\[
+\text{Payoff} = \text{Notional} \times (\text{Realized Variance} - \text{Strike})
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><strong>Realized Variance</strong> is typically calculated using the formula:</li>
+</ul>
+<p><span class="math display">\[
+\text{Realized Variance} = \frac{252}{N} \sum_{i=1}^{N} \left( \log\left(\frac{S_i}{S_{i-1}}\right) \right)^2
+\]</span></p>
+<p>Here, <span class="math inline">\(S_i\)</span> represents the price of the underlying asset at time <span class="math inline">\(i\)</span>, and <span class="math inline">\(N\)</span> is the number of trading days over the contract period.</p>
+<p><strong>Example</strong>: Suppose an investor enters into a variance swap with a notional amount of $100,000 and a strike of 0.04 (implying a volatility strike of 20%). If the realized variance over the swap’s life is 0.06 (implying a realized volatility of 24.5%), the payoff would be:</p>
+<p><span class="math display">\[
+\text{Payoff} = 100,000 \times (0.06 - 0.04) = 100,000 \times 0.02 = 2,000
+\]</span></p>
+<p>This means the investor would receive $2,000 at the end of the swap period.</p>
+<p>As all futures constracts, variance swaps are marked to market on each trading day.</p>
+<p>Variance swaps can be used to hedge against volatility risk. For example, a portfolio manager concerned about increasing market volatility can buy variance swaps to protect the portfolio’s value.</p>
+<p>Traders can also use variance swaps to speculate or arbitrage on future volatility. For example, If a trader believes that future volatility will be higher than the current implied volatility, they can enter a variance swap to profit from this view.</p>
+</section>
+<section id="pricing-of-a-variance-swap-for-stocks-with-geometric-brownian-motion-prices" class="level3">
+<h3 class="anchored" data-anchor-id="pricing-of-a-variance-swap-for-stocks-with-geometric-brownian-motion-prices">Pricing of a Variance Swap for Stocks with Geometric Brownian Motion Prices</h3>
+<p>Similor the pricing of a futures, we need find the fair swap strike such that the initial value of the swap is zero. For simplicity, consider a stock whose price <span class="math inline">\(S_t\)</span> follows a geometric Brownian motion process:</p>
+<p><span class="math display">\[ \frac{dS_t}{S_t} = \mu \, dt + \sigma \, dZ_t
+\]</span></p>
+<p>Applying Ito’s Lemma to ( (S_t) ):</p>
+<p><span class="math display">\[ d(\log S_t) = \left( \mu - \frac{\sigma^2}{2} \right) \, dt + \sigma \, dZ_t
+\]</span></p>
+<p>Rearranging terms, we get:</p>
+<p><span class="math display">\[ \frac{dS_t}{S_t} - d(\log S_t) = \frac{\sigma^2}{2} \, dt
+\]</span></p>
+<p>Integrating over the life of the swap ( [0, T] ):</p>
+<p><span class="math display">\[ \text{Total Variance} = \frac{1}{T} \int_0^T \sigma^2 \, dt = \frac{2}{T} \left( \int_0^T \frac{dS_t}{S_t} - \log \left( \frac{S_T}{S_0} \right) \right),  
+\]</span> which implies that the total variance can be replicated by continuously rebalancing the stock position with weight <span class="math inline">\(1/S_t\)</span> and shorting one unit of the security which pays the <span class="math inline">\(\log\)</span> return of the stock. However, this <span class="math inline">\(\log\)</span> return secutiry is not traded in the market. Fortunately, we can synthesize this security with a forward and options, because</p>
+<p><span class="math display">\[
+-ln (\frac{S_T}{S^*})=-\frac{S-S^*}{S^*}+\int_0^{S^*}\frac{(K-S)^+}{K^2}dK+\int_{S^*}^\infty\frac{(S-K)^+}{K^2}dK,
+\]</span> where <span class="math inline">\(S^*\)</span> is an arbitrary cut-off strike for calls and puts, the first term on the right hand side represents a short position in the forward contract on the stock, the second term represents a continuum of put options with strike prices from 0 to <span class="math inline">\(S^*\)</span>, and the third term represents a continuum of call options with strike prices above <span class="math inline">\(S^*\)</span>. Taking expectation under the risk neutral measure, we have that the fair swap strike <span class="math inline">\(K_{\text{var}}\)</span> is equal to:</p>
+<p><span class="math display">\[ K_{\text{var}} = \frac{2}{T} \left( rT - \left( \frac{S_0}{S^*} e^{rT} - 1 \right) - \log \left( \frac{S^*}{S_0} \right) + e^{rT} \int_0^{S^*} \frac{1}{K^2} P(K) \, dK + e^{rT} \int_{S^*}^\infty \frac{1}{K^2} C(K) \, dK \right)
+\]</span></p>
+<p>Choosing <span class="math inline">\(S^*\)</span> to be the current forward price <span class="math inline">\(F_0=S_0 e^{rT}\)</span>:</p>
+<p><span class="math display">\[ K_{\text{var}} = \frac{2 e^{rT}}{T} \left( \int_0^{F_0} \frac{P(K)}{K^2} \, dK + \int_{F_0}^\infty \frac{C(K)}{K^2} \, dK \right)
+\]</span></p>
+<p>This formula allows us to compute the fair strike price of a variance swap using the prices of European call and put options. The following code provides an example of this computation using data from Yahoo finance for Apple.</p>
+<div id="variance_swap_pricing" class="cell" data-execution_count="22">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate <span class="im">import</span> interp1d</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> indicator_function(condition):</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="cf">if</span> condition <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_variance_swap_strike(S, r, T, options_data):</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract call and put prices</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    call_data <span class="op">=</span> options_data[options_data[<span class="st">'Type'</span>] <span class="op">==</span> <span class="st">'call'</span>].copy()</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>    put_data <span class="op">=</span> options_data[options_data[<span class="st">'Type'</span>] <span class="op">==</span> <span class="st">'put'</span>].copy()</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Interpolate call and put prices</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    strikes <span class="op">=</span> np.unique(options_data[<span class="st">'Strike'</span>])</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>    call_interp <span class="op">=</span> interp1d(call_data[<span class="st">'Strike'</span>], call_data[<span class="st">'Price'</span>], fill_value<span class="op">=</span><span class="st">"extrapolate"</span>)</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>    put_interp <span class="op">=</span> interp1d(put_data[<span class="st">'Strike'</span>], put_data[<span class="st">'Price'</span>], fill_value<span class="op">=</span><span class="st">"extrapolate"</span>)</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Integrate using numerical methods (trapezoidal rule)</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>    K_min, K_max <span class="op">=</span> strikes.<span class="bu">min</span>(), strikes.<span class="bu">max</span>()</span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> np.linspace(K_min, S<span class="op">*</span>np.exp(r<span class="op">*</span>T), <span class="dv">500</span>)</span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a>    integral1 <span class="op">=</span> np.trapezoid(put_interp(K) <span class="op">/</span> K<span class="op">**</span><span class="dv">2</span>, K)</span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> np.linspace(S<span class="op">*</span>np.exp(r<span class="op">*</span>T),K_max, <span class="dv">500</span>)</span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a>    integral2 <span class="op">=</span> np.trapezoid(call_interp(K) <span class="op">/</span> K<span class="op">**</span><span class="dv">2</span>, K)</span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the variance swap strike</span></span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>    variance_swap_strike <span class="op">=</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> (integral1<span class="op">+</span>integral2) <span class="op">/</span> T)</span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> variance_swap_strike</span>
+<span id="cb39-31"><a href="#cb39-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-32"><a href="#cb39-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb39-33"><a href="#cb39-33" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span></span>
+<span id="cb39-34"><a href="#cb39-34" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="fl">150.0</span>  <span class="co"># Current stock price</span></span>
+<span id="cb39-35"><a href="#cb39-35" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.01</span>  <span class="co"># Risk-free rate</span></span>
+<span id="cb39-36"><a href="#cb39-36" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># Time to maturity (6 months)</span></span>
+<span id="cb39-37"><a href="#cb39-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-38"><a href="#cb39-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Fetch options data from Yahoo Finance</span></span>
+<span id="cb39-39"><a href="#cb39-39" aria-hidden="true" tabindex="-1"></a>stock <span class="op">=</span> yf.Ticker(ticker)</span>
+<span id="cb39-40"><a href="#cb39-40" aria-hidden="true" tabindex="-1"></a>expiry <span class="op">=</span> stock.options[<span class="dv">0</span>]</span>
+<span id="cb39-41"><a href="#cb39-41" aria-hidden="true" tabindex="-1"></a>opt_chain <span class="op">=</span> stock.option_chain(expiry)</span>
+<span id="cb39-42"><a href="#cb39-42" aria-hidden="true" tabindex="-1"></a>calls <span class="op">=</span> opt_chain.calls[[<span class="st">'strike'</span>, <span class="st">'lastPrice'</span>]].copy()</span>
+<span id="cb39-43"><a href="#cb39-43" aria-hidden="true" tabindex="-1"></a>puts <span class="op">=</span> opt_chain.puts[[<span class="st">'strike'</span>, <span class="st">'lastPrice'</span>]].copy()</span>
+<span id="cb39-44"><a href="#cb39-44" aria-hidden="true" tabindex="-1"></a>calls.columns <span class="op">=</span> [<span class="st">'Strike'</span>, <span class="st">'Price'</span>]</span>
+<span id="cb39-45"><a href="#cb39-45" aria-hidden="true" tabindex="-1"></a>puts.columns <span class="op">=</span> [<span class="st">'Strike'</span>, <span class="st">'Price'</span>]</span>
+<span id="cb39-46"><a href="#cb39-46" aria-hidden="true" tabindex="-1"></a>calls[<span class="st">'Type'</span>] <span class="op">=</span> <span class="st">'call'</span></span>
+<span id="cb39-47"><a href="#cb39-47" aria-hidden="true" tabindex="-1"></a>puts[<span class="st">'Type'</span>] <span class="op">=</span> <span class="st">'put'</span></span>
+<span id="cb39-48"><a href="#cb39-48" aria-hidden="true" tabindex="-1"></a>options_data <span class="op">=</span> pd.concat([calls, puts])</span>
+<span id="cb39-49"><a href="#cb39-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-50"><a href="#cb39-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the variance swap strike</span></span>
+<span id="cb39-51"><a href="#cb39-51" aria-hidden="true" tabindex="-1"></a>variance_swap_strike <span class="op">=</span> calculate_variance_swap_strike(S, r, T, options_data)</span>
+<span id="cb39-52"><a href="#cb39-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Variance Swap Strike: </span><span class="sc">{</span>variance_swap_strike<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Variance Swap Strike: 0.5615</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level2" data-number="9.14">
+<h2 data-number="9.14" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.14</span> Exercises</h2>
 <div id="exr-nolabel" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 9.1 </strong></span>Intuitively, the value of a forward-start call option should be lower the closer is the date <span class="math inline">\(T\)</span> at which the strike is set to the date <span class="math inline">\(T'\)</span> at which the option matures, because then the option has less time to maturity after being created at <span class="math inline">\(T\)</span>. Create an Excel worksheet to confirm this. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, and <span class="math inline">\(T'\)</span>. Compute and plot the value of the option for <span class="math inline">\(T=0.1T'\)</span>, <span class="math inline">\(T=0.2T'\)</span>, , <span class="math inline">\(T=0.9T'\)</span>.</p>
 </div>
