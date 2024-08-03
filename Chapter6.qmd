@@ -985,8 +985,8 @@ def binomialbd(n,r,sig,S0,y,K,T):
     pu = (a-d)/(u-d)
     pd = 1-pu
     # Build vector of ending values
-    # and prices for which put is exercised
-    ex = np.zeros(n)
+    # 
+    
     S = np.zeros(n)
     AP = np.zeros(n)
     
@@ -1000,13 +1000,13 @@ def binomialbd(n,r,sig,S0,y,K,T):
     AP = np.maximum(K-S,blackscholes(S, K, r, q, sig, dt, call = False))
     
     
-    
     # Backward recursion in the loop
     for i in range(n-1):
         vec = np.arange(n-i-1)
         vec1 = np.ones(n-i-1)
         # Possible Stock prices at times-i period
         S = S0 * u**(2*vec-(n-i-1)*vec1+1)
+    
     #     S = S0 * u**(2*vec-(n-i))
         # P calculates the value of early exercise
         P = np.maximum(K*vec1 - S, 0)
@@ -1014,23 +1014,17 @@ def binomialbd(n,r,sig,S0,y,K,T):
         PP = (pu*AP[1:(n-i)] + pd*AP[0:(n-i-1)])/a
         # AP is the max of ealry exercise and waiting
         AP = np.maximum(P,PP)
-        # ex is prices where early exercise is optimal
-        ex = S[AP-PP>0]
-        # eb calculates the highest price
-        # where exercise is optimal to plot boundary
-        if ex.shape[0]>0:
-            eb[n-i] = ex.max()
-        else:
-            eb[n-i] = np.nan
-
         
+
+    
+    
     
     return AP[0]          
 ```
 Now we create a program that uses Richardson extrapolation from a binomial
 model with N periods and a binomial model with N/2 periods to estimate
 the value from a binomial model with an infinite number of periods. We use
-the previous program as our binomial model. The number of time steps $n$ must be even so $n/2$ is an integer.
+the previous program as our binomial model. The number of time steps $n$ must be even so $n/2$ is an integer.  In the following we initally use $n=20$, which is smaller than the the number of steps in the previous binomial american option routines.
 
 ```{python}
 
@@ -1042,7 +1036,7 @@ from math import pow, exp, sqrt
 
 #inputs
 #number of steps= n; must be an even number
-n=40
+n=20
 # interest rate
 r=.1
 # volatility
