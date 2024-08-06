@@ -1882,6 +1882,113 @@ print('The second sample estimate of the basket option value=',value1)
 print('The average estimate of the basket option value=',(value+value1)/2)
 ```
 
+We can generate the entire path of multiple assets to value, for example, lookback options on a basket.  The code below values the same European basket option as above only it calculates $m=2$ time steps;  a lookback can be created by changing the payoffs and increasing $m$.
+
+```{python}
+import numpy as np
+#number of time steps
+m=2
+# number of assets
+k=3
+# number of sample paths
+n=100000
+
+#risk free rate
+r=0.1
+
+
+
+# Horizon
+T=0.5
+# delta t
+dt=T/m
+# Initial price
+
+S0=[42,50,45]
+
+#Strike Price
+
+K=45
+
+#  put in volatilities
+sig1=.2
+sig2=.3
+sig3=.4
+
+#create diagonal
+sig=[sig1,sig2,sig3]
+
+S=np.diag(sig)
+
+
+# correlation matrix
+
+rho=np.array([[1.0, 0.5, 0.3],
+                  [0.5, 1.0, 0.2],
+                  [0.3, 0.2, 1.0]])
+
+# covariance matrix
+
+V = S@rho@S
+
+# drift of log returns
+drift= np.array(r*np.ones(k) -0.5*np.dot(S@S,np.ones(k)))*dt
+
+# times vector
+t=np.array(range(1,m + 1,1))
+
+
+driftv = np.transpose(np.kron(drift,t).reshape(3,m))
+
+# generate uniform n(paths)*k(assets)*m(time steps) normal uncorrelated random variables
+
+seed=2024
+np.random.seed(seed)
+
+inc=np.random.normal(loc = 0, scale = np.sqrt(dt),size = (n,k,m))
+
+#create correlated random increments
+Z=np.linalg.cholesky(V)
+# numpy matmul assumes last two define matrix multiplication
+incr=np.matmul(Z,inc)
+
+
+
+SSt=S0*np.exp(driftv)
+
+# generate returns along path and antithetic path
+# first e^{cumsum(increments)} gives e^sigma B_t for different t
+
+Stb = np.exp(np.cumsum(incr[:,:,],axis=2))
+Stb1 = np.exp(-np.cumsum(incr[:,:,],axis=2))
+
+
+#Multiply by S0 e^drift for each t
+St=np.multiply(Stb,np.transpose(SSt))
+St1=np.multiply(Stb1,np.transpose(SSt))
+
+#Last date returns
+Stm=St[:,:,m-1]
+Stm1=St1[:,:,m-1]
+
+#define payoff
+# Basket Weights
+w=[.25,.5,.25]
+
+
+payoff= np.maximum(np.matmul(Stm,np.transpose(w))-K,0)
+payoff1= np.maximum(np.matmul(Stm1,np.transpose(w))-K,0)
+
+
+value= np.exp(-r*T)*np.mean(payoff)
+value1= np.exp(-r*T)*np.mean(payoff1)
+print('The estimate for the first sample value=',value)
+print('The estimate for the second sample value=',value1)
+print('The average estimate for the value=',(value+value1)/2)
+
+```
+
+
 ## Binomial Valuation of Basket and Spread Options {#sec-s_curse}
 
 \index{basket option} \index{spread option} \index{binomial model} By combining binomial models, we can  value options or other derivatives on multiple assets.  We will illustrate for an option on two assets.  This is the most important case, and the extension to more than two assets is straightforward.
