@@ -1743,7 +1743,9 @@ where
 $$\begin{array}{rclcrcl}
 a_{11}&=&\sigma_1\;, &\qquad & a_{12}&=&0\; ,\\
 a_{21}&=&\sigma_2\rho\;, &\qquad & a_{22} &= &\sigma_2\sqrt{1-\rho^2}\;.
-\end{array}$$
+\end{array}
+$$
+
 These are not the only possible choices for the constants $a_{ij}$.  Given that $Z_1$ and $Z_2$ are independent standard normals, the conditions the $a_{ij}$ must satisfy in order to match the variances $\sigma_i^2\Delta t$ and correlation $\rho$ of the changes in the logarithms are
 
 
@@ -1779,7 +1781,7 @@ The logarithm of the $i$--th asset price at maturity is simulated as
 $$\log S_i(T) = \log S_i(0) +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,$$
 where the $Z_j$ are independent standard normals.  Given the simulated values of the $\log S_i(T)$, the value at maturity of the basket option is readily computed.  The estimate of the date--0 value is then computed as the discounted average of the simulated values at maturity.  
 
-For our two asset example we compute the value of a call otption on an equally weighted porfotlio.
+For our two asset example we compute the value of a call opttion on an equally weighted porfotlio.
 
 ```{python}
 w=0.5
@@ -1793,6 +1795,199 @@ print('The second estimate is =',estimatea)
 print('The average of the estimates=',(estimate+estimatea)/2)
 
 ```
+
+Below is a three asset basket option whihc uses the numpy cholesky decomposition.  In contrast to the above routine, this routine is does not have the option to  generate the entire path, although this can be easily modeified.
+
+```{python}
+import numpy as np
+#risk free rate
+r=0.1
+# number of assets
+k=3
+
+# number of paths
+n=100000
+# Horizon
+T=0.5
+
+# Initial price
+
+S0=[42,50,45]
+
+# Basket Weights
+w=[.25,.5,.25]
+
+#Strike Price
+
+K=45
+
+#  put in volatilities
+sig1=.2
+sig2=.3
+sig3=.4
+
+#create diagonal
+sig=[sig1,sig2,sig3]
+
+S=np.diag(sig)
+
+# drift of log returns
+
+drift= r*np.ones(k) -0.5*np.dot(S@S,np.ones(k))
+
+
+# correlation matrix
+
+rho=np.array([[1.0, 0.5, 0.3],
+                  [0.5, 1.0, 0.2],
+                  [0.3, 0.2, 1.0]])
+# covariance matrix
+
+V = S@rho@S
+
+# generate uniform n*k normal uncorrelated random variables
+
+seed=2024
+np.random.seed(seed)
+
+inc1=np.transpose(np.random.normal(loc = 0, scale = np.sqrt(T),size = (n,k)))
+ 
+
+
+# create correlated random variables
+Z=np.linalg.cholesky(V)
+incr=np.dot(Z,inc1)
+
+print('The sample correlation matrix =',np.corrcoef(incr))
+print('The input correlation matrix =',rho)
+
+
+
+
+St = S0 * np.exp(drift *T + np.transpose(incr))
+#antithetic sample
+St1 = S0 * np.exp( drift * T - np.transpose(incr))
+
+estimate=np.mean(St,axis=0)*np.exp(-r*T)
+estimate1=np.mean(St1,axis=0)*np.exp(-r*T)
+print('The average discounted stock price averaged over both samples=',(estimate+estimate1)/2)
+print('The initial Srock Price input =',S0)
+
+basketpo=np.maximum(w@np.transpose(St)-K,0)
+basketpo1=np.maximum(w@np.transpose(St1)-K,0)
+value=np.mean(basketpo)*np.exp(-r*T)
+value1=np.mean(basketpo1)*np.exp(-r*T)
+print('The first sample estimate of the basket option value=',value)
+print('The second sample estimate of the basket option value=',value1)
+print('The average estimate of the basket option value=',(value+value1)/2)
+```
+
+We can generate the entire path of multiple assets to value, for example, lookback options on a basket.  The code below values the same European basket option as above only it calculates $m=2$ time steps;  a lookback can be created by changing the payoffs and increasing $m$.
+
+```{python}
+import numpy as np
+#number of time steps
+m=2
+# number of assets
+k=3
+# number of sample paths
+n=100000
+
+#risk free rate
+r=0.1
+
+
+
+# Horizon
+T=0.5
+# delta t
+dt=T/m
+# Initial price
+
+S0=[42,50,45]
+
+#Strike Price
+
+K=45
+
+#  put in volatilities
+sig1=.2
+sig2=.3
+sig3=.4
+
+#create diagonal
+sig=[sig1,sig2,sig3]
+
+S=np.diag(sig)
+
+
+# correlation matrix
+
+rho=np.array([[1.0, 0.5, 0.3],
+                  [0.5, 1.0, 0.2],
+                  [0.3, 0.2, 1.0]])
+
+# covariance matrix
+
+V = S@rho@S
+
+# drift of log returns
+drift= np.array(r*np.ones(k) -0.5*np.dot(S@S,np.ones(k)))*dt
+
+# times vector
+t=np.array(range(1,m + 1,1))
+
+
+driftv = np.transpose(np.kron(drift,t).reshape(3,m))
+
+# generate uniform n(paths)*k(assets)*m(time steps) normal uncorrelated random variables
+
+seed=2024
+np.random.seed(seed)
+
+inc=np.random.normal(loc = 0, scale = np.sqrt(dt),size = (n,k,m))
+
+#create correlated random increments
+Z=np.linalg.cholesky(V)
+# numpy matmul assumes last two define matrix multiplication
+incr=np.matmul(Z,inc)
+
+
+
+SSt=S0*np.exp(driftv)
+
+# generate returns along path and antithetic path
+# first e^{cumsum(increments)} gives e^sigma B_t for different t
+
+Stb = np.exp(np.cumsum(incr[:,:,],axis=2))
+Stb1 = np.exp(-np.cumsum(incr[:,:,],axis=2))
+
+
+#Multiply by S0 e^drift for each t
+St=np.multiply(Stb,np.transpose(SSt))
+St1=np.multiply(Stb1,np.transpose(SSt))
+
+#Last date returns
+Stm=St[:,:,m-1]
+Stm1=St1[:,:,m-1]
+
+#define payoff
+# Basket Weights
+w=[.25,.5,.25]
+
+
+payoff= np.maximum(np.matmul(Stm,np.transpose(w))-K,0)
+payoff1= np.maximum(np.matmul(Stm1,np.transpose(w))-K,0)
+
+
+value= np.exp(-r*T)*np.mean(payoff)
+value1= np.exp(-r*T)*np.mean(payoff1)
+print('The estimate for the first sample value=',value)
+print('The estimate for the second sample value=',value1)
+print('The average estimate for the value=',(value+value1)/2)
+
+```
+
 
 ## Binomial Valuation of Basket and Spread Options {#sec-s_curse}
 
@@ -1924,7 +2119,7 @@ $$
 
 This formula allows us to compute the fair strike price of a variance swap using the prices of European call and put options. The following code provides an example of this computation using data from Yahoo finance for Apple.
 
-```{python}
+<!-- ```{python}
 
 #| code-fold: true
 #| label: Variance_Swap_Pricing
@@ -1983,7 +2178,7 @@ options_data = pd.concat([calls, puts])
 variance_swap_strike = calculate_variance_swap_strike(S, r, T, options_data)
 print(f"Variance Swap Strike: {variance_swap_strike:.4f}")
 ```
-
+ -->
 ## Exercises
 
 ::: {#exr-nolabel}

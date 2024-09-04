@@ -52,10 +52,12 @@ S0 = 42
 T = 0.5
 #Strike Price
 K=40
+# Dividend Yield
+q=0.0
 # Delta t
 dt = T/m
 # Drift
-drift = (r-0.5*sig**2)
+drift = (r-q-0.5*sig**2)
 # Volatility
 vol = sig * np.sqrt(dt)
 
@@ -92,32 +94,32 @@ from scipy import stats
 import numpy as np
 from scipy.optimize import minimize, minimize_scalar
 
-def blackscholes(S0, K, r, sig, T, call = True):
+def blackscholes(S0, K, r, q, sig, T, call = True):
     '''Calculate option price using B-S formula.
-
+    
     Args:
         S0 (num): initial price of underlying asset.
         K (num): strick price.
+        r (num): risk free rate
+        q (num): dividend yield
         sig (num): Black-Scholes volatility.
         T (num): maturity.
         call (bool): True returns call price, False returns put price.
-
+        
     Returns:
         num
     '''
-    d1 = (np.log(S0/K) + (r + sig**2/2) * T)/(sig*np.sqrt(T))
+    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
     d2 = d1 - sig*np.sqrt(T)
-#     norm = sp.stats.norm
+ #    <!-- norm = sp.stats.norm -->
     norm = stats.norm
     if call:
-        return S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1)
+        return np.exp(- q *T) * S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1) 
     else:
-        return S0 * norm.cdf(-d1,0,1) - K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
+        return -np.exp(-q * T) * S0 * norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
 
-truebsc = blackscholes(S0,K,r,sig,T)
-print('The exact Black Scholes Price is=', truebsc)
-
-
+truebsc=blackscholes(S0, K, r, q, sig, T, call = True)
+print('The black scholes fromula=',truebsc)
 ```
   
   
@@ -946,14 +948,120 @@ This implies
 $$2y_2-y_1 = f(0) + \text{difference of higher order terms}\;.$$
 Having eliminated the first-order term, one can hope to obtain a closer approximation to $f(0)$.
 
+We now show hot to implement this in Pyhton.  
+First we create a binomial valuation program that replaces (i) calculation
+of the intrinsic value at maturity and (ii) calculation of the value at the
+penultimate date as the larger of intrinsic value and the discounted value
+at maturity with (iii) calculation of the value at the penultimate date as the
+larger of intrinsic value and the Black-Scholes value of a European option with
+one period to maturity.
+```{python}
+# uses blackscholes(S0, K, r, q, sig, T, call = False)
+
+def binomialbd(n,r,sig,S0,y,K,T):
+
+    # parameters
+    # number of steps
+    #n 
+    # interest rate
+    #r 
+    # volatility
+    #sig 
+    # Initial Stock Price
+    #S0
+    # Strike Price
+        #K 
+    # Maturity
+    #T 
+    # dividend yield
+    # y
+
+    # calculate parameters for binomial model
+    dt = T/n
+    delt = np.exp(-y*dt)
+    a = np.exp(r*dt) * delt
+    u = np.exp(sig*np.sqrt(dt))
+    d = 1/u
+    pu = (a-d)/(u-d)
+    pd = 1-pu
+    # Build vector of ending values
+    # 
+    
+    S = np.zeros(n)
+    AP = np.zeros(n)
+    
+    # Build vector of ending values
+    # at the next to last date (penultimate date)
+    vec = np.arange(n)
+    vec1 = np.ones(n)
+
+    S = S0 * u**(2*vec - (n-1)*vec1)
+
+    AP = np.maximum(K-S,blackscholes(S, K, r, q, sig, dt, call = False))
+    
+    
+    # Backward recursion in the loop
+    for i in range(n-1):
+        vec = np.arange(n-i-1)
+        vec1 = np.ones(n-i-1)
+        # Possible Stock prices at times-i period
+        S = S0 * u**(2*vec-(n-i-1)*vec1+1)
+    
+    #     S = S0 * u**(2*vec-(n-i))
+        # P calculates the value of early exercise
+        P = np.maximum(K*vec1 - S, 0)
+        # PP calculates value of waiting using payoffs from next period
+        PP = (pu*AP[1:(n-i)] + pd*AP[0:(n-i-1)])/a
+        # AP is the max of ealry exercise and waiting
+        AP = np.maximum(P,PP)
+        
+
+    
+    
+    
+    return AP[0]          
+```
+Now we create a program that uses Richardson extrapolation from a binomial
+model with N periods and a binomial model with N/2 periods to estimate
+the value from a binomial model with an infinite number of periods. We use
+the previous program as our binomial model. The number of time steps $n$ must be even so $n/2$ is an integer.  In the following we initally use $n=20$, which is smaller than the the number of steps in the previous binomial american option routines.
+
+```{python}
+
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+from math import pow, exp, sqrt
 
 
+#inputs
+#number of steps= n; must be an even number
+n=20
+# interest rate
+r=.1
+# volatility
+sig=.2
+# initial stock price
+S0=42
+# dividend yield
+y=0
+# Strike price 
+K=42
+# expiration
+T=0.5
 
+if 2*int(n/2) == n:
 
+    y2=binomialbd(n,r,sig,S0,y,K,T)
+    y1=binomialbd(int(n/2),r,sig,S0,y,K,T)
+    
+    extrapolate= 2*y2-y1
+    print('The extrapolated value=',extrapolate)
 
+else:
+    print('n must be even you big dummy!!')   
+```
 
-
-  
   
   
   
