@@ -26,7 +26,9 @@ An option on a foreign asset, with the strike price defined in the foreign curre
 ## Options on Foreign Assets Struck in Domestic Currency {#sec-s_domesticstrike}
 
 A call option on a foreign asset with domestic strike price $K$ on the foreign asset with price $S$ pays
-$$\max(X(T)S(T)-K,0)$$
+$$
+\max(X(T)S(T)-K,0)
+$$
 at its maturity $T$.  The underlying price $X(T)S(T)$ is the value in domestic currency of the portfolio that with starts with $\mathrm{e}^{-qT}$ units of the asset and reinvests dividends until date $T$.  Thus, we can use the Black-Scholes formula to value it, taking the initial asset price to be $\mathrm{e}^{-qT}X(0)S(0)$ and the dividend rate to be zero (or taking the initial asset price to be $X(0)S(0)$ and the dividend rate to be $q$).  The volatility that should be input into the Black-Scholes formula is the volatility of the domestic currency price $\mathrm{e}^{-q(T-t)}X(t)S(t)$, which is the same as the volatility of $X(t)S(t)$.  
 According to @eq-volatilityproduct, the volatility of the domestic currency price $XS$ is 
 $$
@@ -59,7 +61,7 @@ $$ {#eq-forwardexchangerate}
 :::
 
 The relation @eq-forwardexchangerate is called covered interest parity. \index{covered interest parity}The name stems from the fact that an investment in one of the risk-free assets (foreign or domestic) financed by borrowing in the other, with the currency risk hedged (covered) by a forward contract, is certain to generate zero value (otherwise, it would be an arbitrage opportunity).^[
-A relation analogous to covered interest parity holds for any forward contract if the underlying asset has a constant dividend yield and storage costs that are a constant proportion of the value of the units stored.  For commodities, the term dividend yield must be interpreted in a broad sense, and is usually called convenience yield, \index{convenience yield] because ownership of the physical asset may produce abnormal profits during temporary shortages, an advantage that is not obtained by owning a forward contract on the asset, just as dividends are not received by the owner of a forward contract.  Thus, one must consider the convenience of owning the physical asset as an advantage analogous to dividends.}
+A relation analogous to covered interest parity holds for any forward contract if the underlying asset has a constant dividend yield and storage costs that are a constant proportion of the value of the units stored.  For commodities, the term dividend yield must be interpreted in a broad sense, and is usually called convenience yield, \index{convenience yield}] because ownership of the physical asset may produce abnormal profits during temporary shortages, an advantage that is not obtained by owning a forward contract on the asset, just as dividends are not received by the owner of a forward contract.  Thus, one must consider the convenience of owning the physical asset as an advantage analogous to dividends.
 
 Suppose that one has made a commitment to pay a certain amount of foreign currency (perhaps to a foreign manufacturer) at some date in the future.  The exchange rate risk that this commitment entails can obviously be hedged by buying the currency forward.  However, one can also create a synthetic forward, by buying currency today and investing it in the foreign risk-free asset.  The cash outflow can be incurred today, or it can be deferred by borrowing the cost of the currency at the domestic risk-free rate.  In the latter case, we have created a true synthetic forward.  In either case, we would call this a money market hedge \index{money market hedge} because we have utilized the foreign money market (risk-free asset) to create the hedge.
 
@@ -82,12 +84,11 @@ To be more precise about the sizes of the investments, consider replacing a mone
 
 
 $$
-\begin{multline}
+\begin{multline} 
  \text{$\mathrm{e}^{r_f(T-t)}$ Long Currency Forwards} \\+  \text{$X(t)$ Long in the Domestic Risk-Free Asset}\\
 = \text{1 Unit of Foreign Currency Long in the Foreign Risk-Free Asset}\;.
-\end{multline}
-$$ {#eq-mmhedge}
-
+\end{multline} 
+$$  {#eq-mmhedge}
 
 :::
 
@@ -278,11 +279,11 @@ To value this, we make use of what we learned in @sec-s_quantos.  Namely, the po
 ## 
 The value of a quanto call is 
 
-$$
+
 \begin{multline}
  V(0)\mathrm{N}(d_1) - \mathrm{e}^{-rT}K\mathrm{N}(d_2) \\= \exp\left\{(r_f - r-q-\rho\sigma_x\sigma_s)T\right\}\bar{X}S(0)\mathrm{N}(d_1) - \mathrm{e}^{-rT}K\mathrm{N}(d_2)\;,
 \end{multline}
-$$ {#eq-quantocall21}
+ {#eq-quantocall21}
 
 where
 
@@ -379,19 +380,19 @@ To see the interpretation of equation~@eq-uncoveredparity as uncovered interest 
 ## Exercises
 
 ::: {#exr-nolabel}
- Create an Excel worksheet to compare the values of call options on foreign assets that are (i) struck in foreign currency or (ii) struck in domestic currency.  Prompt the user to input $X(0)$, $S(0)$, $K$, $r$, $r_f$, $\sigma_x$, $\sigma_s$, $\rho$, $q$ and $T$.  Take the strike price of the option struck in foreign currency to be $K$ and take the strike price of the option struck in domestic currency to be $X(0)K$ (so $K$ is interpreted as an amount in foreign currency).  You should be able to confirm, for example, that if $r=r_f$ and $\rho \geq 0$ then the option struck in domestic currency is more valuable.
+ Create a python code to compare the values of call options on foreign assets that are (i) struck in foreign currency or (ii) struck in domestic currency.  Prompt the user to input $X(0)$, $S(0)$, $K$, $r$, $r_f$, $\sigma_x$, $\sigma_s$, $\rho$, $q$ and $T$.  Take the strike price of the option struck in foreign currency to be $K$ and take the strike price of the option struck in domestic currency to be $X(0)K$ (so $K$ is interpreted as an amount in foreign currency).  You should be able to confirm, for example, that if $r=r_f$ and $\rho \geq 0$ then the option struck in domestic currency is more valuable.
 :::
 ::: {#exr-nolabel}
  Repeat the preceding problem comparing (i) call options struck in foreign currency, versus (ii) quanto call options.  Use the same inputs as in the preceding problem and take the fixed exchange rate in the quanto to be $\bar{X}=X(0)$.  You should be able to confirm, for example, that if $r=r_f$ and $\rho \geq 0$ then the option struck in foreign currency is more valuable.
 :::
 ::: {#exr-nolabel}
- Create an Excel worksheet in which the user inputs $r$ and $r_f$ and the exchange rate.  Compute the forward exchange rate at maturities $T=0.1, 0.2, \dots, 2.0$ and plot the forward rate against the maturity in a scatter plot. A market is said to be in contango if this curve is upward sloping and to be in backwardation if this curve is downward sloping.  For currencies, what determines whether the market is in contango or in backwardation?
+ Create a python code in which the user inputs $r$ and $r_f$ and the exchange rate.  Compute the forward exchange rate at maturities $T=0.1, 0.2, \dots, 2.0$ and plot the forward rate against the maturity in a scatter plot. A market is said to be in contango if this curve is upward sloping and to be in backwardation if this curve is downward sloping.  For currencies, what determines whether the market is in contango or in backwardation?
 :::
 ::: {#exr-nolabel}
- Create a VBA subroutine to simulate a path of the exchange rate and the forward exchange rate under the risk-neutral measure, prompting the user to input $X(0)$, $r$, $r_f$, $\sigma_x$, and the maturity $T$ of the forward contract.
+ Create a Python function to simulate a path of the exchange rate and the forward exchange rate under the risk-neutral measure, prompting the user to input $X(0)$, $r$, $r_f$, $\sigma_x$, and the maturity $T$ of the forward contract.
 :::
 ::: {#exr-nolabel}
- Create a VBA subroutine to simulate a path of the exchange rate under the actual probability measure, prompting the user to input $X(0)$, $\sigma_x$, and the expected rate of growth $\mu$ of the exchange rate under the actual probability measure.  Prompt the user also to input $S(0)$, $r$, $r_f$, $\sigma_s$, $q$, $\rho$, a fixed exchange rate $\bar{X}$, a maturity $T$, and a number of periods $N$.  Calculate the gain/loss from the portfolio that promises to pay $\bar{X}S(T)$ at date $T$ and uses a discretely rebalanced hedge, rebalancing at dates $t_1,\ldots t_N=T$, where $t_i-t_{i-1} = T/N$, similar to the calculation in the function \verb!Simulated_Delta_Hedge_Profit!.  Use the money-market hedge, which means investing $V(0)$ at date 0, holding the number of shares of the foreign asset shown in  @eq-quanto4 at each date $t_i$, and having a short position in the foreign risk-free asset of the same value at each date $t_i$.  Cash flows generated at each date from buying/selling the foreign asset and lending/borrowing at the foreign risk-free rate should be withdrawn/deposited in the domestic risk-free asset.  Note: Because of discrete rebalancing, this is not a perfect hedge, and the investment in the domestic risk-free asset will not always equal $V(t)$.  
+ Create a Python function to simulate a path of the exchange rate under the actual probability measure, prompting the user to input $X(0)$, $\sigma_x$, and the expected rate of growth $\mu$ of the exchange rate under the actual probability measure.  Prompt the user also to input $S(0)$, $r$, $r_f$, $\sigma_s$, $q$, $\rho$, a fixed exchange rate $\bar{X}$, a maturity $T$, and a number of periods $N$.  Calculate the gain/loss from the portfolio that promises to pay $\bar{X}S(T)$ at date $T$ and uses a discretely rebalanced hedge, rebalancing at dates $t_1,\ldots t_N=T$, where $t_i-t_{i-1} = T/N$, similar to the calculation in the function `Simulated_Delta_Hedge_Profit`.  Use the money-market hedge, which means investing $V(0)$ at date 0, holding the number of shares of the foreign asset shown in  @eq-quanto4 at each date $t_i$, and having a short position in the foreign risk-free asset of the same value at each date $t_i$.  Cash flows generated at each date from buying/selling the foreign asset and lending/borrowing at the foreign risk-free rate should be withdrawn/deposited in the domestic risk-free asset.  Note: Because of discrete rebalancing, this is not a perfect hedge, and the investment in the domestic risk-free asset will not always equal $V(t)$.  
 :::
 ::: {#exr-e_forwardhedging}
   Repeat the previous exercise using the forward contract hedge discussed in @sec-s_replicatingquantos.  The cash flows generated from trading forwards cannot be withdrawn/deposited in the domestic risk-free asset, because they do not materialize until the maturity of the forward.  You will have to create a variable to keep track of the net asset/liability and include it in the valuation at date $T$.

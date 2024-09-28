@@ -166,7 +166,7 @@ where $d_1$ is defined in @eq-sharedigital_d1 and $d_2 = d_1-\sigma{\sqrt{T}}$.
 :::
 Again, this is the Black-Scholes formula.
 
-The values of the European put and call satisfy put-call parity, \index{put-call parity} and we can also find one from the other by^[The put-call parity relation follows from the fact that both the left and the right-hand sides are the prices of portfolios that have value $\max(S(T),K)$ at the maturity of the option.  To see this for the left-hand side, note that $\mathrm{e]^{-rT}K$ is sufficient cash to accumulate to $K$ at date $T$, allowing exercise of the call when it is in the money and retention of the cash $K$ otherwise.  For the right-hand side, note that $\mathrm{e}^{-q T}S(0)$ is enough cash to buy $\mathrm{e}^{-q T}$ shares of the stock at date 0 which, with reinvestment of dividends, will accumulate to one share at date $T$, enabling exercise of the put if it is in the money or retention of the share otherwise.}
+The values of the European put and call satisfy put-call parity, \index{put-call parity} and we can also find one from the other by^[The put-call parity relation follows from the fact that both the left and the right-hand sides are the prices of portfolios that have value $\max(S(T),K)$ at the maturity of the option.  To see this for the left-hand side, note that $\mathrm{e}^{-rT}K$ is sufficient cash to accumulate to $K$ at date $T$, allowing exercise of the call when it is in the money and retention of the cash $K$ otherwise.  For the right-hand side, note that $\mathrm{e}^{-q T}S(0)$ is enough cash to buy $\mathrm{e}^{-q T}$ shares of the stock at date 0 which, with reinvestment of dividends, will accumulate to one share at date $T$, enabling exercise of the put if it is in the money or retention of the share otherwise.}
 $$
 \mathrm{e}^{-rT}K + \text{Call Price} = \mathrm{e}^{-q T}S(0)+ \text{Put Price}\;.
 $$ {#eq-putcallparity11}
@@ -184,18 +184,32 @@ The derivatives (calculus derivatives, not financial derivatives!) of an option 
 \centering
 \caption{Black-Scholes Greeks}
 \begin{tabular}{lccccc}
-\hline\mathrm{n}oalign{skip}
+\hline \\
 \bfseries{Input} & \bfseries{Input Symbol} & \qquad &\bfseries{Greek} & \qquad & \bfseries{Greek Symbol}\\
-\mathrm{n}oalign{skip}\hline\mathrm{n}oalign{skip}
+\hline \\
 Stock price & $S$  &\qquad& delta &\qquad& $\delta$ \\
-\hline delta & $\delta$ &\qquad& gamma&\qquad & $\Gamma$\\
-\hline - Time to maturity  & $-T$&\qquad& theta &\qquad& $\Theta$ \\
-\hline Volatility & $\sigma$&\qquad& vega &\qquad& $\cal{V}$ \\
-\hline Interest rate & $r$ &\qquad& rho&\qquad & $\rho$\\
-\mathrm{n}oalign{skip}\hline
+\hline \\
+delta & $\delta$ &\qquad& gamma&\qquad & $\Gamma$\\
+\hline \\
+- Time to maturity  & $-T$&\qquad& theta &\qquad& $\Theta$ \\
+\hline \\
+Volatility & $\sigma$&\qquad& vega &\qquad& $\cal{V}$ \\
+\hline \\
+Interest rate & $r$ &\qquad& rho&\qquad & $\rho$\\
+\hline
 \end{tabular}
 \end{table}
-\index{delta} \index{gamma} \index{theta} \index{vega} \index{rho}
+
+
+| **Input**          | **Input Symbol** |       | **Greek**  |       | **Greek Symbol** |
+| ------------------ | ---------------- | ----- | ---------- | ----- | ---------------- |
+| Stock price        | $S$              |       | delta      |       | $\delta$         |
+| delta              | $\delta$         |       | gamma      |       | $\Gamma$         |
+| - Time to maturity | $-T$             |       | theta      |       | $\Theta$         |
+| Volatility         | $\sigma$         |       | vega       |       | $\cal{V}$        |
+| Interest rate      | $r$              |       | rho        |       | $\rho$           |
+
+
 The second line of the above shows $\delta$ as an input.^[The delta is frequently denoted by the upper case $\Delta$, but we will use the lower case, reserving the upper case for discrete changes, e.g., $\Delta t$.  One may have noticed also that the symbol for vega is a little different from the others; this reflects the fact that  vega is not actually a Greek letter.]  Of course, it is not an input but instead is calculated.  Gamma, the derivative of $\delta$, is the second derivative of the option price with respect to the underlying asset price.  The reason for calculating $\Theta$ as the derivative with respect to $-T$ instead of $T$ is that the time-to-maturity $T$ decreasing ($-T$ increasing) is equivalent to time passing, so $\Theta$ measures the change in the option value when time passes.  
 
 We can calculate these from the Black-Scholes formula using the chain rule from differential calculus.  The derivative of the normal distribution function $\mathrm{N}$ is the normal density function $\mathrm{n}d$ defined as
@@ -266,7 +280,7 @@ It is straightforward to check, from the definitions of $\Theta$, $\Gamma$ and $
 the sum of the terms in @eq-hedgeprofits is zero.  The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest.
 Therefore, the delta hedge is a perfect hedge.  The portfolio, which has a zero cost, neither earns nor loses money.  This is true not only on average but for every possible change in the stock price.  
 
-To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in $S$ over time and sum the gains and losses over discrete rebalancing periods.  One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses.  This is discussed further in @sec-blackscholes_python.
+To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in $S$ over time and sum the gains and losses over discrete rebalancing periods.  One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses.  
 
 ## Gamma Hedging {#sec-s_gammahedging}
 
@@ -299,7 +313,7 @@ $$
 
 ## Implied Volatilities {#sec-s_impliedvolatility}
 
-All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient $\sigma$.  We can estimate $\sigma$ from historical data (see @sec-c_stochasticvolatility), or estimate it from the prices of other options.  The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the $\sigma$ that is input, so one can take the price as given and infer $\sigma$ from the formula. The $\sigma$ computed in this way is called the implied volatility. \index{implied volatility}  The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.  The calculation of implied volatilities is discussed in @sec-blackscholes_implied.
+All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient $\sigma$.  We can estimate $\sigma$ from historical data (see @sec-c_stochasticvolatility), or estimate it from the prices of other options.  The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the $\sigma$ that is input, so one can take the price as given and infer $\sigma$ from the formula. The $\sigma$ computed in this way is called the implied volatility. \index{implied volatility}  The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.  
 
 
 Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small.  Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity.  To some extent, the implied volatility normalizes the price relative to the exercise price and maturity.  Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!
@@ -794,7 +808,7 @@ print(f"Delta Hedge Profit (95th percentile): {delta_hedge_profit}")
 ## Exercises
 
 ::: {#exr-problem4.1}
-  Create Python code which inputs $K$, $r$, $\sigma$, $q$ and $T$.  Compute the delta of a call option 
+  Create a Python code which inputs $K$, $r$, $\sigma$, $q$ and $T$.  Compute the delta of a call option 
 for stock prices $S = .01K$, $.02K$, \ldots, $1.99K$, $2K$ (i.e., $S = iK/100$ for $i=1, \ldots 200$) and plot the delta against the stock price.  
 :::
 
@@ -812,7 +826,7 @@ Modify the  Python code for replicating portfolio insurance to simulate a discre
  Repeat @exr-problem4.1 for the gamma of a call option.
 :::
 <!-- ::: {#exr-nolabel}
- Use put-call parity to derive the Greeks of a put option, and write a VBA function that computes the value and Greeks.
+ Use put-call parity to derive the Greeks of a put option, and write a Python function that computes the value and Greeks.
 ::: -->
 ::: {#exr-nolabel}
  Consider delta and gamma hedging a short call option, using the underlying and a put with the same strike and maturity as the call.  Calculate the position in the underlying and the put that you should take, using the analysis in @sec-s_gammahedging.  Will you ever need to adjust this hedge?  Relate your result to put-call parity.
@@ -853,17 +867,16 @@ $$
 $$ {#eq-bsp2}
 
 
-Thus, the contract payoff is equivalent to the amount invested plus a certain number of call options written on the gross holding period return $\mathrm{e}^{qT}S(T)/S(0)$.  Note that $Z(t) = \mathrm{e}^{qt}S(t)/S(0)$ is the date--$t$ value of the portfolio that starts with $1/S(0)$ units of the asset (i.e., with a \$1 investment) and reinvests dividends.  Thus, the call options are call options on a non-dividend paying portfolio with the same volatility as $S$ and initial price of \$1.  This implies that the date--0 value of the contract to the investor is $\mathrm{e}^{-rT}D$ plus
-\begin{verbatim}
-Exp(-alpha*T)*D*Black_Scholes_Call(1,Exp(alpha*T),r,sigma,0,T)
-\end{verbatim}
+Thus, the contract payoff is equivalent to the amount invested plus a certain number of call options written on the gross holding period return $\mathrm{e}^{qT}S(T)/S(0)$.  Note that $Z(t) = \mathrm{e}^{qt}S(t)/S(0)$ is the date--$t$ value of the portfolio that starts with $1/S(0)$ units of the asset (i.e., with a \$1 investment) and reinvests dividends.  Thus, the call options are call options on a non-dividend paying portfolio with the same volatility as $S$ and initial price of \$1.  This implies that the date--0 value of the contract to the investor is $\mathrm{e}^{-rT}D$ plus 
+
+$e^{-\alpha*T}*D*$`Black_Scholes_Call`$(1,e^{-\alpha*T},r,sigma,q,T)$
 
 
 
+1. Create a Python function  to compute the fair expense ratio; i.e., find $\alpha$ such that the date--0 value of the contract is equal to $D$.  Hint:  Modify the
 
-1. Create a VBA function  to compute the fair expense ratio; i.e., find $\alpha$ such that the date--0 value of the contract is equal to $D$.  Hint:  Modify the
- \begin{center}\verb!Black_Scholes_Call_Implied_Vol! 
-\end{center}
+```Black_Scholes_Call_Implied_Vol``` 
+
 function.  You can use $\alpha=0$ as a lower bound.  Because the value of the contract is decreasing as $\alpha$ increases, you can find an upper bound by iterating until the value of the contract is less than $D$.
 2.  How does the fair expense ratio vary with the maturity $T$?  Why?
 
