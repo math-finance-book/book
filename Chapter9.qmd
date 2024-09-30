@@ -216,13 +216,12 @@ A compound option \index{compound option} is an option on an option, for example
 Let the underlying call option have exercise price $K'$ and maturity $T'$.  Consider an option maturing at $T<T'$ to purchase the underlying call at price $K$.
 
 Let $C(t,S)$ denote the value at date $t$ of the underlying call when the stock price is $S$ (i.e., $C$ is the Black-Scholes formula).    It is of course rational to exercise the compound call at date $T$ if the value of the underlying call exceeds $K$; i.e., if $C(T,S(T))>K$.  Let $S^*$ denote the critical price such that $C(T,S^*)=K$.  To calculate $S^*$, we need to solve
-\begin{center}
-Black\_Scholes\_Call(Sstar,Kprime,r,sigma,q,Tprime-T) $=$ K.
-\end{center}
+
+``` Black_Scholes_Call(S*,Kprime,r,sigma,q,Tprime-T) = K ```
+
 for $S^*$.  We can do this by bisection or one of the other methods mentioned in @sec-s_impliedvolatility.
 It is rational to exercise the compound option 
-when
-$S(T) > S^*$.  
+when $S(T) > S^*$.  
 
 When $S(T) > S^*$,  exercise of the compound option generates a cash flow of $-K$ at date $T$.  There is a cash flow (of $S(T')-K'$) at date $T'$ only if the compound call is exercised and the underlying call finishes in the money.  This is equivalent to:
 $$
@@ -347,9 +346,9 @@ Thus, the value of a put on a call can be derived from the value of a call on a 
 Consider a call option maturing at $T$ with strike $K$ with the underlying being a put option with strike $K'$ and maturity $T'>T$.  The underlying of the put is the asset with price $S$ and constant volatility $\sigma$.  The call on the put will never be in the money at $T$ and hence is worthless if $K> \mathrm{e}^{-r(T'-T)}K'$, because the maximum possible value of the put option at date $T$ is $\mathrm{e}^{-r(T'-T)}K'$.  So assume $K< \mathrm{e}^{-r(T'-T)}K'$.  
 
 Let $S^*$ again denote the critical value of the stock price such that the call is at the money at date $T$ when $S(T)=S^*$.  This means that $S^*$ solves
-\begin{center}
-`Black\_Scholes\_Put(Sstar,Kprime,r,sigma,q,Tprime-T) \= K`.
-\end{center} 
+
+```Black_Scholes_Put(S*,Kprime,r,sigma,q,Tprime-T) = K.```
+ 
 We leave it as an exercise to confirm the following.
 
 
@@ -547,11 +546,11 @@ We will assume instead that $Z$ has a constant volatility $\sigma$.  Thus, $Z$ i
 ### American Call Payoff
 If the call is not exercised before the dividend is paid at date $T$, then its value at date $T$ will be
 \begin{center}
-`Black\_Scholes\_Call(Z,K,r,sigma,0,Tprime-T)`
+`Black_Scholes_Call(Z,K,r,sigma,0,Tprime-T)`
 \end{center}
 where  `Z` $=Z(T)$.  Hence, exercise is optimal when
 \begin{center}
-`Z` $+$ `D` $-$ `K` $>$ `Black\_Scholes\_Call(Z,K,r,sigma,0,Tprime-T)`\;.
+`Z` $+$ `D` $-$ `K` $>$ `Black_Scholes_Call(Z,K,r,sigma,0,Tprime-T)`\;.
 \end{center}
 A lower bound for the Black-Scholes call value on the right-hand side is $Z(T)-\mathrm{e}^{-r(T'-T)}K$.  If $Z(T)+D-K$ is less than or equal to this lower bound, then exercise cannot be optimal.  Thus, if $D-K$ is less than or equal to $-\mathrm{e}^{-r(T'-T)}K$, then exercise will never be optimal.  In this circumstance, the dividend is simply too small to offset the time value of money on the exercise price $K$,  and the value of the American call written on the asset with price $S$ is the same as the value of the European call written on the non-dividend-paying portfolio with price $Z$.  
 
@@ -559,7 +558,7 @@ On the other hand, if $D-K > -\mathrm{e}^{-r(T'-T)}K$, then exercise will be opt
 $Z^*$ such that the owner of the call will be indifferent about exercise, and exercise will be optimal for \vfil\eject
 all $Z(T)>Z^*$.  This $Z^*$ is defined by
 \begin{center}
-`Zstar` $+$ `D` $-$ `K` $=$ `Black\_Scholes\_Call(Zstar,K,r,sigma,0,Tprime-T)`\;.
+`Z*` $+$ `D` $-$ `K` $=$ `Black_Scholes_Call(Z*,K,r,sigma,0,Tprime-T)`\;.
 \end{center}
 As in the previous section, we can compute $Z^*$ by bisection.  
 
@@ -758,7 +757,8 @@ A chooser option \index{chooser} allows the holder to choose whether the option 
 
 ### Chooser Payoff
 The value of the chooser at date $T$ will be the larger of the call and put prices.  Let $S^*$ denote the stock price at which the call and put have the same value.  We can find $S^*$ by solving
-`Black\_Scholes\_Call(Sstar,Kc,r,sigma,q,Tc-T)                   \= Black\_Scholes\_Put(Sstar,Kp,r,sigma,q,Tp-T).`                           
+
+```Black_Scholes_Call(S*,Kc,r,sigma,q,Tc-T) = Black_Scholes_Put(S*,Kp,r,sigma,q,Tp-T).```                           
 
 
 \noindent For a simple chooser with $K_c=K_p=K$ and $T_c=T_p=T'$, we can find $S^*$ from the put-call parity relation at $T$, leading to $S^*=\mathrm{e}^{(q-r)(T'-T)}K.$
@@ -2331,13 +2331,13 @@ print(f"Variance Swap Strike: {variance_swap_strike:.4f}")
 ## Exercises
 
 ::: {#exr-nolabel}
- Intuitively, the value of a forward-start call option should be lower the closer is the date $T$ at which the strike is set to the date $T'$ at which the option matures, because then the option has less time to maturity after being created at $T$.  Create an Excel worksheet to confirm this.  Allow the user to input $S$, $r$, $\sigma$, $q$, and $T'$.  Compute and plot the value of the option for $T=0.1T'$, $T=0.2T'$, \ldots, $T=0.9T'$.
+ Intuitively, the value of a forward-start call option should be lower the closer is the date $T$ at which the strike is set to the date $T'$ at which the option matures, because then the option has less time to maturity after being created at $T$.  Create a Python program to confirm this.  Allow the user to input $S$, $r$, $\sigma$, $q$, and $T'$.  Compute and plot the value of the option for $T=0.1T'$, $T=0.2T'$, \ldots, $T=0.9T'$.
 :::
 ::: {#exr-nolabel}
- Create an Excel worksheet to demonstrate the additional leverage of a call-on-a-call relative to a standard call.  Allow the user to input $S$, $r$, $\sigma$, $q$, and $T'$.  Use the `Black-Scholes_Call` function to compute and output the value $C$ of a European call with strike $K'=S$ (i.e., the call is at the money) and maturity $T'$.  Use the `Call_on_Call` function to compute and output the value of a call option on the call with strike $K=C$ (i.e., the call-on-a-call is at the money) and maturity $T=0.5T'$.  Compute the percentage returns the standard European call and the call-on-a-call would experience if the stock price $S$ instantaneously increased by 10\%.
+ Create a Python program to demonstrate the additional leverage of a call-on-a-call relative to a standard call.  Allow the user to input $S$, $r$, $\sigma$, $q$, and $T'$.  Use the `Black-Scholes_Call` function to compute and output the value $C$ of a European call with strike $K'=S$ (i.e., the call is at the money) and maturity $T'$.  Use the `Call_on_Call` function to compute and output the value of a call option on the call with strike $K=C$ (i.e., the call-on-a-call is at the money) and maturity $T=0.5T'$.  Compute the percentage returns the standard European call and the call-on-a-call would experience if the stock price $S$ instantaneously increased by 10\%.
 :::
 ::: {#exr-nolabel}
- Create an Excel worksheet to illustrate the early exercise premium for an American call on a stock paying a discrete dividend.  Allow the user to input $S$, $r$, $\sigma$, and $T'$.  Take the date of the dividend payment to be $T=0.5T'$ and take the strike price to be $K=S$.  As discussed in @sec-s_discrete, the value of a European call is given by the Black-Scholes formula with $S-\mathrm{e}^{-rT}D$ being the initial asset price and $q=0$ being the constant dividend yield.  Use the function `American_Call_Dividend` to compute the value of an American call for dividends $D=.1S$, \ldots $D=.9S$.  Subtract the value of the European call with the same dividend to obtain the early exercise premium.  Plot the early exercise premium against the dividend $D$.
+ Create a Python program to illustrate the early exercise premium for an American call on a stock paying a discrete dividend.  Allow the user to input $S$, $r$, $\sigma$, and $T'$.  Take the date of the dividend payment to be $T=0.5T'$ and take the strike price to be $K=S$.  As discussed in @sec-s_discrete, the value of a European call is given by the Black-Scholes formula with $S-\mathrm{e}^{-rT}D$ being the initial asset price and $q=0$ being the constant dividend yield.  Use the function `American_Call_Dividend` to compute the value of an American call for dividends $D=.1S$, \ldots $D=.9S$.  Subtract the value of the European call with the same dividend to obtain the early exercise premium.  Plot the early exercise premium against the dividend $D$.
 :::
 ::: {#exr-nolabel}
  Create a Python function to value a simple chooser (a chooser option in which $K_c=K_p$ and $T_c=T_p$) using put-call parity to compute $S^*$ as mentioned in @sec-s_choosers.  Verify that the function gives the same result as the function `Chooser`.
@@ -2346,10 +2346,10 @@ print(f"Variance Swap Strike: {variance_swap_strike:.4f}")
  Create a Python code to compare the cost of a simple chooser to that of a straddle (straddle = call + put with same strike and maturity).  Allow the user to input $S$, $r$, $\sigma$, $q$, and $T'$.  Take the time to maturity of the underlying call and put to be $T'$ for both the chooser and the straddle.  Take the strike prices to be $K=S$.  Take the time the choice must be made for the chooser to be $T=0.5T'$.  Compute the cost of the chooser and the cost of the straddle.
 :::
 ::: {#exr-nolabel}
- A stock has fallen in price and you are attempting to persuade a client that it is now a good buy.  The client believes it may fall further before bouncing back and hence is inclined to postpone a decision.  To convince the client to buy now, you offer to deliver the stock to him at the end of two months at which time he will pay you the lowest price it trades during the two months plus a fee for your costs.  The stock is not expected to pay a dividend during the next two months.  Assuming the stock actually satisfies the Black-Scholes assumptions, find a formula for the minimum fee that you would require.  (Hint:  It is almost in @sec-s_lookbacks.)  Create an Excel worksheet allowing the user to input $S$, $r$, and $\sigma$  and computing the minimum fee.
+ A stock has fallen in price and you are attempting to persuade a client that it is now a good buy.  The client believes it may fall further before bouncing back and hence is inclined to postpone a decision.  To convince the client to buy now, you offer to deliver the stock to him at the end of two months at which time he will pay you the lowest price it trades during the two months plus a fee for your costs.  The stock is not expected to pay a dividend during the next two months.  Assuming the stock actually satisfies the Black-Scholes assumptions, find a formula for the minimum fee that you would require.  (Hint:  It is almost in @sec-s_lookbacks.)  Create a Python program allowing the user to input $S$, $r$, and $\sigma$  and computing the minimum fee.
 :::
 ::: {#exr-e_standardknockout}
-  Suppose you must purchase 100 units of an asset at the end of a year.  Create an Excel worksheet simulating the asset price and comparing the quality of the following hedges (assuming 100 contracts of each):
+  Suppose you must purchase 100 units of an asset at the end of a year.  Create a Python program simulating the asset price and comparing the quality of the following hedges (assuming 100 contracts of each):
 
 
 
@@ -2372,7 +2372,7 @@ Modify @exr-e_standardknockout by including a third hedge: a combination of a do
 Modify @exr-e_standardknockout2 by including the hedge in @exr-e_standardknockout3.  Value the down-and-in call using the function `Down_And_Out_Call` and the fact that a down-and-out and down-and-in with the same strikes and barriers form a standard option. 
 :::
 ::: {#exr-e_averagehedge}
-  Each week you purchase 100 units of an asset, and you want to hedge your total quarterly (13-week) cost.  Create an Excel worksheet simulating the asset price and comparing the quality of the following hedges: 
+  Each week you purchase 100 units of an asset, and you want to hedge your total quarterly (13-week) cost.  Create a Python program simulating the asset price and comparing the quality of the following hedges: 
 
 
 

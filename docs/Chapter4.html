@@ -641,7 +641,7 @@ a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 <section id="sec_blackscholes_python" class="level2" data-number="4.10">
 <h2 data-number="4.10" class="anchored" data-anchor-id="sec_blackscholes_python"><span class="header-section-number">4.10</span> Calculations in Python</h2>
 <p>The following calculates the Black Scholes call, put, call delta, call gamma, and impliied volatility.</p>
-<div id="92fec297" class="cell" data-execution_count="1">
+<div id="e26cd961" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -772,7 +772,7 @@ Implied Volatility: 0.2203836441040039</code></pre>
 </div>
 </div>
 <p>The following plot the Black Scholes call price against the stock price, the strike price, volatility, dividend yield, interest rate, and time to maturity.</p>
-<div id="c788745f" class="cell" data-execution_count="2">
+<div id="c56493b8" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -864,7 +864,7 @@ Implied Volatility: 0.2203836441040039</code></pre>
 <p>Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by <span class="math inline">\(\max(K,S_T)\)</span>. The reason for the name protective put is apparent since the position can pay off no less than <span class="math inline">\(K\)</span>. The cost of this insurance is the price of the put. However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously. The basic recipe is to start with inital wealth equal to that for a protective put position: <span class="math inline">\(W_0 = P(0,S_0)+S_0\)</span>. The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is <span class="math inline">\(N(d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is calculated at each point in time. However, in practice we cannot trade continuously. A simple discrete strategy would rebalance at intervals <span class="math inline">\(\Delta t\)</span>. The strategy calculates <span class="math inline">\(N(d_1)\)</span> at time 0 and holds <span class="math inline">\(P(0,S_0)+S_0 - N(d_1)S_0\)</span> dollars in the risk free asset and <span class="math inline">\(N(d_1)\)</span> shares of the asset. Thereafter these holdings are adjusted. The change in portfolio value over the interval <span class="math inline">\(\Delta t\)</span> is <span class="math display">\[\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} \]</span> <span class="math display">\[
 = (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t})
 \]</span> where <span class="math inline">\(N(d1-)\)</span> is the delta chosen at time <span class="math inline">\((i-1)\Delta t\)</span>. The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be? This is simulated in the following code:</p>
-<div id="64b92d0b" class="cell" data-execution_count="3">
+<div id="5df9c7b1" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1008,7 +1008,7 @@ Implied Volatility: 0.2203836441040039</code></pre>
 <h3 class="anchored" data-anchor-id="discretely-rebalanced-delta-hedges">Discretely-Rebalanced Delta Hedges</h3>
 <p>To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return <span class="math inline">\(\mu\)</span>. We consider adjusting the hedge at dates <span class="math inline">\(0=t_0&lt;t_1&lt;\cdots&lt;t_N=T\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. The changes in the natural logarithm of the stock price between successive dates <span class="math inline">\(t_{i-1}\)</span> and <span class="math inline">\(t_i\)</span> are simulated as <span class="math display">\[\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\Delta B\; ,\]</span> where <span class="math inline">\(\Delta B\)</span> is normally distributed with mean zero and variance <span class="math inline">\(\Delta t\)</span>. The random variables <span class="math inline">\(\Delta B\)</span> are simulated as standard normals multiplied by <span class="math inline">\(\sqrt{\Delta t}\)</span>. We begin with the portfolio that is short a call, long <span class="math inline">\(\delta\)</span> shares of the underlying, and short <span class="math inline">\(\delta S-C\)</span> in cash. After the stock price changes, say from <span class="math inline">\(S\)</span> to <span class="math inline">\(S'\)</span>, we compute the new delta <span class="math inline">\(\delta'\)</span>. The cash flow from adjusting the hedge is <span class="math inline">\((\delta-\delta')S'\)</span>. Accumulation (or payment) of interest on the cash position is captured by the factor <span class="math inline">\(e^{r\Delta t}\)</span>. Continuous payment of dividends is modelled similarly: the dividends earned during the period <span class="math inline">\(\Delta t\)</span> is taken to be <span class="math inline">\(\delta S\left(e^{q\Delta t}-1\right)\)</span>. The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge. At date <span class="math inline">\(T\)</span>, the value of the portfolio is the cash position less the intrinsic value of the option.</p>
 <p>To describe the distribution of gains and losses, we compute percentiles of the distribution. You should see that the hedge becomes more nearly perfect as the number of periods <span class="math inline">\(N\)</span> is increased. Note that this is true regardless of the <span class="math inline">\(\mu\)</span> that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Excel function.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
-<div id="fca6a32f" class="cell" data-execution_count="4">
+<div id="5d9de1c0" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1081,7 +1081,7 @@ Implied Volatility: 0.2203836441040039</code></pre>
 <span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Delta Hedge Profit (95th percentile): </span><span class="sc">{</span>delta_hedge_profit<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Delta Hedge Profit (95th percentile): 0.6997350210960679</code></pre>
+<pre><code>Delta Hedge Profit (95th percentile): 0.6490265709521196</code></pre>
 </div>
 </div>
 </section>
@@ -1137,10 +1137,10 @@ We can rearrange the expression <a href="#eq-bsp1" class="quarto-xref">Equation&
 </ol>
 <p><code>Black_Scholes_Call_Implied_Vol</code></p>
 <p>function. You can use <span class="math inline">\(\alpha=0\)</span> as a lower bound. Because the value of the contract is decreasing as <span class="math inline">\(\alpha\)</span> increases, you can find an upper bound by iterating until the value of the contract is less than <span class="math inline">\(D\)</span>. 2. How does the fair expense ratio vary with the maturity <span class="math inline">\(T\)</span>? Why?</p>
-::: ::: {#exr-nolabel} Modify the function to compute percentiles of gains and losses for an investor who writes a call option and constructs a delta and gamma hedge using the underlying asset and another call option. Include the exercise price of the call option used to hedge as an input, and assume it has the same time to maturity as the option that is written. Hint: In each period , the updated cash position can be calculated as
-where denotes the number of shares of the stock held, denotes the number of units held of the option that is used for hedging, and denotes the price of the option used for hedging (computed from the Black-Scholes formula each period). This expression embodies the interest earned (paid) on the cash position, the dividends received on the shares of stock and the cash inflows (outflows) from adjusting the hedge. At the final date , the value of the hedge is
-and the value of the overall portfolio is the value of the hedge less
-<p>where denotes the strike price of the option used to hedge and denotes the strike of the option that was written. :::</p>
+<p>::: ::: {#exr-nolabel} Modify the function <code>Simulated_Delta_Hedge_Profit</code> to compute percentiles of gains and losses for an investor who writes a call option and constructs a delta and gamma hedge using the underlying asset and another call option. Include the exercise price of the call option used to hedge as an input, and assume it has the same time to maturity as the option that is written. Hint: In each period , the updated cash position can be calculated as</p>
+<p><code>Cash = exp(r*dt)*Cash + a*S*(exp(q*dt)-1) - (Newa-a)*NewS - (Newb-b)*PriceHedge,</code> where <code>a</code> denotes the number of shares of the stock held, <code>b</code> denotes the number of units held of the option that is used for hedging, and <code>PriceHedge</code> denotes the price of the option used for hedging (computed from the Black-Scholes formula each period). This expression embodies the interest earned (paid) on the cash position, the dividends received on the shares of stock and the cash inflows (outflows) from adjusting the hedge. At the final date <code>N</code>, the value of the hedge is</p>
+<p><code>exp(r*dt)*Cash + a*S*(exp(q*dt)-1) + a*NewS + b*Application.Max(NewS-KHedge,0),</code></p>
+<p>and the value of the overall portfolio is the value of the hedge less <code>Application.Max(NewS-KWritten,0),</code> where <code>KHedge</code> denotes the strike price of the option used to hedge and <code>KWritten</code> denotes the strike of the option that was written. :::</p>
 
 
 </section>

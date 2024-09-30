@@ -730,7 +730,7 @@ $$\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\De
 where $\Delta B$ is normally distributed with mean zero and variance $\Delta t$.  The random variables $\Delta B$ are simulated as standard normals multiplied by
 $\sqrt{\Delta t}$.  We begin with the portfolio that is short a call, long $\delta$ shares of the underlying, and short $\delta S-C$ in cash.  After the stock price changes, say from $S$ to $S'$, we compute the new delta $\delta'$.  The cash flow from adjusting the hedge is $(\delta-\delta')S'$.  Accumulation (or payment) of interest on the cash position is captured by the factor $e^{r\Delta t}$.  Continuous payment of dividends is modelled similarly: the dividends earned during the period $\Delta t$ is taken to be $\delta S\left(e^{q\Delta t}-1\right)$.  The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge.  At date $T$, the value of the portfolio is the cash position less the intrinsic value of the option.
 
-To describe the distribution of gains and losses, we compute percentiles of the distribution.  You should see that the hedge becomes more nearly perfect as the number of periods $N$ is increased.  Note that this is true regardless of the $\mu$ that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Excel \verb!Percentile! function.^[If numsims = 11 and pct =0.1, the percentile function returns the second lowest element in the series.  The logic is that 10\% of the numbers, excluding the number returned, are below the number returned---i.e., 1 out of the other 10 are below---and 90\% of the others are above.  In particular, if pct = 0.5, the percentile function returns the median.  When necessary, the function interpolates; for example, if numsims = 10 and pct=0.1, then the number returned is an interpolation between the lowest and second lowest numbers.] 
+To describe the distribution of gains and losses, we compute percentiles of the distribution.  You should see that the hedge becomes more nearly perfect as the number of periods $N$ is increased.  Note that this is true regardless of the $\mu$ that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Python program.^[If numsims = 11 and pct =0.1, the percentile function returns the second lowest element in the series.  The logic is that 10\% of the numbers, excluding the number returned, are below the number returned---i.e., 1 out of the other 10 are below---and 90\% of the others are above.  In particular, if pct = 0.5, the percentile function returns the median.  When necessary, the function interpolates; for example, if numsims = 10 and pct=0.1, then the number returned is an interpolation between the lowest and second lowest numbers.] 
 
 ```{python}
 
@@ -844,7 +844,7 @@ Repeat @exr-problem4.1 for the delta of this share digital.
  Repeat the previous problem for  $S=1.2K$ (an example of an in-the-money call option).
 :::
 ::: {#exr-nolabel}
- The file CBOEQuotes.txt (available at \verb!www.kerryback.net!) contains price data for call options on the S\&P 500 index.  The options expired in February, 2003, and the prices were obtained on January 22, 2003.  The first column lists various exercise prices.  The second column gives the bid price and the third column the ask price.  Import this data into an Excel worksheet and compute and plot the implied volatility against the exercise price using this data.  Use the ask price as the market price for the option.    The options have 30 days to maturity (so $T=30/365$).  At the time the quotes were downloaded, the S\&P 500 was at 884.25.  According to the CBOE, the dividend yield on the S\&P 500 was 1.76\%.  Use 1.25\% for the risk-free interest rate.  
+ The file CBOEQuotes.txt (available at \verb!www.kerryback.net!) contains price data for call options on the S\&P 500 index.  The options expired in February, 2003, and the prices were obtained on January 22, 2003.  The first column lists various exercise prices.  The second column gives the bid price and the third column the ask price.  Import this data into a Python program and compute and plot the implied volatility against the exercise price using this data.  Use the ask price as the market price for the option.    The options have 30 days to maturity (so $T=30/365$).  At the time the quotes were downloaded, the S\&P 500 was at 884.25.  According to the CBOE, the dividend yield on the S\&P 500 was 1.76\%.  Use 1.25\% for the risk-free interest rate.  
 
 :::
 ::: {#exr-nolabel}
@@ -884,20 +884,15 @@ function.  You can use $\alpha=0$ as a lower bound.  Because the value of the co
 
 :::
 ::: {#exr-nolabel}
- Modify the function \verb!Simulated_Delta_Hedge_Profit! to compute percentiles of gains and losses for an investor who writes a call option and constructs a delta and gamma hedge using the underlying asset and another call option. Include the exercise price of the call option used to hedge as an input, and assume it has the same time to maturity as the option that is written.  Hint:  In each period \verb!j = 1 to N-1!, the updated cash position can be calculated as
-\begin{verbatim}
-Cash = exp(r*dt)*Cash + a*S*(exp(q*dt)-1) - (Newa-a)*NewS _
-     - (Newb-b)*PriceHedge ,
-\end{verbatim}
-where \verb!a! denotes the number of shares of the stock held, \verb!b! denotes the number of units held of the option that is used for hedging, and \verb!PriceHedge! denotes the price of the option used for hedging (computed from the Black-Scholes formula each period).  This expression embodies the interest earned (paid) on the cash position, the dividends received on the shares of stock and the cash inflows (outflows) from adjusting the hedge.  At the final date \verb!N!, the value of the hedge is
-\begin{verbatim}
-exp(r*dt)*Cash + a*S*(exp(q*dt)-1) + a*NewS _
-     + b*Application.Max(NewS-KHedge,0) ,
- \end{verbatim}
- and the value of the overall portfolio is the value of the hedge less
- \begin{verbatim}
-Application.Max(NewS-KWritten,0) ,
- \end{verbatim}
-where \verb!KHedge! denotes the strike price of the option used to hedge and \verb!KWritten! denotes the strike of the option that was written.
+ Modify the function `Simulated_Delta_Hedge_Profit` to compute percentiles of gains and losses for an investor who writes a call option and constructs a delta and gamma hedge using the underlying asset and another call option. Include the exercise price of the call option used to hedge as an input, and assume it has the same time to maturity as the option that is written.  Hint:  In each period \verb!j = 1 to N-1!, the updated cash position can be calculated as
+
+``` Cash = exp(r*dt)*Cash + a*S*(exp(q*dt)-1) - (Newa-a)*NewS - (Newb-b)*PriceHedge,```
+where `a` denotes the number of shares of the stock held, `b` denotes the number of units held of the option that is used for hedging, and `PriceHedge` denotes the price of the option used for hedging (computed from the Black-Scholes formula each period).  This expression embodies the interest earned (paid) on the cash position, the dividends received on the shares of stock and the cash inflows (outflows) from adjusting the hedge.  At the final date `N`, the value of the hedge is
+
+```exp(r*dt)*Cash + a*S*(exp(q*dt)-1) + a*NewS + b*np.max(NewS-KHedge,0),```
+
+and the value of the overall portfolio is the value of the hedge less
+```np.max(NewS-KWritten,0),```
+where `KHedge` denotes the strike price of the option used to hedge and `KWritten` denotes the strike of the option that was written.
 :::
 
