@@ -12,61 +12,82 @@
   {
     "objectID": "Chapter1.html",
     "href": "Chapter1.html",
-    "title": "1  Calls and Puts",
+    "title": "1  Intro to Options",
     "section": "",
-    "text": "1.1 Intrinsic Value and Time Value",
+    "text": "2 Introduction to Options\nFinancial options are rights to buy and sell assets at pre-specified prices. The rights are traded on exchanges and also as private contracts (called over-the-counter or OTC). A call option is a right to buy an asset. A put option is a right to sell an asset. The pre-specified price is called the exercise price, the strike price, or simply the strike. The asset to which an option pertains is called the underlying asset, or, more briefly, the underlying.\nHere is a snapshot of market statistics regarding call options on Apple stock (AAPL) traded on the Chicago Board Options Exchange (CBOE). We are accessing the data courtesy of Yahoo Finance. We will refer to this data throughout the chapter.\nCode\nimport pandas as pd\nimport yfinance as yf\nfrom datetime import datetime\nimport pytz\nfrom datetime import datetime\n\nest = pytz.timezone('US/Eastern')\nfmt = '%Y-%m-%d %H:%M:%S %Z%z'\nnow = datetime.today().astimezone(est).strftime(fmt)\n\nticker = \"AAPL\"         # ticker to pull\nkind = \"call\"           # call or put\nmaturity = 4            # option maturity in order of maturities trading\n\ntick = yf.Ticker(ticker.upper())\n\n# Pull last stock price\nclose = tick.history().iloc[-1].Close\n\n# Get maturity date\ndate = tick.options[maturity]\n\n# Pull options data\ndf = (\n    tick.option_chain(date).calls\n    if kind == \"call\"\n    else tick.option_chain(date).puts\n)\n\ndf.lastTradeDate = df.lastTradeDate.map(\n    lambda x: x.astimezone(est).strftime(fmt)\n)\n\n# Formatting\ncols = [\n    \"strike\",\n    \"bid\",\n    \"ask\",\n    \"lastPrice\",\n    \"change\",\n    \"percentChange\",\n    \"lastTradeDate\",\n    \"volume\",\n    \"openInterest\",\n    \"impliedVolatility\",\n]\ndf = df[cols]\ndf[\"impliedVolatility\"] = df[\"impliedVolatility\"].map(\"{:.1%}\".format)\ndf[\"change\"] = df[\"change\"].round(2)\ndf[\"percentChange\"] = (df[\"percentChange\"]/100).map(\"{:.1%}\".format)\ndf.columns = [\n    \"Strike\",\n    \"Bid\",\n    \"Ask\",\n    \"Last Price\",\n    \"Change\",\n    \"% Change\",\n    \"Time of Last Trade\",\n    \"Volume\",\n    \"Open Interest\",\n    \"Implied Volatility\",\n] \ndf = df.set_index(\"Strike\")\nprint(f\"Code was executed at \\t{now}\")\nprint(f\"Last {ticker.upper()} price was \\t${close:.2f}.\")\nprint(f'Maturity date of options:\\t{date}')\npd.set_option('display.max_rows', 500)\npd.set_option('display.max_columns', 500)\npd.set_option('display.width', 1000)\nprint(df)\n\n\n/Users/austinclime/vs_code_projects/math_finance_book_repo/book/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020\n  warnings.warn(\n\n\nCode was executed at    2024-10-09 12:04:53 EDT-0400\nLast AAPL price was     $228.18.\nMaturity date of options:   2024-11-08\n          Bid    Ask  Last Price  Change % Change            Time of Last Trade  Volume  Open Interest Implied Volatility\nStrike                                                                                                                   \n140.0   88.70  89.10       85.08    0.00     0.0%  2024-10-07 12:37:35 EDT-0400     2.0              4              93.9%\n145.0   83.65  84.15       79.97    0.00     0.0%  2024-10-03 13:50:31 EDT-0400     NaN             10              88.0%\n180.0   49.10  49.40       45.77    0.00     0.0%  2024-10-04 11:25:59 EDT-0400     2.0              4              55.9%\n185.0   44.20  44.50       39.60    0.00     0.0%  2024-10-07 14:30:13 EDT-0400     1.0              1              51.9%\n195.0   34.45  34.75       29.07    0.00     0.0%  2024-10-07 15:49:41 EDT-0400    18.0             22              45.1%\n200.0   29.75  30.05       29.40    2.08     7.6%  2024-10-09 10:59:11 EDT-0400     8.0            110              42.0%\n205.0   25.15  25.45       22.30    0.00     0.0%  2024-10-08 11:06:52 EDT-0400    66.0             99              38.9%\n210.0   20.70  20.90       19.35    0.40     2.1%  2024-10-08 15:59:37 EDT-0400     1.0             41              35.6%\n215.0   16.60  16.80       16.62    1.63    10.9%  2024-10-09 11:18:48 EDT-0400   189.0            390              33.6%\n220.0   12.85  13.05       12.75    1.41    12.4%  2024-10-09 11:23:47 EDT-0400    46.0            455              32.0%\n225.0    9.50   9.65        9.50    1.15    13.8%  2024-10-09 11:25:24 EDT-0400   257.0            977              30.2%\n230.0    6.70   6.80        6.55    0.90    15.9%  2024-10-09 11:20:09 EDT-0400   236.0            887              28.8%\n235.0    4.35   4.45        4.35    0.65    17.6%  2024-10-09 11:18:49 EDT-0400   254.0           4182              27.4%\n240.0    2.74   2.80        2.69    0.40    17.5%  2024-10-09 11:20:06 EDT-0400   125.0           1930              26.6%\n245.0    1.61   1.64        1.63    0.33    25.4%  2024-10-09 11:27:01 EDT-0400   180.0           1709              25.8%\n250.0    0.91   0.95        0.94    0.19    25.3%  2024-10-09 11:32:09 EDT-0400    25.0            873              25.6%\n255.0    0.49   0.53        0.48    0.08    20.0%  2024-10-09 11:05:02 EDT-0400    29.0            483              25.5%\n260.0    0.28   0.30        0.28    0.05    21.7%  2024-10-09 11:32:30 EDT-0400    17.0            195              25.7%\n265.0    0.16   0.17        0.14    0.01     7.7%  2024-10-09 09:30:08 EDT-0400   350.0            105              26.0%\n270.0    0.09   0.11        0.09    0.03    50.0%  2024-10-09 10:26:27 EDT-0400    15.0            145              26.9%\n280.0    0.00   0.12        0.15    0.00     0.0%  2024-10-02 10:54:06 EDT-0400     NaN             16              32.1%\n285.0    0.01   0.11        0.09    0.00     0.0%  2024-09-30 10:19:00 EDT-0400     NaN              1              34.1%\n300.0    0.00   0.04        0.02    0.00     0.0%  2024-10-04 12:03:18 EDT-0400     5.0              7              36.1%",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Calls and Puts</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
     ]
   },
   {
     "objectID": "Chapter1.html#investing-in-options",
     "href": "Chapter1.html#investing-in-options",
-    "title": "1  Introduction to Options",
-    "section": "1.2 Investing in Options",
-    "text": "1.2 Investing in Options"
+    "title": "1  Intro to Options",
+    "section": "2.2 Investing in Options",
+    "text": "2.2 Investing in Options",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   },
   {
     "objectID": "Chapter1.html#hedging-with-options",
     "href": "Chapter1.html#hedging-with-options",
-    "title": "1  Introduction to Options",
-    "section": "1.3 Hedging with Options",
-    "text": "1.3 Hedging with Options"
+    "title": "1  Intro to Options",
+    "section": "2.3 Hedging with Options",
+    "text": "2.3 Hedging with Options",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   },
   {
     "objectID": "Chapter1.html#selling-options-for-income",
     "href": "Chapter1.html#selling-options-for-income",
-    "title": "1  Introduction to Options",
-    "section": "1.4 Selling Options for Income",
-    "text": "1.4 Selling Options for Income"
+    "title": "1  Intro to Options",
+    "section": "2.4 Selling Options for Income",
+    "text": "2.4 Selling Options for Income",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   },
   {
     "objectID": "Chapter1.html#option-spreads",
     "href": "Chapter1.html#option-spreads",
-    "title": "1  Introduction to Options",
-    "section": "1.5 Option Spreads",
-    "text": "1.5 Option Spreads"
+    "title": "1  Intro to Options",
+    "section": "2.5 Option Spreads",
+    "text": "2.5 Option Spreads",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   },
   {
     "objectID": "Chapter1.html#put-call-parity",
     "href": "Chapter1.html#put-call-parity",
-    "title": "1  Introduction to Options",
-    "section": "1.6 Put-Call Parity",
-    "text": "1.6 Put-Call Parity"
+    "title": "1  Intro to Options",
+    "section": "2.6 Put-Call Parity",
+    "text": "2.6 Put-Call Parity",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   },
   {
     "objectID": "Chapter1.html#american-options",
     "href": "Chapter1.html#american-options",
-    "title": "1  Introduction to Options",
-    "section": "1.7 American Options",
-    "text": "1.7 American Options"
+    "title": "1  Intro to Options",
+    "section": "2.7 American Options",
+    "text": "2.7 American Options",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   },
   {
     "objectID": "Chapter1.html#dividends",
     "href": "Chapter1.html#dividends",
-    "title": "1  Introduction to Options",
-    "section": "1.8 Dividends",
-    "text": "1.8 Dividends"
+    "title": "1  Intro to Options",
+    "section": "2.8 Dividends",
+    "text": "2.8 Dividends",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   },
   {
     "objectID": "Chapter1.html#footnotes",
@@ -1604,8 +1625,21 @@
   {
     "objectID": "Chapter1.html#intrinsic-value-and-time-value",
     "href": "Chapter1.html#intrinsic-value-and-time-value",
-    "title": "1  Introduction to Options",
-    "section": "1.1 Intrinsic Value and Time Value",
-    "text": "1.1 Intrinsic Value and Time Value"
+    "title": "1  Intro to Options",
+    "section": "2.1 Intrinsic Value and Time Value",
+    "text": "2.1 Intrinsic Value and Time Value",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
+  },
+  {
+    "objectID": "Chapter1.html#testing-widget-code-austin",
+    "href": "Chapter1.html#testing-widget-code-austin",
+    "title": "1  Intro to Options",
+    "section": "2.9 Testing Widget Code (Austin)",
+    "text": "2.9 Testing Widget Code (Austin)\n\n\n\nFigure 2.7: my sample graph\n\n\n\n\n\n\n\n\n\nCode\nx = 4\nprint(f\"x = {x}\")\n\n\nx = 4\n\n\n\n\nCode\n%matplotlib widget\n#%matplotlib ipympl\nimport numpy as np\nimport ipywidgets as widgets\nimport matplotlib.pyplot as plt\nfrom scipy import stats\nfrom IPython.display import display, HTML\nfrom ipywidgets import VBox,HBox, Layout\n#! pip install latex\nimport latex\n\nr = .03  # interest rate\nsig = .2 # volatility\nS0 = 100 # Initial Stock Price\nT = 1 # Maturity\n\ndef bs_delta(S0, K, r, sig, T, call = True):\n    d1 = (np.log(S0/K) + (r + sig**2/2) * T)/(sig*np.sqrt(T))\n    norm = stats.norm\n    if type(call) == bool:\n        if call:\n            return norm.cdf(d1,0,1)\n        else:\n            return norm.cdf(-d1,0,1)\n\nK = np.linspace(1, 200, 100)\n\nfig, ax = plt.subplots()\n#fig.suptitle('matplotlib.axes.Axes.set_label() function \\ Example\\n', fontweight =\"bold\")\nfig.set_label('my label')\n\n\n#call_delta_plot, = ax.plot(K, bs_delta(S0,K,r,sig,T,True),label='Call')\ncall_delta_plot, = ax.plot(K, bs_delta(S0,K,r,sig,T,True),label=r'Call=$\\Phi(d_1)$')\nput_delta_plot, = ax.plot(K, bs_delta(S0,K,r,sig,T,False),label=r'Put=$\\Phi(-d_1)$')\n\nax.title.set_text(r'Black Scholes Deltas Over A Strike Contiuum')\nax.set_xlabel(r'K')\nax.set_ylabel(r'$\\Phi(d_1)$')\nax.legend()\nax.grid(True)\n\ndef update_maturity(change):\n    #line.set_ydata(np.sin(change.new * x))\n    call_delta_plot.set_ydata( bs_delta(S0,K,r,sig,change.new,True) )\n    put_delta_plot.set_ydata( bs_delta(S0,K,r,sig,change.new,False) )\n    fig.canvas.draw()\n\ndef update_volatility(change):\n    #line.set_ydata(np.sin(change.new * x))\n    call_delta_plot.set_ydata( bs_delta(S0,K,r,change.new,maturity_slider.value,True) )\n    put_delta_plot.set_ydata( bs_delta(S0,K,r,change.new,maturity_slider.value,False) )\n    fig.canvas.draw()\n\ndef update_display(change):\n    #print(change)\n    #print(change.owner.description)\n    if 'Put' in change['owner'].description:\n        if change['new']==False:\n            #put_delta_plot.set_ydata( np.zeros(len(K)) )\n            #fig.canvas.draw()\n            put_delta_plot.remove()\n        else:\n            #print(change)\n            #fig.add_artist(put_delta_plot)\n            ax.add_artist(put_delta_plot)\n            #fig.canvas.draw()\n            \n            \n    elif 'Call' in change['owner'].description:\n        if change['new']==False:\n            #put_delta_plot.set_ydata( np.zeros(len(K)) )\n            #fig.canvas.draw()\n            call_delta_plot.remove()\n        else:\n            #print(change)\n            #fig.add_artist(call_delta_plot)\n            ax.add_artist(call_delta_plot)\n            #fig.canvas.draw()\n    \n    fig.canvas.draw()\n\n\nmaturity_slider = widgets.FloatSlider(value=T,min=0, max=T, step=0.1,description=r'Maturity',continuous_update=False)\nvolatility_slider = widgets.FloatSlider(value=sig,min=0+0.00001, max=0.6, step=0.05,description=r'Volatility',continuous_update=False)\nshow_call=widgets.Checkbox(value=True,description='Call',disabled=False)\nshow_put=widgets.Checkbox(value=True,description='Put',disabled=False)\n\nmaturity_slider.observe(update_maturity, 'value')\nvolatility_slider.observe(update_volatility, 'value')\nshow_call.observe(update_display,'value')\nshow_put.observe(update_display,'value')\n#display(maturity_slider)\n\nUI=VBox([\n    HBox([maturity_slider]),\n    HBox([volatility_slider]),\n    HBox([show_call,show_put])\n    ])\n\ndisplay(UI)\n\n\n\n\nFigure 2.8\n\n\n\n\n\n(a) A line plot on a polar axis\n\n\n\n\n\n\n\n\n\n(b)",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Options</span>"
+    ]
   }
 ]
