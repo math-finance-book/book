@@ -2,17 +2,17 @@
 
 ## Introduction
 
-The Fourier Transform has become an essential tool in option pricing, particularly for complex models like those with stochastic volatility, Lévy processes, and variance gamma processes. In this chapter, we will explore how the Fourier Transform simplifies the pricing of derivative securities, examine its advantages, and provide analytical examples and Python code for practical illustration.
+The Fourier Transform has become an essential tool in option pricing, particularly for complex models like those with stochastic volatility and Lévy processes including variance gamma and jump diffusion processes. In this chapter, we will explore how the Fourier Transform simplifies the pricing of derivative securities, examine its advantages, and provide analytical examples and Python code for practical illustration.
 
 
 The key reason for using Fourier Transforms in option pricing is that they allow us to solve pricing problems more efficiently in the frequency domain rather than the time domain. Specifically, Fourier methods:
 
-1. **Simplify Complex Problems**: Many option pricing models lead to complex partial differential equations (PDEs). The Fourier Transform helps transform these PDEs into simpler algebraic equations.
-2. **Handle Non-Gaussian Processes**: Many real-world asset price models involve jumps or stochastic volatility, which may lead to non-Gaussian distributions of returns. Fourier Transforms allow us to handle these models efficiently.
-3. **Efficiency with Characteristic Functions**: The Fourier Transform is closely related to the characteristic function of the underlying asset price. Using the characteristic function simplifies the integration required in risk-neutral valuation.
-4. **Fast Numerical Computation**: By leveraging Fast Fourier Transform (FFT) algorithms, we can calculate option prices for a wide range of strikes and maturities quickly.
+1. **Handle Non-Gaussian Processes**: Many real-world asset price models involve jumps or stochastic volatility, which may lead to non-Gaussian distributions of returns. Fourier Transforms allow us to handle these models efficiently.
+2. **Use Characteristic Functions**: The Fourier Transform is closely related to the characteristic function of the underlying asset price. Many stochastic processes have closed-form characteristic functions without explicit distribution functions. Using the closed-form characteristic functions simplifies the integration required in risk-neutral valuation.
+3. **Conduct Fast Numerical Computation**: By leveraging Fast Fourier Transform (FFT) algorithms, we can calculate option prices for a wide range of strikes and maturities quickly.
+4. **Simplify Complex Problems**: Many option pricing models lead to complex partial differential equations (PDEs). The Fourier Transform helps transform these PDEs into simpler algebraic equations.
 
-In this chapter, we'll demonstrate these advantages through theory, examples, and Python code.
+In this chapter, we'll focus on the first three and demonstrate these advantages through theory, examples, and Python code.
 
 ## Section 1: Theoretical Foundation
 
@@ -32,7 +32,7 @@ $$
 C(X_T) = \max(e^{X_T} - K, 0)
 $$
 
-We now take the Fourier transform of this function with respect to $x = X_T$(the log-price), leading to the formula for $\hat{C}(u)$, which is:
+We now take the Fourier transform of this function with respect to $x = X_T$ (the log-price), leading to the formula for $\hat{C}(u)$, which is:
 
 $$
 \hat{C}(u) = \int_{-\infty}^{\infty} e^{-iux} \max(e^x - K, 0) \, dx
@@ -42,7 +42,7 @@ To compute this transform explicitly, we split the payoff function into two regi
 - When $x < \ln(K)$, the payoff is zero because $S_T < K$.
 - When $x \geq \ln(K)$, the payoff is $e^x - K$ because $S_T \geq K$.
 
-Thus, the integral for$\hat{C}(u)$becomes:
+Thus, the integral for $\hat{C}(u)$ becomes:
 
 $$
 \hat{C}(u) = \int_{\ln(K)}^{\infty} e^{-iux} (e^x - K) \, dx
@@ -54,7 +54,7 @@ $$
 \hat{C}(u) = \frac{K^{1 - iu}}{iu(1 + iu)}
 $$
 
-In essence,$\hat{C}(u)$ is the representation of the call option’s payoff in the **frequency domain**. It captures how different frequencies (or Fourier modes) contribute to the option price. Once the Fourier transform is applied to the payoff function, this $\hat{C}(u)$ can be combined with the **characteristic function** of the underlying asset's price process to calculate the option price.
+In essence, $\hat{C}(u)$ is the representation of the call option’s payoff in the **frequency domain**. It captures how different frequencies (or Fourier modes) contribute to the option price. Once the Fourier transform is applied to the payoff function, this $\hat{C}(u)$ can be combined with the **characteristic function** of the underlying asset's price process to calculate the option price.
 
 The characteristic function $\phi_{X}(u)$ of a random variable $X$ is defined as:
 
@@ -81,61 +81,81 @@ Unfortunately, the Fast Fourier Transform  (FFT) cannot be used to evaluate the 
 
 ## The Carr-Madan Method
 
-The key idea is to express the option price as an integral in Fourier space and then discretize it for the FFT numerical evaluation.
+The key idea behind the Carr-Madan Method is to express the option price as an integral in Fourier space and then discretize it for the FFT numerical evaluation.
 
 
 ### Step 1: Modify the Payoff Function
 
-To ensure the square integrability of the Fourier Transform, we first modify the option's payoff function by introducing a dampening factor $\alpha > 0$:
+Let $k$ denote the log of the strike price $K$, and let $C(k)$ be the desired value of a $T$-maturity call option with strike exp(k). Let the risk-neutral density of the $s=\ln(S)$ be $q(s)$. The initial call value $C(k)$ is related to the risk-neutral density $q(s)$ by 
 
 $$
-\tilde{C}(K) = e^{\alpha k} C(K)=,
+C(k) = \int_{k}^\infty e^{-r T} (e^s-e^k) q(s)\, ds.
 $$
 
-where $k = \ln K$ is the log-strike price. This modification ensures that the transformed function decays sufficiently fast at infinity.^[With $\alpha=0$, when $K$ approaches $0$, $k$ approaches $\infty$ and $C(K)$ approaches $S$, not $0$, making $C(K)$ not square integrable in fourier transform.]
+Because $C(k)$ approaches $S_0$ as $k$ tends to $-\infty$, the call pricing function of $k$ is not square integrable. To ensure the square integrability of the Fourier Transform, we first modify the option's payoff function by introducing a dampening factor $\alpha > 0$:
+
+$$
+\tilde{C}(k) = e^{\alpha k} C(k).
+$$
+This modification ensures that the transformed function decays sufficiently fast at infinity.
 
 ### Step 2: Express the Modified Price as an Integral
 
 By the fourier inversion theorem, the modified call price can be written as:
 
 $$
-\tilde{C}(K) = \frac{e^{-r T}}{2\pi} \int_{-\infty}^\infty e^{-i u k} \phi_{C}(u) \, du,
-$$
-
-where $\phi_{C}(u)$ is the Fourier Transform of $e^{\alpha k} (S_T - K)^+$.
+C(k) = \frac{e^{-\alpha k}}{2\pi} \int_{-\infty}^\infty e^{-i u k} \phi_{C}(u)\, du = \frac{e^{-\alpha k}}{\pi} \int_{0}^\infty e^{-i u k} \phi_{C}(u)\, du,
+$$ {#eq-carrmadan}
+where $\phi_{C}(u)$ is the Fourier Transform of the option $C(k)$ and the second equality follows because $\phi_{C}(u)$ is odd in its imaginary part and even in its real part.
 
 ### Step 3: Derive the Fourier Transform of the Payoff
 
 The Fourier Transform $\phi_{C}(u)$ is given by:
 
 $$
-\phi_{C}(u) = \int_{-\infty}^\infty e^{i u k} e^{\alpha k} (e^{s} - e^{k})^+ \, ds,
+\phi_{C}(u) = \int_{-\infty}^\infty e^{i u k} e^{\alpha k}e^{-r T} (e^{s} - e^{k})^+q(s) \, ds.
 $$
-
-where $s = \ln S_T$.
 
 By simplifying and rearranging terms, we obtain:
 
 $$
-\phi_{C}(u) = \frac{\phi_{S_T}(u - i (\alpha + 1))}{(\alpha + i u)(\alpha + i u + 1)},
-$$ {#eq-carrmadan}
-
-where $\phi_{S_T}(u)$ is the characteristic function of $\ln S_T$.
+\phi_{C}(u) = \frac{e^{-rT}\phi_{S}(u - i (\alpha + 1))}{(\alpha + i u)(\alpha + i u + 1)},
+$$ 
+where $\phi_{S}(u)$ is the characteristic function of $\ln S$.
 
 ### Step 4: Discretize the Integral for FFT
 
-We discretize the integral @eq-carrmadan over $u$ to apply the FFT:
+The FFT is an efficient algorithm for computing the sum
+$$
+f(k)=\sum_{j=1}^{N} Exp(-i \frac{2\pi}{N}(j-1) (k-1))g(j), k=1,...,N,
+$$
+where $N$ is typically a power of 2 and $g(\cdot)$ is a function including weights. The algorithm reduces the number of
+multiplications in the required $N$ summations from an order of $N^2$ to that of
+$N \log_2(N)$, a very significant reduction. We present in this section the details for writing the integration (5) as an application of the summation (16).
+
+To apply the FFT, we discretize the integral @eq-carrmadan over $u$:
 
 - Define $u_j = \eta j$, where $\eta$ is the spacing between points and $j = 0, 1, \dots, N - 1$.
-- Similarly, define $k_m = k_{\text{min}} + \Delta k \, m$, where $\Delta k$ is the spacing in log-strike space and $m = 0, 1, \dots, N - 1$.
+- Similarly, define $k_m = -b + \lambda \, m$, where 
+$$
+\lambda = \frac{2\pi}{N \eta}
+$$ 
+is the spacing in log-strike space,
+$$
+b=\frac{N \lambda}{2} 
+$$
+is the integration upper limit of $k$, and $m = 0, \dots, N-1$.
 
 The integral @eq-carrmadan becomes a sum:
 
 $$
-\tilde{C}(K_m) \approx \frac{e^{-r T}}{2\pi} \sum_{j=0}^{N-1} e^{-i u_j k_{\text{min}}} \phi_{C}(u_j) e^{-i 2\pi j m / N} \eta,
+\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=0}^{N-1} e^{-i u_j (-b))} \phi_{C}(u_j) e^{-i 2\pi j\, m / N} \eta.
 $$
-
-which can be efficiently computed using the FFT.^[For options with very short maturities, the pricing errors 
+To further improve the efficiency, we use Simpson's rule to choose the weights of each term to arrive at 
+$$
+\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=0}^{N-1} e^{-i u_j (-b))} \phi_{C}(u_j) e^{-i 2\pi j\, m / N} \frac{\eta}{3}(3+(-1)^{j+1}-\delta_j-3\delta_{j-(N-1)}),
+$${#eq-carrmadanFFT}
+where $\delta_n=1$ is equal to 1 if and only if $n=0$. @eq-carrmadanFFT can be efficiently computed using the FFT method.^[For options with very short maturities, the pricing errors 
 for close-to-money options because the value approaches the non-analytic intrinsic value. Adjusting the Fourier transform parameter values (e.g., $N$ and $\eta$) may be necessary.  
 An alternative method proposed by Carr and Madan (1999) may also be used. See Carr and Madan (1999) for details. ]
 
@@ -156,21 +176,11 @@ For a given model (e.g., Black-Scholes, Heston), compute the characteristic func
 Compute $\phi_{C}(u_j)$ using:
 
 $$
-\phi_{C}(u_j) = \frac{\phi_{S_T}(u_j - i (\alpha + 1))}{(\alpha + i u_j)(\alpha + i u_j + 1)}.
+\phi_{C}(u_j) = \frac{e^{-r T}\phi_{S_T}(u_j - i (\alpha + 1))}{(\alpha + i u_j)(\alpha + i u_j + 1)}.
 $$
 
-#### 4. Apply the FFT
+#### 4. Apply the FFT @eq-carrmadanFFT to get the option price. 
 
-- Multiply $\phi_{C}(u_j)$ by $e^{-i u_j k_{\text{min}}}$ and the appropriate weights (e.g., Simpson's rule).
-- Use the FFT to compute the sum efficiently.
-
-#### 5. Recover the Option Prices
-
-Obtain $\tilde{C}(K_m)$ from the inverse FFT and adjust for the dampening factor:
-
-$$
-C(K_m) = e^{-\alpha k_m} \tilde{C}(K_m).
-$$
 
 ## Applications of the Carr-Madan Method
 
