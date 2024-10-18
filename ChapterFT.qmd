@@ -77,7 +77,7 @@ where $\phi_X(u)$ is the **characteristic function** of the log-price process at
 By evaluating this integral (typically done numerically), we recover the option price. This illustrate the main idea behind the appilcation of Fourier transform in pricing options. 
 
 
-Unfortunately, the Fast Fourier Transform  (FFT) cannot be used to evaluate the pricing integral @eq-FTpricing, since the integrand is singular at the required evaluation point $u = 0$. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method that can leverage the efficiency of  the FFT.
+Unfortunately, the Fast Fourier Transform  (FFT) cannot be used to evaluate the pricing integral @eq-FTpricing, since the integrand is singular at the required evaluation point $u = 0$. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method [@CarrMadan] that can leverage the efficiency of  the FFT.
 
 ## The Carr-Madan Method
 
@@ -127,16 +127,29 @@ where $\phi_{S}(u)$ is the characteristic function of $\ln S$.
 
 The FFT is an efficient algorithm for computing the sum
 $$
-f(k)=\sum_{j=1}^{N} Exp(-i \frac{2\pi}{N}(j-1) (k-1))g(j), k=1,...,N,
+g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j), m=1,...,N,
 $$
-where $N$ is typically a power of 2 and $g(\cdot)$ is a function including weights. The algorithm reduces the number of
+where $N$ is typically a power of 2 and $y(\cdot)$ is some given function. The algorithm reduces the number of
 multiplications in the required $N$ summations from an order of $N^2$ to that of
-$N \log_2(N)$, a very significant reduction. We present in this section the details for writing the integration (5) as an application of the summation (16).
+$N \log_2(N)$, a very significant reduction. We present in this section the details for writing the integration (5) as an application of the summation (16). To improve the accuracy of the approximation, we can combine it with the Simpson's rule. 
 
-To apply the FFT, we discretize the integral @eq-carrmadan over $u$:
+**Simpson's Rule:** We divide the integration interval $[a, b]$ into $N$ subintervals, where $N$ is an even number. Let $h = \frac{b - a}{N}$ be the width of each subinterval. The function $f(x)$ is evaluated at equally spaced points $x_1, x_2, x_3, \dots, x_{N+1}$, where $x_j = a+(j-1) h$.
 
-- Define $u_j = \eta j$, where $\eta$ is the spacing between points and $j = 0, 1, \dots, N - 1$.
-- Similarly, define $k_m = -b + \lambda \, m$, where 
+The Simpson's Rule formula is:
+$$
+\int_a^b f(x) \, dx \approx \frac{h}{3} \left[ f(x_1) + 4 \sum_{j=2,4,6,\dots}^{N-1} f(x_j) + 2 \sum_{j=1,3,5,\dots}^{N-2} f(x_j) + f(x_{N+1}) \right].
+$$
+Combinig the FFT with the Simpson's rule, we have 
+$$
+g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j)w(j), m=1,...,N,
+$${#eq-FFTSimpson}
+where $w(j)=4$ if $j$ is even, $w(j)=2$ if $j$ is odd, and $w(1)=w(N+1)=1$.^[NOte that because for FFT to work efficiently, we need $N$ to be even, but for the Simpson's rule, we need even number of **subintervals**, i.e., $N$ to be odd. In practice, we choose $N$ to be even and ignore the last point evaluation for the Simpson's weight $w(N+1)$. When the spacing interval is small, the error from this omission is small.]
+
+
+To apply the FFT @eq-FFTSimpson, we discretize the integral @eq-carrmadan over $u$:
+
+- Define $u_j = \eta (j-1)$, where $\eta$ is the spacing between points and $j = 1, 2, \dots, N $.
+- Similarly, define $k_m = -b + \lambda \, (m-1)$, where 
 $$
 \lambda = \frac{2\pi}{N \eta}
 $$ 
@@ -144,16 +157,16 @@ is the spacing in log-strike space,
 $$
 b=\frac{N \lambda}{2} 
 $$
-is the integration upper limit of $k$, and $m = 0, \dots, N-1$.
+is the integration upper limit of $k$, and $m = 1, 2,  \dots, N$.
 
 The integral @eq-carrmadan becomes a sum:
 
 $$
-\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=0}^{N-1} e^{-i u_j (-b))} \phi_{C}(u_j) e^{-i 2\pi j\, m / N} \eta.
+\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j)  \eta.
 $$
 To further improve the efficiency, we use Simpson's rule to choose the weights of each term to arrive at 
 $$
-\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=0}^{N-1} e^{-i u_j (-b))} \phi_{C}(u_j) e^{-i 2\pi j\, m / N} \frac{\eta}{3}(3+(-1)^{j+1}-\delta_j-3\delta_{j-(N-1)}),
+\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j) \frac{\eta}{3}(3+(-1)^{j}-\delta_{j-1}),
 $${#eq-carrmadanFFT}
 where $\delta_n=1$ is equal to 1 if and only if $n=0$. @eq-carrmadanFFT can be efficiently computed using the FFT method.^[For options with very short maturities, the pricing errors 
 for close-to-money options because the value approaches the non-analytic intrinsic value. Adjusting the Fourier transform parameter values (e.g., $N$ and $\eta$) may be necessary.  
@@ -165,7 +178,7 @@ An alternative method proposed by Carr and Madan (1999) may also be used. See Ca
 
 - Choose $N$, the number of FFT points (preferably a power of 2 for computational efficiency).
 - Set the dampening factor $\alpha$ to ensure convergence.
-- Determine $\eta$ and $\Delta k$ based on $N$ and the desired range of strikes.
+- Determine $\eta$ and $\lambda$ based on $N$ and the desired range of strikes.
 
 #### 2. Compute the Characteristic Function
 
@@ -194,7 +207,15 @@ $$
 where $S_0$ is the initial asset price, $r$ is the risk-free rate,
 $\sigma$ is the volatility of the asset, $T$ is the time to maturity, and $u$ is the complex Fourier variable.
 
-The following Python code implements the Carr-Madan method to price a European call option under the Black-Scholes Model and compare it to the closed-form Black Scholes price. The results suggest that the Carr-Madan method yields an accurate call price.  
+The following code implements the Carr-Madan method, which uses the FFT to price 
+European call options by transforming the characteristic function of 
+the Black-Scholes model into the frequency domain. The option prices are 
+then obtained by applying Simpson's Rule for integration and 
+FFT for efficient computation. These prices are compared to those 
+obtained using the Black-Scholes formula. The code also visualizes 
+the comparison and the differences between the two methods.
+The results suggest that the Carr-Madan method yields 
+an accurate call price.  
 
 ```{python}
 import numpy as np
@@ -296,7 +317,7 @@ plt.show()
 
 ### Pricing a European Call Option under the Heston (1993) Model 
 
-In the Heston stochastic volatility model, the dynamics of the asset price $S_t$ and its variance $v_t$ are given by the following stochastic differential equations (SDEs):
+In the Heston stochastic volatility model [@Heston], the dynamics of the asset price $S_t$ and its variance $v_t$ are given by the following stochastic differential equations (SDEs):
 
 $$
 dS_t = \mu S_t dt + \sqrt{v_t} S_t dW_t^S
@@ -305,11 +326,8 @@ $$
 dv_t = \kappa(\theta - v_t)dt + \sigma \sqrt{v_t} dW_t^v
 $$
 
-Where:
--$v_t$ is the stochastic variance,
--$\kappa$ is the rate at which $v_t$ reverts to the long-term mean $\theta$,
--$\sigma$ is the volatility of volatility,
--$W_t^S$ and $W_t^v$ are two Wiener processes with correlation coefficient $\rho$.
+Where $v_t$ is the stochastic variance, $\kappa$ is the rate at which $v_t$ reverts to the long-term mean $\theta$, $\sigma$ is the volatility of volatility,
+$W_t^S$ and $W_t^v$ are two Wiener processes with correlation coefficient $\rho$.
 
 The characteristic function is more complex and involves solving a system of differential equations. 
 The characteristic function of $\ln(S_t)$ for the Heston model is given by (for derivation details, see Heston (1993)):
@@ -317,15 +335,14 @@ The characteristic function of $\ln(S_t)$ for the Heston model is given by (for 
 
 $$
 \begin{multline}
-\phi(u) = \exp\left\{ i u \left( \ln(S_0) + (r-q) T \right) + \frac{\kappa \theta}{\sigma^2} \left[ (b - d) T - 2 \ln\left( \frac{1 - g e^{-d T}}{1 - g} \right) \right]\\ + \frac{b - d}{\sigma^2} \left( \frac{1 - e^{-d T}}{1 - g e^{-d T}} \right) v_0 \right\}
+\phi(u) = \exp\left\{ i u \left( \ln(S_0) + (r-q) T \right) + \frac{\kappa \theta}{\sigma^2} \left[ (b - d) T - 2 \ln\left( \frac{1 - g e^{-d T}}{1 - g} \right) \right]\\ + \frac{b - d}{\sigma^2} \left( \frac{1 - e^{-d T}}{1 - g e^{-d T}} \right) v_0 \right\},
 \end{multline}
 $$
-
-Where 
+where 
 $$
 \begin{aligned}
-b &= \kappa +\lambda- \rho \sigma i u \\
-d &= \sqrt{( \rho \sigma i u - b )^2 + \sigma^2 (i u + u^2)} \\
+b &= \kappa +\lambda- \rho \sigma i u, \\
+d &= \sqrt{( \rho \sigma i u - b )^2 + \sigma^2 (i u + u^2)}, \\
 g &= \frac{b - d}{b + d}, \\
 \end{aligned}
 $$
@@ -607,10 +624,7 @@ $$
 \psi(t) = i\gamma t - \frac{1}{2} \sigma^2 t^2 + \int_{\mathbb{R}} \left( e^{itx} - 1 - itx \mathbf{1}_{|x| < 1} \right) \nu(dx).
 $$
 
-In this formula:
-- $\gamma$ is the drift term (linear component).
-- $\sigma^2$ is the variance of the continuous Gaussian component.
-- $\nu$ is the **Lévy measure**, which controls the intensity and size of jumps.
+In this formula, $\gamma$ is the drift term (linear component), $\sigma^2$ is the variance of the continuous Gaussian component, $\nu$ is the **Lévy measure**, which controls the intensity and size of jumps.
 
 Lévy processes can thus combine continuous movements, such as Brownian motion, with jumps, providing a powerful framework for modeling both smooth and abrupt changes in time series.
 
@@ -627,22 +641,16 @@ where $X(t)$ is a variance gamma process:
 $$
 X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right) \right)t + \sigma W(G(t))
 $$
-- $r$ is the **risk-free rate**.
-- $q$ is the **dividend yield**.
-- $\sigma$ is the volatility parameter.
-- $G(t)$ is a Gamma process with mean rate $t$ and variance rate $\nu$.
-- $\theta$ controls the drift of the VG process.
-- $\nu$ is the variance rate of the Gamma process.
-- $W(t)$ is a standard Brownian motion under the risk neutral measure $\mathbb{Q}$.
+where $r$ is the risk-free rate, $q$ is the dividend yield, $\sigma$ is the volatility parameter, $G(t)$ is a Gamma process with mean rate $t$ and variance rate $\nu$, $\theta$ controls the drift of the VG process, $\nu$ is the variance rate of the Gamma process, and  $W(t)$ is a standard Brownian motion under the risk neutral measure $\mathbb{Q}$.
 
-The characteristic function of $\log(S(t))$ under the risk-neutral measure with dividend yield $q$ is:
+The characteristic function of $\log(S(t))$ under the risk-neutral measure is:
 
 $$
 \phi_{\log(S(t))}^{\mathbb{Q}}(u) = e^{iu \log(S(0))} \left( \frac{1}{1 - iu \theta_{\mathbb{Q}} \nu + \frac{1}{2} \sigma^2 u^2 \nu} \right)^{t/\nu},
 $$
 where 
 $$
-\theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right)
+\theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right).
 $$
 
 The following Python code implements the Carr-Madan method to price a European call option under the Variance Gamma Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation. 
@@ -821,7 +829,7 @@ print(f"Computational Time (Monte Carlo): {time_mc:.6f} seconds")
 
 **Pricing Options in a Jump Diffusion Model** 
 
-A jump diffusion process is a type of stochastic process that extends a standard diffusion process, such as Brownian motion, by including random jumps. This model is widely used in financial mathematics to capture sudden, discontinuous changes in asset prices, interest rates, or other time series that are not explained by continuous diffusive processes alone.
+A jump diffusion process is a type of stochastic process that extends a standard diffusion process, such as Brownian motion, by including random jumps. This model [e.g., @MertonJD] is widely used in financial mathematics to capture sudden, discontinuous changes in asset prices, interest rates, or other time series that are not explained by continuous diffusive processes alone.
 
 Let $S(t)$ represent the stock price at time $t$, and under the risk-neutral measure $\mathbb{Q}$, the stock price follows a jump diffusion process. The stock price dynamics can be described by:
 
@@ -829,18 +837,12 @@ $$
 dS(t) = (r - q) S(t) dt + \sigma S(t) dW(t) + S(t) dJ(t)
 $$
 
-where:
-- $r$ is the risk-free rate.
-- $q$ is the continuous dividend yield.
-- $\sigma$ is the volatility of the Brownian motion component.
-- $W(t)$ is a standard Brownian motion under the risk-neutral measure.
+where $r$ is the risk-free rate, $q$ is the continuous dividend yield, $\sigma$ is the volatility of the Brownian motion component, $W(t)$ is a standard Brownian motion under the risk-neutral measure, 
 and the jump process $J(t)$ follows:
 $$
-J(t) = \sum_{i=1}^{N(t)} (Y_i - 1)
+J(t) = \sum_{i=1}^{N(t)} (Y_i - 1),
 $$
-where:
-- $N(t)$ is a Poisson process with intensity $\lambda$, representing the number of jumps up to time $t$.
-- $Y_i$ is the jump size, often modeled as a random variable from a log-normal distribution such that $\log(Y_i) \sim \mathcal{N}(\mu_J, \sigma_J^2)$.
+where $N(t)$ is a Poisson process with intensity $\lambda$, representing the number of jumps up to time $t$, and $Y_i$ is the jump size, often modeled as a random variable from a log-normal distribution such that $\log(Y_i) \sim \mathcal{N}(\mu_J, \sigma_J^2)$.
 
 Thus, the stock price is driven by both the diffusion term (due to the Brownian motion) and the jump term (due to the Poisson process).
 
@@ -1025,8 +1027,24 @@ print(f"Computational Time (Monte Carlo): {time_mc:.6f} seconds")
 
 
 
+## Exercises
 
 
+::: {#exr-nolabel}
+ Create a Python code to compare the Carr-Madan method with the direct Fourier Transform method using @eq-FTpricing for pricing in-the-money, at-the-money, and out-of-the-money  European call options in terms of speed and accuracy in the Black-Scholes model. 
+:::
+
+
+::: {#exr-nolabel}
+ Create a Python code to let users input all the parameter values in the jump diffusion model and use the Carr-Madan method to price European put options in this model.
+:::
+::: {#exr-nolabel}
+ Create a Python code to let users input all the parameter values in the Heston model and use the Carr-Madan method to price European put options in this model.  
+:::
+
+::: {#exr-nolabel}
+ Create a Python code to show how the speed and accuracy change as one varies the damping factor $\alpha$ and the strike price spacing $\eta$ in the jump diffusion model. 
+:::
 
 
 ## References
