@@ -127,15 +127,15 @@ window.Quarto = {
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>The Fourier Transform has become an essential tool in option pricing, particularly for complex models like those with stochastic volatility, Lévy processes, and variance gamma processes. In this chapter, we will explore how the Fourier Transform simplifies the pricing of derivative securities, examine its advantages, and provide analytical examples and Python code for practical illustration.</p>
+<p>The Fourier Transform has become an essential tool in option pricing, particularly for complex models like those with stochastic volatility and Lévy processes including variance gamma and jump diffusion processes. In this chapter, we will explore how the Fourier Transform simplifies the pricing of derivative securities, examine its advantages, and provide analytical examples and Python code for practical illustration.</p>
 <p>The key reason for using Fourier Transforms in option pricing is that they allow us to solve pricing problems more efficiently in the frequency domain rather than the time domain. Specifically, Fourier methods:</p>
 <ol type="1">
-<li><strong>Simplify Complex Problems</strong>: Many option pricing models lead to complex partial differential equations (PDEs). The Fourier Transform helps transform these PDEs into simpler algebraic equations.</li>
 <li><strong>Handle Non-Gaussian Processes</strong>: Many real-world asset price models involve jumps or stochastic volatility, which may lead to non-Gaussian distributions of returns. Fourier Transforms allow us to handle these models efficiently.</li>
-<li><strong>Efficiency with Characteristic Functions</strong>: The Fourier Transform is closely related to the characteristic function of the underlying asset price. Using the characteristic function simplifies the integration required in risk-neutral valuation.</li>
-<li><strong>Fast Numerical Computation</strong>: By leveraging Fast Fourier Transform (FFT) algorithms, we can calculate option prices for a wide range of strikes and maturities quickly.</li>
+<li><strong>Use Characteristic Functions</strong>: The Fourier Transform is closely related to the characteristic function of the underlying asset price. Many stochastic processes have closed-form characteristic functions without explicit distribution functions. Using the closed-form characteristic functions simplifies the integration required in risk-neutral valuation.</li>
+<li><strong>Conduct Fast Numerical Computation</strong>: By leveraging Fast Fourier Transform (FFT) algorithms, we can calculate option prices for a wide range of strikes and maturities quickly.</li>
+<li><strong>Simplify Complex Problems</strong>: Many option pricing models lead to complex partial differential equations (PDEs). The Fourier Transform helps transform these PDEs into simpler algebraic equations.</li>
 </ol>
-<p>In this chapter, we’ll demonstrate these advantages through theory, examples, and Python code.</p>
+<p>In this chapter, we’ll focus on the first three and demonstrate these advantages through theory, examples, and Python code.</p>
 </section>
 <section id="section-1-theoretical-foundation" class="level2">
 <h2 class="anchored" data-anchor-id="section-1-theoretical-foundation">Section 1: Theoretical Foundation</h2>
@@ -148,12 +148,12 @@ window.Quarto = {
 <p><span class="math display">\[
 C(X_T) = \max(e^{X_T} - K, 0)
 \]</span></p>
-<p>We now take the Fourier transform of this function with respect to <span class="math inline">\(x = X_T\)</span>(the log-price), leading to the formula for <span class="math inline">\(\hat{C}(u)\)</span>, which is:</p>
+<p>We now take the Fourier transform of this function with respect to <span class="math inline">\(x = X_T\)</span> (the log-price), leading to the formula for <span class="math inline">\(\hat{C}(u)\)</span>, which is:</p>
 <p><span class="math display">\[
 \hat{C}(u) = \int_{-\infty}^{\infty} e^{-iux} \max(e^x - K, 0) \, dx
 \]</span></p>
 <p>To compute this transform explicitly, we split the payoff function into two regions: - When <span class="math inline">\(x &lt; \ln(K)\)</span>, the payoff is zero because <span class="math inline">\(S_T &lt; K\)</span>. - When <span class="math inline">\(x \geq \ln(K)\)</span>, the payoff is <span class="math inline">\(e^x - K\)</span> because <span class="math inline">\(S_T \geq K\)</span>.</p>
-<p>Thus, the integral for<span class="math inline">\(\hat{C}(u)\)</span>becomes:</p>
+<p>Thus, the integral for <span class="math inline">\(\hat{C}(u)\)</span> becomes:</p>
 <p><span class="math display">\[
 \hat{C}(u) = \int_{\ln(K)}^{\infty} e^{-iux} (e^x - K) \, dx
 \]</span></p>
@@ -161,7 +161,7 @@ C(X_T) = \max(e^{X_T} - K, 0)
 <p><span class="math display">\[
 \hat{C}(u) = \frac{K^{1 - iu}}{iu(1 + iu)}
 \]</span></p>
-<p>In essence,<span class="math inline">\(\hat{C}(u)\)</span> is the representation of the call option’s payoff in the <strong>frequency domain</strong>. It captures how different frequencies (or Fourier modes) contribute to the option price. Once the Fourier transform is applied to the payoff function, this <span class="math inline">\(\hat{C}(u)\)</span> can be combined with the <strong>characteristic function</strong> of the underlying asset’s price process to calculate the option price.</p>
+<p>In essence, <span class="math inline">\(\hat{C}(u)\)</span> is the representation of the call option’s payoff in the <strong>frequency domain</strong>. It captures how different frequencies (or Fourier modes) contribute to the option price. Once the Fourier transform is applied to the payoff function, this <span class="math inline">\(\hat{C}(u)\)</span> can be combined with the <strong>characteristic function</strong> of the underlying asset’s price process to calculate the option price.</p>
 <p>The characteristic function <span class="math inline">\(\phi_{X}(u)\)</span> of a random variable <span class="math inline">\(X\)</span> is defined as:</p>
 <p><span class="math display">\[
 \phi_{X}(u) = \mathbb{E}[e^{i u X}].
@@ -172,52 +172,66 @@ C(X_T) = \max(e^{X_T} - K, 0)
 C(K) = \frac{e^{-rT}}{2\pi} \int_{-\infty}^{\infty} e^{-iuk} \hat{C}(u) \phi_X(u) \, du,
 \tag{1}\]</span></span> where <span class="math inline">\(\phi_X(u)\)</span> is the <strong>characteristic function</strong> of the log-price process at time <span class="math inline">\(T\)</span>, <span class="math inline">\(k = \ln(K)\)</span> is the log-strike, and <span class="math inline">\(\hat{C}(u)\)</span> is the Fourier transform of the payoff function.</p>
 <p>By evaluating this integral (typically done numerically), we recover the option price. This illustrate the main idea behind the appilcation of Fourier transform in pricing options.</p>
-<p>Unfortunately, the Fast Fourier Transform (FFT) cannot be used to evaluate the pricing integral <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;1</a>, since the integrand is singular at the required evaluation point <span class="math inline">\(u = 0\)</span>. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method that can leverage the efficiency of the FFT.</p>
+<p>Unfortunately, the Fast Fourier Transform (FFT) cannot be used to evaluate the pricing integral <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;1</a>, since the integrand is singular at the required evaluation point <span class="math inline">\(u = 0\)</span>. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method <span class="citation" data-cites="CarrMadan">[@CarrMadan]</span> that can leverage the efficiency of the FFT.</p>
 </section>
 <section id="the-carr-madan-method" class="level2">
 <h2 class="anchored" data-anchor-id="the-carr-madan-method">The Carr-Madan Method</h2>
-<p>The key idea is to express the option price as an integral in Fourier space and then discretize it for the FFT numerical evaluation.</p>
+<p>The key idea behind the Carr-Madan Method is to express the option price as an integral in Fourier space and then discretize it for the FFT numerical evaluation.</p>
 <section id="step-1-modify-the-payoff-function" class="level3">
 <h3 class="anchored" data-anchor-id="step-1-modify-the-payoff-function">Step 1: Modify the Payoff Function</h3>
-<p>To ensure the square integrability of the Fourier Transform, we first modify the option’s payoff function by introducing a dampening factor <span class="math inline">\(\alpha &gt; 0\)</span>:</p>
+<p>Let <span class="math inline">\(k\)</span> denote the log of the strike price <span class="math inline">\(K\)</span>, and let <span class="math inline">\(C(k)\)</span> be the desired value of a <span class="math inline">\(T\)</span>-maturity call option with strike exp(k). Let the risk-neutral density of the <span class="math inline">\(s=\ln(S)\)</span> be <span class="math inline">\(q(s)\)</span>. The initial call value <span class="math inline">\(C(k)\)</span> is related to the risk-neutral density <span class="math inline">\(q(s)\)</span> by</p>
 <p><span class="math display">\[
-\tilde{C}(K) = e^{\alpha k} C(K)=,
+C(k) = \int_{k}^\infty e^{-r T} (e^s-e^k) q(s)\, ds.
 \]</span></p>
-<p>where <span class="math inline">\(k = \ln K\)</span> is the log-strike price. This modification ensures that the transformed function decays sufficiently fast at infinity.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>Because <span class="math inline">\(C(k)\)</span> approaches <span class="math inline">\(S_0\)</span> as <span class="math inline">\(k\)</span> tends to <span class="math inline">\(-\infty\)</span>, the call pricing function of <span class="math inline">\(k\)</span> is not square integrable. To ensure the square integrability of the Fourier Transform, we first modify the option’s payoff function by introducing a dampening factor <span class="math inline">\(\alpha &gt; 0\)</span>:</p>
+<p><span class="math display">\[
+\tilde{C}(k) = e^{\alpha k} C(k).
+\]</span> This modification ensures that the transformed function decays sufficiently fast at infinity.</p>
 </section>
 <section id="step-2-express-the-modified-price-as-an-integral" class="level3">
 <h3 class="anchored" data-anchor-id="step-2-express-the-modified-price-as-an-integral">Step 2: Express the Modified Price as an Integral</h3>
 <p>By the fourier inversion theorem, the modified call price can be written as:</p>
-<p><span class="math display">\[
-\tilde{C}(K) = \frac{e^{-r T}}{2\pi} \int_{-\infty}^\infty e^{-i u k} \phi_{C}(u) \, du,
-\]</span></p>
-<p>where <span class="math inline">\(\phi_{C}(u)\)</span> is the Fourier Transform of <span class="math inline">\(e^{\alpha k} (S_T - K)^+\)</span>.</p>
+<p><span id="eq-carrmadan"><span class="math display">\[
+C(k) = \frac{e^{-\alpha k}}{2\pi} \int_{-\infty}^\infty e^{-i u k} \phi_{C}(u)\, du = \frac{e^{-\alpha k}}{\pi} \int_{0}^\infty e^{-i u k} \phi_{C}(u)\, du,
+\tag{2}\]</span></span> where <span class="math inline">\(\phi_{C}(u)\)</span> is the Fourier Transform of the option <span class="math inline">\(C(k)\)</span> and the second equality follows because <span class="math inline">\(\phi_{C}(u)\)</span> is odd in its imaginary part and even in its real part.</p>
 </section>
 <section id="step-3-derive-the-fourier-transform-of-the-payoff" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-derive-the-fourier-transform-of-the-payoff">Step 3: Derive the Fourier Transform of the Payoff</h3>
 <p>The Fourier Transform <span class="math inline">\(\phi_{C}(u)\)</span> is given by:</p>
 <p><span class="math display">\[
-\phi_{C}(u) = \int_{-\infty}^\infty e^{i u k} e^{\alpha k} (e^{s} - e^{k})^+ \, ds,
+\phi_{C}(u) = \int_{-\infty}^\infty e^{i u k} e^{\alpha k}e^{-r T} (e^{s} - e^{k})^+q(s) \, ds.
 \]</span></p>
-<p>where <span class="math inline">\(s = \ln S_T\)</span>.</p>
 <p>By simplifying and rearranging terms, we obtain:</p>
-<p><span id="eq-carrmadan"><span class="math display">\[
-\phi_{C}(u) = \frac{\phi_{S_T}(u - i (\alpha + 1))}{(\alpha + i u)(\alpha + i u + 1)},
-\tag{2}\]</span></span></p>
-<p>where <span class="math inline">\(\phi_{S_T}(u)\)</span> is the characteristic function of <span class="math inline">\(\ln S_T\)</span>.</p>
+<p><span class="math display">\[
+\phi_{C}(u) = \frac{e^{-rT}\phi_{S}(u - i (\alpha + 1))}{(\alpha + i u)(\alpha + i u + 1)},
+\]</span> where <span class="math inline">\(\phi_{S}(u)\)</span> is the characteristic function of <span class="math inline">\(\ln S\)</span>.</p>
 </section>
 <section id="step-4-discretize-the-integral-for-fft" class="level3">
 <h3 class="anchored" data-anchor-id="step-4-discretize-the-integral-for-fft">Step 4: Discretize the Integral for FFT</h3>
-<p>We discretize the integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;2</a> over <span class="math inline">\(u\)</span> to apply the FFT:</p>
+<p>The FFT is an efficient algorithm for computing the sum <span class="math display">\[
+g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j), m=1,...,N,
+\]</span> where <span class="math inline">\(N\)</span> is typically a power of 2 and <span class="math inline">\(y(\cdot)\)</span> is some given function. The algorithm reduces the number of multiplications in the required <span class="math inline">\(N\)</span> summations from an order of <span class="math inline">\(N^2\)</span> to that of <span class="math inline">\(N \log_2(N)\)</span>, a very significant reduction. We present in this section the details for writing the integration (5) as an application of the summation (16). To improve the accuracy of the approximation, we can combine it with the Simpson’s rule.</p>
+<p><strong>Simpson’s Rule:</strong> We divide the integration interval <span class="math inline">\([a, b]\)</span> into <span class="math inline">\(N\)</span> subintervals, where <span class="math inline">\(N\)</span> is an even number. Let <span class="math inline">\(h = \frac{b - a}{N}\)</span> be the width of each subinterval. The function <span class="math inline">\(f(x)\)</span> is evaluated at equally spaced points <span class="math inline">\(x_1, x_2, x_3, \dots, x_{N+1}\)</span>, where <span class="math inline">\(x_j = a+(j-1) h\)</span>.</p>
+<p>The Simpson’s Rule formula is: <span class="math display">\[
+\int_a^b f(x) \, dx \approx \frac{h}{3} \left[ f(x_1) + 4 \sum_{j=2,4,6,\dots}^{N-1} f(x_j) + 2 \sum_{j=1,3,5,\dots}^{N-2} f(x_j) + f(x_{N+1}) \right].
+\]</span> Combinig the FFT with the Simpson’s rule, we have <span id="eq-FFTSimpson"><span class="math display">\[
+g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j)w(j), m=1,...,N,
+\tag{3}\]</span></span> where <span class="math inline">\(w(j)=4\)</span> if <span class="math inline">\(j\)</span> is even, <span class="math inline">\(w(j)=2\)</span> if <span class="math inline">\(j\)</span> is odd, and <span class="math inline">\(w(1)=w(N+1)=1\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>To apply the FFT <a href="#eq-FFTSimpson" class="quarto-xref">Equation&nbsp;3</a>, we discretize the integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;2</a> over <span class="math inline">\(u\)</span>:</p>
 <ul>
-<li>Define <span class="math inline">\(u_j = \eta j\)</span>, where <span class="math inline">\(\eta\)</span> is the spacing between points and <span class="math inline">\(j = 0, 1, \dots, N - 1\)</span>.</li>
-<li>Similarly, define <span class="math inline">\(k_m = k_{\text{min}} + \Delta k \, m\)</span>, where <span class="math inline">\(\Delta k\)</span> is the spacing in log-strike space and <span class="math inline">\(m = 0, 1, \dots, N - 1\)</span>.</li>
+<li>Define <span class="math inline">\(u_j = \eta (j-1)\)</span>, where <span class="math inline">\(\eta\)</span> is the spacing between points and $j = 1, 2, , N $.</li>
+<li>Similarly, define <span class="math inline">\(k_m = -b + \lambda \, (m-1)\)</span>, where <span class="math display">\[
+\lambda = \frac{2\pi}{N \eta}
+\]</span> is the spacing in log-strike space, <span class="math display">\[
+b=\frac{N \lambda}{2}
+\]</span> is the integration upper limit of <span class="math inline">\(k\)</span>, and <span class="math inline">\(m = 1, 2,  \dots, N\)</span>.</li>
 </ul>
 <p>The integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;2</a> becomes a sum:</p>
 <p><span class="math display">\[
-\tilde{C}(K_m) \approx \frac{e^{-r T}}{2\pi} \sum_{j=0}^{N-1} e^{-i u_j k_{\text{min}}} \phi_{C}(u_j) e^{-i 2\pi j m / N} \eta,
-\]</span></p>
-<p>which can be efficiently computed using the FFT.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j)  \eta.
+\]</span> To further improve the efficiency, we use Simpson’s rule to choose the weights of each term to arrive at <span id="eq-carrmadanFFT"><span class="math display">\[
+\tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j) \frac{\eta}{3}(3+(-1)^{j}-\delta_{j-1}),
+\tag{4}\]</span></span> where <span class="math inline">\(\delta_n=1\)</span> is equal to 1 if and only if <span class="math inline">\(n=0\)</span>. <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;4</a> can be efficiently computed using the FFT method.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 </section>
 <section id="implementation-steps" class="level3">
 <h3 class="anchored" data-anchor-id="implementation-steps">Implementation Steps</h3>
@@ -226,7 +240,7 @@ C(K) = \frac{e^{-rT}}{2\pi} \int_{-\infty}^{\infty} e^{-iuk} \hat{C}(u) \phi_X(u
 <ul>
 <li>Choose <span class="math inline">\(N\)</span>, the number of FFT points (preferably a power of 2 for computational efficiency).</li>
 <li>Set the dampening factor <span class="math inline">\(\alpha\)</span> to ensure convergence.</li>
-<li>Determine <span class="math inline">\(\eta\)</span> and <span class="math inline">\(\Delta k\)</span> based on <span class="math inline">\(N\)</span> and the desired range of strikes.</li>
+<li>Determine <span class="math inline">\(\eta\)</span> and <span class="math inline">\(\lambda\)</span> based on <span class="math inline">\(N\)</span> and the desired range of strikes.</li>
 </ul>
 </section>
 <section id="compute-the-characteristic-function" class="level4">
@@ -237,22 +251,11 @@ C(K) = \frac{e^{-rT}}{2\pi} \int_{-\infty}^{\infty} e^{-iuk} \hat{C}(u) \phi_X(u
 <h4 class="anchored" data-anchor-id="calculate-the-fourier-transform-of-the-call-payoff">3. Calculate the Fourier Transform of the Call Payoff</h4>
 <p>Compute <span class="math inline">\(\phi_{C}(u_j)\)</span> using:</p>
 <p><span class="math display">\[
-\phi_{C}(u_j) = \frac{\phi_{S_T}(u_j - i (\alpha + 1))}{(\alpha + i u_j)(\alpha + i u_j + 1)}.
+\phi_{C}(u_j) = \frac{e^{-r T}\phi_{S_T}(u_j - i (\alpha + 1))}{(\alpha + i u_j)(\alpha + i u_j + 1)}.
 \]</span></p>
 </section>
-<section id="apply-the-fft" class="level4">
-<h4 class="anchored" data-anchor-id="apply-the-fft">4. Apply the FFT</h4>
-<ul>
-<li>Multiply <span class="math inline">\(\phi_{C}(u_j)\)</span> by <span class="math inline">\(e^{-i u_j k_{\text{min}}}\)</span> and the appropriate weights (e.g., Simpson’s rule).</li>
-<li>Use the FFT to compute the sum efficiently.</li>
-</ul>
-</section>
-<section id="recover-the-option-prices" class="level4">
-<h4 class="anchored" data-anchor-id="recover-the-option-prices">5. Recover the Option Prices</h4>
-<p>Obtain <span class="math inline">\(\tilde{C}(K_m)\)</span> from the inverse FFT and adjust for the dampening factor:</p>
-<p><span class="math display">\[
-C(K_m) = e^{-\alpha k_m} \tilde{C}(K_m).
-\]</span></p>
+<section id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price." class="level4">
+<h4 class="anchored" data-anchor-id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price.">4. Apply the FFT <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;4</a> to get the option price.</h4>
 </section>
 </section>
 </section>
@@ -264,8 +267,8 @@ C(K_m) = e^{-\alpha k_m} \tilde{C}(K_m).
 <p><span class="math display">\[
 \phi_T(u) = \exp\left(iu \left(\ln(S_0) + \left(r -q-\frac{\sigma^2}{2}\right)T\right) - \frac{1}{2} \sigma^2 T u^2 \right),
 \]</span> where <span class="math inline">\(S_0\)</span> is the initial asset price, <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(\sigma\)</span> is the volatility of the asset, <span class="math inline">\(T\)</span> is the time to maturity, and <span class="math inline">\(u\)</span> is the complex Fourier variable.</p>
-<p>The following Python code implements the Carr-Madan method to price a European call option under the Black-Scholes Model and compare it to the closed-form Black Scholes price. The results suggest that the Carr-Madan method yields an accurate call price.</p>
-<div id="e262eb4b" class="cell" data-execution_count="1">
+<p>The following code implements the Carr-Madan method, which uses the FFT to price European call options by transforming the characteristic function of the Black-Scholes model into the frequency domain. The option prices are then obtained by applying Simpson’s Rule for integration and FFT for efficient computation. These prices are compared to those obtained using the Black-Scholes formula. The code also visualizes the comparison and the differences between the two methods. The results suggest that the Carr-Madan method yields an accurate call price.</p>
+<div id="f412d1b6" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.fft <span class="im">import</span> fft</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -376,28 +379,27 @@ C(K_m) = e^{-\alpha k_m} \tilde{C}(K_m).
 </section>
 <section id="pricing-a-european-call-option-under-the-heston-1993-model" class="level3">
 <h3 class="anchored" data-anchor-id="pricing-a-european-call-option-under-the-heston-1993-model">Pricing a European Call Option under the Heston (1993) Model</h3>
-<p>In the Heston stochastic volatility model, the dynamics of the asset price <span class="math inline">\(S_t\)</span> and its variance <span class="math inline">\(v_t\)</span> are given by the following stochastic differential equations (SDEs):</p>
+<p>In the Heston stochastic volatility model <span class="citation" data-cites="Heston">[@Heston]</span>, the dynamics of the asset price <span class="math inline">\(S_t\)</span> and its variance <span class="math inline">\(v_t\)</span> are given by the following stochastic differential equations (SDEs):</p>
 <p><span class="math display">\[
 dS_t = \mu S_t dt + \sqrt{v_t} S_t dW_t^S
 \]</span> <span class="math display">\[
 dv_t = \kappa(\theta - v_t)dt + \sigma \sqrt{v_t} dW_t^v
 \]</span></p>
-<p>Where: -<span class="math inline">\(v_t\)</span> is the stochastic variance, -<span class="math inline">\(\kappa\)</span> is the rate at which <span class="math inline">\(v_t\)</span> reverts to the long-term mean <span class="math inline">\(\theta\)</span>, -<span class="math inline">\(\sigma\)</span> is the volatility of volatility, -<span class="math inline">\(W_t^S\)</span> and <span class="math inline">\(W_t^v\)</span> are two Wiener processes with correlation coefficient <span class="math inline">\(\rho\)</span>.</p>
+<p>Where <span class="math inline">\(v_t\)</span> is the stochastic variance, <span class="math inline">\(\kappa\)</span> is the rate at which <span class="math inline">\(v_t\)</span> reverts to the long-term mean <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\sigma\)</span> is the volatility of volatility, <span class="math inline">\(W_t^S\)</span> and <span class="math inline">\(W_t^v\)</span> are two Wiener processes with correlation coefficient <span class="math inline">\(\rho\)</span>.</p>
 <p>The characteristic function is more complex and involves solving a system of differential equations. The characteristic function of <span class="math inline">\(\ln(S_t)\)</span> for the Heston model is given by (for derivation details, see Heston (1993)):</p>
 <p><span class="math display">\[
 \begin{multline}
-\phi(u) = \exp\left\{ i u \left( \ln(S_0) + (r-q) T \right) + \frac{\kappa \theta}{\sigma^2} \left[ (b - d) T - 2 \ln\left( \frac{1 - g e^{-d T}}{1 - g} \right) \right]\\ + \frac{b - d}{\sigma^2} \left( \frac{1 - e^{-d T}}{1 - g e^{-d T}} \right) v_0 \right\}
+\phi(u) = \exp\left\{ i u \left( \ln(S_0) + (r-q) T \right) + \frac{\kappa \theta}{\sigma^2} \left[ (b - d) T - 2 \ln\left( \frac{1 - g e^{-d T}}{1 - g} \right) \right]\\ + \frac{b - d}{\sigma^2} \left( \frac{1 - e^{-d T}}{1 - g e^{-d T}} \right) v_0 \right\},
 \end{multline}
-\]</span></p>
-<p>Where <span class="math display">\[
+\]</span> where <span class="math display">\[
 \begin{aligned}
-b &amp;= \kappa +\lambda- \rho \sigma i u \\
-d &amp;= \sqrt{( \rho \sigma i u - b )^2 + \sigma^2 (i u + u^2)} \\
+b &amp;= \kappa +\lambda- \rho \sigma i u, \\
+d &amp;= \sqrt{( \rho \sigma i u - b )^2 + \sigma^2 (i u + u^2)}, \\
 g &amp;= \frac{b - d}{b + d}, \\
 \end{aligned}
 \]</span> <span class="math inline">\(v_0\)</span> is the initial variance (volatility squared), <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\theta\)</span> is the long-term mean of the variance, <span class="math inline">\(\kappa\)</span> is the rate at which the variance reverts to <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\rho\)</span> is the correlation between the asset price and its volatility, <span class="math inline">\(\sigma\)</span> is the volatility of volatility, and <span class="math inline">\(\lambda\)</span> is the volatility risk premium.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Heston Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="6ffa257e" class="cell" data-execution_count="2">
+<div id="1cafe508" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
@@ -648,8 +650,8 @@ g &amp;= \frac{b - d}{b + d}, \\
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computation Time (Carr-Madan Method): 0.02 seconds
-Computation Time (Monte Carlo Simulation): 4.62 seconds
+<pre><code>Computation Time (Carr-Madan Method): 0.03 seconds
+Computation Time (Monte Carlo Simulation): 6.48 seconds
 Maximum Price Difference: 0.024669</code></pre>
 </div>
 </div>
@@ -677,7 +679,7 @@ Maximum Price Difference: 0.024669</code></pre>
 \]</span> where <span class="math inline">\(\psi(t)\)</span> is called the <strong>Lévy exponent</strong> and has the form: <span class="math display">\[
 \psi(t) = i\gamma t - \frac{1}{2} \sigma^2 t^2 + \int_{\mathbb{R}} \left( e^{itx} - 1 - itx \mathbf{1}_{|x| &lt; 1} \right) \nu(dx).
 \]</span></p>
-<p>In this formula: - <span class="math inline">\(\gamma\)</span> is the drift term (linear component). - <span class="math inline">\(\sigma^2\)</span> is the variance of the continuous Gaussian component. - <span class="math inline">\(\nu\)</span> is the <strong>Lévy measure</strong>, which controls the intensity and size of jumps.</p>
+<p>In this formula, <span class="math inline">\(\gamma\)</span> is the drift term (linear component), <span class="math inline">\(\sigma^2\)</span> is the variance of the continuous Gaussian component, <span class="math inline">\(\nu\)</span> is the <strong>Lévy measure</strong>, which controls the intensity and size of jumps.</p>
 <p>Lévy processes can thus combine continuous movements, such as Brownian motion, with jumps, providing a powerful framework for modeling both smooth and abrupt changes in time series.</p>
 <p><strong>Pricing Options in the Variance Gamma Model</strong></p>
 <p>Let <span class="math inline">\(S(t)\)</span> represent the stock price at time <span class="math inline">\(t\)</span>. Under the risk-neutral measure <span class="math inline">\(\mathbb{Q}\)</span>, the stock price evolves as:</p>
@@ -685,15 +687,15 @@ Maximum Price Difference: 0.024669</code></pre>
 S(t) = S(0) \exp(X(t)),
 \]</span> where <span class="math inline">\(X(t)\)</span> is a variance gamma process: <span class="math display">\[
 X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right) \right)t + \sigma W(G(t))
-\]</span> - <span class="math inline">\(r\)</span> is the <strong>risk-free rate</strong>. - <span class="math inline">\(q\)</span> is the <strong>dividend yield</strong>. - <span class="math inline">\(\sigma\)</span> is the volatility parameter. - <span class="math inline">\(G(t)\)</span> is a Gamma process with mean rate <span class="math inline">\(t\)</span> and variance rate <span class="math inline">\(\nu\)</span>. - <span class="math inline">\(\theta\)</span> controls the drift of the VG process. - <span class="math inline">\(\nu\)</span> is the variance rate of the Gamma process. - <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk neutral measure <span class="math inline">\(\mathbb{Q}\)</span>.</p>
-<p>The characteristic function of <span class="math inline">\(\log(S(t))\)</span> under the risk-neutral measure with dividend yield <span class="math inline">\(q\)</span> is:</p>
+\]</span> where <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\sigma\)</span> is the volatility parameter, <span class="math inline">\(G(t)\)</span> is a Gamma process with mean rate <span class="math inline">\(t\)</span> and variance rate <span class="math inline">\(\nu\)</span>, <span class="math inline">\(\theta\)</span> controls the drift of the VG process, <span class="math inline">\(\nu\)</span> is the variance rate of the Gamma process, and <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk neutral measure <span class="math inline">\(\mathbb{Q}\)</span>.</p>
+<p>The characteristic function of <span class="math inline">\(\log(S(t))\)</span> under the risk-neutral measure is:</p>
 <p><span class="math display">\[
 \phi_{\log(S(t))}^{\mathbb{Q}}(u) = e^{iu \log(S(0))} \left( \frac{1}{1 - iu \theta_{\mathbb{Q}} \nu + \frac{1}{2} \sigma^2 u^2 \nu} \right)^{t/\nu},
 \]</span> where <span class="math display">\[
-\theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right)
+\theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right).
 \]</span></p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Variance Gamma Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="b01d79fd" class="cell" data-execution_count="3">
+<div id="edf73781" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.fft <span class="im">import</span> fft</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -873,19 +875,19 @@ X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \thet
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Maximum Absolute Price Difference: 0.010150
-Computational Time (Carr-Madan FFT): 0.000000 seconds
-Computational Time (Monte Carlo): 0.415393 seconds</code></pre>
+Computational Time (Carr-Madan FFT): 0.005763 seconds
+Computational Time (Monte Carlo): 0.531835 seconds</code></pre>
 </div>
 </div>
 <p><strong>Pricing Options in a Jump Diffusion Model</strong></p>
-<p>A jump diffusion process is a type of stochastic process that extends a standard diffusion process, such as Brownian motion, by including random jumps. This model is widely used in financial mathematics to capture sudden, discontinuous changes in asset prices, interest rates, or other time series that are not explained by continuous diffusive processes alone.</p>
+<p>A jump diffusion process is a type of stochastic process that extends a standard diffusion process, such as Brownian motion, by including random jumps. This model <span class="citation" data-cites="MertonJD">[e.g., @MertonJD]</span> is widely used in financial mathematics to capture sudden, discontinuous changes in asset prices, interest rates, or other time series that are not explained by continuous diffusive processes alone.</p>
 <p>Let <span class="math inline">\(S(t)\)</span> represent the stock price at time <span class="math inline">\(t\)</span>, and under the risk-neutral measure <span class="math inline">\(\mathbb{Q}\)</span>, the stock price follows a jump diffusion process. The stock price dynamics can be described by:</p>
 <p><span class="math display">\[
 dS(t) = (r - q) S(t) dt + \sigma S(t) dW(t) + S(t) dJ(t)
 \]</span></p>
-<p>where: - <span class="math inline">\(r\)</span> is the risk-free rate. - <span class="math inline">\(q\)</span> is the continuous dividend yield. - <span class="math inline">\(\sigma\)</span> is the volatility of the Brownian motion component. - <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk-neutral measure. and the jump process <span class="math inline">\(J(t)\)</span> follows: <span class="math display">\[
-J(t) = \sum_{i=1}^{N(t)} (Y_i - 1)
-\]</span> where: - <span class="math inline">\(N(t)\)</span> is a Poisson process with intensity <span class="math inline">\(\lambda\)</span>, representing the number of jumps up to time <span class="math inline">\(t\)</span>. - <span class="math inline">\(Y_i\)</span> is the jump size, often modeled as a random variable from a log-normal distribution such that <span class="math inline">\(\log(Y_i) \sim \mathcal{N}(\mu_J, \sigma_J^2)\)</span>.</p>
+<p>where <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(q\)</span> is the continuous dividend yield, <span class="math inline">\(\sigma\)</span> is the volatility of the Brownian motion component, <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk-neutral measure, and the jump process <span class="math inline">\(J(t)\)</span> follows: <span class="math display">\[
+J(t) = \sum_{i=1}^{N(t)} (Y_i - 1),
+\]</span> where <span class="math inline">\(N(t)\)</span> is a Poisson process with intensity <span class="math inline">\(\lambda\)</span>, representing the number of jumps up to time <span class="math inline">\(t\)</span>, and <span class="math inline">\(Y_i\)</span> is the jump size, often modeled as a random variable from a log-normal distribution such that <span class="math inline">\(\log(Y_i) \sim \mathcal{N}(\mu_J, \sigma_J^2)\)</span>.</p>
 <p>Thus, the stock price is driven by both the diffusion term (due to the Brownian motion) and the jump term (due to the Poisson process).</p>
 <p>The solution to the stochastic differential equation (SDE) for <span class="math inline">\(S(t)\)</span> can be expressed as:</p>
 <p><span class="math display">\[
@@ -899,7 +901,7 @@ S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}
 \]</span></p>
 <p>This formula captures both the diffusion (Brownian motion) and jump components, making it applicable for more accurate modeling of stock prices that experience sudden jumps in addition to continuous fluctuations.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Jump Diffusion Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="1dc8ef4a" class="cell" data-execution_count="4">
+<div id="7ec559a2" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.fft <span class="im">import</span> fft</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
@@ -1071,11 +1073,26 @@ S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computational Time (Carr-Madan FFT): 0.016201 seconds
-Computational Time (Monte Carlo): 0.036847 seconds</code></pre>
+<pre><code>Computational Time (Carr-Madan FFT): 0.016755 seconds
+Computational Time (Monte Carlo): 0.046619 seconds</code></pre>
 </div>
 </div>
 </section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 1</strong></span> Create a Python code to compare the Carr-Madan method with the direct Fourier Transform method using <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;1</a> for pricing in-the-money, at-the-money, and out-of-the-money European call options in terms of speed and accuracy in the Black-Scholes model.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 2</strong></span> Create a Python code to let users input all the parameter values in the jump diffusion model and use the Carr-Madan method to price European put options in this model.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 3</strong></span> Create a Python code to let users input all the parameter values in the Heston model and use the Carr-Madan method to price European put options in this model.</p>
+</div>
+<div id="exr-nolabel" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4</strong></span> Create a Python code to show how the speed and accuracy change as one varies the damping factor <span class="math inline">\(\alpha\)</span> and the strike price spacing <span class="math inline">\(\eta\)</span> in the jump diffusion model.</p>
+</div>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
@@ -1089,7 +1106,7 @@ Computational Time (Monte Carlo): 0.036847 seconds</code></pre>
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>With <span class="math inline">\(\alpha=0\)</span>, when <span class="math inline">\(K\)</span> approaches <span class="math inline">\(0\)</span>, <span class="math inline">\(k\)</span> approaches <span class="math inline">\(\infty\)</span> and <span class="math inline">\(C(K)\)</span> approaches <span class="math inline">\(S\)</span>, not <span class="math inline">\(0\)</span>, making <span class="math inline">\(C(K)\)</span> not square integrable in fourier transform.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>NOte that because for FFT to work efficiently, we need <span class="math inline">\(N\)</span> to be even, but for the Simpson’s rule, we need even number of <strong>subintervals</strong>, i.e., <span class="math inline">\(N\)</span> to be odd. In practice, we choose <span class="math inline">\(N\)</span> to be even and ignore the last point evaluation for the Simpson’s weight <span class="math inline">\(w(N+1)\)</span>. When the spacing interval is small, the error from this omission is small.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>For options with very short maturities, the pricing errors for close-to-money options because the value approaches the non-analytic intrinsic value. Adjusting the Fourier transform parameter values (e.g., <span class="math inline">\(N\)</span> and <span class="math inline">\(\eta\)</span>) may be necessary.<br>
 An alternative method proposed by Carr and Madan (1999) may also be used. See Carr and Madan (1999) for details. <a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
