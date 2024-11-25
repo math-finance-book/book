@@ -28,49 +28,6 @@ $$X(T)=\lim_{t \rightarrow \infty} \left(1+r \frac{T}{N}\right)^{N}.$$
 
 This can be verified by taking the log of $\left(1+r \frac{T}{N}\right)^{N}$ and using l'Hospital's rule.  Given the initial wealth, $X(0)$ and the rate of change $r X(t)$ (which, if the unit of account is dollars, is in units dollars / time), we can we  solve for the value of our wealth at all times. 
 
-
-```{python}
-#| label: fig-miracle-exponential
-#| fig-cap: "Growth of an investment account at different rates of return."
-
-import plotly.graph_objects as go
-import numpy as np
-
-trace1= go.Scatter(
-    x=np.arange(31), 
-    y=1.08**np.arange(31),
-    mode="lines",
-    name="8%"
-)
-
-trace2 = go.Scatter(
-    x=np.arange(31), 
-    y=1.04**np.arange(31),
-    mode="lines",
-    name="4%"
-)
-
-fig = go.Figure()
-fig.add_trace(trace1)
-fig.add_trace(trace2)
-string = "year %{x}<br>balance = $%{y:.2f}"
-fig.update_traces(hovertemplate=string)
-fig.update_layout(
-    template="none",
-    xaxis_title="Year",
-    yaxis_title="Account Balance",
-    yaxis_tickprefix="$", 
-    yaxis_tickformat=",.0f",
-    legend=dict(
-        yanchor="top", 
-        y=0.99, 
-        xanchor="left", 
-        x=0.01
-        )
-)
-fig.show()
-```
-
 However, most investments involve risk.  We might think that part of the return is more or less known while a portion of the investment is random or risky.  Therefore we would like a model which can be written as 
 $$ d X(t) = \mu X(t) dt + \text{`noise'} \times X(t). $$
 
@@ -239,6 +196,15 @@ plt.plot(t,t * dt **2)
 
 Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual.  To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, \index{total variation} which is defined in the same way as quadratic variation but with the squared changes $[\Delta B(t_i)]^2$ replaced by the absolute value of the changes $|\Delta B(t_i)|.$  If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one).  It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion.  This is not quite right.  Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil.  Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has.  Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass.  If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function).  However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye---no matter how small the segment, one would still see the characteristic jiggling.
 
+
+To better visualize the convergence of the quadratic for a handfull of simulated paths of a standard Brownian motion, we encourage readers to interact with the plot below.
+
+::: {#fig-interactive_quad_var}
+<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/quad_var_plot"></iframe>
+
+Convergence of quadratic variation for a standard Brownian motion
+:::
+
 One may well question why we should be interested in this curious mathematical object.  The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing @eq-formula establishes.  Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants.  More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes.  So, we are led to a study of continuous martingales.  An important fact is that any non-constant continuous martingale must have infinite total variation!  So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.  
 
 There remains perhaps the question of why we focus on Brownian motion within the world of continuous martingales.  The answer here is that any continuous martingale is really just a transformation of a Brownian motion.  This is a consequence of the following important fact, which is known as Levy's theorem: \index{Levy's theorem}
@@ -378,7 +344,7 @@ $$\lim_{N \rightarrow \infty} \sum_{i=1}^N [\Delta B(t_i)]^2 = T\; ,$$
 whereas for the continuously differentiable function $x(t) = f(t)$, the same limit is zero.  In fact it seems sensible to interpret the limit of $[\Delta B]^2$ as $(\mathrm{d} B)^2 =\mathrm{d} t$.
 This is perfectly consistent with Ito's formula: if we take the limit in @eq-itonew2, replacing the limit of $[\Delta B(t_i)]^2$ with $(\mathrm{d} B)^2 = \mathrm{d} t$, we obtain @eq-itonew1.
 
-The code below defines a function $g(x)=e^{x}$ (g'(x)=e^x$ and g''(x) = e^x$) and simulates the value $e^{B_t}$ in two ways.  The first way is to simulate the Ito expansion
+The code below defines a function $g(x)=e^{x}$ ($g'(x)=e^x$ and $g''(x) = e^x$) and simulates the value $e^{B_t}$ in two ways.  The first way is to simulate the Ito expansion
 $$e^{B_t}=1 + \int_0^t e^{B_s} d B_s + \frac{1}{2}\int_0^t e^{B_s} ds$$
 using the discretization
 $$\Delta e^{B_t}= e^{B_t} \Delta B_t + \frac{1}{2} e^{B_t} \Delta t $$
@@ -418,6 +384,15 @@ QVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)
 plt.figure(figsize=(9,6))
 plt.plot(t[0:n], QVV[:,0])
 ```
+
+To see the accuracy of Ito's approximation over different amounts of subdivisions, as well as the impact of the second derivative term $\int_0^t \fra{1}{2}g''(B_s)ds$, we encourage readers to interact with the plot below.
+
+::: {#fig-interactive_ito}
+<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/ito_approx_plot"></iframe>
+
+Accuracy of Ito's approximation
+:::
+
 
 ## Multiple Ito Processes
 
