@@ -1,22 +1,18 @@
----
-title: "Intro to Options"
-format:
-  html:
-    code-fold: true
-jupyter: python3
----
-
 # Introduction to Options {#sec-c_calls-puts}
 
 <a target="_blank" href="https://colab.research.google.com/github/math-finance-book/notebooks/blob/main/chapter1.ipynb">
-  <img src="images/Open in Colab.png" alt="Open Chapter Code In Colab" width="200" height="34"/>
+  <img src="images/Open in Colab.png" alt="Open Chapter Code In Colab" width="150" height="34"/>
 </a>  
 
 Financial options are rights to buy and sell assets at pre-specified prices.  The rights are traded on exchanges and also as private contracts (called over-the-counter or OTC).  A call option is a right to buy an asset.  A put option is a right to sell an asset.  The pre-specified price is called the exercise price, the strike price, or simply the strike.   The asset to which an option pertains is called the underlying asset, or, more briefly, the underlying.  
 
-Here is a snapshot of market statistics regarding call options on Apple stock (AAPL) traded on the Chicago Board Options Exchange (CBOE).  We are accessing the data courtesy of Yahoo Finance.  We will refer to this data throughout the chapter.
+Here is a snapshot of market statistics regarding call options on Apple stock (AAPL) traded on the Chicago Board Options Exchange (CBOE).  We are accessing the data courtesy of Yahoo Finance.  
+
 
 ```{python}
+
+#| label: aapl-table
+#| fig-cap: "Market data for AAPL options"
 #| execute: auto
 
 import pandas as pd
@@ -26,7 +22,7 @@ import pytz
 from datetime import datetime
 
 est = pytz.timezone('US/Eastern')
-fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+fmt = '%Y-%m-%d %H:%M:%S'
 now = datetime.today().astimezone(est).strftime(fmt)
 
 ticker = "AAPL"         # ticker to pull
@@ -82,9 +78,77 @@ df.columns = [
     "Implied Volatility",
 ] 
 df = df.set_index("Strike")
-print(f"Code was executed at \t{now}")
-print(f"Last {ticker.upper()} price was \t${close:.2f}.")
 print(f'Maturity date of options:\t{date}')
+print(f"Code executed at \t{now}")
+print(f"Last {ticker.upper()} price was \t${close:.2f}.")
+
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
+print(df)
+```
+
+The maturity date for the particular contracts that are displayed is shown in the text above the table.  Many different maturities are traded each day.  The data shown is 15 minutes delayed (and obviously more than 15 minutes if the code is executed outside trading hours).
+
+The first column shows the strike prices of the calls and puts that are available for trading. The exchange chooses which strikes people can trade and at which maturities.  As the price of AAPL stock moves, the exchange will introduce new strikes to maintain a bracket around the stock price.  Typically, interest in trading the strikes that become further away from the stock price will decline, except for people closing positions (discussed further below).
+
+When a strike is first introduced for trading, no one has a position in it.  Positions are created by trade.  We say that a buyer is long the option, and a seller is short.  These concepts are discussed further below.  The standard contract size is 100 shares, so a buyer of one contract is long options on 100 shares of the underlying asset (AAPL in this example), and a seller is short options on 100 shares.  The number of longs always equals the number of shorts.  If the first trade is for 1 contract, we say the open interest is 1 contract, meaning that there is 1 long and 1 short.  Subsequent trades increase the open interest if new positions are created or reduce the open interesting if existing positions are closed.  Open interest is shown in the penultimate column of the table.
+
+The second column of the table shows the bid prices. The bid price is the highest price at which other traders are willing to buy (it is what traders are bidding for the option, as in bidding to buy a house).  So, if you submitted a market order to sell, you would trade at the bid, assuming the bid did not change before your order reached the exchange's computers.  Thus, the bid price is what you would pay for the right to buy AAPL at the strike price at any time up to and including the maturity date.
+
+The ask price is the lowest price at which others are willing to sell (similar to the asking price for a house).  The difference between the ask price and the bid price is called the bid-ask spread.  You should think of half the spread as being the cost an investor pays in order to be able to trade immediately, and it is a return for supplying immediacy to those investors or market makers on the other side of the trade.  This is discussed further below.
+
+For call options, bid and ask prices are lower for higher strikes.  It is better to have the right to buy AAPL at $100 a share than to have the right to buy it at $200 per share, so the market price of the former is higher than the price of the latter.
+
+The fourth column of the table shows the most recent transaction price.  For strikes away from the current AAPL price, the most recent transaction may have been several days ago.  The change and %change are the changes during the current trading day relative to the last price of the prior day (more precisely, it is relative to the settlement price, which is discussed below).  The volume is the number of contracts traded on the most recent day on which the strike traded.  Implied volatility, shown in the last column, is discussed in Chapter ???.
+
+```{python}
+# Pull options data
+kind = "put"
+df = (
+    tick.option_chain(date).calls
+    if kind == "call"
+    else tick.option_chain(date).puts
+)
+
+df.lastTradeDate = df.lastTradeDate.map(
+    lambda x: x.astimezone(est).strftime(fmt)
+)
+
+# Formatting
+cols = [
+    "strike",
+    "bid",
+    "ask",
+    "lastPrice",
+    "change",
+    "percentChange",
+    "lastTradeDate",
+    "volume",
+    "openInterest",
+    "impliedVolatility",
+]
+df = df[cols]
+df["impliedVolatility"] = df["impliedVolatility"].map("{:.1%}".format)
+df["change"] = df["change"].round(2)
+df["percentChange"] = (df["percentChange"]/100).map("{:.1%}".format)
+df.columns = [
+    "Strike",
+    "Bid",
+    "Ask",
+    "Last Price",
+    "Change",
+    "% Change",
+    "Time of Last Trade",
+    "Volume",
+    "Open Interest",
+    "Implied Volatility",
+] 
+df = df.set_index("Strike")
+print(f'Maturity date of options:\t{date}')
+print(f"Code executed at \t{now}")
+print(f"Last {ticker.upper()} price was \t${close:.2f}.")
+
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
@@ -92,7 +156,7 @@ print(df)
 ```
 
 
-![](images/under_construction.png){fig-align="center"}
+## Intrinsic Value and Time Value
 
 :::{#fig-option_portfolios}
 
@@ -107,39 +171,6 @@ bond that matures at the option maturity.
 :::
 
 
-::: {#fig-miracle-npv} 
-<iframe width="780" height="400" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/npv"></iframe>
-
-The net present value is the sum of the present values of the cash flows, and the present value of each cash flow is the cash flow multiplied by the present value factor.  The light blue cells are editable.
-:::
-
-::: {#fig-miracle-amortization} 
-<iframe width="780" height="700" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/amortization_schedules"></iframe>
-
-A loan payment is calculated for the parameters set by the sliders for either monthly or annual payments.  The figure on the left shows the division of each payment between principal and interest.  The figure on the right is the amortization schedule, showing the remaining balance on the loan just before each payment.
-:::
-
-::: {#fig-miracle-retirement} 
-<iframe width="780" height="700" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/retirement_planning"></iframe>
-
-The figure tracks a retirement account balance in which deposits (savings) are made at the end of each month for a specified number of years.  Withdrawals are then made at the beginning of each month for a specified number of years.  All inputs should be specified in real terms (in today's dollars).  The monthly deposit growth rate is $g = (1+g_a)^{1/12}-1$, where $g_a$ is the annual savings growth rate specified by the slider.  The calculations are explained in more detail in.
-:::
-
-::: {#fig-miracle-retirement-sim} 
-<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/retirement_planning_sim"></iframe>
-
-A retirement account is tracked assuming monthly deposits and withdrawals as in , except that the monthly returns are randomly generated from a normal distribution. The monthly mean return is taken to be the annual mean divided by 12, and the monthly standard deviation is taken to be the annual standard deviation divided by the square root of 12, where the annual mean and standard deviation are specified by the sliders. 5,000 possible lifetimes are simulated, and the distribution of the 5,000 ending balances is described in the table. The figure on the left in the second row is a box plot of the ending balances, and the figure on the right displays the percentiles of the ending balance distribution, supplementing the information in the table.
-:::
-
-
-::: {#fig-miracle-irr} 
-<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/irr"></iframe>
-
-The table on the right illustrates the NPV calculation as in @fig-miracle-npv, using the internal rate of return as the discount rate.  In this case, the NPV is zero.  The figure plots the NPV as a function of the discount rate.  The IRR is the rate at which the NPV curve crosses zero.  The light blue cells are editable.
-:::
-
-
-## Intrinsic Value and Time Value
 
 
 ## Investing in Options
@@ -161,132 +192,5 @@ The table on the right illustrates the NPV calculation as in @fig-miracle-npv, u
 
 
 ## Dividends
-
-
-## Testing Widget Code (Austin)
-
-::: {#fig-miracle-irr} 
-<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/bs_delta_test_austin"></iframe>
-
-my sample graph
-:::
-
-
-
-```{python}
-x = 4
-print(f"x = {x}")
-```
-
-```{python}
-#| label: fig-polar
-#| fig-cap: "A line plot on a polar axis"
-
-%matplotlib widget
-#%matplotlib ipympl
-import numpy as np
-import ipywidgets as widgets
-import matplotlib.pyplot as plt
-from scipy import stats
-from IPython.display import display, HTML
-from ipywidgets import VBox,HBox, Layout
-#! pip install latex
-import latex
-
-r = .03  # interest rate
-sig = .2 # volatility
-S0 = 100 # Initial Stock Price
-T = 1 # Maturity
-
-def bs_delta(S0, K, r, sig, T, call = True):
-    d1 = (np.log(S0/K) + (r + sig**2/2) * T)/(sig*np.sqrt(T))
-    norm = stats.norm
-    if type(call) == bool:
-        if call:
-            return norm.cdf(d1,0,1)
-        else:
-            return norm.cdf(-d1,0,1)
-
-K = np.linspace(1, 200, 100)
-
-fig, ax = plt.subplots()
-#fig.suptitle('matplotlib.axes.Axes.set_label() function \ Example\n', fontweight ="bold")
-fig.set_label('my label')
-
-
-#call_delta_plot, = ax.plot(K, bs_delta(S0,K,r,sig,T,True),label='Call')
-call_delta_plot, = ax.plot(K, bs_delta(S0,K,r,sig,T,True),label=r'Call=$\Phi(d_1)$')
-put_delta_plot, = ax.plot(K, bs_delta(S0,K,r,sig,T,False),label=r'Put=$\Phi(-d_1)$')
-
-ax.title.set_text(r'Black Scholes Deltas Over A Strike Contiuum')
-ax.set_xlabel(r'K')
-ax.set_ylabel(r'$\Phi(d_1)$')
-ax.legend()
-ax.grid(True)
-
-def update_maturity(change):
-    #line.set_ydata(np.sin(change.new * x))
-    call_delta_plot.set_ydata( bs_delta(S0,K,r,sig,change.new,True) )
-    put_delta_plot.set_ydata( bs_delta(S0,K,r,sig,change.new,False) )
-    fig.canvas.draw()
-
-def update_volatility(change):
-    #line.set_ydata(np.sin(change.new * x))
-    call_delta_plot.set_ydata( bs_delta(S0,K,r,change.new,maturity_slider.value,True) )
-    put_delta_plot.set_ydata( bs_delta(S0,K,r,change.new,maturity_slider.value,False) )
-    fig.canvas.draw()
-
-def update_display(change):
-    #print(change)
-    #print(change.owner.description)
-    if 'Put' in change['owner'].description:
-        if change['new']==False:
-            #put_delta_plot.set_ydata( np.zeros(len(K)) )
-            #fig.canvas.draw()
-            put_delta_plot.remove()
-        else:
-            #print(change)
-            #fig.add_artist(put_delta_plot)
-            ax.add_artist(put_delta_plot)
-            #fig.canvas.draw()
-            
-            
-    elif 'Call' in change['owner'].description:
-        if change['new']==False:
-            #put_delta_plot.set_ydata( np.zeros(len(K)) )
-            #fig.canvas.draw()
-            call_delta_plot.remove()
-        else:
-            #print(change)
-            #fig.add_artist(call_delta_plot)
-            ax.add_artist(call_delta_plot)
-            #fig.canvas.draw()
-    
-    fig.canvas.draw()
-
-
-maturity_slider = widgets.FloatSlider(value=T,min=0, max=T, step=0.1,description=r'Maturity',continuous_update=False)
-volatility_slider = widgets.FloatSlider(value=sig,min=0+0.00001, max=0.6, step=0.05,description=r'Volatility',continuous_update=False)
-show_call=widgets.Checkbox(value=True,description='Call',disabled=False)
-show_put=widgets.Checkbox(value=True,description='Put',disabled=False)
-
-maturity_slider.observe(update_maturity, 'value')
-volatility_slider.observe(update_volatility, 'value')
-show_call.observe(update_display,'value')
-show_put.observe(update_display,'value')
-#display(maturity_slider)
-
-UI=VBox([
-    HBox([maturity_slider]),
-    HBox([volatility_slider]),
-    HBox([show_call,show_put])
-    ])
-
-display(UI)
-```
-
-
-
-
 
 
