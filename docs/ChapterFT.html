@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.6.32">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Pricing and Hedging Derivative Securities: Theory and Methods - 11&nbsp; Using Fourier Transforms to Price Options</title>
+<title>11&nbsp; Using Fourier Transforms to Price Options – Pricing and Hedging Derivative Securities: Theory and Methods</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -58,6 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -90,17 +91,23 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2486e1f0a3ee9ee1fc393803a1361cdb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bb6b93f51bf5a7975605005bd985cc1c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -109,15 +116,48 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
 <script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -127,13 +167,13 @@ div.csl-indent {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ChapterFT.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Using Fourier Transforms to Price Options</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
-      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ChapterFT.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Using Fourier Transforms to Price Options</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -142,7 +182,7 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Pricing and Hedging Derivative Securities: Theory and Methods</a> 
@@ -164,7 +204,7 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Options</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Options</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -253,9 +293,9 @@ div.csl-indent {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
  <span class="menu-text">Appendices</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -271,7 +311,7 @@ div.csl-indent {
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -305,7 +345,9 @@ div.csl-indent {
   </div>
   
 
+
 </header>
+
 
 <section id="introduction" class="level2" data-number="11.1">
 <h2 data-number="11.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">11.1</span> Introduction</h2>
@@ -354,7 +396,7 @@ C(X_T) = \max(e^{X_T} - K, 0)
 C(K) = \frac{e^{-rT}}{2\pi} \int_{-\infty}^{\infty} e^{-iuk} \hat{C}(u) \phi_X(u) \, du,
 \tag{11.1}\]</span></span> where <span class="math inline">\(\phi_X(u)\)</span> is the <strong>characteristic function</strong> of the log-price process at time <span class="math inline">\(T\)</span>, <span class="math inline">\(k = \ln(K)\)</span> is the log-strike, and <span class="math inline">\(\hat{C}(u)\)</span> is the Fourier transform of the payoff function.</p>
 <p>By evaluating this integral (typically done numerically), we recover the option price. This illustrate the main idea behind the appilcation of Fourier transform in pricing options.</p>
-<p>Unfortunately, the Fast Fourier Transform (FFT) cannot be used to evaluate the pricing integral <a href="#eq-FTpricing">Equation&nbsp;<span>11.1</span></a>, since the integrand is singular at the required evaluation point <span class="math inline">\(u = 0\)</span>. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method <span class="citation" data-cites="CarrMadan">(<a href="#ref-CarrMadan" role="doc-biblioref">Carr and Madan 1999</a>)</span> that can leverage the efficiency of the FFT.</p>
+<p>Unfortunately, the Fast Fourier Transform (FFT) cannot be used to evaluate the pricing integral <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;<span>11.1</span></a>, since the integrand is singular at the required evaluation point <span class="math inline">\(u = 0\)</span>. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method <span class="citation" data-cites="CarrMadan">(<a href="#ref-CarrMadan" role="doc-biblioref">Carr and Madan 1999</a>)</span> that can leverage the efficiency of the FFT.</p>
 </section>
 <section id="the-carr-madan-method" class="level2" data-number="11.3">
 <h2 data-number="11.3" class="anchored" data-anchor-id="the-carr-madan-method"><span class="header-section-number">11.3</span> The Carr-Madan Method</h2>
@@ -399,21 +441,21 @@ g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j), m=1,...,N
 \]</span> Combinig the FFT with the Simpson’s rule, we have <span id="eq-FFTSimpson"><span class="math display">\[
 g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j)w(j), m=1,...,N,
 \tag{11.3}\]</span></span> where <span class="math inline">\(w(j)=4\)</span> if <span class="math inline">\(j\)</span> is even, <span class="math inline">\(w(j)=2\)</span> if <span class="math inline">\(j\)</span> is odd, and <span class="math inline">\(w(1)=w(N+1)=1\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p>To apply the FFT <a href="#eq-FFTSimpson">Equation&nbsp;<span>11.3</span></a>, we discretize the integral <a href="#eq-carrmadan">Equation&nbsp;<span>11.2</span></a> over <span class="math inline">\(u\)</span>:</p>
+<p>To apply the FFT <a href="#eq-FFTSimpson" class="quarto-xref">Equation&nbsp;<span>11.3</span></a>, we discretize the integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;<span>11.2</span></a> over <span class="math inline">\(u\)</span>:</p>
 <ul>
 <li>Define <span class="math inline">\(u_j = \eta (j-1)\)</span>, where <span class="math inline">\(\eta\)</span> is the spacing between points and $j = 1, 2, , N $.</li>
 <li>Similarly, define <span class="math inline">\(k_m = -b + \lambda \, (m-1)\)</span>, where <span class="math display">\[
 \lambda = \frac{2\pi}{N \eta}
 \]</span> is the spacing in log-strike space, <span class="math display">\[
 b=\frac{N \lambda}{2}
-\]</span> is the integration upper limit of <span class="math inline">\(k\)</span>, and <span class="math inline">\(m = 1, 2, \dots, N\)</span>.</li>
+\]</span> is the integration upper limit of <span class="math inline">\(k\)</span>, and <span class="math inline">\(m = 1, 2,  \dots, N\)</span>.</li>
 </ul>
-<p>The integral <a href="#eq-carrmadan">Equation&nbsp;<span>11.2</span></a> becomes a sum:</p>
+<p>The integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;<span>11.2</span></a> becomes a sum:</p>
 <p><span class="math display">\[
 \tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j)  \eta.
 \]</span> To further improve the efficiency, we use Simpson’s rule to choose the weights of each term to arrive at <span id="eq-carrmadanFFT"><span class="math display">\[
 \tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j) \frac{\eta}{3}(3+(-1)^{j}-\delta_{j-1}),
-\tag{11.4}\]</span></span> where <span class="math inline">\(\delta_n=1\)</span> is equal to 1 if and only if <span class="math inline">\(n=0\)</span>. <a href="#eq-carrmadanFFT">Equation&nbsp;<span>11.4</span></a> can be efficiently computed using the FFT method.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+\tag{11.4}\]</span></span> where <span class="math inline">\(\delta_n=1\)</span> is equal to 1 if and only if <span class="math inline">\(n=0\)</span>. <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span>11.4</span></a> can be efficiently computed using the FFT method.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 </section>
 <section id="implementation-steps" class="level3">
 <h3 class="anchored" data-anchor-id="implementation-steps">Implementation Steps</h3>
@@ -437,7 +479,7 @@ b=\frac{N \lambda}{2}
 \]</span></p>
 </section>
 <section id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price." class="level4">
-<h4 class="anchored" data-anchor-id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price.">4. Apply the FFT <a href="#eq-carrmadanFFT">Equation&nbsp;<span>11.4</span></a> to get the option price.</h4>
+<h4 class="anchored" data-anchor-id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price.">4. Apply the FFT <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span>11.4</span></a> to get the option price.</h4>
 </section>
 </section>
 </section>
@@ -450,8 +492,8 @@ b=\frac{N \lambda}{2}
 \phi_T(u) = \exp\left(iu \left(\ln(S_0) + \left(r -q-\frac{\sigma^2}{2}\right)T\right) - \frac{1}{2} \sigma^2 T u^2 \right),
 \]</span> where <span class="math inline">\(S_0\)</span> is the initial asset price, <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(\sigma\)</span> is the volatility of the asset, <span class="math inline">\(T\)</span> is the time to maturity, and <span class="math inline">\(u\)</span> is the complex Fourier variable.</p>
 <p>The following code implements the Carr-Madan method, which uses the FFT to price European call options by transforming the characteristic function of the Black-Scholes model into the frequency domain. The option prices are then obtained by applying Simpson’s Rule for integration and FFT for efficient computation. These prices are compared to those obtained using the Black-Scholes formula. The code also visualizes the comparison and the differences between the two methods. The results suggest that the Carr-Madan method yields an accurate call price.</p>
-<div class="cell" data-execution_count="1">
-<details>
+<div id="2447b52f" class="cell" data-execution_count="1">
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.fft <span class="im">import</span> fft</span>
@@ -547,10 +589,18 @@ b=\frac{N \lambda}{2}
 <span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-2-output-1.png" width="808" height="523"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-2-output-1.png" width="808" height="523" class="figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-2-output-2.png" width="846" height="523"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-2-output-2.png" width="846" height="523" class="figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -576,8 +626,8 @@ g &amp;= \frac{b - d}{b + d}, \\
 \end{aligned}
 \]</span> <span class="math inline">\(v_0\)</span> is the initial variance (volatility squared), <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\theta\)</span> is the long-term mean of the variance, <span class="math inline">\(\kappa\)</span> is the rate at which the variance reverts to <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\rho\)</span> is the correlation between the asset price and its volatility, <span class="math inline">\(\sigma\)</span> is the volatility of volatility, and <span class="math inline">\(\lambda\)</span> is the volatility risk premium.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Heston Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div class="cell" data-execution_count="2">
-<details>
+<div id="d15d282a" class="cell" data-execution_count="2">
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -816,14 +866,22 @@ g &amp;= \frac{b - d}{b + d}, \\
 <span id="cb2-235"><a href="#cb2-235" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Maximum Price Difference: </span><span class="sc">{</span>max_diff<span class="sc">:.6f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-3-output-1.png" width="813" height="533"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-3-output-1.png" width="813" height="533" class="figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-3-output-2.png" width="834" height="533"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-3-output-2.png" width="834" height="533" class="figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computation Time (Carr-Madan Method): 0.04 seconds
-Computation Time (Monte Carlo Simulation): 8.61 seconds
+<pre><code>Computation Time (Carr-Madan Method): 0.06 seconds
+Computation Time (Monte Carlo Simulation): 5.42 seconds
 Maximum Price Difference: 0.024669</code></pre>
 </div>
 </div>
@@ -867,8 +925,8 @@ X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \thet
 \theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right).
 \]</span></p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Variance Gamma Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div class="cell" data-execution_count="3">
-<details>
+<div id="ca78f4cc" class="cell" data-execution_count="3">
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.fft <span class="im">import</span> fft</span>
@@ -1035,15 +1093,23 @@ X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \thet
 <span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Computational Time (Monte Carlo): </span><span class="sc">{</span>time_mc<span class="sc">:.6f}</span><span class="ss"> seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-4-output-1.png" width="821" height="523"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-4-output-1.png" width="821" height="523" class="figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-4-output-2.png" width="829" height="523"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-4-output-2.png" width="829" height="523" class="figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Maximum Absolute Price Difference: 0.010150
-Computational Time (Carr-Madan FFT): 0.005000 seconds
-Computational Time (Monte Carlo): 0.502583 seconds</code></pre>
+Computational Time (Carr-Madan FFT): 0.016580 seconds
+Computational Time (Monte Carlo): 0.488684 seconds</code></pre>
 </div>
 </div>
 <p><strong>Pricing Options in a Jump Diffusion Model</strong></p>
@@ -1068,8 +1134,8 @@ S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}
 \]</span></p>
 <p>This formula captures both the diffusion (Brownian motion) and jump components, making it applicable for more accurate modeling of stock prices that experience sudden jumps in addition to continuous fluctuations.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Jump Diffusion Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div class="cell" data-execution_count="4">
-<details>
+<div id="4dcb2bb6" class="cell" data-execution_count="4">
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.fft <span class="im">import</span> fft</span>
@@ -1229,14 +1295,22 @@ S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}
 <span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Computational Time (Monte Carlo): </span><span class="sc">{</span>time_mc<span class="sc">:.6f}</span><span class="ss"> seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-5-output-1.png" width="808" height="523"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-5-output-1.png" width="808" height="523" class="figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="ChapterFT_files/figure-html/cell-5-output-2.png" width="840" height="523"></p>
+<div>
+<figure class="figure">
+<p><img src="ChapterFT_files/figure-html/cell-5-output-2.png" width="840" height="523" class="figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computational Time (Carr-Madan FFT): 0.021775 seconds
-Computational Time (Monte Carlo): 0.057093 seconds</code></pre>
+<pre><code>Computational Time (Carr-Madan FFT): 0.029293 seconds
+Computational Time (Monte Carlo): 0.063203 seconds</code></pre>
 </div>
 </div>
 </section>
@@ -1244,16 +1318,16 @@ Computational Time (Monte Carlo): 0.057093 seconds</code></pre>
 <section id="exercises" class="level2" data-number="11.5">
 <h2 data-number="11.5" class="anchored" data-anchor-id="exercises"><span class="header-section-number">11.5</span> Exercises</h2>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.1 </strong></span>Create a Python code to compare the Carr-Madan method with the direct Fourier Transform method using <a href="#eq-FTpricing">Equation&nbsp;<span>11.1</span></a> for pricing in-the-money, at-the-money, and out-of-the-money European call options in terms of speed and accuracy in the Black-Scholes model.</p>
+<p><span class="theorem-title"><strong>Exercise 11.1</strong></span> Create a Python code to compare the Carr-Madan method with the direct Fourier Transform method using <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;<span>11.1</span></a> for pricing in-the-money, at-the-money, and out-of-the-money European call options in terms of speed and accuracy in the Black-Scholes model.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.2 </strong></span>Create a Python code to let users input all the parameter values in the jump diffusion model and use the Carr-Madan method to price European put options in this model.</p>
+<p><span class="theorem-title"><strong>Exercise 11.2</strong></span> Create a Python code to let users input all the parameter values in the jump diffusion model and use the Carr-Madan method to price European put options in this model.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.3 </strong></span>Create a Python code to let users input all the parameter values in the Heston model and use the Carr-Madan method to price European put options in this model.</p>
+<p><span class="theorem-title"><strong>Exercise 11.3</strong></span> Create a Python code to let users input all the parameter values in the Heston model and use the Carr-Madan method to price European put options in this model.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 11.4 </strong></span>Create a Python code to show how the speed and accuracy change as one varies the damping factor <span class="math inline">\(\alpha\)</span> and the strike price spacing <span class="math inline">\(\eta\)</span> in the jump diffusion model.</p>
+<p><span class="theorem-title"><strong>Exercise 11.4</strong></span> Create a Python code to show how the speed and accuracy change as one varies the damping factor <span class="math inline">\(\alpha\)</span> and the strike price spacing <span class="math inline">\(\eta\)</span> in the jump diffusion model.</p>
 </div>
 </section>
 <section id="references" class="level2" data-number="11.6">
@@ -1264,7 +1338,7 @@ Computational Time (Monte Carlo): 0.057093 seconds</code></pre>
 </ol>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-CarrMadan" class="csl-entry" role="listitem">
 Carr, P., and D. B. Madan. 1999. <span>“Option Valuation Using the Fast Fourier Transform.”</span> <em>Journal of Computational Finance</em> 2: 61–73.
 </div>
@@ -1321,18 +1395,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1364,11 +1427,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1378,8 +1480,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1391,7 +1502,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1435,6 +1669,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1460,6 +1695,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1521,17 +1782,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./Chapter10.html" class="pagination-link">
+      <a href="./Chapter10.html" class="pagination-link" aria-label="Finite Difference Methods">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Finite Difference Methods</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./Chapter11.html" class="pagination-link">
+      <a href="./Chapter11.html" class="pagination-link" aria-label="Fixed Income Concepts">
         <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Fixed Income Concepts</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 
