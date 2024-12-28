@@ -2,7 +2,24 @@ import os
 import sys 
 num = 1 if len(sys.argv) == 1 else int(sys.argv[1])
 
-chapters = [f"Chapter{i}.qmd" for i in range(1, 16)] + ["ChapterFT.qmd"]
+names = [
+    "Ito", 
+    "Intro",
+    "Arbitrage",
+    "BlackScholes",
+    "FX",
+    "Merton",
+    "Exotics",
+    "Vol",
+    "MC_Binomial",
+    "FiniteDifferences",
+    "Fourier",
+    "FixedIncome",
+    "FixedIncomeDerivatives",
+    "Vasicek",
+    "Survey"
+]
+chapters = [f"Chapter_{name}.qmd" for name in names]
 for _ in range(num):
     for chapter in chapters:
         os.system(
