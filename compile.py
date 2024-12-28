@@ -20,6 +20,7 @@ names = [
     "Survey"
 ]
 chapters = [f"Chapter_{name}.qmd" for name in names]
+chapters += ["index.qmd", "AppendixA.qmd"]
 for _ in range(num):
     for chapter in chapters:
         os.system(
