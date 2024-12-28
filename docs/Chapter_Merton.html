@@ -197,6 +197,11 @@ window.Quarto = {
       <a href="./">Pricing and Hedging Derivative Securities: Theory and Methods</a> 
         <div class="sidebar-tools-main">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
 </div>
     </div>
       </div>
@@ -411,7 +416,7 @@ d_2=d_1-\sigma\sqrt{T}\;,
 <p>The dividend yield on the first asset remains <span class="math inline">\(q_1\)</span>. To see this, note that the dividend paid in the natural currency is <span class="math inline">\(q_1S_1(t)\,\mathrm{d} t\)</span> in an instant <span class="math inline">\(\mathrm{d} t\)</span> and the value of this dividend using the second asset as numeraire is <span class="math inline">\([q_1S_1(t)/S_2(t)]\,\mathrm{d} t\)</span>, which is the fraction <span class="math inline">\(q_1\,\mathrm{d} t\)</span> of the value <span class="math inline">\(S_1(t)/S_2(t)\)</span> of the first asset using the second asset as numeraire.</p>
 <p>The volatility of the first asset using the second as numeraire is the volatility of the ratio <span class="math inline">\(S_1(t)/S_2(t)\)</span>, which is <span class="math inline">\(\sigma\)</span> defined in <a href="#eq-margrabesigma" class="quarto-xref">Equation&nbsp;<span>6.6</span></a>. Applying the Black-Scholes formula with these inputs yields Margrabe’s formula directly.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
 <p>In terms of programming, we could of course write entirely separate programs for the options discussed so far and those to be discussed in this chapter but it will become clear that they have common structure. As discussed in the introduction to this chapter, each is the present value of what is received upon exercise multiplied by <span class="math inline">\(\mathrm{N}(x)\)</span> minus the present value of what is delivered upon exercise multiplied by <span class="math inline">\(\mathrm{N}(y)\)</span> and <span class="math inline">\(x\)</span> in each case is the logarithm of the ratio of present values plus one-half <span class="math inline">\(\sigma^2T\)</span>, all divided by <span class="math inline">\(\sigma\sqrt{T}\)</span>. Thus, we first write a code for a generic option price. Later we use this generic option price function to price other options.</p>
-<div id="60eb0ef0" class="cell" data-execution_count="1">
+<div id="e26c38fb" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -447,7 +452,7 @@ d_2=d_1-\sigma\sqrt{T}\;,
 </div>
 </div>
 <p>Now we can use the following one-line programs to value exchange options.</p>
-<div id="5dd82254" class="cell" data-execution_count="2">
+<div id="974de2d9" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> margrabe(S1, S2, sigma, q1, q2, T):</span>
@@ -554,7 +559,7 @@ d^m_2 &amp;= -\frac{\log\left(\frac{F(0)}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma
 <p>We still need to explain why <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> defined in <a href="#eq-blackexchange" class="quarto-xref">Equation&nbsp;<span>6.17</span></a> are asset prices, in fact the prices of non-dividend-paying assets since we have taken <span class="math inline">\(q_1=q_2=0\)</span> in applying Margrabe’s formula. The case of <span class="math inline">\(S_2\)</span> should be clear: it is the price of <span class="math inline">\(K\)</span> units of the discount bond maturing at <span class="math inline">\(T'\)</span>. The case of <span class="math inline">\(S_1\)</span> is more subtle. It is the price of the following portfolio constructed at date 0 and held until date <span class="math inline">\(T\)</span>: go long one forward contract and buy <span class="math inline">\(F(0)\)</span> units of the discount bond maturing at <span class="math inline">\(T'\)</span>. The value at date <span class="math inline">\(t\)</span> of the bonds in the portfolio is <span class="math inline">\(F(0)P(t,T')\)</span>. The value at date <span class="math inline">\(t\)</span> of the long forward contract can be seen by considering unwinding it by selling a forward at date <span class="math inline">\(t\)</span> at the market price <span class="math inline">\(F(t)\)</span>. This cancels the delivery/receipt obligations on the underlying and results in a net cash flow of <span class="math inline">\(F(t)-F(0)\)</span> to be received at date <span class="math inline">\(T'\)</span>. The value at date <span class="math inline">\(t\)</span> of this future cash flow is <span class="math inline">\(P(t,T')[F(t)-F(0)]\)</span> and when we add this to the value of the bonds we obtain <span class="math inline">\(P(t,T')F(t) = S_1(t)\)</span>.</p>
 <p>Put-call parity for options on forwards is <span class="math display">\[\text{Call Price}  + P(0,T')K = \text{Put Price}  + P(0,T')F(0)\; .\]</span> The left-hand side is the cost of the call and <span class="math inline">\(K\)</span> units of the discount bond, which have value <span class="math inline">\(\max(F(T),K)P(T,T')\)</span> at time <span class="math inline">\(T\)</span>. The right-hand side is the cost of the put option and <span class="math inline">\(F(0)\)</span> units of the discount bond, which, together with a long forward contract initiated at date 0, also have value <span class="math inline">\(\max(F(T),K)P(T,T')\)</span> at time <span class="math inline">\(T\)</span>.</p>
 <p>As in the case of exchange option, we can also write one-line programs for pricing options on futures and forwards.</p>
-<div id="5c48e83a" class="cell" data-execution_count="3">
+<div id="95dd9546" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_call(F, K, P, sigma, T):</span>
@@ -706,7 +711,7 @@ d_2=d_1-\sigma\sqrt{T}\;,
 \tag{6.33}\]</span></span></p>
 </div>
 </div>
-<div id="a82d9924" class="cell" data-execution_count="4">
+<div id="e1ec0aa2" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> margrabe_deferred(S1, S2, sigma, q1, q2, Tmat, Texch):</span>
