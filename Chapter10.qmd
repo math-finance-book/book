@@ -106,7 +106,7 @@ $$ {#eq-explicit}
 
 Given that $t_i$ is the final date $t_N$, the values $C$, $C_{\text{up}}$ and $C_{\text{down}}$ have already been calculated as the intrinsic value of the call at maturity.  The only unknown is $C_{\text{left}}$, which is the value of the call at $(t_{N-1},x_j)$.  We can solve this explicitly  for $C_{\text{left}}$, whence the name of the algorithm.  We do this at each point $x_j$ at date $t_{N-1}$ (except for the top and bottom points, which we will discuss below) and then we follow the same procedure to back up sequentially to the initial date, as in the binomial model.
 
-Equation @eq-explicit cannot be used to find $C_{\text{left}}$ at the bottom point $x_{-M}$, because at this point there is no $C_{\text{down}}$ at date $t_N$.  Similarly, we cannot use it to find $C_{\text{left}}$ at the top point $x_M$, because at that point there is no $C_{\text{up}}$.  We have to define the values along the top and bottom of the grid in some other fashion.  We do this using conditions the derivative is known to satisfy as the stock price approaches $+\infty$ or 0.  For example, for a European call option, we use the conditions that $\partial C/\partial S \rightarrow 1$ as $S \rightarrow \infty$ and $\partial C/\partial S \rightarrow 0$ as $S \rightarrow 0$.  We will explain this in more detail in the following section.
+@eq-explicit cannot be used to find $C_{\text{left}}$ at the bottom point $x_{-M}$, because at this point there is no $C_{\text{down}}$ at date $t_N$.  Similarly, we cannot use it to find $C_{\text{left}}$ at the top point $x_M$, because at that point there is no $C_{\text{up}}$.  We have to define the values along the top and bottom of the grid in some other fashion.  We do this using conditions the derivative is known to satisfy as the stock price approaches $+\infty$ or 0.  For example, for a European call option, we use the conditions that $\partial C/\partial S \rightarrow 1$ as $S \rightarrow \infty$ and $\partial C/\partial S \rightarrow 0$ as $S \rightarrow 0$.  We will explain this in more detail in the following section.
 
 The solution of @eq-explicit for $C_{\text{left}}$ can be written as
 $$
@@ -189,7 +189,7 @@ where the constants $a_i$ are the factors in parentheses in @eq-crank2.
 
 As before, we start at the final date $t_N$ and define the call value at that date by its intrinsic value.  Consider a grid point $(t_{N-1},x_j)$.  Forcing  @eq-3 to hold at the midpoint $(t_{N-1}+\Delta t/2,x_j)$ leads us to @eq-crank3.  In this equation, $C'$, $C'_{\text{up}}$ and $C'_{\text{down}}$ are known from the intrinsic value at maturity, and we need to solve for $C$, $C_{\text{up}}$ and $C_{\text{down}}$.  There are $2M-1$ linear equations of this type and we will add linear equations at the upper and lower boundaries of the grid and solve the resulting system of $2M+1$ linear equations for the $2M+1$ call values.  After finding the call values at date $t_{N-1}$, we then repeat the calculation at $t_{N-2}$ and continue backing up in this way until we reach the initial date.
 
-Notice that the Crank-Nicolson equations @eq-crank2 are similar to the equations @eq-implicit in the implicit method, but more information is used in each step of the Crank-Nicolson method than is used in each step of the implicit method. Equation @eq-crank2 links the call values $C$, $C_{\text{up}}$ and $C_{\text{down}}$ to the previously calculated $C'$, $C'_{\text{up}}$ and $C'_{\text{down}}$, whereas in the implicit method they were linked only to $C'$ (which we called $C_{\text{right}}$).
+Notice that @eq-crank2 is similar to @eq-implicit in the implicit method, but more information is used in each step of the Crank-Nicolson method than is used in each step of the implicit method.  @eq-crank2 links the call values $C$, $C_{\text{up}}$ and $C_{\text{down}}$ to the previously calculated $C'$, $C'_{\text{up}}$ and $C'_{\text{down}}$, whereas in the implicit method they were linked only to $C'$ (which we called $C_{\text{right}}$).
 
 
 ## European  Options
@@ -237,7 +237,7 @@ $$ {#eq-crank4bb}
 
 
 where $z_1$, $b_1$, $z_L$ and $b_L$ are numbers to be calculated or input by the user.
- The equations @eq-crank4a and @eq-crank4b are the special cases in which  $z_1 = \lambda_0(S-S_{\text{up}})$, $b_1 = 1$, $z_L = \lambda_\infty(S-S_{\text{down}})$,  and $b_L=1$.   The additional generality in allowing $b_1$ and $b_L$ to be different from one is important for many purposes, and we will see an example of it in the valuation of barrier options.  
+  @eq-crank4a and @eq-crank4b are the special cases in which  $z_1 = \lambda_0(S-S_{\text{up}})$, $b_1 = 1$, $z_L = \lambda_\infty(S-S_{\text{down}})$,  and $b_L=1$.   The additional generality in allowing $b_1$ and $b_L$ to be different from one is important for many purposes, and we will see an example of it in the valuation of barrier options.  
 
 The system of equations that we want to solve is therefore 
 \setcounter{MaxMatrixCols}{11}
@@ -483,7 +483,7 @@ Create a python function European_Call_Explicit that uses the explicit method @e
 
 ::: {#exr-nolabel}
 
-Write the system of equations @eq-implicit for the implicit method, together with boundary conditions of the form @eq-crank4aa - @eq-crank4bb as a matrix system and solve for $u_j$ and $b_j$ in @eq-crank101 - @eq-crankC_L, as in the subsection that defines the function CrankNicolson.
+Write  @eq-implicit for the implicit method, together with boundary conditions of the form @eq-crank4aa - @eq-crank4bb as a matrix system and solve for $u_j$ and $b_j$ in @eq-crank101 - @eq-crankC_L, as in the subsection that defines the function CrankNicolson.
 :::
 
 ::: {#exr-nolabel}
