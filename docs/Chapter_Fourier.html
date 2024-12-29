@@ -130,9 +130,21 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -446,7 +458,7 @@ C(X_T) = \max(e^{X_T} - K, 0)
 <p>Once <span class="math inline">\(\hat{C}(u)\)</span> is computed, the price of the option can be calculated using the <strong>Fourier inversion formula</strong>. The general formula for the call option price <span class="math inline">\(C(K)\)</span> at time <span class="math inline">\(0\)</span> is:</p>
 <p><span id="eq-FTpricing"><span class="math display">\[
 C(K) = \frac{e^{-rT}}{2\pi} \int_{-\infty}^{\infty} e^{-iuk} \hat{C}(u) \phi_X(u) \, du,
-\qquad(11.1)\]</span></span> where <span class="math inline">\(\phi_X(u)\)</span> is the <strong>characteristic function</strong> of the log-price process at time <span class="math inline">\(T\)</span>, <span class="math inline">\(k = \ln(K)\)</span> is the log-strike, and <span class="math inline">\(\hat{C}(u)\)</span> is the Fourier transform of the payoff function.</p>
+\tag{11.1}\]</span></span> where <span class="math inline">\(\phi_X(u)\)</span> is the <strong>characteristic function</strong> of the log-price process at time <span class="math inline">\(T\)</span>, <span class="math inline">\(k = \ln(K)\)</span> is the log-strike, and <span class="math inline">\(\hat{C}(u)\)</span> is the Fourier transform of the payoff function.</p>
 <p>By evaluating this integral (typically done numerically), we recover the option price. This illustrate the main idea behind the appilcation of Fourier transform in pricing options.</p>
 <p>Unfortunately, the Fast Fourier Transform (FFT) cannot be used to evaluate the pricing integral <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;<span>11.1</span></a>, since the integrand is singular at the required evaluation point <span class="math inline">\(u = 0\)</span>. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method <span class="citation" data-cites="CarrMadan">(<a href="#ref-CarrMadan" role="doc-biblioref">Carr and Madan 1999</a>)</span> that can leverage the efficiency of the FFT.</p>
 </section>
@@ -469,7 +481,7 @@ C(k) = \int_{k}^\infty e^{-r T} (e^s-e^k) q(s)\, ds.
 <p>By the fourier inversion theorem, the modified call price can be written as:</p>
 <p><span id="eq-carrmadan"><span class="math display">\[
 C(k) = \frac{e^{-\alpha k}}{2\pi} \int_{-\infty}^\infty e^{-i u k} \phi_{C}(u)\, du = \frac{e^{-\alpha k}}{\pi} \int_{0}^\infty e^{-i u k} \phi_{C}(u)\, du,
-\qquad(11.2)\]</span></span> where <span class="math inline">\(\phi_{C}(u)\)</span> is the Fourier Transform of the option <span class="math inline">\(C(k)\)</span> and the second equality follows because <span class="math inline">\(\phi_{C}(u)\)</span> is odd in its imaginary part and even in its real part.</p>
+\tag{11.2}\]</span></span> where <span class="math inline">\(\phi_{C}(u)\)</span> is the Fourier Transform of the option <span class="math inline">\(C(k)\)</span> and the second equality follows because <span class="math inline">\(\phi_{C}(u)\)</span> is odd in its imaginary part and even in its real part.</p>
 </section>
 <section id="step-3-derive-the-fourier-transform-of-the-payoff" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-derive-the-fourier-transform-of-the-payoff">Step 3: Derive the Fourier Transform of the Payoff</h3>
@@ -492,7 +504,7 @@ g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j), m=1,...,N
 \int_a^b f(x) \, dx \approx \frac{h}{3} \left[ f(x_1) + 4 \sum_{j=2,4,6,\dots}^{N-1} f(x_j) + 2 \sum_{j=1,3,5,\dots}^{N-2} f(x_j) + f(x_{N+1}) \right].
 \]</span> Combinig the FFT with the Simpson’s rule, we have <span id="eq-FFTSimpson"><span class="math display">\[
 g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j)w(j), m=1,...,N,
-\qquad(11.3)\]</span></span> where <span class="math inline">\(w(j)=4\)</span> if <span class="math inline">\(j\)</span> is even, <span class="math inline">\(w(j)=2\)</span> if <span class="math inline">\(j\)</span> is odd, and <span class="math inline">\(w(1)=w(N+1)=1\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+\tag{11.3}\]</span></span> where <span class="math inline">\(w(j)=4\)</span> if <span class="math inline">\(j\)</span> is even, <span class="math inline">\(w(j)=2\)</span> if <span class="math inline">\(j\)</span> is odd, and <span class="math inline">\(w(1)=w(N+1)=1\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <p>To apply the FFT <a href="#eq-FFTSimpson" class="quarto-xref">Equation&nbsp;<span>11.3</span></a>, we discretize the integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;<span>11.2</span></a> over <span class="math inline">\(u\)</span>:</p>
 <ul>
 <li>Define <span class="math inline">\(u_j = \eta (j-1)\)</span>, where <span class="math inline">\(\eta\)</span> is the spacing between points and $j = 1, 2, , N $.</li>
@@ -507,7 +519,7 @@ b=\frac{N \lambda}{2}
 \tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j)  \eta.
 \]</span> To further improve the efficiency, we use Simpson’s rule to choose the weights of each term to arrive at <span id="eq-carrmadanFFT"><span class="math display">\[
 \tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j) \frac{\eta}{3}(3+(-1)^{j}-\delta_{j-1}),
-\qquad(11.4)\]</span></span> where <span class="math inline">\(\delta_n=1\)</span> is equal to 1 if and only if <span class="math inline">\(n=0\)</span>. <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span>11.4</span></a> can be efficiently computed using the FFT method.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+\tag{11.4}\]</span></span> where <span class="math inline">\(\delta_n=1\)</span> is equal to 1 if and only if <span class="math inline">\(n=0\)</span>. <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span>11.4</span></a> can be efficiently computed using the FFT method.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 </section>
 <section id="implementation-steps" class="level3">
 <h3 class="anchored" data-anchor-id="implementation-steps">Implementation Steps</h3>
@@ -544,7 +556,7 @@ b=\frac{N \lambda}{2}
 \phi_T(u) = \exp\left(iu \left(\ln(S_0) + \left(r -q-\frac{\sigma^2}{2}\right)T\right) - \frac{1}{2} \sigma^2 T u^2 \right),
 \]</span> where <span class="math inline">\(S_0\)</span> is the initial asset price, <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(\sigma\)</span> is the volatility of the asset, <span class="math inline">\(T\)</span> is the time to maturity, and <span class="math inline">\(u\)</span> is the complex Fourier variable.</p>
 <p>The following code implements the Carr-Madan method, which uses the FFT to price European call options by transforming the characteristic function of the Black-Scholes model into the frequency domain. The option prices are then obtained by applying Simpson’s Rule for integration and FFT for efficient computation. These prices are compared to those obtained using the Black-Scholes formula. The code also visualizes the comparison and the differences between the two methods. The results suggest that the Carr-Madan method yields an accurate call price.</p>
-<div id="f06e382a" class="cell" data-execution_count="1">
+<div id="a503fb58" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -678,7 +690,7 @@ g &amp;= \frac{b - d}{b + d}, \\
 \end{aligned}
 \]</span> <span class="math inline">\(v_0\)</span> is the initial variance (volatility squared), <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\theta\)</span> is the long-term mean of the variance, <span class="math inline">\(\kappa\)</span> is the rate at which the variance reverts to <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\rho\)</span> is the correlation between the asset price and its volatility, <span class="math inline">\(\sigma\)</span> is the volatility of volatility, and <span class="math inline">\(\lambda\)</span> is the volatility risk premium.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Heston Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="4023ecd9" class="cell" data-execution_count="2">
+<div id="73786446" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -932,8 +944,8 @@ g &amp;= \frac{b - d}{b + d}, \\
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computation Time (Carr-Madan Method): 0.21 seconds
-Computation Time (Monte Carlo Simulation): 13.36 seconds
+<pre><code>Computation Time (Carr-Madan Method): 0.06 seconds
+Computation Time (Monte Carlo Simulation): 4.93 seconds
 Maximum Price Difference: 0.024669</code></pre>
 </div>
 </div>
@@ -977,7 +989,7 @@ X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \thet
 \theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right).
 \]</span></p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Variance Gamma Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="fdae7c25" class="cell" data-execution_count="3">
+<div id="c0f60d79" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1160,8 +1172,8 @@ X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \thet
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Maximum Absolute Price Difference: 0.010150
-Computational Time (Carr-Madan FFT): 0.066853 seconds
-Computational Time (Monte Carlo): 1.453967 seconds</code></pre>
+Computational Time (Carr-Madan FFT): 0.014283 seconds
+Computational Time (Monte Carlo): 0.443499 seconds</code></pre>
 </div>
 </div>
 <p><strong>Pricing Options in a Jump Diffusion Model</strong></p>
@@ -1186,7 +1198,7 @@ S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}
 \]</span></p>
 <p>This formula captures both the diffusion (Brownian motion) and jump components, making it applicable for more accurate modeling of stock prices that experience sudden jumps in addition to continuous fluctuations.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Jump Diffusion Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="c94c7d5a" class="cell" data-execution_count="4">
+<div id="f928ae30" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1361,8 +1373,8 @@ S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computational Time (Carr-Madan FFT): 0.082079 seconds
-Computational Time (Monte Carlo): 0.182509 seconds</code></pre>
+<pre><code>Computational Time (Carr-Madan FFT): 0.020169 seconds
+Computational Time (Monte Carlo): 0.054480 seconds</code></pre>
 </div>
 </div>
 </section>
