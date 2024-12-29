@@ -3,6 +3,8 @@ import sys
 num = 1 if len(sys.argv) == 1 else int(sys.argv[1])
 
 names = [
+    "OptionPricing",
+    "ItosFormula",
     "Ito", 
     "Intro",
     "Arbitrage",

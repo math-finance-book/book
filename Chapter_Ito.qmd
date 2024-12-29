@@ -1,4 +1,4 @@
-# Brownian Motion and Ito Calculus {#sec-c_continuoustime}
+# Brownian Motion {#sec-c_continuoustime}
 
 ## From Discrete to Continuous Time {#sec_f_discrete}
 Our main point of departure is knowing how a given quantity evolves through time.  For example, $X(t)$ might denote how much wealth you have at time $t$.  Partition the interval $[0,T]$ into $N$ intervals of length $\Delta t = \frac{T}{N}$, in other words
@@ -10,7 +10,7 @@ $$
 $$  
 The limiting form of this equation is 
 $$
- X(t) = r X(t) dt ~~~\text{or} ~~~\frac{d X(t)}{dt} = r X(t)
+ X(t) = r X(t) \,\mathrm{d} t ~~~\text{or} ~~~\frac{d X(t)}{\,\mathrm{d} t} = r X(t)
 $$ 
 
 which is a differential equation.  Notice this can also be written as a sum 
@@ -20,20 +20,20 @@ $$
 
 in the limit we get an integral equation
 
-$$X(t) = X(0) + \int_0^T r X(t) dt.$$
+$$X(t) = X(0) + \int_0^T r X(t) \,\mathrm{d} t.$$
 
-  The solution is $X(t) = X(0) e^{r T}$ which is easily verified by taking the derivative $\frac{d}{dt}e^{r t} X(t) = r X(t)$ or by inserting the solution into the integral equation. This is also the limiting value of the discretely compunded interest as the number of compounding periods $n$ goes to infinity: 
+  The solution is $X(t) = X(0) e^{r T}$ which is easily verified by taking the derivative $\frac{d}{\,\mathrm{d} t}e^{r t} X(t) = r X(t)$ or by inserting the solution into the integral equation. This is also the limiting value of the discretely compunded interest as the number of compounding periods $n$ goes to infinity: 
 
 $$X(t)=\lim_{t \rightarrow \infty} \left(1+r \frac{T}{N}\right)^{N}.$$ 
 
 This can be verified by taking the log of $\left(1+r \frac{T}{N}\right)^{N}$ and using l'Hospital's rule.  Given the initial wealth, $X(0)$ and the rate of change $r X(t)$ (which, if the unit of account is dollars, is in units dollars / time), we can we  solve for the value of our wealth at all times. 
 
 However, most investments involve risk.  We might think that part of the return is more or less known while a portion of the investment is random or risky.  Therefore we would like a model which can be written as 
-$$ d X(t) = \mu X(t) dt + \text{`noise'} \times X(t). $$
+$$ d X(t) = \mu X(t) \,\mathrm{d} t + \text{`noise'} \times X(t). $$
 
 It makes sense that the units of the noise should be in the unit of account (dollars) and it should have zero mean but it is not obvious how to make sense of a noisy change over an instant.  In the next section we examine the most popular choice for this model, namely Brownian motion.  Loosely speaking, we can take expectations to get
 
-$$ d E[X(t)]= \mu E[X(t)] dt$$ 
+$$ d E[X(t)]= \mu E[X(t)] \,\mathrm{d} t$$ 
 
 which gives a solution 
 
@@ -79,7 +79,7 @@ T = 0.5
 # delta t
 dt = T/n
 # volatility is standard deviation
-vol = np.sqrt(dt)
+vol = np.sqrt(\,\mathrm{d} t)
 # seed for random generator
 seed= 1234
 # define a random generator
@@ -96,7 +96,7 @@ for i in range(1, n + 1):
     Bt[i] = Bt[i - 1] + inc[i - 1]
 
 # plot one path
-t = np.array(range(0, n + 1, 1)) * dt
+t = np.array(range(0, n + 1, 1)) * \,\mathrm{d} t
 plt.figure(figsize=(9,6))
 plt.plot(t,Bt[:,0])
 plt.xlabel("Time")
@@ -122,24 +122,24 @@ plt.ylabel("Brownian Motion")
 
 
 
-<!-- ^[The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrtdt]*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\Delta t}$ and hence its variance is $\Delta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings Time and Brownian Motion.  To plot the path of the Brownian motion, select the two columns and insert an XY (Scatter) chart, with data points connected by lines.} -->
+<!-- ^[The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrt\,\mathrm{d} t]*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\Delta t}$ and hence its variance is $\Delta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings Time and Brownian Motion.  To plot the path of the Brownian motion, select the two columns and insert an XY (Scatter) chart, with data points connected by lines.} -->
 
 <!-- <!-- \addcontentsline{lof}{figure}{Simulating Brownian Motion}
 \begin{verbatim}
 Sub Simulating_Brownian_Motion()
-Dim T, dt, Sqrdt, BrownianMotion, i, N
+Dim T, \,\mathrm{d} t, Sqr\,\mathrm{d} t, BrownianMotion, i, N
 T = InputBox("Enter the length of the time period (t)")
 N = InputBox("Enter the number of periods (N)")
-dt = T / N
-Sqrdt = Sqr(dt)
+\,\mathrm{d} t = T / N
+Sqr\,\mathrm{d} t = Sqr(\,\mathrm{d} t)
 ActiveCell.Value = "Time"
 ActiveCell.Offset(0, 1) = "Brownian Motion"
 ActiveCell.Offset(1, 0) = 0   ' beginning time
 ActiveCell.Offset(1, 1) = 0   ' beginning value of Brownian motion
 BrownianMotion = 0
 For i = 1 To N
-  ActiveCell.Offset(i + 1, 0) = i * dt          ' next time
-  BrownianMotion = BrownianMotion + Sqrdt * RandN()
+  ActiveCell.Offset(i + 1, 0) = i * \,\mathrm{d} t          ' next time
+  BrownianMotion = BrownianMotion + Sqr\,\mathrm{d} t * RandN()
   ActiveCell.Offset(i + 1, 1) = BrownianMotion  ' next value
 Next i
 End Sub -->
@@ -163,10 +163,10 @@ where $\Delta B_{t_i}$ denotes the change $B_{t_i}-B(t_{i-1}).$  If we consider 
 #| fig-cap: "Quadratic Variation"
 # quadratic variation
 Q = np.zeros(shape = (n, m))
-# Generate dB^2
+# Generate \,\mathrm{d} B^2
 Q = (Bt[1:n + 1] - Bt[0:n])**2
 
-# Quadratic variation is the cumulative sum of dB^2
+# Quadratic variation is the cumulative sum of \,\mathrm{d} B^2
 QV = np.zeros(shape = (n + 1, m))
 QV[1:] = Q.cumsum(axis = 0)
 plt.figure(figsize=(9,6))
@@ -187,9 +187,9 @@ as $N \rightarrow \infty$.  Essentially the same argument shows that the quadrat
 ```{python}
 #| label: squaredvariation
 #| fig-cap: "Approximate Squared Variation of $f(t)=t$"
-# Plot dt^2
+# Plot \,\mathrm{d} t^2
 plt.figure(figsize=(9,6))
-plt.plot(t,t * dt **2)
+plt.plot(t,t * \,\mathrm{d} t **2)
 ```
 
 
@@ -200,7 +200,7 @@ Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic va
 To better visualize the convergence of the quadratic for a handfull of simulated paths of a standard Brownian motion, we encourage readers to interact with the plot below.
 
 ::: {#fig-interactive_quad_var}
-<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/quad_var_plot"></iframe>
+<iframe wi\,\mathrm{d} th="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/quad_var_plot"></iframe>
 
 Convergence of quadratic variation for a standard Brownian motion
 :::
@@ -262,15 +262,15 @@ To compute the quadratic variation of an Ito process, we use the following simpl
 
 $$
 (\mathrm{d} t)^2 = 0\;, 
-$$ {#eq-dtsquared}
+$$ {#eq-\,\mathrm{d} tsquared}
 
 $$
 (\mathrm{d} t)(\mathrm{d} B) =0\;, 
-$$ {#eq-dtdB}
+$$ {#eq-\,\mathrm{d} t\,\mathrm{d} B}
 
 $$
 (\mathrm{d} B)^2 =\mathrm{d} t\;. 
-$$ {#eq-dBsquared}
+$$ {#eq-\,\mathrm{d} Bsquared}
 
 
 
@@ -318,7 +318,7 @@ Y(t) = Y(0) + \int_0^T g'(B(t))\,\mathrm{d} B(t) + \frac{1}{2}\int_0^T g''(B(t))
 $$ {#eq-itonew1}
 
 Thus, relative to the ordinary calculus, Ito's formula has an extra term involving the second derivative $g''$.  We can write @eq-itonew1 in differential form as
-$$dY(t) = \frac{1}{2}g''(B(t))\,\mathrm{d} t + g'(B(t))\,\mathrm{d} B(t).$$
+$$\,\mathrm{d} Y(t) = \frac{1}{2}g''(B(t))\,\mathrm{d} t + g'(B(t))\,\mathrm{d} B(t).$$
 Thus, $Y=g(B)$ is an Ito process with drift $g''(B(t))/2$ and diffusion coefficient $g'(B(t))$.
 
 To gain some intuition for the extra term in Ito's formula, we return to the ordinary calculus.  Given dates $t<u$, the derivative defines a linear approximation of the change in $y$ over this time period; i.e., setting $\Delta x = x(u)-x(t)$ and $\Delta y = y(u) - y(t)$, we have the approximation
@@ -355,13 +355,13 @@ $$\Delta e^{B(t)}= e^{B(t)} \Delta B(t) + \frac{1}{2} e^{B(t)} \Delta t $$
 G = lambda x: np.exp(x)
 DG = lambda x: np.exp(x)
 DDG = lambda x: np.exp(x)
-# Build G'(x)dB
-GdB = np.zeros(shape = (n, m))
-GdB[0] = np.repeat(DG(0), m) * inc[0]
-GdB[1:] = DG(Bt[0:n - 1]) * inc[1:]
+# Build G'(x)\,\mathrm{d} B
+G\,\mathrm{d} B = np.zeros(shape = (n, m))
+G\,\mathrm{d} B[0] = np.repeat(DG(0), m) * inc[0]
+G\,\mathrm{d} B[1:] = DG(Bt[0:n - 1]) * inc[1:]
 SI = np.zeros(shape = (n, m))
-# Stochastic Integral is cumulative sum of G'(B)dB plus initial
-SI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G(0)
+# Stochastic Integral is cumulative sum of G'(B)\,\mathrm{d} B plus initial
+SI = G\,\mathrm{d} B.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G(0)
 # Compare Ito's Lemma 
 plt.figure(figsize=(9,6))
 plt.plot(t[0:n], SI[:,0])
@@ -385,10 +385,10 @@ plt.figure(figsize=(9,6))
 plt.plot(t[0:n], QVV[:,0])
 ```
 
-To see the accuracy of Ito's approximation over different amounts of subdivisions, as well as the impact of the second derivative term $\int_0^t \fra{1}{2}g''(B_s)ds$, we encourage readers to interact with the plot below.
+To see the accuracy of Ito's approximation over different amounts of subdivisions, as well as the impact of the second derivative term $\int_0^t (1/2)g''(B_s)ds$, we encourage readers to interact with the plot below.
 
 ::: {#fig-interactive_ito}
-<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/ito_approx_plot"></iframe>
+<iframe wi\,\mathrm{d} th="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/ito_approx_plot"></iframe>
 
 Accuracy of Ito's approximation
 :::
@@ -432,8 +432,8 @@ $$ {#eq-itoprocess113}
 By adding the rule 
 $$
 (\mathrm{d} B_x)(\mathrm{d} B_y) = \rho\,\mathrm{d} t 
-$$ {#eq-dBdB}
- to the rules @eq-dtsquared--@eq-dBsquared, we can compute the limit in @eq-itoprocess113 as
+$$ {#eq-\,\mathrm{d} B\,\mathrm{d} B}
+ to the rules @eq-\,\mathrm{d} tsquared--@eq-\,\mathrm{d} Bsquared, we can compute the limit in @eq-itoprocess113 as
 
 $$
 \lim_{N \rightarrow\infty} \sum_{i=1}^N \Delta X_{t_i} \times \Delta Y_{t_i}  = \int_0^T (\mathrm{d} X)(\mathrm{d} Y)
@@ -462,7 +462,7 @@ $$
 $$ {#eq-itogeneralnew}
 
 
-In this equation, we apply the rules @eq-dtsquared--@eq-dBdB to compute
+In this equation, we apply the rules @eq-\,\mathrm{d} tsquared--@eq-\,\mathrm{d} B\,\mathrm{d} B to compute
 \begin{align*}
 (\mathrm{d} X(t))^2&= \sigma_x^2(t)\,\mathrm{d} t\; ,\\
 (\mathrm{d} Y(t))^2 &= \sigma_y^2(t)\,\mathrm{d} t\; ,\\
@@ -672,13 +672,13 @@ S0 = 42
 # Maturity
 T = 0.5
 # Delta t
-dt = T/m
+\,\mathrm{d} t = T/m
 # Drift
 drift = (r-0.5*sig**2)
 # Volatility
-vol = sig * np.sqrt(dt)
+vol = sig * np.sqrt(\,\mathrm{d} t)
 
-t = np.array(range(0,m + 1,1)) * dt
+t = np.array(range(0,m + 1,1)) * \,\mathrm{d} t
 
 # seed for random generator
 seed= 2020
@@ -709,8 +709,8 @@ While Geometric Brownian Motion is an important stochastic process to model stoc
 $$X(t) = \exp\left(-\frac{\kappa^2}{2} + \kappa B(t)\right)$$
 
 satisfies $E[X(t)]=1$ and $E[X(t)|X(s)]=X(s)$ and is an important example of a strictly positive martingale.  Again, these facts can be verified using the formula for the expected value of a lognormal random variable.  Notice we can write
-$$dX(t)= \kappa X(t) dB(t)$$
-which agrees with the martingale characterization of $\int_0^t \sigma(X(t),t) dB(t)$.
+$$\,\mathrm{d} X(t)= \kappa X(t) \,\mathrm{d} B(t)$$
+which agrees with the martingale characterization of $\int_0^t \sigma(X(t),t) \,\mathrm{d} B(t)$.
 
 ## Numeraires and Probabilities {#sec-s_girsanov}
 When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  (Likewise, a martingale is unlikely to remain a martingale when we change probabilities.)  However, the Brownian motion $B$ will still be an Ito process under the new probability measure.  In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire) this will always be true for us.]  Changing probabilities only changes the drift of an Ito process.  
@@ -950,7 +950,7 @@ $$ {#eq-volatilityratio}
 To understand why taking the square root of $(\mathrm{d} Z/Z)^2$ (dropping the $\mathrm{d} t$) gives the volatility, consider for example the product case $Z=XY$.  Define a random process $B$ by $B(0)=0$ and 
 $$
 \mathrm{d} B = \frac{\sigma_x}{\sigma}\,\mathrm{d} B_x + \frac{\sigma_y}{\sigma}\,\mathrm{d} B_y\;,
-$$ {#eq-foreigndB}
+$$ {#eq-foreign\,\mathrm{d} B}
 
 where $\sigma$ is the volatility defined in @eq-volatilityproduct.
 Then we can write  @eq-volproduct1 as
@@ -1015,17 +1015,17 @@ For $N$ larger than about $100 T$, the approximation will look perfect---you won
 $$
  Z_{t_i} = Z(t_{i-1}) \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
 $$ {#eq-exponential112}
-and using Taylor's Theorem for small $\Delta t$, $e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t$ and $e^{\sigma \Delta B(t)} \approx 1+ \sigma \Delta B(t) +\frac{1}{2}\sigma^2 (\Delta B(t))^2$ and $(dB(t))^2=\Delta t$.
+and using Taylor's Theorem for small $\Delta t$, $e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t$ and $e^{\sigma \Delta B(t)} \approx 1+ \sigma \Delta B(t) +\frac{1}{2}\sigma^2 (\Delta B(t))^2$ and $(\,\mathrm{d} B(t))^2=\Delta t$.
 :::
 ::: {#exr-nolabel}
 Use simulation to find  $E^*[e^{-r T}{\mathbf{1}}_{\{S(t) \ge K\}}]$ in the risk neutral measure where
 \begin{equation*}
-dS(t)= r S(t) dt + \sigma S(t) dB(t)^*
+\,\mathrm{d} S(t)= r S(t) \,\mathrm{d} t + \sigma S(t) \,\mathrm{d} B(t)^*
 \end{equation*}
 Verify that $S(t)/e^{r t}$ is a martingale in the $*$ measure where $B^*$ is a Brownian motion.
 Then use simulation to find $S(0)E^S[\frac{1}{S(t)} {\mathbf{1}}_{\{S(t) \ge K\}}]$ in the pricing measure which uses the share as numeraire where 
 \begin{equation*}
-dS(t) = (r + \sigma^2) S(t) dt + \sigma S(t) dB(t)^S
+\,\mathrm{d} S(t) = (r + \sigma^2) S(t) \,\mathrm{d} t + \sigma S(t) \,\mathrm{d} B(t)^S
 \end{equation*}
 so the log satisfies
 \begin{equation*}
