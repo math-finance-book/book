@@ -4,19 +4,19 @@ This chapter introduces the change of measure (or change of numeraire or marting
 
 The pricing and hedging results in this book are not tied to any particular currency.  However, for specificity, the discussion will generally be in terms of dollars.  Multiple currencies are addressed in @sec-c_foreignexchange.
 
-## State Prices in a One-Period Binomial Model {#sec-s_oneperiodbinomial}
+## Fundamental Ideas in a Simple Setting {#sec-s_oneperiodbinomial}
 
-To introduce the concepts that will be discussed in the remainder of the chapter, we will consider in this and the following section the following very simple framework.  \index{binomial model} There is a stock with price $S$ today (which we will call date~0).  At the end of some period of time of length $T$, the stock price will take one of two values: either $S_u$ or $S_d$, where $S_u > S_d$.  If the stock price equals $S_u$ we say we are in the up state of the world, and if it equals $S_d$ we say we are in the down state.  The stock does not pay a dividend.  There is also a risk-free asset earning a continuously compounded rate of interest $r$.  Finally we want to consider a European call option on the stock with maturity $T$ and strike $K$.   The value of the call option at the end of the period is $C_u=\max(0,S_u-K)$ in the up state and $C_d=\max(0,S_d-K)$ in the down state. 
+We consider in this section the following very simple framework.  \index{binomial model} There is a stock with price $S$ today (which we call date~0).  At the end of some period of time of length $T$, the stock price will take one of two values: either $S_u$ or $S_d$, where $S_u > S_d$.  If the stock price equals $S_u$ we say we are in the up state of the world, and if it equals $S_d$ we say we are in the down state.  The stock does not pay a dividend prior to $T$.  There is also a risk-free asset earning a continuously compounded rate of interest $r$.  Finally we want to consider a European call option on the stock with maturity $T$ and strike $K$.   A call option gives the owner the right (but not the obligation) to buy the stock at the fixed price called the strike.  The value of this at the option maturity $T$ is the excess of the stock price over $K$ if that is positive and a value of zero otherwise.  Options are discussed in more detail in the next chapter.  Here, it is sufficient just to know that the value of the call option at the end of the period is $C_u=\max(0,S_u-K)$ in the up state and $C_d=\max(0,S_d-K)$ in the down state. 
 
-We will assume
+We assume
 $$
 \frac{S_u}{S} > \mathrm{e}^{rT} > \frac{S_d}{S}\;.
 $$ {#eq-binomialnoarbitrage}
-
 This condition means that the rate of return on the stock in the up state is greater than the risk-free rate, and the rate of return on the stock in the down state is less than the risk-free rate.  If it were not true, there would be an arbitrage opportunity: \index{arbitrage} if the rate of return on the stock were greater than the risk-free rate in both states, then one should buy an infinite amount of the stock on margin, and conversely if the rate of return on the stock were less than the risk-free rate in both states, then one should short an infinite amount of stock and put the proceeds in the risk-free asset.  So what we are assuming is that there are no arbitrage opportunities in the market for the stock and risk-free asset.
 
+### Option Deltas and Replication 
 
-The delta of the call option is $\delta = (C_u-C_d)/(S_u-S_d)$.  \index{delta} Multiplying by $S_u-S_d$ gives us $\delta(S_u-S_d) = C_u-C_d$ and rearranging yields  $\delta S_u - C_u = \delta S_d-C_d$, which is critical to what follows.  Consider purchasing $\delta$ shares of the stock at date 0 and borrowing
+The delta of the call option is defined to be the difference between the call values in the up and down states divided by the difference between the underlying values; that is, $\delta = (C_u-C_d)/(S_u-S_d)$.  \index{delta} Multiplying by $S_u-S_d$ gives us $\delta(S_u-S_d) = C_u-C_d$ and rearranging yields  $\delta S_u - C_u = \delta S_d-C_d$, which is critical to what follows.  Consider purchasing $\delta$ shares of the stock at date 0 and borrowing
 $$\mathrm{e}^{-rT}(\delta S_u-C_u) = \mathrm{e}^{-rT}(\delta S_d-C_d)$$
 dollars at date 0.  Then you will owe 
 $$\delta S_u-C_u = \delta S_d-C_d$$
@@ -32,7 +32,9 @@ $$ {#eq-C0}
 
 Because the call option is equivalent to buying the stock on margin, it can be considered a levered investment in the stock. \index{leverage}
 
-We will now rewrite the option pricing @eq-C0 in terms of state prices. \index{state price}
+### State Prices
+
+We now rewrite the option pricing @eq-C0 in terms of what are called state prices. \index{state price}
 By substituting for $\delta$ in @eq-C0, we can rearrange it as
 
 
@@ -74,20 +76,23 @@ $$
 $$ {#eq-binomialR2}
 
 
-These equations have the following interpretation: the value of a security today is its value in the up state times $\pi_u$ plus its value in the down state times $\pi_d$.  This applies to @eq-binomialR2 by considering an investment of \$1 today in the risk-free asset---it has value 1 today and will have value $\mathrm{e}^{rT}$ in both the up and down states at date $T$.  Moreover, this same equation will hold for any other derivative asset.  For example, if we considered a put option, then a delta--hedging argument analogous to that we just gave for the call option will lead to a formula for the value $P$ of the put today which can be expressed as $P = \pi_uP_u+\pi_dP_d$ for the same $\pi_u$ and $\pi_d$ defined in @eq-binomialstateprices.  
+These equations have the following interpretation: the value of a security today is its value in the up state times $\pi_u$ plus its value in the down state times $\pi_d$.  This applies to @eq-binomialR2 by considering an investment of \$1 today in the risk-free asset---it has value 1 today and will have value $\mathrm{e}^{rT}$ in both the up and down states at date $T$.  Moreover, this same equation holds for any other derivative asset (for example, a put option -- see @#sec-c_calls-puts) for the same $\pi_u$ and $\pi_d$ defined in @eq-binomialstateprices.  
 
 In this model, we can think of any security as a portfolio of what are called Arrow securities (in recognition of the seminal work of Kenneth Arrow [@Arrow]).  \index{Arrow security} One of the Arrow securities pays \$1 at date $T$ if the up state occurs and the other pays \$1 at date $T$ if the down state occurs.  For example, the stock is equivalent to a portfolio consisting of $S_u$ units of the first Arrow security and $S_d$ units of the second, because the stock is worth $S_u$ dollars in the up state and $S_d$ dollars in the down state.   @eq-binomialC2--@eq-binomialR2 show that~ $\pi_u$ is the price of the first Arrow security and $\pi_d$ is the price of the second.  For example, the right-hand side of @eq-binomialS2 is the value of the stock at date 0 viewed as a portfolio of Arrow securities when the Arrow securities have prices $\pi_u$ and $\pi_d$.  Because the stock clearly is such a portfolio, its price today must equal its value as that portfolio, which is what @eq-binomialS2 asserts.
 
-As mentioned before, the prices $\pi_u$ and $\pi_d$ of the Arrow securities are called the state prices, because they are the prices of receiving \$1 in the two states of the world.  The state prices should be positive, because the payoff  of each Arrow security is nonnegative in both states and positive in one.  A little algebra shows that the conditions $\pi_u>0$ and $\pi_d>0$  are exactly equivalent to our no-arbitrage assumption @eq-binomialnoarbitrage.  Thus, we conclude that **in the absence of arbitrage opportunities, there exist positive state prices such that the price of any security is the sum across the states of the world of its payoff multiplied by the state price.**
+As mentioned before, the prices $\pi_u$ and $\pi_d$ of the Arrow securities are called the state prices, because they are the prices of receiving \$1 in the two states of the world.  The state prices should be positive, because the payoff  of each Arrow security is nonnegative in both states and positive in one.  A little algebra shows that the conditions $\pi_u>0$ and $\pi_d>0$  are exactly equivalent to our no-arbitrage assumption @eq-binomialnoarbitrage.  Thus, we conclude that 
 
-This conclusion generalizes to other models, including models in which the stock price takes a continuum of possible values.  We will discuss more general models later in this chapter.  It is a powerful result that tremendously simplifies derivative security pricing.  
+::: {.callout-important}
+In the absence of arbitrage opportunities, there exist positive state prices such that the price of any security is the sum across the states of the world of its payoff multiplied by the state price.
+:::
 
-## Probabilities and Numeraires
+This conclusion generalizes to other models, including models in which the stock price takes a continuum of possible values.  We discuss more general models later in this chapter.  It is a powerful result that tremendously simplifies derivative security pricing.  
 
-In this section, we will continue our analysis of the binomial example.  To apply the statement about state prices appearing in boldface type above in the most convenient way, we will manipulate the state prices  so we can interpret the sums on the right-hand sides of  @eq-binomialC2--@eq-binomialR2 in terms of  expectations.  \index{expectation} The expectation (or mean) of a random variable is of course its probability-weighted average value.
+### Risk-Neutral Probability
 
-In general, there are different expectations that are useful.  In this model, there are two that we can define: one corresponding to the risk-free asset and one corresponding to the stock.  Many readers will have experience with the first in the form of risk-neutral probabilities.  
+In this section, we continue our analysis of the binomial example.  To apply the statement about state prices appearing in boldface type above in the most convenient way, we manipulate the state prices  so we can interpret the sums on the right-hand sides of  @eq-binomialC2--@eq-binomialR2 in terms of  expectations.  \index{expectation} The expectation (or mean) of a random variable is of course its probability-weighted average value.
 
+In general, there are different expectations that are useful.  In this model, there are two that we can define: one corresponding to the risk-free asset and one corresponding to the stock.  
 The risk-neutral probabilities are defined as $\pi_u\mathrm{e}^{rT}$ for the up state and $\pi_d\mathrm{e}^{rT}$ for the down state.  Denoting these as $p_u$ and $p_d$ respectively,  @eq-binomialC2--@eq-binomialR2 can be written as
 
 $$
@@ -106,7 +111,9 @@ $$ {#eq-binomialR3}
 The numbers $p_u$ and $p_d$ are both positive (because the state prices are positive under our no-arbitrage assumption) and @eq-binomialR3 states that they sum to one, so it is indeed sensible to consider them as probabilities.
  @eq-binomialC3 and @eq-binomialS3 state that the value of a security today is its expected value at date $T$ (the expectation taken with respect to the risk-neutral probabilities) discounted at the risk-free rate.  Thus, these are present value formulas.  Unlike the Capital Asset Pricing Model, for example, there is no risk premium in the discount rate.  This is the calculation we would do to price assets under the actual probabilities if investors were risk neutral (or for zero-beta assets).  So, we can act as if investors are risk neutral by adjusting the probabilities.  Of course, we are not really assuming investors are risk neutral.  We have simply embedded any risk premia in the probabilities.^[This fundamental idea is due to Cox and Ross [@CR].]
 
- @eq-binomialC3 and @eq-binomialS3 can be written in an equivalent form, which, though somewhat less intuitive, generalizes more readily.  First, let's introduce some notation for the price of the risk-free asset.  Considering an investment of \$1 today which grows to $\mathrm{e}^{rT}$ at date $T$, it is sensible to take the price today to be $R=1$ and the price in the up and down states at date $T$ to be $R_u=R_d=\mathrm{e}^{rT}$.^[All of the equations appearing below will also be true if instead we take $R=\mathrm{e}^{-rT}$ and $R_u=R_d=1$.]  In terms of this notation,  @eq-binomialC3--@eq-binomialR3 can be written as:
+ ### Martingales
+
+ @eq-binomialC3 and @eq-binomialS3 can be written in an equivalent form, which, though somewhat less intuitive, generalizes more readily.  First, let's introduce some notation for the price of the risk-free asset.  Considering an investment of \$1 today which grows to $\mathrm{e}^{rT}$ at date $T$, it is sensible to take the price today to be $R=1$ and the price in the up and down states at date $T$ to be $R_u=R_d=\mathrm{e}^{rT}$.^[All of the equations appearing below  are also true if instead we take $R=\mathrm{e}^{-rT}$ and $R_u=R_d=1$.]  In terms of this notation,  @eq-binomialC3--@eq-binomialR3 can be written as:
 
 $$
 \frac{C}{R} = p_u \frac{C_u}{R_u} + p_d \frac{C_d}{R_d}\;, 
@@ -121,7 +128,12 @@ $$
 $$ {#eq-binomialR4}
 
 
-@eq-binomialC4 and @eq-binomialS4 each state that the price of a security today divided by the price of the risk-free asset equals the expected future value of the same ratio, when we take expectations using the risk-neutral probabilities.  In other words, the mean of the date--$T$ value of the ratio is equal to the ratio today.  We will discuss the interpretation and significance of these equations further below.  First, we consider the other type of expectation in this model, which is based on probabilities corresponding to the stock.
+@eq-binomialC4 and @eq-binomialS4 each state that the price of a security today divided by the price of the risk-free asset equals the expected future value of the same ratio, when we take expectations using the risk-neutral probabilities.  In other words, the mean of the date--$T$ value of the ratio is equal to the ratio today.  
+A variable that changes randomly over time with the expected future value being always equal to the current value is called a martingale.  Thus, we have shown that the ratio of the stock price to the price of the risk-free asset is a martingale when using the risk-neutral probabilities.
+
+The ratio of one price to another is the value of the first (numerator) asset  when we are using the second (denominator) asset  as the numeraire.  \index{numeraire} The term numeraire means a unit of measurement.  For example, the ratio $C/R$ is the value of the call when we use the risk-free asset as the unit of measurement: it is the number  of units of the risk-free asset for which one call option can be exchanged (to see this, note that $C/S$ shares is worth $C/R \times R = C$ dollars, so $C/R$ units of the risk-free asset is worth the same as one call). Thus, we have shown that asset prices using the risk-free asset as numeraire are martingales relative to the risk-neutral probabilities.
+
+### Other Numeraires
 
 Note that the risk-neutral probabilities are the state prices multiplied by the gross return on the risk-free asset.  Analogously, define numbers $q_u = \pi_uS_u/S$ and $q_d = \pi_dS_d/S$.  Substituting for $\pi_u$ and $\pi_d$ in  @eq-binomialC2--@eq-binomialR2 and continuing to use the notation $R$ for the price of the risk-free asset, we obtain
 
@@ -138,96 +150,90 @@ $$
 $$ {#eq-binomialR5}
 
 
-@eq-binomialS5 establishes that we can view the $q$'s as probabilities (like the risk-neutral probabilities, they are positive because the state prices are positive).   @eq-binomialC5 and @eq-binomialR5 both state that the ratio of a security price to the price of the stock today equals the mean value of the same ratio at date $T$, when we compute expectations using the $q$'s as probabilities.  
+@eq-binomialS5 establishes that we can view the $q$'s as probabilities (like the risk-neutral probabilities, they are positive because the state prices are positive).   @eq-binomialC5 and @eq-binomialR5 both state that the ratio of a security price to the price of the stock is a martingale when we use the $q's$ as probabilities.  Thus, asset prices using the stock as numeraire are martingales when we use the $q$ probabilities.
 
+An assignment of probabilities to events is called a probability measure, or simply a measure (because it measures the events, in a sense).  Thus, we have described two different probability measures: one using the risk-free asset as numeraire and one using the stock as numeraire.  The probability measure using the risk-free asset as numeraire defined in the previous section is universally called the risk-neutral probability.  When we use one of these probabilities, we commonly say that we are changing numeraires.
 
-Here is some useful terminology:
+::: {.callout-important}
+If there are no arbitrage opportunities, then for each (non-dividend-paying) asset, there exists a probability measure  such that the ratio of any other (non-dividend-paying) asset price to the first (numeraire) asset price is a martingale.
+:::
 
+We have applied this statement to the risk-free asset, which pays dividends (interest).  However, the price $R_u=R_d=\mathrm{e}^{rT}$ includes the interest, so no interest has been withdrawn---the interest has been reinvested---prior to the maturity $T$ of the option.  This is what we mean by a non-dividend-paying asset.  In general, we apply the formulas developed in this and the following section to dividend-paying assets by considering the portfolios in which dividends are reinvested.
 
-- An assignment of probabilities to events is called a probability measure, or simply a measure (because it measures the events, in a sense).  Thus, we have described two different probability measures in this section.  \index{measure} \index{probability measure}
-- The ratio of one price to another is the value of the first (numerator) asset  when we are using the second (denominator) asset  as the numeraire.  \index{numeraire} The term numeraire means a unit of measurement.  For example, the ratio $C/S$ is the value of the call when we use the stock as the unit of measurement: it is the number of shares of stock for which one call option can be exchanged (to see this, note that $C/S$ shares is worth $C/S \times S = C$ dollars, so $C/S$ shares is worth the same as one call.) 
-- A variable that changes randomly over time with the expected future value being always equal to the current value is called a martingale. \index{martingale}
-
-
-
-The right-hand sides of  @eq-binomialC4--@eq-binomialS4 and @eq-binomialC5 and @eq-binomialR5 are expectations under different probability measures (the $p$'s or $q$'s).  The expected future (date--$T$) value equals the current (date--0) value, so the random variables ($C/R$ and $S/R$ or $C/S$ and $R/S$) are martingales.  The values $C/R$ and $S/R$ are the values of the call and stock using the risk-free asset as numeraire, and the values $C/S$ and $R/S$ are the values of the call and risk-free asset using the stock as numeraire.  Thus, we will express  @eq-binomialC4--@eq-binomialS4 as the call and stock are martingales when we use the risk-free asset as numeraire.  Likewise, we will express  @eq-binomialC5 and @eq-binomialR5 as the call and risk-free asset are martingales when we use the stock as numeraire.  It should be understood in both cases that using an asset as numeraire means that we also use the corresponding probability measure (i.e., the $p$'s or $q$'s).  In general, our conclusion that assets can be priced in terms of positive state prices when there are no arbitrage opportunities can be rephrased as: 
-**if there are no arbitrage opportunities, then for each (non-dividend-paying) asset, there exists a probability measure  such that the ratio of any other (non-dividend-paying) asset price to the first (numeraire) asset price is a martingale.**
-
-We have applied this statement to the risk-free asset, which pays dividends (interest).  However, the price $R_u=R_d=\mathrm{e}^{rT}$ includes the interest, so no interest has been withdrawn---the interest has been reinvested---prior to the maturity $T$ of the option.  This is what we mean by a non-dividend-paying asset.  In general, we will apply the formulas developed in this and the following section to dividend-paying assets by considering the portfolios in which dividends are reinvested.
+### Practical Implementation
 
 For this exposition, it was convenient to first calculate the state prices and then calculate the various probabilities.  However, that is not the most efficient way to proceed in most applications.  In a typical application, we would view the prices of the stock and risk-free asset in the various states of the world as given, and we would be attempting to compute the value of the call option.  Note that t @eq-binomialC2--@eq-binomialR2, @eq-binomialC4--@eq-binomialR4, and @eq-binomialC5--@eq-binomialR5 are all equivalent.  In each case we would consider that there are three unknowns---the value $C$ of the call option and either two state prices or two probabilities.  In each case the state prices or probabilities can be computed from the last two equations in the set of three equations and then the call value $C$ can be computed from the first equation in the set.  All three sets of equations produce the same call value.  
 
-In fact, as we will see, it will not even be necessary to calculate the probabilities.  The fact  that ratios of non-dividend paying asset prices to the numeraire asset price are martingales will tell us enough about the probabilities to calculate derivative values without having to calculate the probabilities themselves.
+In fact, as we will see, it is not even necessary to calculate the probabilities.  The fact  that ratios of non-dividend paying asset prices to the numeraire asset price are martingales tell us enough about the probabilities to calculate derivative values without having to calculate the probabilities themselves.
 
-We conclude this section with another reformulation of the pricing relations @eq-binomialC2--@eq-binomialR2.  This formulation will generalize more easily to pricing when there are a continuum of states, the subject of the next section.  
-Let $\text{prob}_u$ denote the actual probability of the up state and $\text{prob}_d$ denote the probability of the down state.  These probabilities are irrelevant for pricing derivatives in the binomial model, but we will use them to write the pricing relations @eq-binomialC2--@eq-binomialR2 as expectations with respect to the actual probabilities.  To do this, we can define
+### Stochastic Discount Factor 
+
+We now consider yet another reformulation of the pricing relations @eq-binomialC2--@eq-binomialR2.  This formulation generalizes more easily to pricing when there are a continuum of states.  
+Let $\text{prob}_u$ denote the actual probability of the up state and $\text{prob}_d$ denote the probability of the down state.  These probabilities are irrelevant for pricing derivatives in the binomial model, but we use them to write the pricing relations @eq-binomialC2--@eq-binomialR2 as expectations with respect to the actual probabilities.  To do this, we can define
 \begin{align*}
-\phi_u &= \frac{\pi_u}{\text{prob}_u}\; ,\\
-\phi_d &= \frac{\pi_d}{\text{prob}_d}\;.
+m_u &= \frac{\pi_u}{\text{prob}_u}\; ,\\
+m_d &= \frac{\pi_d}{\text{prob}_d}\;.
 \end{align*}
 Then @eq-binomialC2--@eq-binomialR2 can be written as
 
 $$
-C = \text{prob}_u\phi_uC_u + \text{prob}_d\phi_dC_d\;,
+C = \text{prob}_um_uC_u + \text{prob}_dm_dC_d\;,
 $$ {#eq-binomialC6}
 
 $$
-S = \text{prob}_u\phi_uS_u + \text{prob}_d\phi_dS_d\;,
+S = \text{prob}_um_uS_u + \text{prob}_dm_dS_d\;,
 $$ {#eq-binomialS6}
 
 $$
-R = \text{prob}_u\phi_uR_u + \text{prob}_d\phi_dR_d\;.
+R = \text{prob}_um_uR_u + \text{prob}_dm_dR_d\;.
 $$ {#eq-binomialR6}
 
 
-The right-hand sides are expectations with respect to the actual probabilities.  For example, the right-hand side of @eq-binomialC6 is the expectation of the random variable that equals $\phi_uC_u$ in the up state and $\phi_dC_d$ in the down state.  The risk-neutral probabilities can be calculated from $\phi_u$ and $\phi_d$ as
-$p_u=\text{prob}_u\phi_uR_u/R$ and $p_d=\text{prob}_d\phi_dR_d/R$.  Likewise, the probabilities using the stock as the numeraire can be calculated from $\phi_u$ and $\phi_d$ as
-$q_u=\text{prob}_u\phi_uS_u/S$ and $q_d=\text{prob}_d\phi_dS_d/S$.  In the following section, we will assume (which can be shown to be true under some technical conditions) that relations such as @eq-binomialC6--@eq-binomialR6  hold in a general (non-binomial) model given the absence of arbitrage opportunities.  We will then show, using definitions analogous to the definitions of $p_u$, $p_d$, $q_u$, and $q_d$ in this paragraph, that relations analogous to @eq-binomialC4--@eq-binomialR4 and @eq-binomialC5--@eq-binomialR5 hold.
+The right-hand sides are expectations with respect to the actual probabilities.  For example, the right-hand side of @eq-binomialC6 is the expectation of the random variable that equals $m_uC_u$ in the up state and $m_dC_d$ in the down state.  The risk-neutral probabilities can be calculated from $m_u$ and $m_d$ as
+$p_u=\text{prob}_um_uR_u/R$ and $p_d=\text{prob}_dm_dR_d/R$.  Likewise, the probabilities using the stock as the numeraire can be calculated from $m_u$ and $m_d$ as
+$q_u=\text{prob}_um_uS_u/S$ and $q_d=\text{prob}_dm_dS_d/S$.  
 
-## Asset Pricing with a Continuum of States
+We call the random variable $m$ the stochastic discount factor.  @eq-binomialS6--@eq-binomialR6 show that we can calculate an asset value as the expectation of its future value discounted (multiplied) by the the stochastic factor $m$.
 
-In this section, we will define the concepts of state prices and probabilities corresponding to different numeraires in a more general framework than that of the preceding section.  This leads to what we will call the fundamental pricing equation, namely @eq-formula.  There are really no new concepts in this section, only a bit more mathematics.
+## More General Models
 
-Consider a non-dividend-paying security having the random price $S(T)$ at date $T$.  We call the contingencies that affect the price $S(T)$ the states of the world.  Our principle regarding state prices developed in the preceding section can in general be expressed as:^[We have proven this in the binomial model, but we will not prove it in general.  As is standard in the literature, we will simply adopt it as an assumption.  A general proof is in fact difficult and requires a definition of no arbitrage that is considerably more complicated than the simple assumption @eq-binomialnoarbitrage that is sufficient in the binomial model.] **if there are no arbitrage opportunities, there exists for each date $T$ a positive random variable $\phi(T)$ such that the value at date 0 of a non-dividend-paying security with price $S$ is **
+Now, we drop the assumption that there are only two possible future prices of the stock and allow a general distribution with potentially a continuum of possible values.  Denote the future price as $S(T)$.  We call the contingencies that affect the price $S(T)$ the states of the world.  Our principle regarding state prices developed in the preceding section can in general be expressed as:^[We have proven this in the binomial model, but we will not prove it in general.  As is standard in the literature, we simply adopt it as an assumption.  A general proof is in fact difficult and requires a definition of no arbitrage that is considerably more complicated than the simple assumption @eq-binomialnoarbitrage that is sufficient in the binomial model.] 
+
+::: {.callout-important}
+If there are no arbitrage opportunities, then there exists for each date $T$ a positive random variable $m(T)$ such that the date--$0$ value of any non-dividend-paying security with price $P$ is 
 $$
-S(0) = E[\phi(T)S(T)]\;.
+P(0) = E[m(T)P(T)]\;.
 $$ {#eq-continuum1}
+:::
 
-Here, $E[\phi(T)S(T)]$ denotes the expectation of the random variable $\phi(T)S(T)$.  The random variable $\phi(T)$ is \index{state price density} called the state price density.^[The term density reflects the fact that in each state of the world $\phi(T)$ can be interpreted as the state price per unit of probability, just as the normal meaning of density is mass per unit of volume.]  In a binomial model (or in any model with only a finite number of states of the world), the concept of an expectation is clear: it is just a weighted average of outcomes, the weights being the probabilities.  In the binomial model, the right-hand side of @eq-binomialS6 is the same as the right-hand side of @eq-continuum1.^[
-In general the expectation (or mean) of a random variable is an intuitive concept, and an intuitive understanding will be sufficient for this book, so I will not give a formal definition.  It should be understood that we are assuming implicitly, whenever necessary, that the expectation exists (which is not always the case).  In this regard, it is useful to note in passing that a product of two random variables $XY$ has a finite mean whenever $X$ and $Y$ have finite variances.]  
+Here, $E[m(T)S(T)]$ denotes the expectation of the random variable $m(T)S(T)$.  The random variable $m(T)$ is the stochastic discount factor.  In a binomial model (or in any model with only a finite number of states of the world), the concept of an expectation is clear: it is just a weighted average of outcomes, the weights being the probabilities.  In the binomial model, the right-hand side of @eq-binomialS6 is the same as the right-hand side of @eq-continuum1.^[
+In general the expectation (or mean) of a random variable is an intuitive concept, and an intuitive understanding  is sufficient for this book, so we will not give a formal definition.  It should be understood that we are assuming implicitly, whenever necessary, that the expectation exists (which is not always the case).  In this regard, it is useful to note in passing that a product of two random variables $XY$ has a finite mean whenever $X$ and $Y$ have finite variances.]  
 
 
-To convert from state prices to probabilities corresponding to different numeraires, we follow the same procedure as at the end of the previous section: we multiply together (i) the probability of the state, (ii) the value of $\phi(T)$ in the state, and (iii)  the gross return of the numeraire in the state.  If there is a continuum of states, then the actual probability of any individual state will typically be zero, so this multiplication will produce a zero probability.  However, we can nevertheless add up these probabilities to define the probability of any event $A$, an event being a set of states of the world.  To do this, let $1_A$ denote the random variable that takes the value 1 when $A$ is true and which is zero otherwise.  Then the probability of $A$ using $S$ as the numeraire is defined as \index{change of measure} \index{change of numeraire}
+To convert from state prices to probabilities corresponding to different numeraires, we follow the same procedure as at the end of the previous section: we multiply together (i) the probability of the state, (ii) the value of $m(T)$ in the state, and (iii)  the gross return of the numeraire in the state.  If there is a continuum of states, then the actual probability of any individual state is typicallt zero, so this multiplication produces a zero probability.  However, we can nevertheless add up these probabilities to define the probability of any event $A$, an event being a set of states of the world.  To do this, let $1_A$ denote the random variable that takes the value 1 when $A$ is true and which is zero otherwise.  Then the probability of $A$ using $S$ as the numeraire is defined as \index{change of measure} \index{change of numeraire}
 $$
-E\left[1_A\phi(T)\frac{S(T)}{S(0)}\right]\;.
+E\left[1_Am(T)\frac{S(T)}{S(0)}\right]\;.
 $$ {#eq-probSnumeraire}
 
-This makes sense as a probability because it is nonnegative and because, if $A$ is the set of all states of the world, then its probability is  $E[\phi(T)S(T)/S(0)]$, which equals one by virtue of @eq-continuum1.  From @eq-probSnumeraire of the probability of any event $A$, it can be shown that the expectation of any random variable $X$ using $S$ as the numeraire is
+This makes sense as a probability because it is nonnegative and because, if $A$ is the set of all states of the world, then its probability is  $E[m(T)S(T)/S(0)]$, which equals one by virtue of @eq-continuum1.  From @eq-probSnumeraire of the probability of any event $A$, it can be shown that the expectation of any random variable $X$ using $S$ as the numeraire is
 $$
-E\left[X\phi(T)\frac{S(T)}{S(0)}\right]\;.
+E\left[Xm(T)\frac{S(T)}{S(0)}\right]\;.
 $$ {#eq-expSnumeraire}
 
 
-The use of the symbol $S$ to denote the price of the numeraire may be confusing, because $S$ is usually used to denote a stock price.  The numeraire here could be any non-dividend-paying asset.  For example, we can take $S(t)=\mathrm{e}^{rt}$, the price of the risk-free asset.  The definition of probabilities as
-$$
-E[1_A\phi(T)\mathrm{e}^{rT}]
-$$ {#eq-riskneutralprob00}
-
-will be called the risk-neutral probability measure or simply risk-neutral measure as before. \index{risk-neutral measure} \index{risk-neutral probability}
-
-Different numeraires lead to different probability measures and hence to different expectations.  To keep this straight, we will use the numeraire as a superscript on the expectation symbol: for example, $E^S$ will denote expectation with respect to the probability measure that corresponds to $S$ being the numeraire.  Also, we will use the symbol $\text{prob}^S(A)$ to denote the probability of an event $A$ when we use $S$ as the numeraire.  So, @eq-probSnumeraire and @eq-expSnumeraire will be written as 
+Different numeraires lead to different probability measures and hence to different expectations.  To keep this straight, we use the numeraire as a superscript on the expectation symbol: for example, $E^S$ denotes expectation with respect to the probability measure that corresponds to $S$ being the numeraire.  Also, we use the symbol $\text{prob}^S(A)$ to denote the probability of an event $A$ when we use $S$ as the numeraire.  So, @eq-probSnumeraire and @eq-expSnumeraire are written as 
 
 $$
-\text{prob}^S(A) = E\left[1_A\phi(T)\frac{S(T)}{S(0)}\right]\;,
+\text{prob}^S(A) = E\left[1_Am(T)\frac{S(T)}{S(0)}\right]\;,
 $$ {#eq-probSnumeraire2}
 
 $$
-E^S[X] = E\left[X\phi(T)\frac{S(T)}{S(0)}\right]\;.
+E^S[X] = E\left[Xm(T)\frac{S(T)}{S(0)}\right]\;.
 $$ {#eq-expSnumeraire2}
 
 
 
-Our key result in the preceding section was that the ratio of the price of any non-dividend paying asset to the price of the numeraire asset is not expected to change when we use the probability measure corresponding to the numeraire.  We will demonstrate the same result in this more general model.   Recall that $T$ denotes an arbitrary but fixed date at which we have defined the probabilities using $S$ as the numeraire in @eq-probSnumeraire.  At each date $t<T$, let $E^S_t$ denote the expectation given information at time $t$ and using $S$ as the numeraire (we will continue to write the expectation at date 0 without a subscript; i.e., $E^S$ has the same meaning as $E^S_0$).  Let $Y$ denote the price of another non-dividend-paying asset.  We will show that
+Our key result in the preceding section was that the ratio of the price of any non-dividend paying asset to the price of the numeraire asset is not expected to change when we use the probability measure corresponding to the numeraire.  We now demonstrate the same result in this more general model.   Recall that $T$ denotes an arbitrary but fixed date at which we have defined the probabilities using $S$ as the numeraire in @eq-probSnumeraire.  At each date $t<T$, let $E^S_t$ denote the expectation given information at time $t$ and using $S$ as the numeraire (we continue to write the expectation at date 0 without a subscript; i.e., $E^S$ has the same meaning as $E^S_0$).  Let $Y$ denote the price of another non-dividend-paying asset.  We will show that
 $$
 \frac{Y(t)}{S(t)} = E^S_t \left[\frac{Y(T)}{S(T)}\right]\;.
 $$ {#eq-preformula}
@@ -239,7 +245,7 @@ $$
 Y(t) = S(t)E^S_t \left[\frac{Y(T)}{S(T)}\right]\;.
 $$ {#eq-formula}
 
-**We will call @eq-formula** the fundamental pricing formula. \index{fundamental pricing formula}
+**We call @eq-formula** the fundamental pricing formula. \index{fundamental pricing formula}
 It is at the heart of modern pricing of derivative securities.  It is a present value relation: the value at time $t$ of the asset is the expectation of its value $Y(T)$ at time $T$ discounted by the (possibly random) factor $S(t)/S(T)$.  To emphasize that the numeraire can be any non-dividend-paying asset (and not necessarily a stock price, as the symbol $S$ might suggest), we can write @eq-formula in the equivalent form
 $$
 Y(t) = A(t)E^A_t \left[\frac{Y(T)}{A(T)}\right]\;,
@@ -254,16 +260,22 @@ $$ {#eq-riskneutralformula}
 
 which means that the value $Y(t)$ is the expected value of $Y(T)$ discounted at the risk-free rate for the remaining time $T\!-\!t$, when the expectation is computed under the risk-neutral probability measure.
 
+In the following section, we assume (which can be shown to be true under some technical conditions) that relations such as @eq-binomialC6--@eq-binomialR6  hold in a general (non-binomial) model given the absence of arbitrage opportunities.  We then show, using definitions analogous to the definitions of $p_u$, $p_d$, $q_u$, and $q_d$ in this paragraph, that relations analogous to @eq-binomialC4--@eq-binomialR4 and @eq-binomialC5--@eq-binomialR5 hold.
+
+## Asset Pricing with a Continuum of States
+
+In this section, we define the concepts of state prices and probabilities corresponding to different numeraires in a more general framework than that of the preceding section.  This leads to what we call the fundamental pricing equation, namely @eq-formula.  There are really no new concepts in this section, only a bit more mathematics.
+
 We end this section with a proof of @eq-preformula, a proof that the reader may skip if desired.^[The proof is due to Harrison and Kreps [@HK].  See also Geman, El Karoui and Rochet [@GKR].  We omit here technical assumptions regarding the existence of expectations.]  
 
 ::: {.callout-note}
  ## 
- Consider any time $t$ and any event $A$ that is distinguishable by time $t$.  Consider the trading strategy of buying one share of the asset with price $Y$ at time $t$ when $A$ has happened and financing this purchase by short selling $Y(t)/S(t)$ shares of the asset with price $S$.  Each share of this asset that you short brings in $S(t)$ dollars, so shorting $Y(t)/S(t)$ shares brings in $Y(t)$ dollars, exactly enough to purchase the desired share of the first asset.  Hold this portfolio until time $T$ and then liquidate it.  Liquidating it will generate 
+ Consider any time $t$ and any event $A$ that is distinguishable by time $t$.  Consider the trading strategy of buying one share of the asset with price $Y$ at time $t$ when $A$ has happened and financing this purchase by short selling $Y(t)/S(t)$ shares of the asset with price $S$.  Each share of this asset that you short brings in $S(t)$ dollars, so shorting $Y(t)/S(t)$ shares brings in $Y(t)$ dollars, exactly enough to purchase the desired share of the first asset.  Hold this portfolio until time $T$ and then liquidate it.  Liquidating it s 
 $$1_A\left(Y(T)-\frac{Y(t)}{S(t)}S(T)\right)$$
 dollars.  The multiplication by the random variable $1_A$ is because we only implement this strategy when $A$ occurs (i.e., when $1_A=1$).  Consider the security that pays this number of dollars at time $T$.  Because we obtained it with a trading strategy that required no investment at time $t$, its price at time 0 must be 0.  We already observed that we can represent the price in terms of state prices, so we conclude that
-$$E \left[\phi(T)1_A\left(Y(T)-\frac{Y(t)}{S(t)}S(T)\right)\right] = 0\;\;.$$
-When we divide by $S(0)$, this will still equal zero.  Factoring $S(T)$ outside the parentheses gives
-$$E \left[1_A\frac{S(T)}{S(0)}\phi(T)\left(\frac{Y(T)}{S(T)}-\frac{Y(t)}{S(t)}\right)\right] = 0\;\;.$$
+$$E \left[m(T)1_A\left(Y(T)-\frac{Y(t)}{S(t)}S(T)\right)\right] = 0\;\;.$$
+When we divide by $S(0)$, this still equals zero.  Factoring $S(T)$ outside the parentheses gives
+$$E \left[1_A\frac{S(T)}{S(0)}m(T)\left(\frac{Y(T)}{S(T)}-\frac{Y(t)}{S(t)}\right)\right] = 0\;\;.$$
 We see from @eq-expSnumeraire2 for expectations using $S$ as the numeraire that we can write this as
 $$E^S\left[1_A\left(\frac{Y(T)}{S(T)}-\frac{Y(t)}{S(t)}\right)\right]=0\;.$$
 This is true for any event $A$ distinguishable at time $t$, so the expectation of $Y(T)/S(T)-Y(t)/S(t)$ must be zero given any information at time $t$ when we use $S$ as the numeraire; i.e.,
@@ -271,74 +283,6 @@ $$E^S_t\left[\frac{Y(T)}{S(T)}-\frac{Y(t)}{S(t)}\right]=0\; ,$$
 or, equivalently
 $$E^S_t\left[\frac{Y(T)}{S(T)}\right] = \frac{Y(t)}{S(t)}\;.$$
 :::
-
-
-## Introduction to Option Pricing {#sec-s_introoptions}
-A complete development of derivative pricing requires the continuous-time mathematics to be covered in the next chapter.  However, we can present the basic ideas using the tools already developed.  Consider the problem of pricing a European call option.  Let $T$ denote the maturity of the option and $K$ its strike price, and let $S$ denote the price of the underlying.  We will assume for now that the underlying does not pay dividends, but we will make no assumptions about the distribution of its price $S(T)$ at the maturity of the option.  Assume there is a risk-free asset with constant interest rate $r$.
-
-Our convention will be that date 0 denotes the date at which we are attempting to value a derivative. 
-The value of the option at maturity is $\max(0,S(T)-K)$.  Consider a contract that pays $S(T)$ at date $T$ when $S(T) \geq K$ and that pays zero when $S(T)<K$, and consider another contract that pays $K$ at date $T$ when $S(T)\geq K$ and zero when $S(T)<K$.  In @sec-c_blackscholes, we will call the first contract a share digital \index{share digital} and the second contract a digital.  \index{digital} The call option is equivalent to a portfolio that is long the first contract and short the second, because the value of the call at maturity is $S(T)-K$ when $S(T)\geq K$ and it is zero otherwise.  So, we can value the call if we can value the share digital and the digital.  This splitting up of complex payoffs into simpler contracts is a key to analyzing many types of derivatives.
-
-### Pricing Share Digitals
-
-Consider first the problem of valuing the share digital.  Let $Y(t)$ denote its value at each date $t \leq T$.   We seek to find $Y(0)$.  Our fundamental pricing @eq-formula tells us that
-$$Y(0) = A(0) E^A \left[\frac{Y(T)}{A(T)}\right]\; ,$$
-for any numeraire with price $A(t)$.  We want to choose the numeraire to simplify the calculation of the expectation.  The expectation only involves the states of the world in which $S(T) \geq K$, because $Y(T)=0$ when $S(T)<K$.  In the states of the world in which $S(T) \geq K$, the value of the share digital is $S(T)$.  The calculation of the expectation would be simplified if the value were a constant when it was nonzero, because, if you are to receive a constant amount in a certain event, your expected payoff is the constant times the probability of the event (e.g., the expected payoff of a gamble that pays \$1 when a fair die rolls a 6 is 1/6).  This suggests we should use the stock as the numeraire, because then we will have
-$$\frac{Y(T)}{A(T)} = \frac{S(T)}{S(T)} = 1$$
-when $S(T) \geq K$, implying that
-$$E^A \left[\frac{Y(T)}{A(T)}\right] = \text{prob}^S\big(S(T)\geq K\big)\; ,$$
-where $\text{prob}^S$ denotes the probability using $S$ as the numeraire.  This implies that the value of the share digital is
-$$S(0) \times \text{prob}^S\big(S(T)\geq K\big)\;.$$
-The remaining question is obviously how to compute the probability.  We will **not** use @eq-probSnumeraire which expresses the probability in terms of an expectation involving state prices.  To attempt to do so would simply raise the question of how to compute the state prices.  Instead, we use the fundamental pricing formula again, this time replacing the derivative value $Y$ with the value of the risk-free asset.  This is exactly analogous to computing the $q$ probabilities from  @eq-binomialS5 and @eq-binomialR5 in @sec-s_oneperiodbinomial.  Recall that the fundamental formula holds for any non-dividend-paying asset, so it holds for $R(t)=\mathrm{e}^{rt}$, telling us that the ratio $R(t)/S(t)$ is a martingale when we use $S$ as the numeraire.  In a continuous-time model (at least until we introduce stochastic volatility) this will give us exactly the information we need to compute the distribution of $S(T)$ when we use $S$ as the numeraire, and from the distribution of $S(T)$ we can easily compute $\text{prob}^S\big(S(T)\geq K\big)$.  This calculation will be covered in @sec-c_blackscholes for the Black-Scholes model.
-
-### Pricing Digitals
-Now consider the problem of pricing the digital.  We will change notation to let $Y(t)$ denote now the value of the digital at time $t$.  Again we want to compute
-$$Y(0) = A(0) E^A\left[\frac{Y(T)}{A(T)}\right]\; ,$$
-and again this expectation only involves the states of the world in which $S(T) \geq K$.  In these states of the world, the value of the digital is already a constant $K$, so we should take the numeraire to have a constant value at $T$, so that the ratio $Y(T)/A(T)$ will be constant in the states in which $S(T) \geq K$.  This means that we should take the numeraire to be the risk-free asset.  For this numeraire, the pricing formula is
-$$Y(0) = \mathrm{e}^{-rT}E^R[Y(T)] = \mathrm{e}^{-rT}K\times \text{prob}^R \big(S(T)\geq K\big)\; ,$$
-so we need to compute the risk-neutral probability that $S(T) \geq K$.   We will do this by using the fact that $S(t)/R(t) = \mathrm{e}^{-rt}S(t)$ is a martingale under the risk-neutral probability measure.  This is analogous to computing the risk-neutral probabilities from  @eq-binomialS4 and @eq-binomialR4 in @sec-s_oneperiodbinomial.
-This calculation will also be covered in @sec-c_blackscholes for the Black-Scholes model.
-
-
-Readers familiar with the Black-Scholes formula may already have surmised that, under the Black-Scholes assumptions, 
-$$\text{prob}^S\big(S(T)\geq K\big) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^R\big(S(T)\geq K\big) = \mathrm{N}(d_2)\; ,$$ where $\mathrm{N}$ denotes the cumulative normal distribution function .  The numbers $d_1$ and $d_2$ are different, and hence these are different probabilities, even though they are both probabilities of the option finishing in the money ($S(T) \geq K$).  They are different probabilities because they are computed under different numeraires.  
-
-### A Remark
-
-It seems worthwhile here to step back a bit from the calculations and try to offer some perspectives on the methods developed in this chapter.  The change of numeraire technique probably seems mysterious.  Even though one may agree that it works after following the steps in the chapter, there is probably a lingering question about why it works.  The author's opinion is that it may be best to regard it simply as a computational trick.  Fundamentally it works because valuation is linear.  Linearity simply means that the value of a cash flow $X=X_1+X_2$ is the sum of the values of the cash flows $X_1$ and $X_2$ and the value of the cash flow $aX$ is $a$ times the value of $X$, for any constant $a$.  This linearity is manifested in the statement that the value of a cash flow is the sum across states of the world of the state prices multiplied by the size of the cash flow in each state.  The change of numeraire technique exploits the linearity to further simplify the valuation exercise.  There are other ways the linearity can be used (for example, it produces solvable partial differential equations) but the particular trick we have developed in this chapter seems the most useful to the author (and to others, though perhaps not to everyone).  After enough practice with it, it will seem as natural as other computational tricks one might have learned.
-
-## An Incomplete Markets Example {#sec-s_incomplete}
-
-In this section, we consider a more difficult valuation problem than the binomial model and discuss the general implications of this example.  We only need to make the problem slightly more difficult to see the issues.  Consider a trinomial model, \index{trinomial model} in which the asset price takes three possible values: $S_u > S_m > S_d$ ($m$ for middle, medium, median, ...).   We continue to make the no arbitrage assumption @eq-binomialnoarbitrage.  State prices $\pi_u$, $\pi_m$ and $\pi_m$ must satisfy equations analogous to @eq-binomialS2--@eq-binomialR2; specifically,
-
-
-$$
-S = \pi_uS_u+\pi_mS_m+\pi_dS_d\;,
-$$ {#eq-binomialS10}
-
-$$
-1 = \pi_u\mathrm{e}^{rT} + \pi_m\mathrm{e}^{rT} +\pi_d \mathrm{e}^{rT}\;.
-$$ {#eq-binomialR10}
-
-
-In the binomial case, these equations can be solved for $\pi_u$ and $\pi_d$, as shown in @eq-binomialstateprices.  However, in the trinomial case, we have only two equations in three unknowns.  Thus, there exist many solutions.
-
-Given any particular solution $(\pi_u,\pi_m,\pi_d)$ of  @eq-binomialS10 - @eq-binomialR10, we can define the risk-neutral probabilities $p_u$, $p_m$ and $p_d$ as before---e.g., $p_u = \pi_u\mathrm{e}^{rT}$.  Likewise, we can define the probabilities using the stock as numeraire.  Thus, we can value calls and puts and other derivative securities.  However, the values we obtain will depend on the particular solution $(\pi_u,\pi_m,\pi_d)$.  There are many arbitrage-free values for a call option, one for each solution of @eq-binomialS10 - @eq-binomialR10.
-
-The reason that there are many arbitrage-free values for a call (or put) is that a call cannot be replicated in a trinomial model using the stock and risk-free asset; we can say equivalently that there is no delta hedge for a call option.  Recall that we first found the value of a call in the binomial model by finding the replicating portfolio and calculating its cost.  A similar analysis is impossible in the trinomial model.  To see this, consider a portfolio of $a$ dollars invested in the risk free asset and $b$ dollars invested in the stock.  The value of the portfolio at date $T$ will be $a\mathrm{e}^{rT} + bS_x/S$, where $x \in \{u,m,d\}$.  To replicate the call, we need $a$ and $b$ to satisfy
-
-$$
-a\mathrm{e}^{rT} + bS_u/S = \max(0,S_u-K)\; ,
-$$
-$$
-a\mathrm{e}^{rT} + bS_m/S = \max(0,S_m-K)\; ,
-$$
-$$
-a\mathrm{e}^{rT} + bS_d/S = \max(0,S_d-K)\;.
-$$
-These are three linear equations in the two unknowns $a$ and $b$.  For any strike price $K$ between $S_d$ and $S_u$, none of the equations is redundant, and the system has no solution.  When there are state-contingent claims (such as the call option payoff) that cannot be replicated by trading in the marketed assets (the stock and risk-free asset in this case), one says that the market is incomplete.  Thus, the trinomial model is an example of an incomplete market. \index{incomplete market}
-
-To value derivative securities in this situation, we have to select some particular solution $(\pi_u,\pi_m,\pi_d)$ of  @eq-binomialS10 - @eq-binomialR10 and assume that the market uses that solution for valuation.  Equivalently, we can assume the market uses a particular set of risk-neutral probabilities $(p_u, p_m, p_d)$.  This type of valuation is often called equilibrium valuation, \index{equilibrium pricing} as opposed to arbitrage valuation, because to give a foundation for our particular choice of risk-neutral probabilities, we would have to assume something about the preferences and endowments of investors and the production possibilities.  We will encounter incomplete markets when we consider stochastic volatility in @sec-c_stochasticvolatility.
 
 
 
@@ -371,12 +315,3 @@ In a binomial model, a put option is equivalent to $\delta_p$ shares of the stoc
 Using the result of the previous exercise, repeat Problem~\ref{e_binomialcall} for a put option.
 :::
 
-::: {#exr-nolabel}
- Here is a chance to apply option pricing theory to real life.  Suppose you have a significant other who would marry you if you ask.  
-
-
-
-1. What type of option do you have on marriage?  Can you tell when it is in the money?
-2. Under what circumstances should you exercise this option early?  
-3. What is the put option in a marriage contract called?  
-:::

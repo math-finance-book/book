@@ -13,7 +13,7 @@ To estimate this by Monte-Carlo \index{Monte Carlo} means to simulate a sample o
 $x$
 and to estimate the expectation by averaging the sample values.^[Boyle~[@boyle] introduced Monte-Carlo methods for derivative valuation, including the variance-reduction methods of control variates and antithetic variates to be discussed later].  Of course, for this to work, the sample must be generated from a population having a distribution consistent with the risk-neutral probabilities.
 
-The simplest example is valuing a European option under the Black-Scholes assumptions.  Of course, for calls and puts, this is redundant, because we already have the Black-Scholes formulas.  Nevertheless, we will describe how to do this for the sake of introducing the Monte Carlo method.  In the case of a call option, the random variable $x$ in @eq-montecarlo1 is $\max(0,S(T)-K)$.  To simulate a sample of values for this random variable, we need to simulate the terminal stock price $S(T)$.  This is easy to do, because, under the Black-Scholes assumptions, the logarithm of $S(T)$ is normally distributed under the risk-neutral measure with mean $\log S(0)+\mathrm{n}u T$ and variance $\sigma^2T$, where $\mathrm{n}u=r-q-\sigma^2/2$.  Thus, we can simulate values for $\log S(T)$ as $\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z$, where $z$ is a standard normal.  We can  average the simulated values of $\max(0,S(T)-K)$, or whatever the payoff of the derivative is, and then discount at the risk-free rate to compute the date--0 value of the derivative.  This means that we generate some number $M$ of standard normals $z_i$ and estimate the option value as $\mathrm{e}^{-rT}\bar{x}$, where $\bar{x}$ is the mean of 
+The simplest example is valuing a European option under the Black-Scholes assumptions.  Of course, for calls and puts, this is redundant, because we already have the Black-Scholes formulas.  Nevertheless, we will describe how to do this for the sake of introducing the Monte Carlo method.  In the case of a call option, the random variable $x$ in @eq-montecarlo1 is $\max(0,S(T)-K)$.  To simulate a sample of values for this random variable, we need to simulate the terminal stock price $S(T)$.  This is easy to do, because, under the Black-Scholes assumptions, the logarithm of $S(T)$ is normally distributed under the risk-neutral probability with mean $\log S(0)+\mathrm{n}u T$ and variance $\sigma^2T$, where $\mathrm{n}u=r-q-\sigma^2/2$.  Thus, we can simulate values for $\log S(T)$ as $\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z$, where $z$ is a standard normal.  We can  average the simulated values of $\max(0,S(T)-K)$, or whatever the payoff of the derivative is, and then discount at the risk-free rate to compute the date--0 value of the derivative.  This means that we generate some number $M$ of standard normals $z_i$ and estimate the option value as $\mathrm{e}^{-rT}\bar{x}$, where $\bar{x}$ is the mean of 
 $$x_i = \max\left(0,\mathrm{e}^{\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z_i}-K\right)\; .$$
 To value options that are path-dependent  we need to simulate the path of the underlying asset price.  Path-dependent options are discussed in Chaps.~\ref{c_exotics} and~\ref{c_montecarlo}.
 
@@ -42,7 +42,7 @@ import matplotlib.pyplot as plt
 n = 10000
 #number of divisions
 m = 1
-# Interest rate (We set the drift equal to the interest rate for the risk neutral measure)
+# Interest rate (We set the drift equal to the interest rate for the risk-neutral probability)
 r = 0.1
 # Volatility
 sig = 0.2
@@ -197,7 +197,7 @@ In terms of the discussion above, the random variable  the mean of which we want
 $$x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\; .$$
 A random variable $y$ that will be closely correlated to $x$ is
 $$y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S(t_i)/N} - K^*,0\right)\; .$$
-The mean $\phi$ of $y$ under the risk-neutral measure is given in the pricing @eq-disc_geom_avg_call. 
+The mean $\phi$ of $y$ under the risk-neutral probability is given in the pricing @eq-disc_geom_avg_call. 
 We can use the sample mean of $y$ and its known mean $\phi$ to adjust the sample mean of $x$ as an estimator of the value of the average-price call.  Generally, the estimated adjustment coefficient $\hat{\beta}$ will be quite close to 1.  
 
 ## Monte Carlo Greeks I: Difference Ratios {#sec-s_montecarlogreeks1}
@@ -327,12 +327,12 @@ To compute pathwise estimates in other models and for other Greeks, we need the 
 
 ## Introduction to Binomial Models {#sec-s_introbinomial}
 
-As in the previous section, \index{binomial model} we will work with the dynamics of the logarithms of asset prices under the risk-neutral measure.  Thus, our starting point is the equation
+As in the previous section, \index{binomial model} we will work with the dynamics of the logarithms of asset prices under the risk-neutral probability.  Thus, our starting point is the equation
 $$
 \mathrm{d} \log S = \left(r-q-\frac{\sigma^2}{2}\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
 $$ {#eq-logstock_riskneutral}
 
-where $B$  represents a Brownian motion under the risk-neutral measure.
+where $B$  represents a Brownian motion under the risk-neutral probability.
 
 In the binomial model, we assume that if the stock price is $S$ at the beginning of the period, it will be either $uS$ or $dS$ at the end of the period, where the multiplicative factors $u$ and $d$ are constants to be determined.  This means that the rate of return is $\Delta S/S = u\!-\!1$ in the up state and $\Delta S/S = d\!-\!1$ in the down state. There are three parameters to the model: $u$, $d$, and the probability $p$ of the up state (the probability of the down state being necessarily $1\!-\!p$). The following illustrates a three-period model.
 
@@ -341,7 +341,7 @@ In the binomial model, we assume that if the stock price is $S$ at the beginning
 A tree constructed like this is recombining in \index{recombining tree} the sense that the stock price after an up-down sequence is the same as after a down-up sequence.  This is very important for reducing the computation time.  For example, the number of nodes at the final date is $N+1$ in a recombining tree, where $N$ is the number of periods, but it is $2^N$ for a non-recombining (sometimes called bushy) tree.  Hence, the computation time will increase linearly with $N$ for a recombining tree but exponentially with $N$ for a non-recombining tree.  Unfortunately, this computational savings is generally not possible for path-dependent options, because the number of distinct paths through a tree (whether recombining or not) is again $2^N$.
 
  
-The value of a European derivative is of course the discounted expectation of its value at maturity, discounting at the risk-free rate and taking the expectation under the risk-neutral measure.  The binomial tree allows us to approximate the expectation very easily.  We simply sum over the nodes of the tree at the option maturity and weight each node by its binomial probability.  In an $N$-period model, the probability of the top node is $p^N$, since the stock must go up each time to reach the top node.  There are $N$ paths reaching the second node from the top (since the period of the single down move could be any one of the $N$ periods) and each such path has probability $p^{N-1}(1-p)$; therefore, the probability of reaching the second node from the top is $Np^{N-1}(1-p)$.  More generally, the probability of going up $i$ times and down $N-i$ times is
+The value of a European derivative is of course the discounted expectation of its value at maturity, discounting at the risk-free rate and taking the expectation under the risk-neutral probability.  The binomial tree allows us to approximate the expectation very easily.  We simply sum over the nodes of the tree at the option maturity and weight each node by its binomial probability.  In an $N$-period model, the probability of the top node is $p^N$, since the stock must go up each time to reach the top node.  There are $N$ paths reaching the second node from the top (since the period of the single down move could be any one of the $N$ periods) and each such path has probability $p^{N-1}(1-p)$; therefore, the probability of reaching the second node from the top is $Np^{N-1}(1-p)$.  More generally, the probability of going up $i$ times and down $N-i$ times is
 $$\frac{N!}{i!(N-i)!}p^i(1-p)^{N-i}\; ,$$
 where as usual $x!$ denotes $x$ factorial.  Therefore, the expectation, for a European call option,  is the following sum over the $N+1$ nodes at date $N$ (starting with $i=0$ up moves and ending with $i=N$ up moves):
 $$
@@ -373,7 +373,7 @@ Discounting back through the tree like this, we reach date 0 and return the opti
 
 Several different ways have been proposed for matching the binomial model to the continuous-time model.  Consider an $N$--period binomial model for a time period of $T$ years.  This means that the length of each period is $\Delta t = T/N$.  In the continuous-time model, over a discrete time period $\Delta t$, we have
 $$\Delta \log S =\mathrm{n}u\,\Delta t + \sigma\,\Delta B\; ,$$
-where $\mathrm{n}u = r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-neutral measure.  The mean and variance, under the risk-neutral measure, of $\Delta \log S$ in the continuous-time model are
+where $\mathrm{n}u = r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-neutral probability.  The mean and variance, under the risk-neutral probability, of $\Delta \log S$ in the continuous-time model are
 \begin{align*}
 E^R[\Delta \log S] &= \mathrm{n}u\,\Delta t\; ,\\
 \mathrm{var}^R[\Delta \log S]&=\sigma^2\Delta t\; ,
@@ -763,7 +763,7 @@ While there are many choices for the parameterization they are not completely ar
 
 
 
-Conceptually, although there are three states and only two assets and the market is incomplete, the model converges to the Black Scholes model but there is no direct replication strategy.  Nevertheless, we are modelling the price in a risk neutral measure.  More importantly it does  potentially give a  better estimate of derivative prices.
+Conceptually, although there are three states and only two assets and the market is incomplete, the model converges to the Black Scholes model but there is no direct replication strategy.  Nevertheless, we are modelling the price in a risk-neutral probability.  More importantly it does  potentially give a  better estimate of derivative prices.
 
 
 ```{python}

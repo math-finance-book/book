@@ -455,7 +455,7 @@ C(X_T) = \max(e^{X_T} - K, 0)
 <p><span class="math display">\[
 \phi_{X}(u) = \mathbb{E}[e^{i u X}].
 \]</span> The characteristic function uniquely defines the probability distribution of <span class="math inline">\(X\)</span> and can be used to recover the density function via the inverse Fourier Transform.</p>
-<p>The final step in the pricing process involves integrating the product of <span class="math inline">\(\hat{C}(u)\)</span> and the characteristic function of the log-returns of the asset (under the risk-neutral measure) to recover the option price in the original domain (time or price space).</p>
+<p>The final step in the pricing process involves integrating the product of <span class="math inline">\(\hat{C}(u)\)</span> and the characteristic function of the log-returns of the asset (under the risk-neutral probability) to recover the option price in the original domain (time or price space).</p>
 <p>Once <span class="math inline">\(\hat{C}(u)\)</span> is computed, the price of the option can be calculated using the <strong>Fourier inversion formula</strong>. The general formula for the call option price <span class="math inline">\(C(K)\)</span> at time <span class="math inline">\(0\)</span> is:</p>
 <p><span id="eq-FTpricing"><span class="math display">\[
 C(K) = \frac{e^{-rT}}{2\pi} \int_{-\infty}^{\infty} e^{-iuk} \hat{C}(u) \phi_X(u) \, du,
@@ -557,7 +557,7 @@ b=\frac{N \lambda}{2}
 \phi_T(u) = \exp\left(iu \left(\ln(S_0) + \left(r -q-\frac{\sigma^2}{2}\right)T\right) - \frac{1}{2} \sigma^2 T u^2 \right),
 \]</span> where <span class="math inline">\(S_0\)</span> is the initial asset price, <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(\sigma\)</span> is the volatility of the asset, <span class="math inline">\(T\)</span> is the time to maturity, and <span class="math inline">\(u\)</span> is the complex Fourier variable.</p>
 <p>The following code implements the Carr-Madan method, which uses the FFT to price European call options by transforming the characteristic function of the Black-Scholes model into the frequency domain. The option prices are then obtained by applying Simpson’s Rule for integration and FFT for efficient computation. These prices are compared to those obtained using the Black-Scholes formula. The code also visualizes the comparison and the differences between the two methods. The results suggest that the Carr-Madan method yields an accurate call price.</p>
-<div id="25853bd3" class="cell" data-execution_count="1">
+<div id="b5012254" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -691,7 +691,7 @@ g &amp;= \frac{b - d}{b + d}, \\
 \end{aligned}
 \]</span> <span class="math inline">\(v_0\)</span> is the initial variance (volatility squared), <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\theta\)</span> is the long-term mean of the variance, <span class="math inline">\(\kappa\)</span> is the rate at which the variance reverts to <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\rho\)</span> is the correlation between the asset price and its volatility, <span class="math inline">\(\sigma\)</span> is the volatility of volatility, and <span class="math inline">\(\lambda\)</span> is the volatility risk premium.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Heston Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="e1f55331" class="cell" data-execution_count="2">
+<div id="4cc88f46" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -946,7 +946,7 @@ g &amp;= \frac{b - d}{b + d}, \\
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Computation Time (Carr-Madan Method): 0.06 seconds
-Computation Time (Monte Carlo Simulation): 6.59 seconds
+Computation Time (Monte Carlo Simulation): 6.02 seconds
 Maximum Price Difference: 0.024669</code></pre>
 </div>
 </div>
@@ -977,20 +977,20 @@ Maximum Price Difference: 0.024669</code></pre>
 <p>In this formula, <span class="math inline">\(\gamma\)</span> is the drift term (linear component), <span class="math inline">\(\sigma^2\)</span> is the variance of the continuous Gaussian component, <span class="math inline">\(\nu\)</span> is the <strong>Lévy measure</strong>, which controls the intensity and size of jumps.</p>
 <p>Lévy processes can thus combine continuous movements, such as Brownian motion, with jumps, providing a powerful framework for modeling both smooth and abrupt changes in time series.</p>
 <p><strong>Pricing Options in the Variance Gamma Model</strong></p>
-<p>Let <span class="math inline">\(S(t)\)</span> represent the stock price at time <span class="math inline">\(t\)</span>. Under the risk-neutral measure <span class="math inline">\(\mathbb{Q}\)</span>, the stock price evolves as:</p>
+<p>Let <span class="math inline">\(S(t)\)</span> represent the stock price at time <span class="math inline">\(t\)</span>. Under the risk-neutral probability <span class="math inline">\(\mathbb{Q}\)</span>, the stock price evolves as:</p>
 <p><span class="math display">\[
 S(t) = S(0) \exp(X(t)),
 \]</span> where <span class="math inline">\(X(t)\)</span> is a variance gamma process: <span class="math display">\[
 X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right) \right)t + \sigma W(G(t))
-\]</span> where <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\sigma\)</span> is the volatility parameter, <span class="math inline">\(G(t)\)</span> is a Gamma process with mean rate <span class="math inline">\(t\)</span> and variance rate <span class="math inline">\(\nu\)</span>, <span class="math inline">\(\theta\)</span> controls the drift of the VG process, <span class="math inline">\(\nu\)</span> is the variance rate of the Gamma process, and <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk neutral measure <span class="math inline">\(\mathbb{Q}\)</span>.</p>
-<p>The characteristic function of <span class="math inline">\(\log(S(t))\)</span> under the risk-neutral measure is:</p>
+\]</span> where <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\sigma\)</span> is the volatility parameter, <span class="math inline">\(G(t)\)</span> is a Gamma process with mean rate <span class="math inline">\(t\)</span> and variance rate <span class="math inline">\(\nu\)</span>, <span class="math inline">\(\theta\)</span> controls the drift of the VG process, <span class="math inline">\(\nu\)</span> is the variance rate of the Gamma process, and <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk-neutral probability <span class="math inline">\(\mathbb{Q}\)</span>.</p>
+<p>The characteristic function of <span class="math inline">\(\log(S(t))\)</span> under the risk-neutral probability is:</p>
 <p><span class="math display">\[
 \phi_{\log(S(t))}^{\mathbb{Q}}(u) = e^{iu \log(S(0))} \left( \frac{1}{1 - iu \theta_{\mathbb{Q}} \nu + \frac{1}{2} \sigma^2 u^2 \nu} \right)^{t/\nu},
 \]</span> where <span class="math display">\[
 \theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right).
 \]</span></p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Variance Gamma Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="8880f011" class="cell" data-execution_count="3">
+<div id="888fefdd" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1173,17 +1173,17 @@ X(t) = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \thet
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Maximum Absolute Price Difference: 0.010150
-Computational Time (Carr-Madan FFT): 0.032553 seconds
-Computational Time (Monte Carlo): 0.707706 seconds</code></pre>
+Computational Time (Carr-Madan FFT): 0.024817 seconds
+Computational Time (Monte Carlo): 0.791801 seconds</code></pre>
 </div>
 </div>
 <p><strong>Pricing Options in a Jump Diffusion Model</strong></p>
 <p>A jump diffusion process is a type of stochastic process that extends a standard diffusion process, such as Brownian motion, by including random jumps. This model <span class="citation" data-cites="MertonJD">(e.g., <a href="#ref-MertonJD" role="doc-biblioref">Merton 1976</a>)</span> is widely used in financial mathematics to capture sudden, discontinuous changes in asset prices, interest rates, or other time series that are not explained by continuous diffusive processes alone.</p>
-<p>Let <span class="math inline">\(S(t)\)</span> represent the stock price at time <span class="math inline">\(t\)</span>, and under the risk-neutral measure <span class="math inline">\(\mathbb{Q}\)</span>, the stock price follows a jump diffusion process. The stock price dynamics can be described by:</p>
+<p>Let <span class="math inline">\(S(t)\)</span> represent the stock price at time <span class="math inline">\(t\)</span>, and under the risk-neutral probability <span class="math inline">\(\mathbb{Q}\)</span>, the stock price follows a jump diffusion process. The stock price dynamics can be described by:</p>
 <p><span class="math display">\[
 dS(t) = (r - q) S(t) dt + \sigma S(t) dW(t) + S(t) dJ(t)
 \]</span></p>
-<p>where <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(q\)</span> is the continuous dividend yield, <span class="math inline">\(\sigma\)</span> is the volatility of the Brownian motion component, <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk-neutral measure, and the jump process <span class="math inline">\(J(t)\)</span> follows: <span class="math display">\[
+<p>where <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(q\)</span> is the continuous dividend yield, <span class="math inline">\(\sigma\)</span> is the volatility of the Brownian motion component, <span class="math inline">\(W(t)\)</span> is a standard Brownian motion under the risk-neutral probability, and the jump process <span class="math inline">\(J(t)\)</span> follows: <span class="math display">\[
 J(t) = \sum_{i=1}^{N(t)} (Y_i - 1),
 \]</span> where <span class="math inline">\(N(t)\)</span> is a Poisson process with intensity <span class="math inline">\(\lambda\)</span>, representing the number of jumps up to time <span class="math inline">\(t\)</span>, and <span class="math inline">\(Y_i\)</span> is the jump size, often modeled as a random variable from a log-normal distribution such that <span class="math inline">\(\log(Y_i) \sim \mathcal{N}(\mu_J, \sigma_J^2)\)</span>.</p>
 <p>Thus, the stock price is driven by both the diffusion term (due to the Brownian motion) and the jump term (due to the Poisson process).</p>
@@ -1192,14 +1192,14 @@ J(t) = \sum_{i=1}^{N(t)} (Y_i - 1),
 S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}^{N(t)} \log(Y_i) \right)
 \]</span></p>
 <p>This shows that the stock price incorporates both continuous changes (via the <span class="math inline">\(W(t)\)</span> term) and discrete jumps (via the <span class="math inline">\(\sum_{i=1}^{N(t)} \log(Y_i)\)</span> term).</p>
-<p>The characteristic function of <span class="math inline">\(\log(S(t))\)</span> under the risk-neutral measure is:</p>
+<p>The characteristic function of <span class="math inline">\(\log(S(t))\)</span> under the risk-neutral probability is:</p>
 <p><span class="math display">\[
 \phi_{\log(S(t))}^{\mathbb{Q}}(u) = e^{iu \log(S(0))} \exp\left( iu (r - q - \frac{1}{2} \sigma^2) t - \frac{1}{2} u^2 \sigma^2 t \right)
 \cdot \exp\left( \lambda t \left( \exp\left( iu \mu_J - \frac{1}{2} u^2 \sigma_J^2 \right) - 1 \right) \right)
 \]</span></p>
 <p>This formula captures both the diffusion (Brownian motion) and jump components, making it applicable for more accurate modeling of stock prices that experience sudden jumps in addition to continuous fluctuations.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Jump Diffusion Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="1da7763c" class="cell" data-execution_count="4">
+<div id="cdf6355e" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1374,8 +1374,8 @@ S(t) = S(0) \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W(t) + \sum_{i=1}
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computational Time (Carr-Madan FFT): 0.039273 seconds
-Computational Time (Monte Carlo): 0.117858 seconds</code></pre>
+<pre><code>Computational Time (Carr-Madan FFT): 0.033638 seconds
+Computational Time (Monte Carlo): 0.081035 seconds</code></pre>
 </div>
 </div>
 </section>
