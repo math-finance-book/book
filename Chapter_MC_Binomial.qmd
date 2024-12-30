@@ -182,7 +182,7 @@ We can compare this to the exact Black Scholes formula from before.
 print('The exact Black Scholes Price is=', truebsc)
 ```
 
-As another example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date 0 is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A(0)$ computed up to date 0, assuming this average includes the price $S(0)$ at date 0.  The average price at date $T$ will be 
+As another example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date $0$ is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A(0)$ computed up to date $0$, assuming this average includes the price $S(0)$ at date $0$.  The average price at date $T$ will be 
 $$A(T) = \frac{\tau}{T+\tau}A(0) + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S(t_i)}{N}\right)\; .$$
 The average-price call pays $\max(0,A(T)-K)$ at its maturity $T$, and we can write this as
 \begin{align*}
@@ -191,7 +191,7 @@ The average-price call pays $\max(0,A(T)-K)$ at its maturity $T$, and we can wri
 \end{align*}
 where 
 $$K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A(0)\; .$$
-Therefore, the value at date 0 of the discretely-sampled average-price call is
+Therefore, the value at date $0$ of the discretely-sampled average-price call is
 $$\frac{T}{T+\tau} \,\mathrm{e}^{-rT} E^R\left[\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\right]\; .$$
 In terms of the discussion above, the random variable  the mean of which we want to estimate is
 $$x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\; .$$
@@ -364,7 +364,7 @@ $$
 C(i) = \mathrm{e}^{-r\Delta t}p\,C(i+1) + \mathrm{e}^{-r\Delta t}(1-p)C(i)\;.
 $$ {#eq-binomial002}
 
-Discounting back through the tree like this, we reach date 0 and return the option value as $C(0)$.  The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option.  This approach is essential for assessing the value of early exercise.
+Discounting back through the tree like this, we reach date $0$ and return the option value as $C(0)$.  The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option.  This approach is essential for assessing the value of early exercise.
 
 ![](images/fig2.png)
 
@@ -583,7 +583,7 @@ for j in range(n+1):
 
 ```
 
-Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.    At each date we start by defining the stock price at the bottom node.  At date $i$ there have been $i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date $i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date 0, we return the put value $AP(0)$, the value at the bottom node, which is the only node at date~0. 
+Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.    At each date we start by defining the stock price at the bottom node.  At date $i$ there have been $i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date $i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date $0$, we return the put value $AP(0)$, the value at the bottom node, which is the only node at date $0$. 
 ```{python}
 for i in range(n):
     S = np.zeros(n-i)
