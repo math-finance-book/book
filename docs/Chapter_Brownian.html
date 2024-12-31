@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -110,6 +110,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
@@ -203,14 +222,14 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_Arbitrage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></span></a>
+  <a href="./Chapter_Intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Options</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_Intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Options</span></span></a>
+  <a href="./Chapter_Arbitrage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -420,135 +439,138 @@ window.Quarto = {
 <p>This chapter has three objectives. The first is to introduce the concept of a Brownian motion. A Brownian motion is a random process (a variable that changes randomly over time) that evolves continuously in time and has the property that its change over any time period is normally distributed with a zero mean and variance equal to the length of the time period. The mean-zero feature means that a Brownian motion is a martingale. We will also give a different characterization (Levy’s theorem) emphasizing the quadratic variation process, which is a property of the paths (how the variable evolves over time, in a given state of the world) of the process.</p>
 <p>The second objective is to explain Ito’s formula, which is the chain rule for stochastic calculus. In the Black-Scholes model, the stock price is assumed to satisfy <span class="math display">\[\frac{\mathrm{d} S}{S}=\mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,\]</span> where <span class="math inline">\(B\)</span> is a Brownian motion. In the case that the stock pays no dividend, the rate of return is <span class="math inline">\(\mathrm{d} S/S\)</span>. The two terms on the right-hand side represent the mean rate of return and the risk, respectively.</p>
 <p>This model can be equivalently written in terms of the natural logarithm of <span class="math inline">\(S\)</span>, which we will write as <span class="math inline">\(\log S\)</span>. The above equation for the rate of return is equivalent to <span class="math display">\[\mathrm{d}\,\log S = \left(\mu - \frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .\]</span> We will explain this equivalence and other similar calculations that are useful for pricing derivatives.</p>
-<p>The third objective is to explain how, when we change numeraires, as described in the previous chapter, we can calculate the expectation in the fundamental pricing <a href="Chapter_Arbitrage.html#eq-formula" class="quarto-xref">Equation&nbsp;<span>1.28</span></a>. The question is what effect does changing the numeraire (and hence the probability measure) have on the distribution of an asset price.</p>
+<p>The third objective is to explain how, when we change numeraires, as described in the previous chapter, we can calculate the expectation in the fundamental pricing <a href="Chapter_Arbitrage.html#eq-formula" class="quarto-xref">Equation&nbsp;<span>2.28</span></a>. The question is what effect does changing the numeraire (and hence the probability measure) have on the distribution of an asset price.</p>
 <p>Everything in the remainder of the book is based on the mathematics presented in this chapter. For easy reference, the essential formulas have been highlighted in boxes.</p>
 <section id="sec-s_simulatingbrownian" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="sec-s_simulatingbrownian"><span class="header-section-number">4.1</span> Simulating a Brownian Motion</h2>
 <p>We begin with the fact that changes in the value of a Brownian motion are normally distributed with a zero mean and variance equal to the length of the time period. Let <span class="math inline">\(B(t)\)</span> denote the value of a Brownian motion at time <span class="math inline">\(t\)</span>. Then for any date <span class="math inline">\(u&gt;t\)</span>, given the information at time <span class="math inline">\(t\)</span>, the random variable <span class="math inline">\(B(u) - B(t)\)</span> is normally distributed with a zero mean and variance equal to <span class="math inline">\(u-t\)</span>. Unless stated otherwise, our convention will be that a Brownian motion starts at <span class="math inline">\(B(0)=0\)</span>.</p>
 <p>We can generate an approximate Brownian motion in Python. To do so, we take a small time period <span class="math inline">\(\Delta t\)</span> and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance <span class="math inline">\(\Delta t\)</span>. In the following procedure, we input the length <span class="math inline">\(T=0.5\)</span> of the entire time period over which the Brownian motion is to be simulated. One input the is number <span class="math inline">\(n=10000\)</span> of time periods of length <span class="math inline">\(\Delta t\)</span> within the full interval <span class="math inline">\([0,T]\)</span>. The length <span class="math inline">\(\Delta t\)</span> of each individual time period is then calculated as <span class="math inline">\(T/n\)</span>. The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number <span class="math inline">\(n\)</span>. Plotting the output of the procedure creates a picture of what we call a path of the Brownian motion, which means that it shows the value taken at each time in one state of the world. The procedure generates <span class="math inline">\(m=2\)</span> paths which can be interpreted as the values of the Brownian motion in another state of the world. In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Python’s random number generating function. The random number generator np.random.normal(loc = 0, scale = vol,size = (n,m)) is an algorithm that produces numbers that mimic <span class="math inline">\(n \times m\)</span> normally distributed random variables with mean 0 (loc=0) and standard deviation <span class="math inline">\(\sqrt{\Delta t}\)</span> (scale=vol). By setting the seed=1234 the generator is initialized and we will always get the same output whenever we run the code. The Brownian path is just the cumulative sum of <span class="math inline">\(n\)</span> of the normal increments.</p>
-<div id="simulated-brownian-motion" class="cell" data-execution_count="1">
+<p>::: {#cell-Simulated Brownian Motion .cell execution_count=1}</p>
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of subdivisions</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10000</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">2</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># last date</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># delta t</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>n</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility is standard deviation</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> np.sqrt(dt)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span> <span class="dv">1234</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># generate "dB" for each date on each path distributed N(0,vol)</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m))</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>Bt <span class="op">=</span> np.zeros(shape <span class="op">=</span> (n <span class="op">+</span> <span class="dv">1</span>, m))</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Brownian path starts at 0 and is cumulative sum of the dB</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Bt[<span class="dv">1</span>:] <span class="op">=</span> inc.cumsum(axis <span class="op">=</span> <span class="dv">0</span>)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Could do previous step in a loop</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    Bt[i] <span class="op">=</span> Bt[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">+</span> inc[i <span class="op">-</span> <span class="dv">1</span>]</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># plot one path</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>, n <span class="op">+</span> <span class="dv">1</span>, <span class="dv">1</span>)) <span class="op">*</span> dt</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">6</span>))</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>plt.plot(t,Bt[:,<span class="dv">0</span>])</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time"</span>)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Brownian Motion"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span>    <span class="co"># number of subdivisions</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span>    <span class="co"># last date</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>N</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># generate dB for each date</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>dB <span class="op">=</span> np.random.normal(size<span class="op">=</span>N)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.zeros(N<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Brownian path starts at 0 and is cumulative sum of the dB</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>B[<span class="dv">1</span>:] <span class="op">=</span> dB.cumsum()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  go.Scatter(</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>np.arange(<span class="dv">0</span>, T<span class="op">+</span>dt, dt), </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>B, </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines'</span>, </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    hovertemplate<span class="op">=</span><span class="st">'t=%</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B=%</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Brownian Motion Path'</span>,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Time'</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">'Brownian Motion'</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'plotly_white'</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="simulated-brownian-motion-1" class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>Text(0, 0.5, 'Brownian Motion')</code></pre>
-<p>Simulated Brownian Motion</p>
+<div id="simulated-brownian-motion" class="cell-output cell-output-display">
+<div>                            <div id="cbc9ef61-f8bd-4570-bd33-a248a5d115d4" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("cbc9ef61-f8bd-4570-bd33-a248a5d115d4")) {                    Plotly.newPlot(                        "cbc9ef61-f8bd-4570-bd33-a248a5d115d4",                        [{"hovertemplate":"t=%{x:.2f}\u003cbr\u003eB=%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","mode":"lines","x":[0.0,0.005,0.01,0.015,0.02,0.025,0.03,0.035,0.04,0.045,0.05,0.055,0.06,0.065,0.07,0.075,0.08,0.085,0.09,0.095,0.1,0.105,0.11,0.115,0.12,0.125,0.13,0.135,0.14,0.145,0.15,0.155,0.16,0.165,0.17,0.17500000000000002,0.18,0.185,0.19,0.195,0.2,0.20500000000000002,0.21,0.215,0.22,0.225,0.23,0.23500000000000001,0.24,0.245,0.25,0.255,0.26,0.265,0.27,0.275,0.28,0.28500000000000003,0.29,0.295,0.3,0.305,0.31,0.315,0.32,0.325,0.33,0.335,0.34,0.34500000000000003,0.35000000000000003,0.355,0.36,0.365,0.37,0.375,0.38,0.385,0.39,0.395,0.4,0.405,0.41000000000000003,0.41500000000000004,0.42,0.425,0.43,0.435,0.44,0.445,0.45,0.455,0.46,0.465,0.47000000000000003,0.47500000000000003,0.48,0.485,0.49,0.495,0.5],"y":[0.0,-0.27306823838298633,-1.2171942033091026,-1.2052675878414614,-1.0072237033376767,-1.3103355224629212,-1.5108255554221375,-1.6630583607352376,-0.3159815262403174,-1.1033710406443302,-0.3847769640093033,-1.567561845025717,-2.942444149419396,-1.583710478723113,-2.259425434994506,-1.5578531650719252,-0.8251523085979124,-0.8584927994812807,-0.7029096521965357,0.16881312937030035,1.1816434684052075,1.0034755973495921,0.6640214135316093,0.08928616933210531,-0.5727949986982486,0.5206826218976575,1.2185483679785716,1.9206095453867662,2.246559862751377,2.649632546717296,2.5294359807518925,3.0314174887749656,2.744715371334142,3.278169226421437,4.919184408278015,5.927605869143354,5.54959961042178,8.48891306777674,7.944788844064193,5.74209468842891,5.9376172740594635,5.344164024341627,7.134170299539614,4.618520332852604,4.697812808302052,4.0592329890826235,4.285802269546402,4.463985797853948,4.596266793545778,5.282507061772815,6.885572193672887,5.76105519012916,4.828866270303495,4.076367596415256,4.3580769775973485,3.227568684653238,3.1919469952829633,4.530224995863925,4.561032150671591,3.611611530517679,1.8459366905640744,2.665705191728811,2.6595098552336816,2.0443860859509178,2.513183287091388,3.9841360409642124,3.0683203923747087,3.9013100259810556,4.405913995721891,3.451018230935634,4.080039989825063,5.1544971642606585,4.84066981900213,4.699587845254909,3.869842492818857,4.13300086739269,5.734074647224148,5.999352146490828,5.469383819667449,6.736700923222294,7.269340512696113,6.9497857392349225,7.608396589473554,8.001952215082365,8.195095578874025,8.123772376977799,5.992492802547266,7.131499771550899,5.820074897190198,5.366287383740986,4.919596714254149,5.651276762862229,5.454165444921018,4.849807533173054,3.774222931856981,2.946632384026101,4.474509635489384,5.75436966323401,6.562828494410362,6.0095046777748715,4.069190595972023],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"showlegend":false,"title":{"text":"Brownian Motion Path"},"xaxis":{"title":{"text":"Time"}},"yaxis":{"title":{"text":"Brownian Motion"}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('cbc9ef61-f8bd-4570-bd33-a248a5d115d4');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+<p>A Brownian Path</p>
 </div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Chapter_Brownian_files/figure-html/simulated-brownian-motion-output-2.png" id="simulated-brownian-motion-2" width="738" height="503" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<!-- ^[The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrt\,\mathrm{d} t]*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\Delta t}$ and hence its variance is $\Delta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings Time and Brownian Motion.  To plot the path of the Brownian motion, select the two columns and insert an XY (Scatter) chart, with data points connected by lines.} -->
-<!-- <!-- \addcontentsline{lof}{figure}{Simulating Brownian Motion}
-\begin{verbatim}
-Sub Simulating_Brownian_Motion()
-Dim T, \,\mathrm{d} t, Sqr\,\mathrm{d} t, BrownianMotion, i, N
-T = InputBox("Enter the length of the time period (t)")
-N = InputBox("Enter the number of periods (N)")
-\,\mathrm{d} t = T / N
-Sqr\,\mathrm{d} t = Sqr(\,\mathrm{d} t)
-ActiveCell.Value = "Time"
-ActiveCell.Offset(0, 1) = "Brownian Motion"
-ActiveCell.Offset(1, 0) = 0   ' beginning time
-ActiveCell.Offset(1, 1) = 0   ' beginning value of Brownian motion
-BrownianMotion = 0
-For i = 1 To N
-  ActiveCell.Offset(i + 1, 0) = i * dt          ' next time
-  BrownianMotion = BrownianMotion + Sqr\,\mathrm{d} t * RandN()
-  ActiveCell.Offset(i + 1, 1) = BrownianMotion  ' next value
-Next i
-End Sub -->
-<!-- \end{verbatim} -->
-<p>–&gt;</p>
+<p>:::</p>
 </section>
 <section id="sec-s_quadraticvariation" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="sec-s_quadraticvariation"><span class="header-section-number">4.2</span> Quadratic Variation</h2>
 <p>If we take a large number <span class="math inline">\(n\)</span> of time steps in the simulation of the preceding section, we will see the distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way. The name Brownian motion derives from the botanist Robert Brown’s observations of the erratic behavior of particles suspended in a fluid. This has long been thought to be a reasonable model for the behavior of a stock price. The plot of other functions with which we may be familiar will be much smoother. This is captured in the concept of quadratic variation.</p>
 <p>Consider a discrete partition <span class="math display">\[0=t_0 &lt; t_1 &lt; t_2 &lt; \cdots &lt; t_N=T\]</span> of the time interval <span class="math inline">\([0,T]\)</span>. Let <span class="math inline">\(B\)</span> be a Brownian motion and calculate the sum of squared changes <span class="math display">\[\sum_{i=1}^N [\Delta B_{t_i}]^2\; ,\]</span> where <span class="math inline">\(\Delta B_{t_i}\)</span> denotes the change <span class="math inline">\(B_{t_i}-B(t_{i-1}).\)</span> If we consider finer partitions with the length of each time interval <span class="math inline">\(t_i-t_{i-1}\)</span> going to zero, the limit of the sum is called the quadratic variation of the process. For a Brownian motion, the quadratic variation over an interval <span class="math inline">\([0,t]\)</span> is equal to <span class="math inline">\(t\)</span> with probability one. Here is a plot of the quadratic variation of the previous approximation of a Brownian motion. The plot shows that the approximation has quadratic variation through each date <span class="math inline">\(t\)</span> that is approximately equal to <span class="math inline">\(t\)</span>.</p>
-<div id="quadratic-variation" class="cell" data-execution_count="2">
+<p>::: {#cell-Quadratic Variation .cell execution_count=2}</p>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quadratic variation</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> np.zeros(shape <span class="op">=</span> (n, m))</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate \,\mathrm{d} B^2</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> (Bt[<span class="dv">1</span>:n <span class="op">+</span> <span class="dv">1</span>] <span class="op">-</span> Bt[<span class="dv">0</span>:n])<span class="op">**</span><span class="dv">2</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Quadratic variation is the cumulative sum of \,\mathrm{d} B^2</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>QV <span class="op">=</span> np.zeros(shape <span class="op">=</span> (n <span class="op">+</span> <span class="dv">1</span>, m))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>QV[<span class="dv">1</span>:] <span class="op">=</span> Q.cumsum(axis <span class="op">=</span> <span class="dv">0</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">6</span>))</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>plt.plot(t,QV[:,<span class="dv">0</span>])</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time"</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Quadratic Variation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quadratic variation is cumulative sum of squared changes</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dQ <span class="op">=</span> dB<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> np.zeros(N<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Q[<span class="dv">1</span>:] <span class="op">=</span> dQ.cumsum()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  go.Scatter(</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>np.arange(<span class="dv">0</span>, T<span class="op">+</span>dt, dt), </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>Q, </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines'</span>, </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    hovertemplate<span class="op">=</span><span class="st">'t=%</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B=%</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Time'</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">'Quadratic Variation'</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'plotly_white'</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="quadratic-variation-1" class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>Text(0, 0.5, 'Quadratic Variation')</code></pre>
-<p>Quadratic Variation</p>
+<div id="quadratic-variation" class="cell-output cell-output-display">
+<div>                            <div id="125b61c7-31a3-4ab6-b4f0-df9f0839c80f" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("125b61c7-31a3-4ab6-b4f0-df9f0839c80f")) {                    Plotly.newPlot(                        "125b61c7-31a3-4ab6-b4f0-df9f0839c80f",                        [{"hovertemplate":"t=%{x:.2f}\u003cbr\u003eB=%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","mode":"lines","x":[0.0,0.005,0.01,0.015,0.02,0.025,0.03,0.035,0.04,0.045,0.05,0.055,0.06,0.065,0.07,0.075,0.08,0.085,0.09,0.095,0.1,0.105,0.11,0.115,0.12,0.125,0.13,0.135,0.14,0.145,0.15,0.155,0.16,0.165,0.17,0.17500000000000002,0.18,0.185,0.19,0.195,0.2,0.20500000000000002,0.21,0.215,0.22,0.225,0.23,0.23500000000000001,0.24,0.245,0.25,0.255,0.26,0.265,0.27,0.275,0.28,0.28500000000000003,0.29,0.295,0.3,0.305,0.31,0.315,0.32,0.325,0.33,0.335,0.34,0.34500000000000003,0.35000000000000003,0.355,0.36,0.365,0.37,0.375,0.38,0.385,0.39,0.395,0.4,0.405,0.41000000000000003,0.41500000000000004,0.42,0.425,0.43,0.435,0.44,0.445,0.45,0.455,0.46,0.465,0.47000000000000003,0.47500000000000003,0.48,0.485,0.49,0.495,0.5],"y":[0.0,0.07456626281358744,0.9659401004612573,0.9660823446177703,1.0053037248071186,1.0971804997005334,1.137376753016521,1.1605515800300172,2.975167578062872,3.5951498254562595,4.111527272431206,5.510507347192218,7.400808698127091,9.246965886010885,9.703556588139737,10.195760238064059,10.73261078314181,10.733722371474155,10.757928487193182,11.517829095095804,12.543654390765369,12.575398181041859,12.690627323953391,13.020947924878454,13.459299397938892,14.654992704682977,15.142009304236048,15.634899201059829,15.741142810449919,15.903610399009407,15.918057613479283,16.1700430478764,16.252241152021455,16.536814167528952,19.22974499461273,20.246658837346516,20.389547568979197,29.029111169567166,29.325182340397948,34.17704388366778,34.215272965159436,34.5674597247601,37.771582190008274,44.10007694490063,44.10636424156353,44.51414842707785,44.565482065927725,44.59723143568785,44.61472969750908,45.08565540324539,47.655473220359184,48.920011711618145,49.78898789386388,50.35524214806744,50.43460232351344,51.712651323928846,51.71392022868244,53.50490823552142,53.50585731630876,54.4072568302822,57.52486447072739,58.19688486622927,58.19692324842356,58.57530049996019,58.79507131575733,60.95877331988338,61.79749162208479,62.49136335178043,62.74598851805864,63.657814439665366,64.05348281282171,65.20794103251784,65.30642863514986,65.32633275846626,66.01481010835549,66.08406243846383,68.64749968692762,68.7178718385448,68.99873826598076,70.6048309069434,70.88853583921825,70.99065109246008,71.42441934451213,71.57930537496047,71.61660973393722,71.62169673306596,76.16404935745075,77.4613862328896,79.18122143398158,79.387144541344,79.5866770955506,80.12203278908171,80.16088566074224,80.5261341462346,81.68301638082285,82.36792249568187,84.70233139122087,86.34037308183935,86.99397876354638,87.30014600960244,91.06496474564487],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"showlegend":false,"xaxis":{"title":{"text":"Time"}},"yaxis":{"title":{"text":"Quadratic Variation"}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('125b61c7-31a3-4ab6-b4f0-df9f0839c80f');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+<p>Quadratic Variation of a Brownian Path</p>
 </div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Chapter_Brownian_files/figure-html/quadratic-variation-output-2.png" id="quadratic-variation-2" width="738" height="503" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The functions with which we are normally familiar are continuously differentiable. If <span class="math inline">\(X\)</span> is a continuously differentiable function of time (in each state of the world), then the quadratic variation of <span class="math inline">\(X\)</span> will be zero. A simple example is a linear function: <span class="math inline">\(X(t) = at\)</span> for some constant <span class="math inline">\(a\)</span>. Then, taking <span class="math inline">\(t_i-t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>, the sum of squared changes is <span class="math display">\[\sum_{i=1}^N [\Delta X_{t_i}]^2 = \sum_{i=1}^N  [a\,\Delta t]^2 = Na^2 (\Delta t)^2 = Na^2 \left(\frac{T}{N}\right)^2 = \frac{a^2T^2}{N} \rightarrow 0\]</span> as <span class="math inline">\(N \rightarrow \infty\)</span>. Essentially the same argument shows that the quadratic variation of any continuously differentiable function is zero, because such a function is approximately linear at each point. Below is a plot of the quadratic variation for the function <span class="math inline">\(X(t)=t\)</span>. Look carefully at the scale of the y-axis</p>
-<div id="cell-squaredvariation" class="cell" data-execution_count="3">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot \,\mathrm{d} t^2</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">6</span>))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.plot(t,t <span class="op">*</span> dt <span class="op">**</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display">
-<div id="squaredvariation" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<figcaption>Approximate Squared Variation of <span class="math inline">\(f(t)=t\)</span></figcaption>
-<p><img src="Chapter_Brownian_files/figure-html/squaredvariation-output-1.png" width="719" height="499" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual. To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, which is defined in the same way as quadratic variation but with the squared changes <span class="math inline">\([\Delta B_{t_i}]^2\)</span> replaced by the absolute value of the changes <span class="math inline">\(|\Delta B_{t_i}|.\)</span> If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one). It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion. This is not quite right. Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil. Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has. Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass. If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function). However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye—no matter how small the segment, one would still see the characteristic jiggling.</p>
+<p>:::</p>
+<p>The functions with which we are normally familiar are continuously differentiable. If <span class="math inline">\(X\)</span> is a continuously differentiable function of time (in each state of the world), then the quadratic variation of <span class="math inline">\(X\)</span> will be zero. A simple example is a linear function: <span class="math inline">\(X(t) = at\)</span> for some constant <span class="math inline">\(a\)</span>. Then, taking <span class="math inline">\(t_i-t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>, the sum of squared changes is <span class="math display">\[\sum_{i=1}^N [\Delta X_{t_i}]^2 = \sum_{i=1}^N  [a\,\Delta t]^2 = Na^2 (\Delta t)^2 = Na^2 \left(\frac{T}{N}\right)^2 = \frac{a^2T^2}{N} \rightarrow 0\]</span> as <span class="math inline">\(N \rightarrow \infty\)</span>. Essentially the same argument shows that the quadratic variation of any continuously differentiable function is zero, because such a function is approximately linear at each point. Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual. To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, which is defined in the same way as quadratic variation but with the squared changes <span class="math inline">\([\Delta B_{t_i}]^2\)</span> replaced by the absolute value of the changes <span class="math inline">\(|\Delta B_{t_i}|.\)</span> If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one). It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion. This is not quite right. Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil. Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has. Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass. If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function). However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye—no matter how small the segment, one would still see the characteristic jiggling.</p>
 <p>To better visualize the convergence of the quadratic variation of a handful of simulated paths of a standard Brownian motion, we encourage readers to interact with the plot below.</p>
 <div id="fig-interactive_quad_var" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -560,7 +582,7 @@ Figure&nbsp;4.1: Convergence of quadratic variation for a standard Brownian moti
 </div>
 </figure>
 </div>
-<p>One may well question why we should be interested in this curious mathematical object. The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing formula (<a href="Chapter_Arbitrage.html#eq-formula" class="quarto-xref">Equation&nbsp;<span>1.28</span></a>) establishes. Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants. More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes. So, we are led to a study of continuous martingales. An important fact is that any non-constant continuous martingale must have infinite total variation! So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.</p>
+<p>One may well question why we should be interested in this curious mathematical object. The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing formula (<a href="Chapter_Arbitrage.html#eq-formula" class="quarto-xref">Equation&nbsp;<span>2.28</span></a>) establishes. Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants. More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes. So, we are led to a study of continuous martingales. An important fact is that any non-constant continuous martingale must have infinite total variation! So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.</p>
 <p>There remains perhaps the question of why we focus on Brownian motion within the world of continuous martingales. The answer here is that any continuous martingale is really just a transformation of a Brownian motion. This is a consequence of the following important fact, which is known as Levy’s theorem: </p>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">

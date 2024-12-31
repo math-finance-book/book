@@ -25,86 +25,41 @@ We can generate an approximate Brownian motion in Python.  To do so, we take a s
 
 ```{python}
 #| label: Simulated Brownian Motion
-#| fig-cap: "Simulated Brownian Motion"
+#| fig-cap: "A Brownian Path"
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
-# number of subdivisions
-n = 10000
-# number of paths
-m = 2
-# last date
-T = 0.5
-# delta t
-dt = T/n
-# volatility is standard deviation
-vol = np.sqrt(dt)
-# seed for random generator
-seed= 1234
-# define a random generator
-np.random.seed(seed)
+N = 100    # number of subdivisions
+T = 0.5    # last date
+dt = T/N
 
-# generate "dB" for each date on each path distributed N(0,vol)
-inc = np.random.normal(loc = 0, scale = vol,size = (n,m))
-Bt = np.zeros(shape = (n + 1, m))
+# generate dB for each date
+dB = np.random.normal(size=N)
+B = np.zeros(N+1)
 
 # Brownian path starts at 0 and is cumulative sum of the dB
-Bt[1:] = inc.cumsum(axis = 0)
-# Could do previous step in a loop
-for i in range(1, n + 1):
-    Bt[i] = Bt[i - 1] + inc[i - 1]
+B[1:] = dB.cumsum()
 
-# plot one path
-t = np.array(range(0, n + 1, 1)) * dt
-plt.figure(figsize=(9,6))
-plt.plot(t,Bt[:,0])
-plt.xlabel("Time")
-plt.ylabel("Brownian Motion")
+fig = go.Figure()
+fig.add_trace(
+  go.Scatter(
+    x=np.arange(0, T+dt, dt), 
+    y=B, 
+    mode='lines', 
+    hovertemplate='t=%{x:.2f}<br>B=%{y:.2f}<extra></extra>'  # 
+    )
+)
+
+fig.update_layout(
+    showlegend=False,
+    title='Brownian Motion Path',
+    xaxis_title='Time',
+    yaxis_title='Brownian Motion',
+    template='plotly_white'
+)
+
+fig.show()
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- ^[The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrt\,\mathrm{d} t]*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\Delta t}$ and hence its variance is $\Delta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings Time and Brownian Motion.  To plot the path of the Brownian motion, select the two columns and insert an XY (Scatter) chart, with data points connected by lines.} -->
-
-<!-- <!-- \addcontentsline{lof}{figure}{Simulating Brownian Motion}
-\begin{verbatim}
-Sub Simulating_Brownian_Motion()
-Dim T, \,\mathrm{d} t, Sqr\,\mathrm{d} t, BrownianMotion, i, N
-T = InputBox("Enter the length of the time period (t)")
-N = InputBox("Enter the number of periods (N)")
-\,\mathrm{d} t = T / N
-Sqr\,\mathrm{d} t = Sqr(\,\mathrm{d} t)
-ActiveCell.Value = "Time"
-ActiveCell.Offset(0, 1) = "Brownian Motion"
-ActiveCell.Offset(1, 0) = 0   ' beginning time
-ActiveCell.Offset(1, 1) = 0   ' beginning value of Brownian motion
-BrownianMotion = 0
-For i = 1 To N
-  ActiveCell.Offset(i + 1, 0) = i * dt          ' next time
-  BrownianMotion = BrownianMotion + Sqr\,\mathrm{d} t * RandN()
-  ActiveCell.Offset(i + 1, 1) = BrownianMotion  ' next value
-Next i
-End Sub -->
-<!-- \end{verbatim} --> -->
-
-
 
 
 ## Quadratic Variation {#sec-s_quadraticvariation}
@@ -118,41 +73,37 @@ where $\Delta B_{t_i}$ denotes the change $B_{t_i}-B(t_{i-1}).$  If we consider 
 
 ```{python}
 #| label: Quadratic Variation
-#| fig-cap: "Quadratic Variation"
-# quadratic variation
-Q = np.zeros(shape = (n, m))
-# Generate \,\mathrm{d} B^2
-Q = (Bt[1:n + 1] - Bt[0:n])**2
+#| fig-cap: "Quadratic Variation of a Brownian Path"
 
-# Quadratic variation is the cumulative sum of \,\mathrm{d} B^2
-QV = np.zeros(shape = (n + 1, m))
-QV[1:] = Q.cumsum(axis = 0)
-plt.figure(figsize=(9,6))
-plt.plot(t,QV[:,0])
-plt.xlabel("Time")
-plt.ylabel("Quadratic Variation")
+# quadratic variation is cumulative sum of squared changes
+dQ = dB**2
+Q = np.zeros(N+1)
+Q[1:] = dQ.cumsum()
+
+fig = go.Figure()
+fig.add_trace(
+  go.Scatter(
+    x=np.arange(0, T+dt, dt), 
+    y=Q, 
+    mode='lines', 
+    hovertemplate='t=%{x:.2f}<br>B=%{y:.2f}<extra></extra>'  # 
+    )
+)
+
+fig.update_layout(
+    showlegend=False,
+    xaxis_title='Time',
+    yaxis_title='Quadratic Variation',
+    template='plotly_white'
+)
+
+
 ```
-
-
-
-
 
 
 The functions with which we are normally familiar are continuously differentiable.  If $X$ is a continuously differentiable function of time (in each state of the world), then the quadratic variation of $X$ will be zero.  A simple example is a linear function: $X(t) = at$ for some constant $a$.  Then, taking $t_i-t_{i-1} = \Delta t = T/N$ for each $i$, the sum of squared changes is
 $$\sum_{i=1}^N [\Delta X_{t_i}]^2 = \sum_{i=1}^N  [a\,\Delta t]^2 = Na^2 (\Delta t)^2 = Na^2 \left(\frac{T}{N}\right)^2 = \frac{a^2T^2}{N} \rightarrow 0$$
-as $N \rightarrow \infty$.  Essentially the same argument shows that the quadratic variation of any continuously differentiable function is zero, because such a function is approximately linear at each point.  Below is a plot of the quadratic variation for the function $X(t)=t$.  Look carefully at the scale of the y-axis
-
-```{python}
-#| label: squaredvariation
-#| fig-cap: "Approximate Squared Variation of $f(t)=t$"
-# Plot \,\mathrm{d} t^2
-plt.figure(figsize=(9,6))
-plt.plot(t,t * dt **2)
-```
-
-
-
-Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual.  To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, \index{total variation} which is defined in the same way as quadratic variation but with the squared changes $[\Delta B_{t_i}]^2$ replaced by the absolute value of the changes $|\Delta B_{t_i}|.$  If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one).  It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion.  This is not quite right.  Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil.  Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has.  Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass.  If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function).  However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye---no matter how small the segment, one would still see the characteristic jiggling.
+as $N \rightarrow \infty$.  Essentially the same argument shows that the quadratic variation of any continuously differentiable function is zero, because such a function is approximately linear at each point.  Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual.  To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, \index{total variation} which is defined in the same way as quadratic variation but with the squared changes $[\Delta B_{t_i}]^2$ replaced by the absolute value of the changes $|\Delta B_{t_i}|.$  If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one).  It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion.  This is not quite right.  Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil.  Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has.  Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass.  If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function).  However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye---no matter how small the segment, one would still see the characteristic jiggling.
 
 
 To better visualize the convergence of the quadratic variation of a handful of simulated paths of a standard Brownian motion, we encourage readers to interact with the plot below.
