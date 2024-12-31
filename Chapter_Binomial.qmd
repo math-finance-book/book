@@ -740,7 +740,54 @@ else:
 
   
   
-  
+
+
+## Binomial Valuation of Basket and Spread Options {#sec-s_curse}
+
+\index{basket option} \index{spread option} \index{binomial model} By combining binomial models, we can  value options or other derivatives on multiple assets.  We will illustrate for an option on two assets.  This is the most important case, and the extension to more than two assets is straightforward.
+
+Consider two stocks with constant dividend yields $q_i$ and constant volatilities $\sigma_i$.  Suppose the two Brownian motions driving the two stocks have a constant correlation coefficient $\rho$.  We will denote the price of stock $i$ ($i=1,2$) in the up state in each period by $u_iS_i$ and the price in the down state by $d_iS_i$, where $S_i$ is the price at the beginning of the period, and $u_i$ and $d_i$ are parameters to be specified.  In each period, there are four possible combinations of returns on the two stocks:  up for both stocks, up for stock 1 and down for stock~2, down for stock 1 and up for stock 2, and down for both stocks.  Denote the probabilities of these four combinations by $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$ respectively.  Thus, there are eight parameters in the binomial model: the number $N$ of periods (which defines the length of each period as $\Delta t=T/N$ where $T$ is the option maturity), the up and down parameters $u_i$ and $d_i$ for each stock, and three probabilities (the fourth probability being determined by the condition that the probabilities sum to one).
+
+Given the period length $\Delta t$, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns $\Delta S_i/S_i$ or the continuously-compounded returns $\Delta \log S_i$.  There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters.  As in @sec-c_introcomputation, it is convenient to take $d_i = 1/u_i$, leaving five restrictions and five free parameters.
+
+As discussed in @sec-s_binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
+Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s_binomialparameters,
+\begin{align*}
+\log u_i&=\sqrt{\sigma_i^2\Delta t + \nu_i^2(\Delta t)^2}\; ,\\
+p_i &= \frac{1}{2}+\frac{\nu_i\Delta t}{2\log u_i}\;.
+\end{align*}
+where $\nu_i=r-q_i-\sigma_i^2/2$.
+In terms of the notation $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$, the probability of the up state for stock 1 is $p_1=p_{uu}+p_{ud}$ and the probability of the up state for stock 2 is $p_2=p_{uu}+p_{du}$.  Therefore,
+
+
+$$
+p_{uu}+p_{ud} = \frac{1}{2}+\frac{\nu_1\Delta t}{2\log u_1}\;,
+$$ {#eq-prob1}
+
+$$
+p_{uu}+p_{du} = \frac{1}{2}+\frac{\nu_2\Delta t}{2\log u_2}\;.
+$$ {#eq-prob2}
+
+
+
+In the continuous time model, over a discrete time period $\Delta t$, the covariance of $\Delta \log S_1$ and $\Delta \log S_2$ is $\rho\sigma_1\sigma_2\Delta t$.  In the binomial model, with $d_i=1/u_i$, we have
+$$
+E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\;.
+$$  Given that $E[\Delta\log S_i] =\nu_i\Delta t$, this implies a covariance of
+$$
+(p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \nu_1\nu_2(\Delta t)^2\;.
+$$
+Matching the covariance in the binomial model to the covariance in the continuous-time model therefore implies
+$$
+p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \nu_1\nu_2(\Delta t)^2}{\log u_1\log u_2}\;.
+$$ {#eq-prob3}
+
+
+
+We can solve the system @eq-prob1 - @eq-prob3, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a  Python function for valuing an American spread call option are given later.  This function operates much like the binomial valuation of American options described in @sec-c_introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
+The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.  
+
+Likewise, in an $N$--period model for a basket option written on three assets, there are $(n+1)^3$ combinations of nodes to be considered at date $n$; if there are five assets, there are $(n+1)^5$ combinations, etc.  Thus, the computation time required increases exponentially with the number of assets.  This can be a serious problem.  For example, with five assets and $N=99$, we would have $100^5$ (10 billion) combinations.  As this suggests, problems with multiple assets quickly become intractable in a binomial framework.  This is called the curse of dimensionality. \index{curse of dimensionality}  
 
 
 
