@@ -11,9 +11,9 @@ We will ultimately deal with different means and different variances, but we sta
 - has a zero mean
 - has a variance equal to the length of the time interval.
 
-We can plot an approximate path of a Brownian motion by summing up normally distributed changes.  We take an interval of time $[s, t]$ and split it up as
-$$[s=t_0, t_1, \ldots, t_{N-1}, t_N=t]$$
-where the times $t_i$ are equally spaced, meaning that $t_i-t_{i-1} = (t-s)/N$, which we will call $\Delta t$.
+We can plot an approximate path of a Brownian motion by summing up normally distributed changes.  We take an interval of time $[0, t]$ and split it up as
+$$[0=t_0, t_1, \ldots, t_{N-1}, t_N=t]$$
+where the times $t_i$ are equally spaced, meaning that $t_i-t_{i-1} = t/N$, which we will call $\Delta t$.
 We generate $N$ normally distributed random variables with zero means and variance equal to $\Delta t$ and define the Brownian motion, which we call $B$, as the cumulative sum of the normal variables.  This fits the definition of a standard Brownian motion, except that we have limited the frequency of the changes to $N$ changes within the interval.  By taking $N$ larger, we can always get a better approximation.  
 
 
@@ -24,8 +24,8 @@ import numpy as np
 import plotly.graph_objects as go
 
 N = 1000   # number of subdivisions
-T = 0.5    # last date
-dt = T/N
+t = 0.5    # last date
+dt = t/N
 
 # generate dB for each date
 dB = np.random.normal(scale = np.sqrt(dt), size=N)
@@ -37,7 +37,7 @@ B[1:] = dB.cumsum()
 fig = go.Figure()
 fig.add_trace(
   go.Scatter(
-    x=np.arange(0, T+dt, dt), 
+    x=np.arange(0, t+dt, dt), 
     y=B, 
     mode='lines', 
     hovertemplate='t=%{x:.2f}<br>B=%{y:.2f}<extra></extra>'  # 
@@ -58,13 +58,13 @@ fig.show()
 
 ## Quadratic Variation {#sec-s_quadraticvariation}
 
-Figure @fig-brownian-path illustrates a distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price. The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
+@fig-brownian-path illustrates a distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price. The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
 
 Consider a discrete partition 
-$$0=t_0 < t_1 < t_2 < \cdots < t_N=T$$
-of the time interval $[0,T]$.  Let $B$ be a Brownian motion and calculate the sum of squared changes
+$$0=t_0 < t_1 < t_2 < \cdots < t_N=t$$
+of the time interval $[0,t]$ as before.  Let $B$ be a Brownian motion and calculate the sum of squared changes
 $$\sum_{i=1}^N [\Delta B_{t_i}]^2\; ,$$
-where $\Delta B_{t_i}$ denotes the change $B_{t_i}-B(t_{i-1}).$  If we consider finer partitions with the length of each time interval $t_i-t_{i-1}$ going to zero, the limit of the sum is called the quadratic variation of the process.  \index{quadratic variation} For a Brownian motion, the quadratic variation over an interval $[0,t]$ is equal to $t$ with probability one.  Here is a plot of the quadratic variation of the previous approximation of a Brownian motion.  The plot shows that the approximation has quadratic variation through each date $t$ that is approximately equal to $t$.
+where $\Delta B_{t_i}$ denotes the change $B_{t_i}-B(t_{i-1}).$  If we consider finer partitions with the length of each time interval $t_i-t_{i-1}$ going to zero, the limit of the sum is called the quadratic variation of the process.  \index{quadratic variation} For a Brownian motion, the quadratic variation over an interval $[0,t]$ is equal to $t$ with probability one.  Here is a plot of the quadratic variation (that is, the cumulative sum of squared changes) of the previous approximation of a Brownian motion.  The plot shows that the approximation has quadratic variation through each date $s \le t$ that is approximately equal to $s$.
 
 ```{python}
 #| label: fig-quadratic-variation
@@ -78,7 +78,7 @@ Q[1:] = dQ.cumsum()
 fig = go.Figure()
 fig.add_trace(
   go.Scatter(
-    x=np.arange(0, T+dt, dt), 
+    x=np.arange(0, t+dt, dt), 
     y=Q, 
     mode='lines', 
     hovertemplate='t=%{x:.2f}<br>B=%{y:.2f}<extra></extra>' 
