@@ -1,27 +1,20 @@
 # Brownian Motion {#sec-c_continuoustime}
 
-This chapter has three objectives.  The first is to introduce the concept of a Brownian motion.  A Brownian motion is a random process (a variable that changes randomly over time) that evolves continuously in time and has the property that its change over any time period is normally distributed with a zero mean and variance equal to the length of the time period.  The mean-zero feature means that a Brownian motion is a martingale.  We will also give a different characterization (Levy's theorem) emphasizing the quadratic variation process, which is a property of the paths (how the variable evolves over time, in a given state of the world) of the process.  
+Brownian motion is a fundamental tool for modeling uncertainty that resolves over time.  Consider predicting a future stock price.  We don't know today what the price will be tomorrow, nor what it will be the following day, nor what it will be the day after that.  We can regard the price three days from now as today's price plus the change from today to tomorrow plus the change from tomorrow to the following day plus the change from that day to the next.  Thus, there are three random changes in this small example.  A simple way to model this situation is to assume each change is a normally distributed random variable with some mean and variance.  Thus, the price in three days is viewed as the sum of three normal increments.
 
-The second objective is to explain Ito's formula, which is the chain rule for stochastic calculus.  In the Black-Scholes model, the stock price is assumed to satisfy
-$$\frac{\mathrm{d} S}{S}=\mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,$$
-where $B$ is a Brownian motion.  In the case that the stock pays no dividend, the rate of return is $\mathrm{d} S/S$. The two terms on the right-hand side represent the mean rate of return and the risk, respectively.  
+Rather than predicting daily changes as in the previous paragraph, we might be interested in predicting hourly changes or even minute-to-minute changes.  This will lead to more, but smaller, increments.  A Brownian motion models changes at all frequencies simultaneously, with all changes being normally distributed.
 
-This model can be equivalently written in terms of the natural logarithm of $S$, which we will write as $\log S$.  The above equation for the rate of return is equivalent to
-$$\mathrm{d}\,\log S = \left(\mu - \frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .$$
-We will explain this equivalence and other similar calculations that are useful for pricing derivatives.
+We will ultimately deal with different means and different variances, but we start with what is called a standard Brownian motion, which is similar to beginning the study of normal random variables by studying a standard normal variable, that is, a normal random variable with a zero mean and a unit variance.  The definition of a standard Brownian motion is that its change over any time interval 
 
-The third objective is to explain how, when we change numeraires, as described in the previous chapter, we can calculate the expectation in the fundamental pricing @eq-formula.  The question is what effect does changing the numeraire (and hence the probability measure) have on the distribution of an asset price.  
+- is normally distributed
+- is independent of prior changes
+- has a zero mean
+- has a variance equal to the length of the time interval.
 
-Everything in the remainder of the book is based on the mathematics presented in this chapter.  For easy reference, the essential formulas have been highlighted in boxes.  
-
-
-
-
-## Brownian Paths {#sec-s_simulatingbrownian}
-
-We begin with the fact that changes in the value of a Brownian motion \index{Brownian motion} are normally distributed with a zero mean and variance equal to the length of the time period.  Let $B(t)$ denote the value of a Brownian motion at time $t$.  Then for any date $u>t$, given the information at time $t$, the random variable $B(u) - B(t)$ is normally distributed with a zero mean and variance equal to $u-t$.  Unless stated otherwise, our convention will be that a Brownian motion starts at $B(0)=0$.
-
-We can generate an approximate Brownian motion in Python.  To do so, we take a small time period $\Delta t$ and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance $\Delta t$.  In the following procedure, we input the length $T=0.5$ of the entire time period over which the Brownian motion is to be simulated.  One input the is number $n=10000$ of time periods of length $\Delta t$ within the full interval $[0,T]$.  The length $\Delta t$ of each individual time period is then calculated as $T/n$.  The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number $n$.  Plotting the output of the procedure creates a picture of what we call a path of the Brownian motion, which means that it shows the value taken at each time in one state of the world.  The procedure generates $m=2$ paths which can be interpreted as the values of the Brownian motion in another state of the world.  In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Python's random number generating function.  The random number generator np.random.normal(loc = 0, scale = vol,size = (n,m)) is an algorithm that produces numbers that mimic $n \times m$ normally distributed random variables with mean 0 (loc=0) and standard deviation $\sqrt{\Delta t}$ (scale=vol).  By setting the seed=1234 the generator is initialized and we will always get the same output whenever we run the code. The Brownian path is just the cumulative sum of the normal increments.  @fig-brownian-path
+We can plot an approximate path of a Brownian motion by summing up normally distributed changes.  We take an interval of time $[s, t]$ and split it up as
+$$[s=t_0, t_1, \ldots, t_{N-1}, t_N=t]$$
+where the times $t_i$ are equally spaced, meaning that $t_i-t_{i-1} = (t-s)/N$, which we will call $\Delta t$.
+We generate $N$ normally distributed random variables with zero means and variance equal to $\Delta t$ and define the Brownian motion, which we call $B$, as the cumulative sum of the normal variables.  This fits the definition of a standard Brownian motion, except that we have limited the frequency of the changes to $N$ changes within the interval.  By taking $N$ larger, we can always get a better approximation.  
 
 
 ```{python}
@@ -64,7 +57,8 @@ fig.show()
 
 
 ## Quadratic Variation {#sec-s_quadraticvariation}
-If we take a large number $n$ of time steps in the simulation of the preceding section, we will see the distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price. The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
+
+Figure @fig-brownian-path illustrates a distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price. The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
 
 Consider a discrete partition 
 $$0=t_0 < t_1 < t_2 < \cdots < t_N=T$$
