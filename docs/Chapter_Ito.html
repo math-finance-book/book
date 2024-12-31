@@ -979,7 +979,7 @@ Tip
 \qquad(6.27)\]</span></span></p>
 <p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S(t_{i-1})\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S(t_{i-1})} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>6.27</span></a>. Thus, the geometric Brownian motion model <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.23</span></a> implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_Vol.html" class="quarto-xref"><span>Chapter 13</span></a>).</p>
 <p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>6.26</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
-<div id="1f32d6da" class="cell" data-execution_count="7">
+<div id="6df0162e" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
@@ -1027,7 +1027,7 @@ Tip
 </div>
 </div>
 <p>The plot below is the distribution of the simulated stock price at <span class="math inline">\(T\)</span>.</p>
-<div id="c2b7431c" class="cell" data-execution_count="8">
+<div id="f147d6c3" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">6</span>))</span>
@@ -1044,157 +1044,8 @@ Tip
 <p>While Geometric Brownian Motion is an important stochastic process to model stock prices, the process with drift equal to zero given by <span class="math display">\[X(t) = \exp\left(-\frac{\kappa^2}{2} + \kappa B(t)\right)\]</span></p>
 <p>satisfies <span class="math inline">\(E[X(t)]=1\)</span> and <span class="math inline">\(E[X(t)|X(s)]=X(s)\)</span> and is an important example of a strictly positive martingale. Again, these facts can be verified using the formula for the expected value of a lognormal random variable. Notice we can write <span class="math display">\[\,\mathrm{d} X(t)= \kappa X(t) \,\mathrm{d} B(t)\]</span> which agrees with the martingale characterization of <span class="math inline">\(\int_0^t \sigma(X(t),t) \,\mathrm{d} B(t)\)</span>.</p>
 </section>
-<section id="sec-s_girsanov" class="level2" data-number="6.10">
-<h2 data-number="6.10" class="anchored" data-anchor-id="sec-s_girsanov"><span class="header-section-number">6.10</span> Numeraires and Probabilities</h2>
-<p>When we change probability measures, we cannot expect a process <span class="math inline">\(B\)</span> that was a Brownian motion to remain a Brownian motion. The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of <span class="math inline">\(B\)</span> is likely to become nonzero. (Likewise, a martingale is unlikely to remain a martingale when we change probabilities.) However, the Brownian motion <span class="math inline">\(B\)</span> will still be an Ito process under the new probability measure. In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> Changing probabilities only changes the drift of an Ito process.</p>
-<p>In a sense, this should not be surprising. It was noted in <a href="#sec-s_quadraticvariation" class="quarto-xref"><span>Section 6.3</span></a> that a Brownian motion <span class="math inline">\(B\)</span> can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval <span class="math inline">\([0,T]\)</span> is equal to <span class="math inline">\(T\)</span>. Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in <span class="math inline">\(B\)</span>) but it will not affect how each path jiggles. So, under the new probability measure, <span class="math inline">\(B\)</span> should still be like a Brownian motion but it may have a nonzero drift. If we consider a general Ito process, the reasoning is the same. The diffusion coefficient <span class="math inline">\(\sigma\)</span> determines how much each path jiggles, and this is unaffected by changing the probability measure. Furthermore, instantaneous covariances—the <span class="math inline">\((\mathrm{d} X)(\mathrm{d} Y)\)</span> terms—between Ito processes are unaffected by changing the probability measure. Only the drifts are affected.</p>
-<p>As explained in <span class="quarto-unresolved-ref">?sec-s_introoptions</span>, we need to know the distribution of the underlying under probability measures corresponding to different numeraires. Let <span class="math inline">\(S\)</span> be the price of an asset that has a constant dividend yield <span class="math inline">\(q\)</span>, and, as in <a href="#sec-s_reinvestingdividends" class="quarto-xref"><span>Section 6.8</span></a>, let <span class="math inline">\(V(t)=\mathrm{e}^{qt}S(t)\)</span>. This is the price of the portfolio in which all dividends are reinvested, and we have <span class="math display">\[\frac{\mathrm{d} V}{V} = q\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\; .\]</span> Let <span class="math inline">\(Y\)</span> be the price of another another asset that does not pay dividends. Let <span class="math inline">\(r(t)\)</span> denote the instantaneous risk-free rate at date <span class="math inline">\(t\)</span> and let <span class="math inline">\(R(t) = \exp\left(\int_0^t r(s)\,\mathrm{d} s\right)\)</span>. Assume <span class="math display">\[\begin{align*}
-\frac{\mathrm{d} S}{S} &amp;= \mu_s\,\mathrm{d} t+\sigma_s\,\mathrm{d} B_s\; ,\\
-\frac{\mathrm{d} Y}{Y} &amp;= \mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y\;,
-\end{align*}\]</span> where <span class="math inline">\(B_s\)</span> and <span class="math inline">\(B_y\)</span> are Brownian motions under the actual probability measure with correlation <span class="math inline">\(\rho\)</span>, and where <span class="math inline">\(\mu_s, \mu_y, \sigma_s, \sigma_y\)</span> and <span class="math inline">\(\rho\)</span> can be quite general random pro-cesses.<br>
-We consider the dynamics of the asset price <span class="math inline">\(S\)</span> under three different probability measures. In each case, we follow the same steps: (i) we note that the ratio of an asset price to the numeraire asset price must be a martingale, (ii) we use Ito’s formula to calculate the drift of this ratio, and (iii) we use the fact that the drift of a martingale must be zero to compute the drift of <span class="math inline">\(\mathrm{d} S/S\)</span>.</p>
-<section id="risk-neutral-probabilities" class="level3">
-<h3 class="anchored" data-anchor-id="risk-neutral-probabilities">Risk-Neutral Probabilities</h3>
-<p>Under the risk-neutral probability, <span class="math inline">\(Z(t)\)</span> defined as <span class="math display">\[Z(t) = \frac{V(t)}{R(t)} = \exp\left(-\int_0^t r(s)\,\mathrm{d} s\right)V(t)\]</span> is a martingale. Using the compounding/discounting rule, we have <span class="math display">\[\frac{\mathrm{d} Z}{Z} =-r\,\mathrm{d} t + \frac{\mathrm{d} V}{V} = (q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\; .\]</span> For <span class="math inline">\(Z\)</span> to be a martingale, the drift (<span class="math inline">\(\mathrm{d} t\)</span> part) of <span class="math inline">\(\mathrm{d} Z/Z\)</span> must be zero. Therefore, the drift of <span class="math inline">\(\mathrm{d} S/S\)</span> must be <span class="math inline">\((r-q)\,\mathrm{d} t\)</span> under the risk-neutral probability. Because the change of measure does not affect the volatility, this implies:</p>
-<div class="callout callout-style-default callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><span id="eq-riskneutral11"><span class="math display">\[
-\frac{\mathrm{d} S}{S} =( r-q)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
-\qquad(6.28)\]</span></span></p>
-<p>where <span class="math inline">\(B^*_s\)</span> is a Brownian motion under the risk-neutral probability.</p>
-</div>
-</div>
-</section>
-<section id="underlying-as-the-numeraire" class="level3">
-<h3 class="anchored" data-anchor-id="underlying-as-the-numeraire">Underlying as the Numeraire</h3>
-<p>When <span class="math inline">\(V\)</span> is the numeraire, the process <span class="math inline">\(Z(t)\)</span> defined as <span class="math display">\[Z(t) = \frac{R(t)}{V(t)} = \frac{\exp\left(\int_0^t r(s)\,\mathrm{d} s\right)}{V(t)}\]</span> is a martingale. Using the rule for ratios, we have <span class="math display">\[\frac{\mathrm{d} Z}{Z} =r\,\mathrm{d} t - \frac{\mathrm{d} V}{V} + \left(\frac{\mathrm{d} V}{V}\right)^2 = (r -q+ \sigma^2_s)\,\mathrm{d} t - \frac{\mathrm{d} S}{S}\; .\]</span> Because the drift of <span class="math inline">\(\mathrm{d} Z/Z\)</span> must be zero, this implies that the drift of <span class="math inline">\(\mathrm{d} S/
-S\)</span> is <span class="math inline">\((r -q + \sigma^2_s)\,\mathrm{d} t\)</span>. We conclude that:</p>
-<div class="callout callout-style-default callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><span id="eq-own11"><span class="math display">\[
-\frac{\mathrm{d} S}{S} = (r-q+ \sigma^2_s)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
-\qquad(6.29)\]</span></span></p>
-<p>where now <span class="math inline">\(B^*_s\)</span> denotes a Brownian motion when <span class="math inline">\(V(t)=\mathrm{e}^{qt}S(t)\)</span> is the numeraire.</p>
-</div>
-</div>
-</section>
-<section id="another-risky-asset-as-the-numeraire" class="level3">
-<h3 class="anchored" data-anchor-id="another-risky-asset-as-the-numeraire">Another Risky Asset as the Numeraire</h3>
-<p>When <span class="math inline">\(Y\)</span> is the numeraire, <span class="math inline">\(Z(t)\)</span> defined as <span class="math display">\[Z(t) = \frac{V(t)}{Y(t)}\]</span> must be a martingale. Using again the rule for ratios, we have <span class="math display">\[\begin{align*}
-\frac{\mathrm{d} Z}{Z} &amp;= \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y}- \left(\frac{\mathrm{d} V}{V}\right)\left(\frac{\mathrm{d} Y}{Y}\right) + \left(\frac{\mathrm{d} Y}{Y}\right)^2\\
-&amp; = \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y} -\rho\sigma_s\sigma_y\,\mathrm{d} t+\sigma_y^2\,\mathrm{d} t\\
-&amp;= \frac{\mathrm{d} S}{S} -\frac{\mathrm{d} Y}{Y} + (q-\rho\sigma_s\sigma_y\,\mathrm{d} t+\sigma_y^2)\,\mathrm{d} t\; .
-\end{align*}\]</span> We can apply our previous example to compute the dynamics of <span class="math inline">\(Y\)</span> when <span class="math inline">\(Y\)</span> is the numeraire. This shows that the drift of <span class="math inline">\(\mathrm{d} Y/Y\)</span> is <span class="math inline">\((r+ \sigma^2_y)\,\mathrm{d} t\)</span>. Because the drift of <span class="math inline">\(\mathrm{d} Z/Z\)</span> must be zero, it follows that the drift of <span class="math inline">\(\mathrm{d} S/S\)</span> is <span class="math inline">\((r-q+ \rho\sigma_s\sigma_y)\,\mathrm{d} t\)</span>. We conclude that:</p>
-<div class="callout callout-style-default callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><span id="eq-other11"><span class="math display">\[
-\frac{\mathrm{d} S}{S} = (r-q+ \rho\sigma_s\sigma_y)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
-\qquad(6.30)\]</span></span></p>
-<p>where <span class="math inline">\(B^*_s\)</span> denotes a Brownian motion under the probability measure corresponding to the non-dividend-paying risky asset <span class="math inline">\(Y\)</span> being the numeraire, and where <span class="math inline">\(\rho\)</span> is the correlation of <span class="math inline">\(S\)</span> and <span class="math inline">\(Y\)</span>.</p>
-</div>
-</div>
-<p>Notice that <a href="Chapter_Girsanov.html#eq-other11" class="quarto-xref">Equation&nbsp;<span>7.3</span></a>, while more complicated, is also more general than the others. In fact, it includes <a href="Chapter_Girsanov.html#eq-riskneutral11" class="quarto-xref">Equation&nbsp;<span>7.1</span></a> and <a href="Chapter_Girsanov.html#eq-own11" class="quarto-xref">Equation&nbsp;<span>7.2</span></a> as special cases: (i) if <span class="math inline">\(Y\)</span> is the price of the instantaneously risk-free asset, then <span class="math inline">\(\sigma_y=0\)</span> and <a href="Chapter_Girsanov.html#eq-other11" class="quarto-xref">Equation&nbsp;<span>7.3</span></a> simplifies to <a href="Chapter_Girsanov.html#eq-riskneutral11" class="quarto-xref">Equation&nbsp;<span>7.1</span></a>, and (ii) if <span class="math inline">\(Y=
-V\)</span>, then <span class="math inline">\(\sigma_y=\sigma_s\)</span> and <span class="math inline">\(\rho=1\)</span>, so <a href="Chapter_Girsanov.html#eq-other11" class="quarto-xref">Equation&nbsp;<span>7.3</span></a> simplifies to <a href="Chapter_Girsanov.html#eq-own11" class="quarto-xref">Equation&nbsp;<span>7.2</span></a>.</p>
-</section>
-<section id="further-discussion" class="level3">
-<h3 class="anchored" data-anchor-id="further-discussion">Further Discussion</h3>
-<p>It would be natural for one to ask at this point: what is the Brownian motion <span class="math inline">\(B^*_s\)</span> and where did it come from? We have argued that once we know the drift, and the fact that the volatility does not change, we can immediately write down, for example, <span class="math display">\[\frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B^*_s\]</span> for a Brownian motion <span class="math inline">\(B^*_s\)</span> under the risk-neutral probability. To answer this question, we will give here the definition of <span class="math inline">\(B^*_s\)</span> under the risk-neutral probability. The definition shows that we are justified in writing down <a href="Chapter_Girsanov.html#eq-riskneutral11" class="quarto-xref">Equation&nbsp;<span>7.1</span></a>–<a href="Chapter_Girsanov.html#eq-other11" class="quarto-xref">Equation&nbsp;<span>7.3</span></a>, but we will not repeat the definition each time we make a statement of this sort.</p>
-<p>We showed that <span class="math inline">\(Z\)</span> is a martingale under the risk-neutral probability, where <span class="math inline">\(Z\)</span> satisfies <span id="eq-numeraire101"><span class="math display">\[
-\frac{\mathrm{d} Z}{Z} = (q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = (q-r+\mu_s)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B_s\;.
-\qquad(6.31)\]</span></span></p>
-<p>Define <span class="math inline">\(B^*_s(0) = 0\)</span> and <span id="eq-numeraire102"><span class="math display">\[
-\mathrm{d} B^*_s = \left(\frac{q-r+\mu_s}{\sigma_s}\right)\,\mathrm{d} t + \mathrm{d} B_s\;.
-\qquad(6.32)\]</span></span></p>
-<p>Then <span class="math display">\[\mathrm{d} B^*_s = \frac{1}{\sigma_s}\left(\frac{\mathrm{d} Z}{Z}\right)\]</span> and hence is a continuous martingale under the risk-neutral probability. We can compute its quadratic variation as <span class="math display">\[(\mathrm{d} B^*_s)^2 = \left(\frac{q-r+\mu_s}{\sigma_s}\right)^2(\mathrm{d} t)^2 + 2\left(\frac{q-r+\mu_s}{\sigma_s}\right)(\mathrm{d} t)(\mathrm{d} B_s) + (\mathrm{d} B_s)^2 = \mathrm{d} t\; .\]</span> Therefore, by Levy’s theorem (<a href="#sec-s_quadraticvariation" class="quarto-xref"><span>Section 6.3</span></a>), <span class="math inline">\(B^*_s\)</span> is a Brownian motion under the risk-neutral probability. From <a href="Chapter_Girsanov.html#eq-numeraire101" class="quarto-xref">Equation&nbsp;<span>7.4</span></a> and <a href="Chapter_Girsanov.html#eq-numeraire102" class="quarto-xref">Equation&nbsp;<span>7.5</span></a> we have <span class="math display">\[(q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = \sigma_s\,\mathrm{d} B^*_s \quad \Longleftrightarrow \quad \frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B^*_s\;,\]</span> as in <a href="Chapter_Girsanov.html#eq-riskneutral11" class="quarto-xref">Equation&nbsp;<span>7.1</span></a>.</p>
-</section>
-</section>
-<section id="sec-tailprobs" class="level2" data-number="6.11">
-<h2 data-number="6.11" class="anchored" data-anchor-id="sec-tailprobs"><span class="header-section-number">6.11</span> Tail Probabilities of Geometric Brownian Motions</h2>
-<p>For each of the numeraires discussed in the previous section, we have <span id="eq-tailprob1"><span class="math display">\[
-\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
-\qquad(6.33)\]</span></span></p>
-<p>for some <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\sigma\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion under the probability measure associated with the numeraire. Specifically, <span class="math inline">\(\sigma=\sigma_s\)</span>, <span class="math inline">\(B=B^*_s\)</span>, and</p>
-<ol type="1">
-<li>for the risk-neutral probability, <span class="math inline">\(\alpha = r-q-\sigma_s^2/2\)</span>,</li>
-<li>when <span class="math inline">\(\mathrm{e}^{qt}S(t)\)</span> is the numeraire, <span class="math inline">\(\alpha = r-q +\sigma_s^2/2\)</span>,</li>
-<li>when another risky asset price <span class="math inline">\(Y\)</span> is the numeraire, <span class="math inline">\(\alpha = r-q+\rho\sigma_s\sigma_y-\sigma_s^2/2\)</span>.</li>
-</ol>
-<p>We will assume in this section that <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\sigma\)</span> are constants. The essential calculation in pricing options, as we will see in the next chapter and in <a href="Chapter_Exotics.html" class="quarto-xref"><span>Chapter 12</span></a>, is to compute <span class="math inline">\(\text{prob}(S(t)&gt;K)\)</span> and <span class="math inline">\(\text{prob}(S(t)&lt;K)\)</span> for a constant <span class="math inline">\(K\)</span> (the strike price of an option), where <span class="math inline">\(\text{prob}\)</span> denotes the probabilities at date <span class="math inline">\(0\)</span> (the date we are pricing an option) associated with a particular numeraire.</p>
-<p><a href="Chapter_Girsanov.html#eq-tailprob1" class="quarto-xref">Equation&nbsp;<span>7.6</span></a> gives us <span class="math display">\[\log S(t) = \log S(0) + \alpha T + \sigma B(t)\; .\]</span> Given this, we deduce</p>
-<p><span class="math display">\[
-S(t) &gt; K  \quad\Longleftrightarrow\quad \log S(t) &gt; \log K
-\]</span> <span class="math display">\[
-\quad\Longleftrightarrow\quad \sigma B(t) &gt; \log K - \log S(0)-\alpha T
-\]</span> <span class="math display">\[
-\quad\Longleftrightarrow\quad \frac{B(t)}{\sqrt{T}} &gt; \frac{\log K - \log S(0)-\alpha T}{\sigma\sqrt{T}}
-\]</span> <span class="math display">\[
-\quad\Longleftrightarrow\quad -\frac{B(t)}{\sqrt{T}} &lt; \frac{\log S(0)-\log K + \alpha T}{\sigma\sqrt{T}}
-\]</span> <span id="eq-tailprob2"><span class="math display">\[
-\quad\Longleftrightarrow\quad -\frac{B(t)}{\sqrt{T}} &lt; \frac{\log \left(\frac{S(0)}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
-\qquad(6.34)\]</span></span></p>
-<p>The random variable on the left-hand side of <a href="Chapter_Girsanov.html#eq-tailprob2" class="quarto-xref">Equation&nbsp;<span>7.7</span></a> has the standard normal distribution—it is normally distributed with mean equal to zero and variance equal to one. As is customary, we will denote the probability that a standard normal is less than some number <span class="math inline">\(d\)</span> as <span class="math inline">\(\mathrm{N}(d)\)</span>. We conclude:</p>
-<div class="callout callout-style-default callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Assume <span class="math inline">\(\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion. Then, for any number <span class="math inline">\(K\)</span>, <span id="eq-tailprob01"><span class="math display">\[
-\text{prob}(S(t)&gt;K) = \mathrm{N}(d)\;,
-\qquad(6.35)\]</span></span></p>
-<p>where <span id="eq-tailprob3"><span class="math display">\[
-d = \frac{\log \left(\frac{S(0)}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
-\qquad(6.36)\]</span></span></p>
-</div>
-</div>
-<p>The probability <span class="math inline">\(\text{prob}(S(t)&lt;K)\)</span> can be calculated similarly, but the simplest way to derive it is to note that the events <span class="math inline">\(S(t)&gt;K\)</span> and <span class="math inline">\(S(t)&lt;K\)</span> are complementary—their probabilities sum to one (the event <span class="math inline">\(S(t)=K\)</span> having zero probability). Therefore <span class="math inline">\(\text{prob}(S(t)&lt;K) = 1-\mathrm{N}(d)\)</span>. This is the probability that a standard normal is greater than <span class="math inline">\(d\)</span>, and by virtue of the symmetry of the standard normal distribution, it equals the probability that a standard normal is less than <span class="math inline">\(-d\)</span>. Therefore, we have:</p>
-<div class="callout callout-style-default callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Assume <span class="math inline">\(\mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion. Then, for any number <span class="math inline">\(K\)</span>, <span id="eq-tailprob02"><span class="math display">\[
-\text{prob}(S(t)&lt;K) = \mathrm{N}(-d)\;,
-\qquad(6.37)\]</span></span></p>
-<p>where <span class="math inline">\(d\)</span> is defined in <a href="Chapter_Girsanov.html#eq-tailprob3" class="quarto-xref">Equation&nbsp;<span>7.9</span></a>.</p>
-</div>
-</div>
-</section>
-<section id="sec-s_volatilities" class="level2" data-number="6.12">
-<h2 data-number="6.12" class="anchored" data-anchor-id="sec-s_volatilities"><span class="header-section-number">6.12</span> Volatilities</h2>
+<section id="sec-s_volatilities" class="level2" data-number="6.10">
+<h2 data-number="6.10" class="anchored" data-anchor-id="sec-s_volatilities"><span class="header-section-number">6.10</span> Volatilities</h2>
 <p>As mentioned in <a href="#sec-s_geometricbrownianmotion" class="quarto-xref"><span>Section 6.9</span></a>, when we encounter an equation of the form <span class="math display">\[\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\]</span> where <span class="math inline">\(B\)</span> is a Brownian motion, we will say ``<span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(S\)</span>. For example, in the Black-Scholes model, the most important assumption is that the volatility of the underlying asset price is constant. We will occasionally need to compute the volatilities of products or ratios of random processes. These computations follow directly from Ito’s formula.</p>
 <p>Suppose <span class="math display">\[\frac{\mathrm{d} X}{X} = \mu_x\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x \qquad \text{and} \qquad
 \frac{\mathrm{d} Y}{Y} = \mu_y\,\mathrm{d} t + \sigma_y\,\mathrm{d} B_y\; ,\]</span> where <span class="math inline">\(B_x\)</span> and <span class="math inline">\(B_y\)</span> are Brownian motions with correlation <span class="math inline">\(\rho\)</span>, and <span class="math inline">\(\mu_x\)</span>, <span class="math inline">\(\mu_y\)</span>, <span class="math inline">\(\sigma_x\)</span>, <span class="math inline">\(\sigma_y\)</span>, and <span class="math inline">\(\rho\)</span> may be quite general random processes.</p>
@@ -1202,7 +1053,7 @@ Tip
 <h3 class="anchored" data-anchor-id="products">Products</h3>
 <p>If <span class="math inline">\(Z=XY\)</span>, then <a href="#eq-rule2" class="quarto-xref">Equation&nbsp;<span>6.15</span></a> gives us <span id="eq-volproduct1"><span class="math display">\[
 \frac{\mathrm{d} Z}{Z} = (\mu_x+\mu_y+\rho\sigma_x\sigma_y)\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x + \sigma_y\,\mathrm{d} B_y\;.
-\qquad(6.38)\]</span></span></p>
+\qquad(6.28)\]</span></span></p>
 <p>The instantaneous variance of <span class="math inline">\(\mathrm{d} Z/Z\)</span> is calculated, using the rules for products of differentials, as <span class="math display">\[\begin{align*}
 \left(\frac{\mathrm{d} Z}{Z}\right)^2 &amp;= (\sigma_x\,\mathrm{d} B_x + \sigma_y\,\mathrm{d} B_y)^2\\
 &amp;= (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
@@ -1219,7 +1070,7 @@ Tip
 <div class="callout-body-container callout-body">
 <p>The volatility of <span class="math inline">\(XY\)</span> is <span id="eq-volatilityproduct"><span class="math display">\[
 \sqrt{\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y}\;.
-\qquad(6.39)\]</span></span></p>
+\qquad(6.29)\]</span></span></p>
 </div>
 </div>
 </section>
@@ -1227,7 +1078,7 @@ Tip
 <h3 class="anchored" data-anchor-id="ratios">Ratios</h3>
 <p>If <span class="math inline">\(Z=Y/X\)</span>, then <a href="#eq-rule4" class="quarto-xref">Equation&nbsp;<span>6.16</span></a> gives us <span id="eq-ratioproduct1"><span class="math display">\[
 \frac{\mathrm{d} Z}{Z} = (\mu_y-\mu_x-\rho\sigma_x\sigma_y+\sigma_x^2)\,\mathrm{d} t + \sigma_y\,\mathrm{d} B_y - \sigma_x\,\mathrm{d} B_x\;.
-\qquad(6.40)\]</span></span></p>
+\qquad(6.30)\]</span></span></p>
 <p>The instantaneous variance of <span class="math inline">\(\mathrm{d} Z/Z\)</span> is therefore <span class="math display">\[\begin{align*}
 \left(\frac{\mathrm{d} Z}{Z}\right)^2 &amp;= (\sigma_y\,\mathrm{d} B_y - \sigma_x\,\mathrm{d} B_x)^2\\
 &amp;= (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
@@ -1245,26 +1096,26 @@ Tip
 <p>The volatility of <span class="math inline">\(Y/X\)</span> is<br>
 <span id="eq-volatilityratio"><span class="math display">\[
 \sqrt{\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y}\;.
-\qquad(6.41)\]</span></span></p>
+\qquad(6.31)\]</span></span></p>
 </div>
 </div>
 </section>
-<section id="further-discussion-1" class="level3">
-<h3 class="anchored" data-anchor-id="further-discussion-1">Further Discussion</h3>
+<section id="further-discussion" class="level3">
+<h3 class="anchored" data-anchor-id="further-discussion">Further Discussion</h3>
 <p>To understand why taking the square root of <span class="math inline">\((\mathrm{d} Z/Z)^2\)</span> (dropping the <span class="math inline">\(\mathrm{d} t\)</span>) gives the volatility, consider for example the product case <span class="math inline">\(Z=XY\)</span>. Define a random process <span class="math inline">\(B\)</span> by <span class="math inline">\(B(0)=0\)</span> and <span class="math display">\[
 \mathrm{d} B = \frac{\sigma_x}{\sigma}\,\mathrm{d} B_x + \frac{\sigma_y}{\sigma}\,\mathrm{d} B_y\;,
 \]</span> {#eq-foreign, B}</p>
-<p>where <span class="math inline">\(\sigma\)</span> is the volatility defined in <a href="#eq-volatilityproduct" class="quarto-xref">Equation&nbsp;<span>6.39</span></a>. Then we can write <a href="#eq-volproduct1" class="quarto-xref">Equation&nbsp;<span>6.38</span></a> as <span id="eq-volproduct2"><span class="math display">\[
-\frac{\mathrm{d} Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;. \qquad(6.42)\]</span></span></p>
+<p>where <span class="math inline">\(\sigma\)</span> is the volatility defined in <a href="#eq-volatilityproduct" class="quarto-xref">Equation&nbsp;<span>6.29</span></a>. Then we can write <a href="#eq-volproduct1" class="quarto-xref">Equation&nbsp;<span>6.28</span></a> as <span id="eq-volproduct2"><span class="math display">\[
+\frac{\mathrm{d} Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;. \qquad(6.32)\]</span></span></p>
 <p>From the discussion in <a href="#sec-s_itoprocesses" class="quarto-xref"><span>Section 6.4</span></a>, we know that <span class="math inline">\(B\)</span> is a continuous martingale. We can compute its quadratic variation from <span class="math display">\[\begin{align*}
 (\mathrm{d} B)^2 &amp;= \left(\frac{\sigma_x\,\mathrm{d} B_x + \sigma_s\,\mathrm{d} B_s}{\sigma}\right)^2\\
 &amp;= \frac{(\sigma_x^2 + \sigma_s^2 + 2\rho\sigma_x\sigma_s)\,\mathrm{d} t}{\sigma^2}\; ,\\
 &amp;= \mathrm{d} t\;.
-\end{align*}\]</span> By Levy’s theorem (see <a href="#sec-s_quadraticvariation" class="quarto-xref"><span>Section 6.3</span></a>), any continuous martingale with this quadratic variation is necessarily a Brownian motion. Therefore, <a href="#eq-volproduct2" class="quarto-xref">Equation&nbsp;<span>6.42</span></a> shows that <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(Z\)</span> as defined at the beginning of the section.</p>
+\end{align*}\]</span> By Levy’s theorem (see <a href="#sec-s_quadraticvariation" class="quarto-xref"><span>Section 6.3</span></a>), any continuous martingale with this quadratic variation is necessarily a Brownian motion. Therefore, <a href="#eq-volproduct2" class="quarto-xref">Equation&nbsp;<span>6.32</span></a> shows that <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(Z\)</span> as defined at the beginning of the section.</p>
 </section>
 </section>
-<section id="exercises" class="level2" data-number="6.13">
-<h2 data-number="6.13" class="anchored" data-anchor-id="exercises"><span class="header-section-number">6.13</span> Exercises</h2>
+<section id="exercises" class="level2" data-number="6.11">
+<h2 data-number="6.11" class="anchored" data-anchor-id="exercises"><span class="header-section-number">6.11</span> Exercises</h2>
 <div id="exr-nolabel" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 6.1</strong></span> Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider the function <span class="math display">\[X(t)=\mathrm{e}^t\; .\]</span> Write a code, which computes and plots <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span>, where <span class="math display">\[\Delta X_{t_i} = X_{t_i}-X(t_{i-1}) = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .\]</span> <!-- Hint: The sum can be computed as follows.
 \begin{verbatim}
@@ -1299,10 +1150,10 @@ Next i
 <div id="exr-nolabel" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 6.9</strong></span> Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider a geometric Brownian motion <span class="math display">\[\frac{\mathrm{d} Z}{Z} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .\]</span> An approximate path <span class="math inline">\(\tilde{Z}(t)\)</span> of the geometric Brownian motion can be simulated as <span id="eq-exponential111"><span class="math display">\[
 \Delta \tilde{Z}_{t_i} = \tilde{Z}(t_{i-1}) \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
-\qquad(6.43)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z(t)\)</span> and an approximate path <span class="math inline">\(\tilde{Z}(t)\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>6.43</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}(0) = Z(0)\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
+\qquad(6.33)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z(t)\)</span> and an approximate path <span class="math inline">\(\tilde{Z}(t)\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>6.33</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}(0) = Z(0)\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
 For <span class="math inline">\(N\)</span> larger than about <span class="math inline">\(100 T\)</span>, the approximation will look perfect—you won’t be able to tell that there are two plots in the figure. One reason this is true is an exact formula is <span id="eq-exponential112"><span class="math display">\[
 Z_{t_i} = Z(t_{i-1}) \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
-\qquad(6.44)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B(t)} \approx 1+ \sigma \Delta B(t) +\frac{1}{2}\sigma^2 (\Delta B(t))^2\)</span> and <span class="math inline">\((\,\mathrm{d} B(t))^2=\Delta t\)</span>.</p>
+\qquad(6.34)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B(t)} \approx 1+ \sigma \Delta B(t) +\frac{1}{2}\sigma^2 (\Delta B(t))^2\)</span> and <span class="math inline">\((\,\mathrm{d} B(t))^2=\Delta t\)</span>.</p>
 </div>
 <div id="exr-nolabel" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 6.10</strong></span> Use simulation to find <span class="math inline">\(E^*[e^{-r T}{\mathbf{1}}_{\{S(t) \ge K\}}]\)</span> in the risk-neutral probability where <span class="math display">\[\begin{equation*}
@@ -1324,7 +1175,6 @@ Z_{t_i} = Z(t_{i-1}) \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t +
 \langle X,X\rangle (t) = \int_0^T \mathrm{d}\langle X,X\rangle(t) = \int_0^T \sigma^2(t)\,\mathrm{d} t\;.
 \]</span><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>We need to assume <span class="math inline">\(g(t,x,y)\)</span> is continuously differentiable in <span class="math inline">\(t\)</span> and twice continuously differentiable in <span class="math inline">\((x,y)\)</span> for <a href="#eq-itogeneralnew" class="quarto-xref">Equation&nbsp;<span>6.13</span></a> and <a href="#eq-itogeneralnew2" class="quarto-xref">Equation&nbsp;<span>6.14</span></a> to be valid. Note also that we are using a short-hand notation here. The partial derivatives of <span class="math inline">\(g\)</span> will generally depend on <span class="math inline">\(t\)</span>, <span class="math inline">\(X(t)\)</span> and <span class="math inline">\(Y(t)\)</span> just as <span class="math inline">\(g\)</span> does.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed. Because of the way we change probability measures when we change numeraires (cf. <a href="Chapter_Arbitrage.html#eq-probSnumeraire" class="quarto-xref">Equation&nbsp;<span>2.23</span></a>) this will always be true for us.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
