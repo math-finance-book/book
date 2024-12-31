@@ -17,19 +17,20 @@ Everything in the remainder of the book is based on the mathematics presented in
 
 
 
-## Simulating a Brownian Motion {#sec-s_simulatingbrownian}
+## Brownian Paths {#sec-s_simulatingbrownian}
+
 We begin with the fact that changes in the value of a Brownian motion \index{Brownian motion} are normally distributed with a zero mean and variance equal to the length of the time period.  Let $B(t)$ denote the value of a Brownian motion at time $t$.  Then for any date $u>t$, given the information at time $t$, the random variable $B(u) - B(t)$ is normally distributed with a zero mean and variance equal to $u-t$.  Unless stated otherwise, our convention will be that a Brownian motion starts at $B(0)=0$.
 
-We can generate an approximate Brownian motion in Python.  To do so, we take a small time period $\Delta t$ and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance $\Delta t$.  In the following procedure, we input the length $T=0.5$ of the entire time period over which the Brownian motion is to be simulated.  One input the is number $n=10000$ of time periods of length $\Delta t$ within the full interval $[0,T]$.  The length $\Delta t$ of each individual time period is then calculated as $T/n$.  The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number $n$.  Plotting the output of the procedure creates a picture of what we call a path of the Brownian motion, which means that it shows the value taken at each time in one state of the world.  The procedure generates $m=2$ paths which can be interpreted as the values of the Brownian motion in another state of the world.  In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Python's random number generating function.  The random number generator np.random.normal(loc = 0, scale = vol,size = (n,m)) is an algorithm that produces numbers that mimic $n \times m$ normally distributed random variables with mean 0 (loc=0) and standard deviation $\sqrt{\Delta t}$ (scale=vol).  By setting the seed=1234 the generator is initialized and we will always get the same output whenever we run the code. The Brownian path is just the cumulative sum of $n$ of the normal increments.  
+We can generate an approximate Brownian motion in Python.  To do so, we take a small time period $\Delta t$ and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance $\Delta t$.  In the following procedure, we input the length $T=0.5$ of the entire time period over which the Brownian motion is to be simulated.  One input the is number $n=10000$ of time periods of length $\Delta t$ within the full interval $[0,T]$.  The length $\Delta t$ of each individual time period is then calculated as $T/n$.  The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number $n$.  Plotting the output of the procedure creates a picture of what we call a path of the Brownian motion, which means that it shows the value taken at each time in one state of the world.  The procedure generates $m=2$ paths which can be interpreted as the values of the Brownian motion in another state of the world.  In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Python's random number generating function.  The random number generator np.random.normal(loc = 0, scale = vol,size = (n,m)) is an algorithm that produces numbers that mimic $n \times m$ normally distributed random variables with mean 0 (loc=0) and standard deviation $\sqrt{\Delta t}$ (scale=vol).  By setting the seed=1234 the generator is initialized and we will always get the same output whenever we run the code. The Brownian path is just the cumulative sum of the normal increments.  @fig-brownian-path
 
 
 ```{python}
-#| label: Simulated Brownian Motion
-#| fig-cap: "A Brownian Path"
+#| label: fig-brownian-path
+#| fig-cap: "A Path of a Brownian Motion"
 import numpy as np
 import plotly.graph_objects as go
 
-N = 100    # number of subdivisions
+N = 1000   # number of subdivisions
 T = 0.5    # last date
 dt = T/N
 
@@ -52,10 +53,10 @@ fig.add_trace(
 
 fig.update_layout(
     showlegend=False,
-    title='Brownian Motion Path',
     xaxis_title='Time',
     yaxis_title='Brownian Motion',
-    template='plotly_white'
+    template='plotly_white',
+    height=300,
 )
 
 fig.show()
@@ -72,8 +73,8 @@ $$\sum_{i=1}^N [\Delta B_{t_i}]^2\; ,$$
 where $\Delta B_{t_i}$ denotes the change $B_{t_i}-B(t_{i-1}).$  If we consider finer partitions with the length of each time interval $t_i-t_{i-1}$ going to zero, the limit of the sum is called the quadratic variation of the process.  \index{quadratic variation} For a Brownian motion, the quadratic variation over an interval $[0,t]$ is equal to $t$ with probability one.  Here is a plot of the quadratic variation of the previous approximation of a Brownian motion.  The plot shows that the approximation has quadratic variation through each date $t$ that is approximately equal to $t$.
 
 ```{python}
-#| label: Quadratic Variation
-#| fig-cap: "Quadratic Variation of a Brownian Path"
+#| label: fig-quadratic-variation
+#| fig-cap: "Quadratic Variation of a Brownian Motion Path"
 
 # quadratic variation is cumulative sum of squared changes
 dQ = dB**2
@@ -86,7 +87,7 @@ fig.add_trace(
     x=np.arange(0, T+dt, dt), 
     y=Q, 
     mode='lines', 
-    hovertemplate='t=%{x:.2f}<br>B=%{y:.2f}<extra></extra>'  # 
+    hovertemplate='t=%{x:.2f}<br>B=%{y:.2f}<extra></extra>' 
     )
 )
 
@@ -94,7 +95,8 @@ fig.update_layout(
     showlegend=False,
     xaxis_title='Time',
     yaxis_title='Quadratic Variation',
-    template='plotly_white'
+    template='plotly_white',
+    height=300
 )
 
 
