@@ -97,6 +97,7 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-bb6b93f51bf5a7975605005bd985cc1c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/quarto-contrib/foldbox/foldbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -130,6 +131,36 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<style>
+.TODO {
+  --color1: #e7b1b4;
+  --color2: #8c3236;
+}
+.Theorem {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.Exercise {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.Feature {
+  --color1: #c0c0c0;
+  --color2: #808080;
+}
+.Corollary {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.DONE {
+  --color1: #cce7b1;
+  --color2: #86b754;
+}
+.Definition {
+  --color1: #d999d3;
+  --color2: #a01793;
+}
+</style>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
@@ -507,102 +538,91 @@ d = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t - \sigma\sqrt{\Delta
 <section id="binomial-valuation-of-european-options" class="level3">
 <h3 class="anchored" data-anchor-id="binomial-valuation-of-european-options">Binomial Valuation of European Options</h3>
 <p>The binomial model for path-independent European options can be implemented as follows. We will use the Cox-Ross-Rubinstein parameters. We first define the binomial parameters and some useful constants, denoting the probability <span class="math inline">\(p\,\)</span> of an up move as <span class="math inline">\(pu\)</span> and the probability <span class="math inline">\(1-p\)</span> of a down move as <span class="math inline">\(pd\)</span>. The routine below uses the combinatoric function comb(N,i) to compute the term <span class="math inline">\(\frac{N !}{i! (N-i)!}\)</span>.</p>
-<div id="c96c914f" class="cell" data-execution_count="1">
+<div id="df348983" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="c96c914f"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="c96c914f-1"><a href="#c96c914f-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="c96c914f-2"><a href="#c96c914f-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> comb</span>
-<span id="c96c914f-3"><a href="#c96c914f-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="c96c914f-4"><a href="#c96c914f-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Binomial Model for European Option</span></span>
-<span id="c96c914f-5"><a href="#c96c914f-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="c96c914f-6"><a href="#c96c914f-6" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span>  <span class="co"># interest rate</span></span>
-<span id="c96c914f-7"><a href="#c96c914f-7" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span>  <span class="co"># volatility</span></span>
-<span id="c96c914f-8"><a href="#c96c914f-8" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># Expiration</span></span>
-<span id="c96c914f-9"><a href="#c96c914f-9" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> div <span class="op">=</span> <span class="fl">0.0</span>  <span class="co"># Dividend</span></span>
-<span id="c96c914f-10"><a href="#c96c914f-10" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span>  <span class="co"># initial stock price</span></span>
-<span id="c96c914f-11"><a href="#c96c914f-11" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">40</span>  <span class="co"># strike price</span></span>
-<span id="c96c914f-12"><a href="#c96c914f-12" aria-hidden="true" tabindex="-1"></a>times <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Number of steps</span></span>
-<span id="c96c914f-13"><a href="#c96c914f-13" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> times</span>
-<span id="c96c914f-14"><a href="#c96c914f-14" aria-hidden="true" tabindex="-1"></a>delt <span class="op">=</span> np.exp(<span class="op">-</span>div <span class="op">*</span> dt)</span>
-<span id="c96c914f-15"><a href="#c96c914f-15" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r <span class="op">*</span> dt) <span class="op">*</span> delt</span>
-<span id="c96c914f-16"><a href="#c96c914f-16" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig <span class="op">*</span> np.sqrt(dt))</span>
-<span id="c96c914f-17"><a href="#c96c914f-17" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
-<span id="c96c914f-18"><a href="#c96c914f-18" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> (a <span class="op">-</span> d) <span class="op">/</span> (u <span class="op">-</span> d)</span>
-<span id="c96c914f-19"><a href="#c96c914f-19" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu</span>
-<span id="c96c914f-20"><a href="#c96c914f-20" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> np.arange(times <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="c96c914f-21"><a href="#c96c914f-21" aria-hidden="true" tabindex="-1"></a>vec1 <span class="op">=</span> np.array([<span class="dv">1</span>] <span class="op">*</span> (times <span class="op">+</span> <span class="dv">1</span>))</span>
-<span id="c96c914f-22"><a href="#c96c914f-22" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.array([<span class="dv">0</span>] <span class="op">*</span> (times <span class="op">+</span> <span class="dv">1</span>))</span>
-<span id="c96c914f-23"><a href="#c96c914f-23" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> vec <span class="op">-</span> times <span class="op">*</span> vec1)</span>
-<span id="c96c914f-24"><a href="#c96c914f-24" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> np.maximum(S <span class="op">-</span> K <span class="op">*</span> vec1, <span class="dv">0</span> <span class="op">*</span> vec1)</span>
-<span id="c96c914f-25"><a href="#c96c914f-25" aria-hidden="true" tabindex="-1"></a>CC <span class="op">=</span> (</span>
-<span id="c96c914f-26"><a href="#c96c914f-26" aria-hidden="true" tabindex="-1"></a>    comb((times) <span class="op">*</span> vec1, (times) <span class="op">*</span> vec1 <span class="op">-</span> vec)</span>
-<span id="c96c914f-27"><a href="#c96c914f-27" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span> pu <span class="op">**</span> (vec)</span>
-<span id="c96c914f-28"><a href="#c96c914f-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span> pd <span class="op">**</span> (times <span class="op">*</span> vec1 <span class="op">-</span> vec)</span>
-<span id="c96c914f-29"><a href="#c96c914f-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span> C</span>
-<span id="c96c914f-30"><a href="#c96c914f-30" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="c96c914f-31"><a href="#c96c914f-31" aria-hidden="true" tabindex="-1"></a>Call <span class="op">=</span> <span class="bu">sum</span>(CC) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
-<span id="c96c914f-32"><a href="#c96c914f-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The Value of the European Call is="</span>, Call)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> comb</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Binomial Model for European Option</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">.1</span> <span class="co"># interest rate</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">.2</span> <span class="co"># volatility</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">.5</span> <span class="co"># Expiration</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> div <span class="op">=</span> <span class="fl">0.0</span> <span class="co"># Dividend</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span> <span class="co"># initial stock price</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">40</span> <span class="co"># strike price</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>times <span class="op">=</span><span class="dv">100</span> <span class="co"># Number of steps</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>times</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>delt <span class="op">=</span> np.exp(<span class="op">-</span>div<span class="op">*</span>dt)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r<span class="op">*</span>dt)<span class="op">*</span>delt</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig<span class="op">*</span>np.sqrt(dt))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>u</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>pu  <span class="op">=</span> (a<span class="op">-</span>d)<span class="op">/</span>(u<span class="op">-</span>d)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span><span class="op">-</span>pu</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> np.arange(times <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>vec1 <span class="op">=</span> np.array([<span class="dv">1</span>] <span class="op">*</span> (times <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.array([<span class="dv">0</span>] <span class="op">*</span> (times <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> S0<span class="op">*</span>u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>vec<span class="op">-</span>times<span class="op">*</span>vec1)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span>  np.maximum(S<span class="op">-</span>K<span class="op">*</span>vec1,<span class="dv">0</span><span class="op">*</span>vec1)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>CC <span class="op">=</span>  comb((times)<span class="op">*</span>vec1,(times)<span class="op">*</span>vec1<span class="op">-</span>vec)<span class="op">*</span>pu<span class="op">**</span>(vec)<span class="op">*</span>pd<span class="op">**</span>(times<span class="op">*</span>vec1<span class="op">-</span>vec)<span class="op">*</span>C</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>Call <span class="op">=</span> <span class="bu">sum</span>(CC)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The Value of the European Call is='</span>,Call)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The Value of the European Call is= 4.76181835776329</code></pre>
 </div>
 </div>
 <p>The Black Scholes value is shown below.</p>
-<div id="17883ad2" class="cell" data-execution_count="2">
+<div id="8bf04a69" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="17883ad2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="17883ad2-1"><a href="#17883ad2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
-<span id="17883ad2-2"><a href="#17883ad2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="17883ad2-3"><a href="#17883ad2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize, minimize_scalar</span>
-<span id="17883ad2-4"><a href="#17883ad2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="17883ad2-5"><a href="#17883ad2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="17883ad2-6"><a href="#17883ad2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> blackscholes(S0, K, r, q, sig, T, call<span class="op">=</span><span class="va">True</span>):</span>
-<span id="17883ad2-7"><a href="#17883ad2-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Calculate option price using B-S formula.</span></span>
-<span id="17883ad2-8"><a href="#17883ad2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="17883ad2-9"><a href="#17883ad2-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="17883ad2-10"><a href="#17883ad2-10" aria-hidden="true" tabindex="-1"></a><span class="co">        S0 (num): initial price of underlying asset.</span></span>
-<span id="17883ad2-11"><a href="#17883ad2-11" aria-hidden="true" tabindex="-1"></a><span class="co">        K (num): strick price.</span></span>
-<span id="17883ad2-12"><a href="#17883ad2-12" aria-hidden="true" tabindex="-1"></a><span class="co">        sig (num): Black-Scholes volatility.</span></span>
-<span id="17883ad2-13"><a href="#17883ad2-13" aria-hidden="true" tabindex="-1"></a><span class="co">        T (num): maturity.</span></span>
-<span id="17883ad2-14"><a href="#17883ad2-14" aria-hidden="true" tabindex="-1"></a><span class="co">        call (bool): True returns call price, False returns put price.</span></span>
-<span id="17883ad2-15"><a href="#17883ad2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="17883ad2-16"><a href="#17883ad2-16" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="17883ad2-17"><a href="#17883ad2-17" aria-hidden="true" tabindex="-1"></a><span class="co">        num</span></span>
-<span id="17883ad2-18"><a href="#17883ad2-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="17883ad2-19"><a href="#17883ad2-19" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S0 <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sig<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sig <span class="op">*</span> np.sqrt(T))</span>
-<span id="17883ad2-20"><a href="#17883ad2-20" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sig <span class="op">*</span> np.sqrt(T)</span>
-<span id="17883ad2-21"><a href="#17883ad2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     norm = sp.stats.norm</span></span>
-<span id="17883ad2-22"><a href="#17883ad2-22" aria-hidden="true" tabindex="-1"></a>    norm <span class="op">=</span> stats.norm</span>
-<span id="17883ad2-23"><a href="#17883ad2-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> call:</span>
-<span id="17883ad2-24"><a href="#17883ad2-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S0 <span class="op">*</span> norm.cdf(d1, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">-</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(</span>
-<span id="17883ad2-25"><a href="#17883ad2-25" aria-hidden="true" tabindex="-1"></a>            d2, <span class="dv">0</span>, <span class="dv">1</span></span>
-<span id="17883ad2-26"><a href="#17883ad2-26" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="17883ad2-27"><a href="#17883ad2-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="17883ad2-28"><a href="#17883ad2-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S0 <span class="op">*</span> norm.cdf(<span class="op">-</span>d1, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">+</span> K <span class="op">*</span> np.exp(</span>
-<span id="17883ad2-29"><a href="#17883ad2-29" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span>r <span class="op">*</span> T</span>
-<span id="17883ad2-30"><a href="#17883ad2-30" aria-hidden="true" tabindex="-1"></a>        ) <span class="op">*</span> norm.cdf(<span class="op">-</span>d2, <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="17883ad2-31"><a href="#17883ad2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="17883ad2-32"><a href="#17883ad2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="17883ad2-33"><a href="#17883ad2-33" aria-hidden="true" tabindex="-1"></a>truebsc <span class="op">=</span> blackscholes(S0, K, r, div, sig, T)</span>
-<span id="17883ad2-34"><a href="#17883ad2-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The exact Black Scholes Price is="</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize, minimize_scalar</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> blackscholes(S0, K, r, q, sig, T, call <span class="op">=</span> <span class="va">True</span>):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Calculate option price using B-S formula.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">        S0 (num): initial price of underlying asset.</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">        K (num): strick price.</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">        sig (num): Black-Scholes volatility.</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">        T (num): maturity.</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">        call (bool): True returns call price, False returns put price.</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">        num</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S0<span class="op">/</span>K) <span class="op">+</span> (r <span class="op">-</span>q <span class="op">+</span> sig<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span> T)<span class="op">/</span>(sig<span class="op">*</span>np.sqrt(T))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sig<span class="op">*</span>np.sqrt(T)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#     norm = sp.stats.norm</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    norm <span class="op">=</span> stats.norm</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> call:</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q<span class="op">*</span>T)<span class="op">*</span>S0 <span class="op">*</span> norm.cdf(d1,<span class="dv">0</span>,<span class="dv">1</span>) <span class="op">-</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(d2,<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.exp(<span class="op">-</span>q<span class="op">*</span>T)<span class="op">*</span>S0 <span class="op">*</span> norm.cdf(<span class="op">-</span>d1,<span class="dv">0</span>,<span class="dv">1</span>) <span class="op">+</span>K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(<span class="op">-</span>d2,<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>truebsc <span class="op">=</span> blackscholes(S0,K,r, div, sig,T)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The exact Black Scholes Price is='</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The exact Black Scholes Price is= 4.759422392871532</code></pre>
 </div>
 </div>
 <p>An alternative way to calculate te value of the call is to use a loop. This takes longer to run but is perhaps easier to understand.</p>
-<div id="310aa2d6" class="cell" data-execution_count="3">
+<div id="249d8fc7" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="310aa2d6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="310aa2d6-1"><a href="#310aa2d6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(times <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="310aa2d6-2"><a href="#310aa2d6-2" aria-hidden="true" tabindex="-1"></a>    S[i] <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> i <span class="op">-</span> times)</span>
-<span id="310aa2d6-3"><a href="#310aa2d6-3" aria-hidden="true" tabindex="-1"></a>    C[i] <span class="op">=</span> <span class="bu">max</span>(S[i] <span class="op">-</span> K, <span class="dv">0</span>)</span>
-<span id="310aa2d6-4"><a href="#310aa2d6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="310aa2d6-5"><a href="#310aa2d6-5" aria-hidden="true" tabindex="-1"></a>    CC[i] <span class="op">=</span> comb((times), (i)) <span class="op">*</span> pu <span class="op">**</span> (i) <span class="op">*</span> pd <span class="op">**</span> (times <span class="op">-</span> i) <span class="op">*</span> C[i]</span>
-<span id="310aa2d6-6"><a href="#310aa2d6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="310aa2d6-7"><a href="#310aa2d6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="310aa2d6-8"><a href="#310aa2d6-8" aria-hidden="true" tabindex="-1"></a>Call <span class="op">=</span> <span class="bu">sum</span>(CC) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
-<span id="310aa2d6-9"><a href="#310aa2d6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The Value of the European Call is="</span>, Call)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(times<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    S[i] <span class="op">=</span> S0<span class="op">*</span>u <span class="op">**</span> (<span class="dv">2</span><span class="op">*</span>i<span class="op">-</span>times)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    C[i] <span class="op">=</span>  <span class="bu">max</span>(S[i]<span class="op">-</span>K,<span class="dv">0</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    CC[i] <span class="op">=</span>  comb((times),(i))<span class="op">*</span>pu <span class="op">**</span> (i)<span class="op">*</span>pd <span class="op">**</span> (times<span class="op">-</span>i)<span class="op">*</span>C[i]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>Call <span class="op">=</span> <span class="bu">sum</span>(CC)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The Value of the European Call is='</span>,Call)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The Value of the European Call is= 4.76181835776329</code></pre>
@@ -626,84 +646,83 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 <section id="binomial-valuation-of-american-options" class="level3">
 <h3 class="anchored" data-anchor-id="binomial-valuation-of-american-options">Binomial Valuation of American Options</h3>
 <p>We will consider an American put. It may also be optimal to exercise an American call early, if there is a positive dividend yield, and the same procedure can be used for American calls. We begin as in the previous subsection by defining the binomial parameters, some useful constants, and the stock price at the last date. We also record the value of the lowest stock price where we exercise at the last date <span class="math inline">\(ex[n]\)</span>.</p>
-<div id="b3372959" class="cell" data-execution_count="4">
+<div id="07fe7dbb" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="b3372959"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="b3372959-1"><a href="#b3372959-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="b3372959-2"><a href="#b3372959-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="b3372959-3"><a href="#b3372959-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="b3372959-4"><a href="#b3372959-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
-<span id="b3372959-5"><a href="#b3372959-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="b3372959-6"><a href="#b3372959-6" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
-<span id="b3372959-7"><a href="#b3372959-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
-<span id="b3372959-8"><a href="#b3372959-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="b3372959-9"><a href="#b3372959-9" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
-<span id="b3372959-10"><a href="#b3372959-10" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="b3372959-11"><a href="#b3372959-11" aria-hidden="true" tabindex="-1"></a><span class="co"># true drift</span></span>
-<span id="b3372959-12"><a href="#b3372959-12" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">0.15</span></span>
-<span id="b3372959-13"><a href="#b3372959-13" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
-<span id="b3372959-14"><a href="#b3372959-14" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="b3372959-15"><a href="#b3372959-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="b3372959-16"><a href="#b3372959-16" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="b3372959-17"><a href="#b3372959-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
-<span id="b3372959-18"><a href="#b3372959-18" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
-<span id="b3372959-19"><a href="#b3372959-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="b3372959-20"><a href="#b3372959-20" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="b3372959-21"><a href="#b3372959-21" aria-hidden="true" tabindex="-1"></a><span class="co"># dividend yield</span></span>
-<span id="b3372959-22"><a href="#b3372959-22" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">0</span></span>
-<span id="b3372959-23"><a href="#b3372959-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="b3372959-24"><a href="#b3372959-24" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate parameters for binomial model</span></span>
-<span id="b3372959-25"><a href="#b3372959-25" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> n</span>
-<span id="b3372959-26"><a href="#b3372959-26" aria-hidden="true" tabindex="-1"></a>delt <span class="op">=</span> np.exp(<span class="op">-</span>y <span class="op">*</span> dt)</span>
-<span id="b3372959-27"><a href="#b3372959-27" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r <span class="op">*</span> dt) <span class="op">*</span> delt</span>
-<span id="b3372959-28"><a href="#b3372959-28" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig <span class="op">*</span> np.sqrt(dt))</span>
-<span id="b3372959-29"><a href="#b3372959-29" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
-<span id="b3372959-30"><a href="#b3372959-30" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> (a <span class="op">-</span> d) <span class="op">/</span> (u <span class="op">-</span> d)</span>
-<span id="b3372959-31"><a href="#b3372959-31" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu</span>
-<span id="b3372959-32"><a href="#b3372959-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
-<span id="b3372959-33"><a href="#b3372959-33" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
-<span id="b3372959-34"><a href="#b3372959-34" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.zeros(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="b3372959-35"><a href="#b3372959-35" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.zeros(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="b3372959-36"><a href="#b3372959-36" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.zeros(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="b3372959-37"><a href="#b3372959-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="b3372959-38"><a href="#b3372959-38" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="b3372959-39"><a href="#b3372959-39" aria-hidden="true" tabindex="-1"></a>    S[j] <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> j <span class="op">-</span> n)</span>
-<span id="b3372959-40"><a href="#b3372959-40" aria-hidden="true" tabindex="-1"></a>    AP[j] <span class="op">=</span> <span class="bu">max</span>(K <span class="op">-</span> S[j], <span class="dv">0</span>)</span>
-<span id="b3372959-41"><a href="#b3372959-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> AP[j] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="b3372959-42"><a href="#b3372959-42" aria-hidden="true" tabindex="-1"></a>        ex[n] <span class="op">=</span> S[j]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">.1</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># true drift</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">.15</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">.2</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co"># dividend yield</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate parameters for binomial model</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>n</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>delt <span class="op">=</span> np.exp(<span class="op">-</span>y<span class="op">*</span>dt)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r<span class="op">*</span>dt) <span class="op">*</span> delt</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig<span class="op">*</span>np.sqrt(dt))</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>u</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> (a<span class="op">-</span>d)<span class="op">/</span>(u<span class="op">-</span>d)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span><span class="op">-</span>pu</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    S[j] <span class="op">=</span> S0<span class="op">*</span>u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>j<span class="op">-</span>n)</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    AP[j] <span class="op">=</span> <span class="bu">max</span>(K<span class="op">-</span>S[j],<span class="dv">0</span>)</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> AP[j]<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>        ex[n] <span class="op">=</span> S[j]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Now we do the backward induction. Note that a period is the time period between successive dates. In a one-period model, there are two dates (the beginning and end) and in general there are <span class="math inline">\(N+1\)</span> dates in an <span class="math inline">\(N\)</span>–period model. We index the dates as <span class="math inline">\(i=0,\ldots,N\)</span>. At each date we start by defining the stock price at the bottom node. At date <span class="math inline">\(i\)</span> there have been <span class="math inline">\(i\)</span> past periods, so the bottom node corresponds to <span class="math inline">\(i\)</span> down moves. The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value). Having already dealt with the bottom node (<span class="math inline">\(j=0\)</span>) we loop over the nodes <span class="math inline">\(j=1,\ldots,i\)</span> at each date <span class="math inline">\(i\)</span>, increasing the stock price by a factor of <span class="math inline">\(u^2\)</span> each time. When we have backed up to date <span class="math inline">\(0\)</span>, we return the put value <span class="math inline">\(AP(0)\)</span>, the value at the bottom node, which is the only node at date <span class="math inline">\(0\)</span>.</p>
-<div id="e0d6310f" class="cell" data-execution_count="5">
+<div id="9da9c240" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="e0d6310f"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="e0d6310f-1"><a href="#e0d6310f-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
-<span id="e0d6310f-2"><a href="#e0d6310f-2" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(n <span class="op">-</span> i)</span>
-<span id="e0d6310f-3"><a href="#e0d6310f-3" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.zeros(n <span class="op">-</span> i)</span>
-<span id="e0d6310f-4"><a href="#e0d6310f-4" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> np.zeros(n <span class="op">-</span> i)</span>
-<span id="e0d6310f-5"><a href="#e0d6310f-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n <span class="op">-</span> i):</span>
-<span id="e0d6310f-6"><a href="#e0d6310f-6" aria-hidden="true" tabindex="-1"></a>        S[j] <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> j <span class="op">-</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>))</span>
-<span id="e0d6310f-7"><a href="#e0d6310f-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="e0d6310f-8"><a href="#e0d6310f-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># P calculates the value of early exercise</span></span>
-<span id="e0d6310f-9"><a href="#e0d6310f-9" aria-hidden="true" tabindex="-1"></a>        P[j] <span class="op">=</span> <span class="bu">max</span>(K <span class="op">-</span> S[j], <span class="dv">0</span>)</span>
-<span id="e0d6310f-10"><a href="#e0d6310f-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="e0d6310f-11"><a href="#e0d6310f-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># PP calculates value of waiting using payoffs</span></span>
-<span id="e0d6310f-12"><a href="#e0d6310f-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># from next period</span></span>
-<span id="e0d6310f-13"><a href="#e0d6310f-13" aria-hidden="true" tabindex="-1"></a>        PP[j] <span class="op">=</span> (pu <span class="op">*</span> AP[j <span class="op">+</span> <span class="dv">1</span>] <span class="op">+</span> pd <span class="op">*</span> AP[j]) <span class="op">/</span> a</span>
-<span id="e0d6310f-14"><a href="#e0d6310f-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="e0d6310f-15"><a href="#e0d6310f-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># AP is the max of ealry exercise and waiting</span></span>
-<span id="e0d6310f-16"><a href="#e0d6310f-16" aria-hidden="true" tabindex="-1"></a>        AP[j] <span class="op">=</span> <span class="bu">max</span>(P[j], PP[j])</span>
-<span id="e0d6310f-17"><a href="#e0d6310f-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="e0d6310f-18"><a href="#e0d6310f-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ex is price where early exercise is optimal</span></span>
-<span id="e0d6310f-19"><a href="#e0d6310f-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> P[j] <span class="op">&gt;</span> PP[j]:</span>
-<span id="e0d6310f-20"><a href="#e0d6310f-20" aria-hidden="true" tabindex="-1"></a>            ex[n <span class="op">-</span> i] <span class="op">=</span> S[j]</span>
-<span id="e0d6310f-21"><a href="#e0d6310f-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> ex[n <span class="op">-</span> i] <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="e0d6310f-22"><a href="#e0d6310f-22" aria-hidden="true" tabindex="-1"></a>            ex[n <span class="op">-</span> i] <span class="op">=</span> np.nan</span>
-<span id="e0d6310f-23"><a href="#e0d6310f-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="e0d6310f-24"><a href="#e0d6310f-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="e0d6310f-25"><a href="#e0d6310f-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The value of the American Put is="</span>, AP[<span class="dv">0</span>])</span>
-<span id="e0d6310f-26"><a href="#e0d6310f-26" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
-<span id="e0d6310f-27"><a href="#e0d6310f-27" aria-hidden="true" tabindex="-1"></a>plt.plot(dt <span class="op">*</span> np.arange(n <span class="op">+</span> <span class="dv">1</span>), ex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(n<span class="op">-</span>i)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.zeros(n<span class="op">-</span>i)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> np.zeros(n<span class="op">-</span>i)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n<span class="op">-</span>i):</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        S[j] <span class="op">=</span> S0<span class="op">*</span>u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>j<span class="op">-</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># P calculates the value of early exercise</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        P[j] <span class="op">=</span> <span class="bu">max</span>(K<span class="op">-</span>S[j],<span class="dv">0</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># PP calculates value of waiting using payoffs</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># from next period</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        PP[j] <span class="op">=</span> (pu<span class="op">*</span>AP[j<span class="op">+</span><span class="dv">1</span>] <span class="op">+</span> pd<span class="op">*</span>AP[j])<span class="op">/</span>a</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># AP is the max of ealry exercise and waiting</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        AP[j] <span class="op">=</span> <span class="bu">max</span>(P[j],PP[j])</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ex is price where early exercise is optimal</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> P[j] <span class="op">&gt;</span> PP[j]:</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>            ex[n<span class="op">-</span>i] <span class="op">=</span> S[j]</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> ex[n<span class="op">-</span>i]<span class="op">==</span><span class="dv">0</span>:</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>           ex[n<span class="op">-</span>i]<span class="op">=</span>np.nan</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>               </span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The value of the American Put is='</span>,AP[<span class="dv">0</span>])</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">6</span>))</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>plt.plot(dt<span class="op">*</span>np.arange(n<span class="op">+</span><span class="dv">1</span>),ex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The value of the American Put is= 1.643396346909605</code></pre>
@@ -717,77 +736,76 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 </div>
 </div>
 <p>The above code runs slowly due to the loops and looping is inefficient in Python. Below we provide a code which generatee the same answer except one of the loops is replaced by vector calculations. The program creates the stock price for each time in a vector and uses vector comparisons to calcualte the maximum of the early exercise and waiting. To understand the code, it is probably a good idea to print out vec1 and vec to see how the exponents are calulated at each node. This procedure is necessary to speed up the execution since loops are inefficient in Python.</p>
-<div id="7898b071" class="cell" data-execution_count="6">
+<div id="d2850293" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="7898b071"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="7898b071-1"><a href="#7898b071-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="7898b071-2"><a href="#7898b071-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="7898b071-3"><a href="#7898b071-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="7898b071-4"><a href="#7898b071-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
-<span id="7898b071-5"><a href="#7898b071-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="7898b071-6"><a href="#7898b071-6" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
-<span id="7898b071-7"><a href="#7898b071-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
-<span id="7898b071-8"><a href="#7898b071-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="7898b071-9"><a href="#7898b071-9" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
-<span id="7898b071-10"><a href="#7898b071-10" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="7898b071-11"><a href="#7898b071-11" aria-hidden="true" tabindex="-1"></a><span class="co"># true drift</span></span>
-<span id="7898b071-12"><a href="#7898b071-12" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">0.15</span></span>
-<span id="7898b071-13"><a href="#7898b071-13" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
-<span id="7898b071-14"><a href="#7898b071-14" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="7898b071-15"><a href="#7898b071-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="7898b071-16"><a href="#7898b071-16" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="7898b071-17"><a href="#7898b071-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
-<span id="7898b071-18"><a href="#7898b071-18" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
-<span id="7898b071-19"><a href="#7898b071-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="7898b071-20"><a href="#7898b071-20" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="7898b071-21"><a href="#7898b071-21" aria-hidden="true" tabindex="-1"></a><span class="co"># dividend yield</span></span>
-<span id="7898b071-22"><a href="#7898b071-22" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">0</span></span>
-<span id="7898b071-23"><a href="#7898b071-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="7898b071-24"><a href="#7898b071-24" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> n</span>
-<span id="7898b071-25"><a href="#7898b071-25" aria-hidden="true" tabindex="-1"></a>delt <span class="op">=</span> np.exp(<span class="op">-</span>y <span class="op">*</span> dt)</span>
-<span id="7898b071-26"><a href="#7898b071-26" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r <span class="op">*</span> dt) <span class="op">*</span> delt</span>
-<span id="7898b071-27"><a href="#7898b071-27" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig <span class="op">*</span> np.sqrt(dt))</span>
-<span id="7898b071-28"><a href="#7898b071-28" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
-<span id="7898b071-29"><a href="#7898b071-29" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> (a <span class="op">-</span> d) <span class="op">/</span> (u <span class="op">-</span> d)</span>
-<span id="7898b071-30"><a href="#7898b071-30" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu</span>
-<span id="7898b071-31"><a href="#7898b071-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
-<span id="7898b071-32"><a href="#7898b071-32" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
-<span id="7898b071-33"><a href="#7898b071-33" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> np.arange(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="7898b071-34"><a href="#7898b071-34" aria-hidden="true" tabindex="-1"></a>vec1 <span class="op">=</span> np.ones(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="7898b071-35"><a href="#7898b071-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="7898b071-36"><a href="#7898b071-36" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> vec <span class="op">-</span> n <span class="op">*</span> vec1)</span>
-<span id="7898b071-37"><a href="#7898b071-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="7898b071-38"><a href="#7898b071-38" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.maximum(K <span class="op">-</span> S, <span class="dv">0</span>)</span>
-<span id="7898b071-39"><a href="#7898b071-39" aria-hidden="true" tabindex="-1"></a><span class="co"># print(AP)</span></span>
-<span id="7898b071-40"><a href="#7898b071-40" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> S[AP <span class="op">&gt;</span> <span class="dv">0</span>]</span>
-<span id="7898b071-41"><a href="#7898b071-41" aria-hidden="true" tabindex="-1"></a>eb <span class="op">=</span> np.zeros(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="7898b071-42"><a href="#7898b071-42" aria-hidden="true" tabindex="-1"></a>eb[n] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
-<span id="7898b071-43"><a href="#7898b071-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Backward recursion in the loop</span></span>
-<span id="7898b071-44"><a href="#7898b071-44" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
-<span id="7898b071-45"><a href="#7898b071-45" aria-hidden="true" tabindex="-1"></a>    vec <span class="op">=</span> np.arange(n <span class="op">-</span> i)</span>
-<span id="7898b071-46"><a href="#7898b071-46" aria-hidden="true" tabindex="-1"></a>    vec1 <span class="op">=</span> np.ones(n <span class="op">-</span> i)</span>
-<span id="7898b071-47"><a href="#7898b071-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Possible Stock prices at times-i period</span></span>
-<span id="7898b071-48"><a href="#7898b071-48" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> vec <span class="op">-</span> (n <span class="op">-</span> i) <span class="op">*</span> vec1 <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="7898b071-49"><a href="#7898b071-49" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     S = S0 * u**(2*vec-(n-i))</span></span>
-<span id="7898b071-50"><a href="#7898b071-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># P calculates the value of early exercise</span></span>
-<span id="7898b071-51"><a href="#7898b071-51" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.maximum(K <span class="op">*</span> vec1 <span class="op">-</span> S, <span class="dv">0</span>)</span>
-<span id="7898b071-52"><a href="#7898b071-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PP calculates value of waiting using payoffs from next period</span></span>
-<span id="7898b071-53"><a href="#7898b071-53" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> (pu <span class="op">*</span> AP[<span class="dv">1</span> : (n <span class="op">-</span> i <span class="op">+</span> <span class="dv">1</span>)] <span class="op">+</span> pd <span class="op">*</span> AP[<span class="dv">0</span> : (n <span class="op">-</span> i)]) <span class="op">/</span> a</span>
-<span id="7898b071-54"><a href="#7898b071-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># AP is the max of ealry exercise and waiting</span></span>
-<span id="7898b071-55"><a href="#7898b071-55" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.maximum(P, PP)</span>
-<span id="7898b071-56"><a href="#7898b071-56" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ex is prices where early exercise is optimal</span></span>
-<span id="7898b071-57"><a href="#7898b071-57" aria-hidden="true" tabindex="-1"></a>    ex <span class="op">=</span> S[AP <span class="op">-</span> PP <span class="op">&gt;</span> <span class="dv">0</span>]</span>
-<span id="7898b071-58"><a href="#7898b071-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># eb calculates the highest price</span></span>
-<span id="7898b071-59"><a href="#7898b071-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># where exercise is optimal to plot boundary</span></span>
-<span id="7898b071-60"><a href="#7898b071-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ex.shape[<span class="dv">0</span>] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="7898b071-61"><a href="#7898b071-61" aria-hidden="true" tabindex="-1"></a>        eb[n <span class="op">-</span> i] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
-<span id="7898b071-62"><a href="#7898b071-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="7898b071-63"><a href="#7898b071-63" aria-hidden="true" tabindex="-1"></a>        eb[n <span class="op">-</span> i] <span class="op">=</span> np.nan</span>
-<span id="7898b071-64"><a href="#7898b071-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="7898b071-65"><a href="#7898b071-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The value of the American Put is="</span>, AP[<span class="dv">0</span>])</span>
-<span id="7898b071-66"><a href="#7898b071-66" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the exercise boundary</span></span>
-<span id="7898b071-67"><a href="#7898b071-67" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
-<span id="7898b071-68"><a href="#7898b071-68" aria-hidden="true" tabindex="-1"></a>plt.plot(dt <span class="op">*</span> np.arange(n <span class="op">+</span> <span class="dv">1</span>), eb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">.1</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># true drift</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">.15</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">.2</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co"># dividend yield</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>n</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>delt <span class="op">=</span> np.exp(<span class="op">-</span>y<span class="op">*</span>dt)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r<span class="op">*</span>dt) <span class="op">*</span> delt</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig<span class="op">*</span>np.sqrt(dt))</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>u</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> (a<span class="op">-</span>d)<span class="op">/</span>(u<span class="op">-</span>d)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span><span class="op">-</span>pu</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> np.arange(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>vec1 <span class="op">=</span> np.ones(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>vec <span class="op">-</span> n<span class="op">*</span>vec1)</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.maximum(K<span class="op">-</span>S,<span class="dv">0</span>)</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co">#print(AP)</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> S[AP<span class="op">&gt;</span><span class="dv">0</span>]</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>eb <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>eb[n] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Backward recursion in the loop</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    vec <span class="op">=</span> np.arange(n<span class="op">-</span>i)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    vec1 <span class="op">=</span> np.ones(n<span class="op">-</span>i)</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Possible Stock prices at times-i period</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>vec<span class="op">-</span>(n<span class="op">-</span>i)<span class="op">*</span>vec1<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="co">#     S = S0 * u**(2*vec-(n-i))</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># P calculates the value of early exercise</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.maximum(K<span class="op">*</span>vec1 <span class="op">-</span> S, <span class="dv">0</span>)</span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PP calculates value of waiting using payoffs from next period</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> (pu<span class="op">*</span>AP[<span class="dv">1</span>:(n<span class="op">-</span>i<span class="op">+</span><span class="dv">1</span>)] <span class="op">+</span> pd<span class="op">*</span>AP[<span class="dv">0</span>:(n<span class="op">-</span>i)])<span class="op">/</span>a</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># AP is the max of ealry exercise and waiting</span></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.maximum(P,PP)</span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ex is prices where early exercise is optimal</span></span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>    ex <span class="op">=</span> S[AP<span class="op">-</span>PP<span class="op">&gt;</span><span class="dv">0</span>]</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># eb calculates the highest price</span></span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># where exercise is optimal to plot boundary</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ex.shape[<span class="dv">0</span>]<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>        eb[n<span class="op">-</span>i] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>        eb[n<span class="op">-</span>i] <span class="op">=</span> np.nan</span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The value of the American Put is='</span>,AP[<span class="dv">0</span>])        </span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>     <span class="co"># plot the exercise boundary</span></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">6</span>))</span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>plt.plot(dt<span class="op">*</span>np.arange(n<span class="op">+</span><span class="dv">1</span>),eb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The value of the American Put is= 1.643396346909605</code></pre>
@@ -834,74 +852,69 @@ p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2
 \]</span></p>
 <p>While there are many choices for the parameterization they are not completely arbitrary. The probability <span class="math inline">\(p_m =2/3\)</span> roughly corresponds to plus or minus one standard devation of a normal distribution and the up and down probabilities capture the tails. There are other parameterizations which can work ust as well.</p>
 <p>Conceptually, although there are three states and only two assets and the market is incomplete, the model converges to the Black Scholes model but there is no direct replication strategy. Nevertheless, we are modelling the price in a risk-neutral probability. More importantly it does potentially give a better estimate of derivative prices.</p>
-<div id="6d325365" class="cell" data-execution_count="7">
+<div id="2570b5ea" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="6d325365"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="6d325365-1"><a href="#6d325365-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="6d325365-2"><a href="#6d325365-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="6d325365-3"><a href="#6d325365-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="6d325365-4"><a href="#6d325365-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
-<span id="6d325365-5"><a href="#6d325365-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="6d325365-6"><a href="#6d325365-6" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
-<span id="6d325365-7"><a href="#6d325365-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
-<span id="6d325365-8"><a href="#6d325365-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="6d325365-9"><a href="#6d325365-9" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
-<span id="6d325365-10"><a href="#6d325365-10" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="6d325365-11"><a href="#6d325365-11" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
-<span id="6d325365-12"><a href="#6d325365-12" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="6d325365-13"><a href="#6d325365-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="6d325365-14"><a href="#6d325365-14" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="6d325365-15"><a href="#6d325365-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
-<span id="6d325365-16"><a href="#6d325365-16" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
-<span id="6d325365-17"><a href="#6d325365-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="6d325365-18"><a href="#6d325365-18" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="6d325365-19"><a href="#6d325365-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="6d325365-20"><a href="#6d325365-20" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate parameters for trinomial model</span></span>
-<span id="6d325365-21"><a href="#6d325365-21" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> n</span>
-<span id="6d325365-22"><a href="#6d325365-22" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r <span class="op">*</span> dt)</span>
-<span id="6d325365-23"><a href="#6d325365-23" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig <span class="op">*</span> np.sqrt(<span class="dv">3</span> <span class="op">*</span> dt))</span>
-<span id="6d325365-24"><a href="#6d325365-24" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
-<span id="6d325365-25"><a href="#6d325365-25" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="dv">6</span> <span class="op">+</span> np.sqrt(dt <span class="op">/</span> (<span class="dv">12</span> <span class="op">*</span> sig<span class="op">**</span><span class="dv">2</span>)) <span class="op">*</span> (r <span class="op">-</span> sig<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>)</span>
-<span id="6d325365-26"><a href="#6d325365-26" aria-hidden="true" tabindex="-1"></a>pm <span class="op">=</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">3</span></span>
-<span id="6d325365-27"><a href="#6d325365-27" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu <span class="op">-</span> pm</span>
-<span id="6d325365-28"><a href="#6d325365-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
-<span id="6d325365-29"><a href="#6d325365-29" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
-<span id="6d325365-30"><a href="#6d325365-30" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> np.arange(<span class="dv">2</span> <span class="op">*</span> n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="6d325365-31"><a href="#6d325365-31" aria-hidden="true" tabindex="-1"></a>vec1 <span class="op">=</span> np.ones(<span class="dv">2</span> <span class="op">*</span> n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="6d325365-32"><a href="#6d325365-32" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (vec <span class="op">-</span> n <span class="op">*</span> vec1)</span>
-<span id="6d325365-33"><a href="#6d325365-33" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.maximum(K <span class="op">-</span> S, <span class="dv">0</span>)</span>
-<span id="6d325365-34"><a href="#6d325365-34" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> S[AP <span class="op">&gt;</span> <span class="dv">0</span>]</span>
-<span id="6d325365-35"><a href="#6d325365-35" aria-hidden="true" tabindex="-1"></a><span class="co"># eb is an array to save the boundary price</span></span>
-<span id="6d325365-36"><a href="#6d325365-36" aria-hidden="true" tabindex="-1"></a>eb <span class="op">=</span> np.zeros(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="6d325365-37"><a href="#6d325365-37" aria-hidden="true" tabindex="-1"></a>eb[n] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
-<span id="6d325365-38"><a href="#6d325365-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Backward recursion in the loop</span></span>
-<span id="6d325365-39"><a href="#6d325365-39" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
-<span id="6d325365-40"><a href="#6d325365-40" aria-hidden="true" tabindex="-1"></a>    vec <span class="op">=</span> np.arange(<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="6d325365-41"><a href="#6d325365-41" aria-hidden="true" tabindex="-1"></a>    vec1 <span class="op">=</span> np.ones(<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="6d325365-42"><a href="#6d325365-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Possible Stock prices at times-i period</span></span>
-<span id="6d325365-43"><a href="#6d325365-43" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (vec <span class="op">-</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> vec1)</span>
-<span id="6d325365-44"><a href="#6d325365-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># P calculates the value of early exercise</span></span>
-<span id="6d325365-45"><a href="#6d325365-45" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.maximum(K <span class="op">-</span> S, <span class="dv">0</span>)</span>
-<span id="6d325365-46"><a href="#6d325365-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PP calculates value of waiting using payoffs from next period</span></span>
-<span id="6d325365-47"><a href="#6d325365-47" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> (</span>
-<span id="6d325365-48"><a href="#6d325365-48" aria-hidden="true" tabindex="-1"></a>        pu <span class="op">*</span> AP[<span class="dv">2</span> : (<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i) <span class="op">+</span> <span class="dv">1</span>)]</span>
-<span id="6d325365-49"><a href="#6d325365-49" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> pm <span class="op">*</span> AP[<span class="dv">1</span> : (<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i))]</span>
-<span id="6d325365-50"><a href="#6d325365-50" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> pd <span class="op">*</span> AP[<span class="dv">0</span> : (<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i) <span class="op">-</span> <span class="dv">1</span>)]</span>
-<span id="6d325365-51"><a href="#6d325365-51" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">/</span> a</span>
-<span id="6d325365-52"><a href="#6d325365-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># AP is the max of ealry exercise and waiting</span></span>
-<span id="6d325365-53"><a href="#6d325365-53" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.maximum(P, PP)</span>
-<span id="6d325365-54"><a href="#6d325365-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ex is prices where early exercise is optimal</span></span>
-<span id="6d325365-55"><a href="#6d325365-55" aria-hidden="true" tabindex="-1"></a>    ex <span class="op">=</span> S[(AP <span class="op">-</span> PP) <span class="op">&gt;</span> <span class="dv">0</span>]</span>
-<span id="6d325365-56"><a href="#6d325365-56" aria-hidden="true" tabindex="-1"></a>    <span class="co"># eb calculates the highest price</span></span>
-<span id="6d325365-57"><a href="#6d325365-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># where exercise is optimal to plot boundary</span></span>
-<span id="6d325365-58"><a href="#6d325365-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ex.shape[<span class="dv">0</span>] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="6d325365-59"><a href="#6d325365-59" aria-hidden="true" tabindex="-1"></a>        eb[n <span class="op">-</span> i] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
-<span id="6d325365-60"><a href="#6d325365-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="6d325365-61"><a href="#6d325365-61" aria-hidden="true" tabindex="-1"></a>        eb[n <span class="op">-</span> i] <span class="op">=</span> np.nan</span>
-<span id="6d325365-62"><a href="#6d325365-62" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The American put price is="</span>, AP[<span class="dv">0</span>])</span>
-<span id="6d325365-63"><a href="#6d325365-63" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the exercise boundary</span></span>
-<span id="6d325365-64"><a href="#6d325365-64" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">7</span>))</span>
-<span id="6d325365-65"><a href="#6d325365-65" aria-hidden="true" tabindex="-1"></a>plt.scatter(dt <span class="op">*</span> np.arange(n <span class="op">+</span> <span class="dv">1</span>), eb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">.1</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">.2</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate parameters for trinomial model</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>n</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r<span class="op">*</span>dt)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig<span class="op">*</span>np.sqrt(<span class="dv">3</span><span class="op">*</span>dt))</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>u</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">6</span> <span class="op">+</span> np.sqrt(dt<span class="op">/</span>(<span class="dv">12</span><span class="op">*</span>sig<span class="op">**</span><span class="dv">2</span>))<span class="op">*</span>(r <span class="op">-</span> sig<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>pm <span class="op">=</span> <span class="dv">2</span><span class="op">/</span><span class="dv">3</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu <span class="op">-</span> pm</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> np.arange(<span class="dv">2</span><span class="op">*</span>n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>vec1 <span class="op">=</span> np.ones(<span class="dv">2</span><span class="op">*</span>n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(vec<span class="op">-</span>n<span class="op">*</span>vec1)</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.maximum(K<span class="op">-</span>S,<span class="dv">0</span>)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> S[AP<span class="op">&gt;</span><span class="dv">0</span>]</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="co"># eb is an array to save the boundary price</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>eb <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>eb[n] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Backward recursion in the loop</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>    vec <span class="op">=</span> np.arange(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    vec1 <span class="op">=</span> np.ones(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Possible Stock prices at times-i period</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(vec<span class="op">-</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span>vec1)</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># P calculates the value of early exercise</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.maximum(K <span class="op">-</span> S, <span class="dv">0</span>)</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PP calculates value of waiting using payoffs from next period</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> (pu<span class="op">*</span>AP[<span class="dv">2</span>:(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i)<span class="op">+</span><span class="dv">1</span>)] <span class="op">+</span> pm<span class="op">*</span>AP[<span class="dv">1</span>:(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i))] <span class="op">+</span> pd<span class="op">*</span>AP[<span class="dv">0</span>:(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i)<span class="op">-</span><span class="dv">1</span>)])<span class="op">/</span>a</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># AP is the max of ealry exercise and waiting</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.maximum(P,PP)</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ex is prices where early exercise is optimal</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    ex <span class="op">=</span> S[(AP<span class="op">-</span>PP)<span class="op">&gt;</span><span class="dv">0</span>]</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># eb calculates the highest price</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># where exercise is optimal to plot boundary</span></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ex.shape[<span class="dv">0</span>]<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>        eb[n<span class="op">-</span>i] <span class="op">=</span> ex.<span class="bu">max</span>()</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>        eb[n<span class="op">-</span>i] <span class="op">=</span> np.nan</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The American put price is='</span>, AP[<span class="dv">0</span>])</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the exercise boundary</span></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">7</span>))</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>plt.scatter(dt<span class="op">*</span>np.arange(n<span class="op">+</span><span class="dv">1</span>),eb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The American put price is= 1.6396310315369165</code></pre>
@@ -915,78 +928,77 @@ p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2
 </div>
 </div>
 <p>We again provide a program which does the same calculation using loops. It is much slower. We use the same parametrs and preamble as before and just outline the steps. As in the binomial model, we start at the last date and build <span class="math inline">\(2n+1\)</span> terminal stock prices. We also keep track of the highest stock price which we exercise.</p>
-<div id="402e14f1" class="cell" data-execution_count="8">
+<div id="4380ac57" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="402e14f1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="402e14f1-1"><a href="#402e14f1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="402e14f1-2"><a href="#402e14f1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="402e14f1-3"><a href="#402e14f1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="402e14f1-4"><a href="#402e14f1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
-<span id="402e14f1-5"><a href="#402e14f1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="402e14f1-6"><a href="#402e14f1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
-<span id="402e14f1-7"><a href="#402e14f1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
-<span id="402e14f1-8"><a href="#402e14f1-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="402e14f1-9"><a href="#402e14f1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
-<span id="402e14f1-10"><a href="#402e14f1-10" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="402e14f1-11"><a href="#402e14f1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
-<span id="402e14f1-12"><a href="#402e14f1-12" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="402e14f1-13"><a href="#402e14f1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="402e14f1-14"><a href="#402e14f1-14" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="402e14f1-15"><a href="#402e14f1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
-<span id="402e14f1-16"><a href="#402e14f1-16" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
-<span id="402e14f1-17"><a href="#402e14f1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="402e14f1-18"><a href="#402e14f1-18" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="402e14f1-19"><a href="#402e14f1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="402e14f1-20"><a href="#402e14f1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate parameters for trinomial model</span></span>
-<span id="402e14f1-21"><a href="#402e14f1-21" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> n</span>
-<span id="402e14f1-22"><a href="#402e14f1-22" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r <span class="op">*</span> dt)</span>
-<span id="402e14f1-23"><a href="#402e14f1-23" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig <span class="op">*</span> np.sqrt(<span class="dv">3</span> <span class="op">*</span> dt))</span>
-<span id="402e14f1-24"><a href="#402e14f1-24" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
-<span id="402e14f1-25"><a href="#402e14f1-25" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="dv">6</span> <span class="op">+</span> np.sqrt(dt <span class="op">/</span> (<span class="dv">12</span> <span class="op">*</span> sig<span class="op">**</span><span class="dv">2</span>)) <span class="op">*</span> (r <span class="op">-</span> sig<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>)</span>
-<span id="402e14f1-26"><a href="#402e14f1-26" aria-hidden="true" tabindex="-1"></a>pm <span class="op">=</span> <span class="dv">2</span> <span class="op">/</span> <span class="dv">3</span></span>
-<span id="402e14f1-27"><a href="#402e14f1-27" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu <span class="op">-</span> pm</span>
-<span id="402e14f1-28"><a href="#402e14f1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
-<span id="402e14f1-29"><a href="#402e14f1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
-<span id="402e14f1-30"><a href="#402e14f1-30" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.zeros(n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="402e14f1-31"><a href="#402e14f1-31" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.zeros(<span class="dv">2</span> <span class="op">*</span> n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="402e14f1-32"><a href="#402e14f1-32" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.zeros(<span class="dv">2</span> <span class="op">*</span> n <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="402e14f1-33"><a href="#402e14f1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="402e14f1-34"><a href="#402e14f1-34" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span> <span class="op">*</span> n <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="402e14f1-35"><a href="#402e14f1-35" aria-hidden="true" tabindex="-1"></a>    S[j] <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (j <span class="op">-</span> n)</span>
-<span id="402e14f1-36"><a href="#402e14f1-36" aria-hidden="true" tabindex="-1"></a>    AP[j] <span class="op">=</span> <span class="bu">max</span>(K <span class="op">-</span> S[j], <span class="dv">0</span>)</span>
-<span id="402e14f1-37"><a href="#402e14f1-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> AP[j] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="402e14f1-38"><a href="#402e14f1-38" aria-hidden="true" tabindex="-1"></a>        ex[n] <span class="op">=</span> S[j]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">.1</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">.2</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate parameters for trinomial model</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>n</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.exp(r<span class="op">*</span>dt)</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.exp(sig<span class="op">*</span>np.sqrt(<span class="dv">3</span><span class="op">*</span>dt))</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>u</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>pu <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">6</span> <span class="op">+</span> np.sqrt(dt<span class="op">/</span>(<span class="dv">12</span><span class="op">*</span>sig<span class="op">**</span><span class="dv">2</span>))<span class="op">*</span>(r <span class="op">-</span> sig<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>pm <span class="op">=</span> <span class="dv">2</span><span class="op">/</span><span class="dv">3</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu <span class="op">-</span> pm</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Build vector of ending values</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="co"># and prices for which put is exercised</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.zeros(<span class="dv">2</span><span class="op">*</span>n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>AP <span class="op">=</span> np.zeros(<span class="dv">2</span><span class="op">*</span>n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span><span class="op">*</span>n<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    S[j] <span class="op">=</span> S0<span class="op">*</span>u<span class="op">**</span>(j<span class="op">-</span>n)</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    AP[j] <span class="op">=</span> <span class="bu">max</span>(K<span class="op">-</span>S[j],<span class="dv">0</span>)</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> AP[j]<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>        ex[n] <span class="op">=</span> S[j]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We then move backwards. There are two loops. The inner loop builds the stock price, the value, and exercise boundary at each time and the outer loop moves backwards in time.</p>
-<div id="2459d233" class="cell" data-execution_count="9">
+<div id="c4d53916" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="2459d233"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="2459d233-1"><a href="#2459d233-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
-<span id="2459d233-2"><a href="#2459d233-2" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="2459d233-3"><a href="#2459d233-3" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.zeros(<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="2459d233-4"><a href="#2459d233-4" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> np.zeros(<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="2459d233-5"><a href="#2459d233-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span> <span class="op">*</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="2459d233-6"><a href="#2459d233-6" aria-hidden="true" tabindex="-1"></a>        S[j] <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (j <span class="op">-</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>))</span>
-<span id="2459d233-7"><a href="#2459d233-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="2459d233-8"><a href="#2459d233-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># P calculates the value of early exercise</span></span>
-<span id="2459d233-9"><a href="#2459d233-9" aria-hidden="true" tabindex="-1"></a>        P[j] <span class="op">=</span> <span class="bu">max</span>(K <span class="op">-</span> S[j], <span class="dv">0</span>)</span>
-<span id="2459d233-10"><a href="#2459d233-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="2459d233-11"><a href="#2459d233-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># PP calculates value of waiting using payoffs</span></span>
-<span id="2459d233-12"><a href="#2459d233-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># from next period</span></span>
-<span id="2459d233-13"><a href="#2459d233-13" aria-hidden="true" tabindex="-1"></a>        PP[j] <span class="op">=</span> (pu <span class="op">*</span> AP[j <span class="op">+</span> <span class="dv">2</span>] <span class="op">+</span> pm <span class="op">*</span> AP[j <span class="op">+</span> <span class="dv">1</span>] <span class="op">+</span> pd <span class="op">*</span> AP[j]) <span class="op">/</span> a</span>
-<span id="2459d233-14"><a href="#2459d233-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="2459d233-15"><a href="#2459d233-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># AP is the max of ealry exercise and waiting</span></span>
-<span id="2459d233-16"><a href="#2459d233-16" aria-hidden="true" tabindex="-1"></a>        AP[j] <span class="op">=</span> <span class="bu">max</span>(P[j], PP[j])</span>
-<span id="2459d233-17"><a href="#2459d233-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
-<span id="2459d233-18"><a href="#2459d233-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ex is price where early exercise is optimal</span></span>
-<span id="2459d233-19"><a href="#2459d233-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> P[j] <span class="op">&gt;</span> PP[j]:</span>
-<span id="2459d233-20"><a href="#2459d233-20" aria-hidden="true" tabindex="-1"></a>            ex[n <span class="op">-</span> i] <span class="op">=</span> S[j]</span>
-<span id="2459d233-21"><a href="#2459d233-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="2459d233-22"><a href="#2459d233-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The American put price is ="</span>, AP[<span class="dv">0</span>])</span>
-<span id="2459d233-23"><a href="#2459d233-23" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the exercise boundary</span></span>
-<span id="2459d233-24"><a href="#2459d233-24" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">7</span>))</span>
-<span id="2459d233-25"><a href="#2459d233-25" aria-hidden="true" tabindex="-1"></a>plt.scatter(dt <span class="op">*</span> np.arange(n <span class="op">+</span> <span class="dv">1</span>), ex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.zeros(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    PP <span class="op">=</span> np.zeros(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span><span class="op">*</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        S[j] <span class="op">=</span> S0<span class="op">*</span>u<span class="op">**</span>(j<span class="op">-</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># P calculates the value of early exercise</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        P[j] <span class="op">=</span> <span class="bu">max</span>(K<span class="op">-</span>S[j],<span class="dv">0</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># PP calculates value of waiting using payoffs</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># from next period</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        PP[j] <span class="op">=</span> (pu<span class="op">*</span>AP[j<span class="op">+</span><span class="dv">2</span>] <span class="op">+</span> pm<span class="op">*</span>AP[j<span class="op">+</span><span class="dv">1</span>] <span class="op">+</span> pd<span class="op">*</span>AP[j])<span class="op">/</span>a</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># AP is the max of ealry exercise and waiting</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>        AP[j] <span class="op">=</span> <span class="bu">max</span>(P[j],PP[j])</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">#</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ex is price where early exercise is optimal</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> P[j] <span class="op">&gt;</span> PP[j]:</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>            ex[n<span class="op">-</span>i] <span class="op">=</span> S[j]</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The American put price is ='</span>, AP[<span class="dv">0</span>])            </span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the exercise boundary</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">7</span>))</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>plt.scatter(dt<span class="op">*</span>np.arange(n<span class="op">+</span><span class="dv">1</span>),ex)            </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The American put price is = 1.6396310315369165</code></pre>
@@ -1020,107 +1032,111 @@ y_2 = f(x_2) &amp;= f(0) + f'(0)x_2 + \text{higher order terms}\;.
 \end{align*}\]</span> This implies <span class="math display">\[2y_2-y_1 = f(0) + \text{difference of higher order terms}\;.\]</span> Having eliminated the first-order term, one can hope to obtain a closer approximation to <span class="math inline">\(f(0)\)</span>.</p>
 <p>We now show hot to implement this in Pyhton.<br>
 First we create a binomial valuation program that replaces (i) calculation of the intrinsic value at maturity and (ii) calculation of the value at the penultimate date as the larger of intrinsic value and the discounted value at maturity with (iii) calculation of the value at the penultimate date as the larger of intrinsic value and the Black-Scholes value of a European option with one period to maturity.</p>
-<div id="bc641234" class="cell" data-execution_count="10">
+<div id="f6f0a51b" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="bc641234"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="bc641234-1"><a href="#bc641234-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses blackscholes(S0, K, r, q, sig, T, call = False)</span></span>
-<span id="bc641234-2"><a href="#bc641234-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-3"><a href="#bc641234-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-4"><a href="#bc641234-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binomialbd(n, r, sig, S0, y, K, T):</span>
-<span id="bc641234-5"><a href="#bc641234-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-6"><a href="#bc641234-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># parameters</span></span>
-<span id="bc641234-7"><a href="#bc641234-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># number of steps</span></span>
-<span id="bc641234-8"><a href="#bc641234-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># n</span></span>
-<span id="bc641234-9"><a href="#bc641234-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># interest rate</span></span>
-<span id="bc641234-10"><a href="#bc641234-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># r</span></span>
-<span id="bc641234-11"><a href="#bc641234-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># volatility</span></span>
-<span id="bc641234-12"><a href="#bc641234-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># sig</span></span>
-<span id="bc641234-13"><a href="#bc641234-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initial Stock Price</span></span>
-<span id="bc641234-14"><a href="#bc641234-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># S0</span></span>
-<span id="bc641234-15"><a href="#bc641234-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Strike Price</span></span>
-<span id="bc641234-16"><a href="#bc641234-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># K</span></span>
-<span id="bc641234-17"><a href="#bc641234-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maturity</span></span>
-<span id="bc641234-18"><a href="#bc641234-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># T</span></span>
-<span id="bc641234-19"><a href="#bc641234-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dividend yield</span></span>
-<span id="bc641234-20"><a href="#bc641234-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># y</span></span>
-<span id="bc641234-21"><a href="#bc641234-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-22"><a href="#bc641234-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate parameters for binomial model</span></span>
-<span id="bc641234-23"><a href="#bc641234-23" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> n</span>
-<span id="bc641234-24"><a href="#bc641234-24" aria-hidden="true" tabindex="-1"></a>    delt <span class="op">=</span> np.exp(<span class="op">-</span>y <span class="op">*</span> dt)</span>
-<span id="bc641234-25"><a href="#bc641234-25" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.exp(r <span class="op">*</span> dt) <span class="op">*</span> delt</span>
-<span id="bc641234-26"><a href="#bc641234-26" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(sig <span class="op">*</span> np.sqrt(dt))</span>
-<span id="bc641234-27"><a href="#bc641234-27" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
-<span id="bc641234-28"><a href="#bc641234-28" aria-hidden="true" tabindex="-1"></a>    pu <span class="op">=</span> (a <span class="op">-</span> d) <span class="op">/</span> (u <span class="op">-</span> d)</span>
-<span id="bc641234-29"><a href="#bc641234-29" aria-hidden="true" tabindex="-1"></a>    pd <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pu</span>
-<span id="bc641234-30"><a href="#bc641234-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build vector of ending values</span></span>
-<span id="bc641234-31"><a href="#bc641234-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">#</span></span>
-<span id="bc641234-32"><a href="#bc641234-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-33"><a href="#bc641234-33" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(n)</span>
-<span id="bc641234-34"><a href="#bc641234-34" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.zeros(n)</span>
-<span id="bc641234-35"><a href="#bc641234-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-36"><a href="#bc641234-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build vector of ending values</span></span>
-<span id="bc641234-37"><a href="#bc641234-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># at the next to last date (penultimate date)</span></span>
-<span id="bc641234-38"><a href="#bc641234-38" aria-hidden="true" tabindex="-1"></a>    vec <span class="op">=</span> np.arange(n)</span>
-<span id="bc641234-39"><a href="#bc641234-39" aria-hidden="true" tabindex="-1"></a>    vec1 <span class="op">=</span> np.ones(n)</span>
-<span id="bc641234-40"><a href="#bc641234-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-41"><a href="#bc641234-41" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> vec <span class="op">-</span> (n <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> vec1)</span>
-<span id="bc641234-42"><a href="#bc641234-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-43"><a href="#bc641234-43" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.maximum(K <span class="op">-</span> S, blackscholes(S, K, r, q, sig, dt, call<span class="op">=</span><span class="va">False</span>))</span>
-<span id="bc641234-44"><a href="#bc641234-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-45"><a href="#bc641234-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward recursion in the loop</span></span>
-<span id="bc641234-46"><a href="#bc641234-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n <span class="op">-</span> <span class="dv">1</span>):</span>
-<span id="bc641234-47"><a href="#bc641234-47" aria-hidden="true" tabindex="-1"></a>        vec <span class="op">=</span> np.arange(n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>)</span>
-<span id="bc641234-48"><a href="#bc641234-48" aria-hidden="true" tabindex="-1"></a>        vec1 <span class="op">=</span> np.ones(n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>)</span>
-<span id="bc641234-49"><a href="#bc641234-49" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Possible Stock prices at times-i period</span></span>
-<span id="bc641234-50"><a href="#bc641234-50" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> S0 <span class="op">*</span> u <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> vec <span class="op">-</span> (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> vec1 <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="bc641234-51"><a href="#bc641234-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-52"><a href="#bc641234-52" aria-hidden="true" tabindex="-1"></a>        <span class="co">#     S = S0 * u**(2*vec-(n-i))</span></span>
-<span id="bc641234-53"><a href="#bc641234-53" aria-hidden="true" tabindex="-1"></a>        <span class="co"># P calculates the value of early exercise</span></span>
-<span id="bc641234-54"><a href="#bc641234-54" aria-hidden="true" tabindex="-1"></a>        P <span class="op">=</span> np.maximum(K <span class="op">*</span> vec1 <span class="op">-</span> S, <span class="dv">0</span>)</span>
-<span id="bc641234-55"><a href="#bc641234-55" aria-hidden="true" tabindex="-1"></a>        <span class="co"># PP calculates value of waiting using payoffs from next period</span></span>
-<span id="bc641234-56"><a href="#bc641234-56" aria-hidden="true" tabindex="-1"></a>        PP <span class="op">=</span> (pu <span class="op">*</span> AP[<span class="dv">1</span> : (n <span class="op">-</span> i)] <span class="op">+</span> pd <span class="op">*</span> AP[<span class="dv">0</span> : (n <span class="op">-</span> i <span class="op">-</span> <span class="dv">1</span>)]) <span class="op">/</span> a</span>
-<span id="bc641234-57"><a href="#bc641234-57" aria-hidden="true" tabindex="-1"></a>        <span class="co"># AP is the max of ealry exercise and waiting</span></span>
-<span id="bc641234-58"><a href="#bc641234-58" aria-hidden="true" tabindex="-1"></a>        AP <span class="op">=</span> np.maximum(P, PP)</span>
-<span id="bc641234-59"><a href="#bc641234-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="bc641234-60"><a href="#bc641234-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> AP[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses blackscholes(S0, K, r, q, sig, T, call = False)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binomialbd(n,r,sig,S0,y,K,T):</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># parameters</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># number of steps</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">#n </span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># interest rate</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#r </span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># volatility</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">#sig </span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initial Stock Price</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">#S0</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Strike Price</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        <span class="co">#K </span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maturity</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#T </span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dividend yield</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># y</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate parameters for binomial model</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T<span class="op">/</span>n</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    delt <span class="op">=</span> np.exp(<span class="op">-</span>y<span class="op">*</span>dt)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.exp(r<span class="op">*</span>dt) <span class="op">*</span> delt</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(sig<span class="op">*</span>np.sqrt(dt))</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>u</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    pu <span class="op">=</span> (a<span class="op">-</span>d)<span class="op">/</span>(u<span class="op">-</span>d)</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    pd <span class="op">=</span> <span class="dv">1</span><span class="op">-</span>pu</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build vector of ending values</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(n)</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.zeros(n)</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build vector of ending values</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># at the next to last date (penultimate date)</span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>    vec <span class="op">=</span> np.arange(n)</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>    vec1 <span class="op">=</span> np.ones(n)</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>vec <span class="op">-</span> (n<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span>vec1)</span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>    AP <span class="op">=</span> np.maximum(K<span class="op">-</span>S,blackscholes(S, K, r, q, sig, dt, call <span class="op">=</span> <span class="va">False</span>))</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward recursion in the loop</span></span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n<span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>        vec <span class="op">=</span> np.arange(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>        vec1 <span class="op">=</span> np.ones(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Possible Stock prices at times-i period</span></span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>vec<span class="op">-</span>(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span>vec1<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     S = S0 * u**(2*vec-(n-i))</span></span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>        <span class="co"># P calculates the value of early exercise</span></span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a>        P <span class="op">=</span> np.maximum(K<span class="op">*</span>vec1 <span class="op">-</span> S, <span class="dv">0</span>)</span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a>        <span class="co"># PP calculates value of waiting using payoffs from next period</span></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a>        PP <span class="op">=</span> (pu<span class="op">*</span>AP[<span class="dv">1</span>:(n<span class="op">-</span>i)] <span class="op">+</span> pd<span class="op">*</span>AP[<span class="dv">0</span>:(n<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>)])<span class="op">/</span>a</span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a>        <span class="co"># AP is the max of ealry exercise and waiting</span></span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a>        AP <span class="op">=</span> np.maximum(P,PP)</span>
+<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> AP[<span class="dv">0</span>]          </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Now we create a program that uses Richardson extrapolation from a binomial model with N periods and a binomial model with N/2 periods to estimate the value from a binomial model with an infinite number of periods. We use the previous program as our binomial model. The number of time steps <span class="math inline">\(n\)</span> must be even so <span class="math inline">\(n/2\)</span> is an integer. In the following we initally use <span class="math inline">\(n=20\)</span>, which is smaller than the the number of steps in the previous binomial american option routines.</p>
-<div id="efb40a71" class="cell" data-execution_count="11">
+<div id="f6225a65" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="efb40a71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="efb40a71-1"><a href="#efb40a71-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="efb40a71-2"><a href="#efb40a71-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="efb40a71-3"><a href="#efb40a71-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="efb40a71-4"><a href="#efb40a71-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
-<span id="efb40a71-5"><a href="#efb40a71-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="efb40a71-6"><a href="#efb40a71-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="efb40a71-7"><a href="#efb40a71-7" aria-hidden="true" tabindex="-1"></a><span class="co"># inputs</span></span>
-<span id="efb40a71-8"><a href="#efb40a71-8" aria-hidden="true" tabindex="-1"></a><span class="co"># number of steps= n; must be an even number</span></span>
-<span id="efb40a71-9"><a href="#efb40a71-9" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">20</span></span>
-<span id="efb40a71-10"><a href="#efb40a71-10" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
-<span id="efb40a71-11"><a href="#efb40a71-11" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="efb40a71-12"><a href="#efb40a71-12" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
-<span id="efb40a71-13"><a href="#efb40a71-13" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="efb40a71-14"><a href="#efb40a71-14" aria-hidden="true" tabindex="-1"></a><span class="co"># initial stock price</span></span>
-<span id="efb40a71-15"><a href="#efb40a71-15" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="efb40a71-16"><a href="#efb40a71-16" aria-hidden="true" tabindex="-1"></a><span class="co"># dividend yield</span></span>
-<span id="efb40a71-17"><a href="#efb40a71-17" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">0</span></span>
-<span id="efb40a71-18"><a href="#efb40a71-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike price</span></span>
-<span id="efb40a71-19"><a href="#efb40a71-19" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">42</span></span>
-<span id="efb40a71-20"><a href="#efb40a71-20" aria-hidden="true" tabindex="-1"></a><span class="co"># expiration</span></span>
-<span id="efb40a71-21"><a href="#efb40a71-21" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="efb40a71-22"><a href="#efb40a71-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="efb40a71-23"><a href="#efb40a71-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="dv">2</span> <span class="op">*</span> <span class="bu">int</span>(n <span class="op">/</span> <span class="dv">2</span>) <span class="op">==</span> n:</span>
-<span id="efb40a71-24"><a href="#efb40a71-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="efb40a71-25"><a href="#efb40a71-25" aria-hidden="true" tabindex="-1"></a>    y2 <span class="op">=</span> binomialbd(n, r, sig, S0, y, K, T)</span>
-<span id="efb40a71-26"><a href="#efb40a71-26" aria-hidden="true" tabindex="-1"></a>    y1 <span class="op">=</span> binomialbd(<span class="bu">int</span>(n <span class="op">/</span> <span class="dv">2</span>), r, sig, S0, y, K, T)</span>
-<span id="efb40a71-27"><a href="#efb40a71-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="efb40a71-28"><a href="#efb40a71-28" aria-hidden="true" tabindex="-1"></a>    extrapolate <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> y2 <span class="op">-</span> y1</span>
-<span id="efb40a71-29"><a href="#efb40a71-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"The extrapolated value="</span>, extrapolate)</span>
-<span id="efb40a71-30"><a href="#efb40a71-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="efb40a71-31"><a href="#efb40a71-31" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="efb40a71-32"><a href="#efb40a71-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"n must be even you big dummy!!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="bu">pow</span>, exp, sqrt</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#inputs</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">#number of steps= n; must be an even number</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>n<span class="op">=</span><span class="dv">20</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"># interest rate</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>r<span class="op">=</span><span class="fl">.1</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># volatility</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>sig<span class="op">=</span><span class="fl">.2</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># initial stock price</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>S0<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co"># dividend yield</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>y<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike price </span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="co"># expiration</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>T<span class="op">=</span><span class="fl">0.5</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="dv">2</span><span class="op">*</span><span class="bu">int</span>(n<span class="op">/</span><span class="dv">2</span>) <span class="op">==</span> n:</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    y2<span class="op">=</span>binomialbd(n,r,sig,S0,y,K,T)</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>    y1<span class="op">=</span>binomialbd(<span class="bu">int</span>(n<span class="op">/</span><span class="dv">2</span>),r,sig,S0,y,K,T)</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    extrapolate<span class="op">=</span> <span class="dv">2</span><span class="op">*</span>y2<span class="op">-</span>y1</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'The extrapolated value='</span>,extrapolate)</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'n must be even you big dummy!!'</span>)   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The extrapolated value= 1.6495917266169138</code></pre>
@@ -1155,21 +1171,26 @@ The computation time required for a spread call option is therefore roughly the 
 </section>
 <section id="exercises" class="level2" data-number="15.7">
 <h2 data-number="15.7" class="anchored" data-anchor-id="exercises"><span class="header-section-number">15.7</span> Exercises</h2>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 15.1</strong></span> Consider an at-the-money European call option on a non-dividend-paying stock with six months to maturity. Take the initial stock price to be $50, the interest rate to be 5% and $=$30%. Compute the value in a binomial model with <span class="math inline">\(N=10, 11, \ldots, 20\)</span> and plot the values against <span class="math inline">\(N\)</span>. Plot your results. Is convergence monotone?</p>
+<div id="Exercise-15.1" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.1</strong></summary><div>Consider an at-the-money European call option on a non-dividend-paying stock with six months to maturity. Take the initial stock price to be $50, the interest rate to be 5% and $=$30%. Compute the value in a binomial model with <span class="math inline">\(N=10, 11, \ldots, 20\)</span> and plot the values against <span class="math inline">\(N\)</span>. Plot your results. Is convergence monotone?<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 15.2</strong></span> Consider the same option as in the previous problem. Roughly what value of <span class="math inline">\(N\)</span> is needed to get penny accuracy? (To evaluate the accuracy, compare the price to the price given by the Black-Scholes formula.)</p>
+<div id="Exercise-15.2" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.2</strong></summary><div>Consider the same option as in the previous problem. Roughly what value of <span class="math inline">\(N\)</span> is needed to get penny accuracy? (To evaluate the accuracy, compare the price to the price given by the Black-Scholes formula.)<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 15.3</strong></span> Repeat the two previous problems only instead of the Cox, Ross Rubenstein model, use the Jarrow Rudd model.</p>
+<div id="Exercise-15.3" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.3</strong></summary><div>Repeat the two previous problems only instead of the Cox, Ross Rubenstein model, use the Jarrow Rudd model.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 15.4</strong></span> The early exercise premium is the difference between the value of an American option and the value of a European option with the same parameters. Compute the early exercise premium for an American put and various values for the interest rate, exercise price, and stock parameters. Under what circumstances is the early exercise premium relatively large?</p>
+<div id="Exercise-15.4" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.4</strong></summary><div>The early exercise premium is the difference between the value of an American option and the value of a European option with the same parameters. Compute the early exercise premium for an American put and various values for the interest rate, exercise price, and stock parameters. Under what circumstances is the early exercise premium relatively large?<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 15.5</strong></span> A shout option is an option where the holder is entitled to shout at any time before the expiration of the option. Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at the money option with the same expiration as the original option. The payoff to this option if the holder shouts at time <span class="math inline">\(\tau\)</span> is thus given as <span class="math inline">\(\max(0, S(\tau)-K, S(T)-K )\)</span> where <span class="math inline">\(K\)</span> is the original strike price.<br>
-1) Show that it is better to shout at some time where <span class="math inline">\(S(\tau)&gt;K\)</span> than to never shout at all. 2) Modify the code for an American put to find the optimal exercise boundary for a shout option. Hint: The payoffs on the last nodes of the tree are simply <span class="math inline">\((S_T - K)^+\)</span>. Then work backwards. The `immediate exercise value’ which is the present value of <span class="math inline">\(S(t)-K\)</span>, (<span class="math inline">\(e^{-r(T-t)} (S(t) -K)\)</span>) plus the Black Scholes value (use a python function) of an at the money option with expiration <span class="math inline">\(T-t\)</span>. Choose the maximum of these values at each node. For each time store the highest price at which you exersize. The first node (time 0) then gives the price. Plot the exercise boundary.</p>
+<div id="Exercise-15.5" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.5</strong></summary><div>A shout option is an option where the holder is entitled to shout at any time before the expiration of the option. Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at the money option with the same expiration as the original option. The payoff to this option if the holder shouts at time <span class="math inline">\(\tau\)</span> is thus given as <span class="math inline">\(\max(0, S(\tau)-K, S(T)-K )\)</span> where <span class="math inline">\(K\)</span> is the original strike price.<br>
+1) Show that it is better to shout at some time where <span class="math inline">\(S(\tau)&gt;K\)</span> than to never shout at all. 2) Modify the code for an American put to find the optimal exercise boundary for a shout option. Hint: The payoffs on the last nodes of the tree are simply <span class="math inline">\((S_T - K)^+\)</span>. Then work backwards. The `immediate exercise value’ which is the present value of <span class="math inline">\(S(t)-K\)</span>, (<span class="math inline">\(e^{-r(T-t)} (S(t) -K)\)</span>) plus the Black Scholes value (use a python function) of an at the money option with expiration <span class="math inline">\(T-t\)</span>. Choose the maximum of these values at each node. For each time store the highest price at which you exersize. The first node (time 0) then gives the price. Plot the exercise boundary.<p></p>
+</div></details>
 </div>
 <!-- ::: {#exr-e_GARCHimpliedvols}
   Create an Excel worksheet in which the user inputs $S$, $r$, $\sigma$, $q$, $T$, $N$, $\kappa$, $\theta$, and $\lambda$.  Use the function \verb!European_Call_GARCH_MC! to compute call option prices for exercise prices $K=0.6S$, $0.7S$, $0,8S$, $0.9S$, $S$, $1.1S$, $1.2S$, $1.3S$ and $1.4S$, taking $M=500$ in each case.  For each computed price, use the function \verb!Black_Scholes_Call_Implied_Vol! to compute an implied Black-Scholes volatility.  Plot the implied volatilities against the exercise prices.
@@ -1177,10 +1198,10 @@ The computation time required for a spread call option is therefore roughly the 
 ::: {#exr-e_Hestoncall}
   Create a VBA function using Monte Carlo to estimate the value of a European call option in the Heston stochastic volatility model.  The inputs should be the initial stock price $S$, the strike price $K$, the risk-free rate $r$, the initial volatility $\sigma$, the dividend yield $q$, the time to maturity $T$, the number of time periods $N$, the parameters  $\kappa$, $\theta$, $\gamma$, and $\rho$, and the number of simulations $M$.  Return the estimated option value and its standard error.  
 :::
-::: {#exr-nolabel}
+::: Exercise
  Modify the VBA function in the previous exercise to also return the estimated delta of the option and the standard error of the delta.
 :::
-::: {#exr-nolabel}
+::: Exercise
  Repeat @exr-e_GARCHimpliedvols using the Heston model (the function developed in @exr-e_Hestoncall) to compute the call option prices, allowing the user to input $\gamma$ and $\rho$ (instead of $\lambda$).  
 ::: -->
 

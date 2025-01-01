@@ -97,6 +97,7 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-bb6b93f51bf5a7975605005bd985cc1c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/quarto-contrib/foldbox/foldbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -130,6 +131,36 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<style>
+.Exercise {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.Definition {
+  --color1: #d999d3;
+  --color2: #a01793;
+}
+.DONE {
+  --color1: #cce7b1;
+  --color2: #86b754;
+}
+.Corollary {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.Feature {
+  --color1: #c0c0c0;
+  --color2: #808080;
+}
+.Theorem {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.TODO {
+  --color1: #e7b1b4;
+  --color2: #8c3236;
+}
+</style>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
@@ -651,77 +682,71 @@ C_L = \frac{z_L+ b_Lu_{L-1}}{1-b_Lb_{L-1}}\;.
 <div id="crank_nicolson" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="crank_nicolson"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="crank_nicolson-1"><a href="#crank_nicolson-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="crank_nicolson-2"><a href="#crank_nicolson-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-3"><a href="#crank_nicolson-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-4"><a href="#crank_nicolson-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> crank_nicolson(a, y, L, z1, b1, zL, bL):</span>
-<span id="crank_nicolson-5"><a href="#crank_nicolson-5" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.zeros(L)</span>
-<span id="crank_nicolson-6"><a href="#crank_nicolson-6" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.zeros(L)</span>
-<span id="crank_nicolson-7"><a href="#crank_nicolson-7" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.zeros(L)</span>
-<span id="crank_nicolson-8"><a href="#crank_nicolson-8" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> np.zeros(L)</span>
-<span id="crank_nicolson-9"><a href="#crank_nicolson-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-10"><a href="#crank_nicolson-10" aria-hidden="true" tabindex="-1"></a>    u[<span class="dv">0</span>] <span class="op">=</span> z1</span>
-<span id="crank_nicolson-11"><a href="#crank_nicolson-11" aria-hidden="true" tabindex="-1"></a>    b[<span class="dv">0</span>] <span class="op">=</span> b1</span>
-<span id="crank_nicolson-12"><a href="#crank_nicolson-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L <span class="op">-</span> <span class="dv">1</span>):</span>
-<span id="crank_nicolson-13"><a href="#crank_nicolson-13" aria-hidden="true" tabindex="-1"></a>        z[j] <span class="op">=</span> a[<span class="dv">3</span>] <span class="op">*</span> y[j] <span class="op">+</span> a[<span class="dv">1</span>] <span class="op">*</span> y[j <span class="op">+</span> <span class="dv">1</span>] <span class="op">+</span> a[<span class="dv">2</span>] <span class="op">*</span> y[j <span class="op">-</span> <span class="dv">1</span>]</span>
-<span id="crank_nicolson-14"><a href="#crank_nicolson-14" aria-hidden="true" tabindex="-1"></a>        u[j] <span class="op">=</span> (a[<span class="dv">2</span>] <span class="op">*</span> u[j <span class="op">-</span> <span class="dv">1</span>] <span class="op">+</span> z[j]) <span class="op">/</span> (a[<span class="dv">0</span>] <span class="op">-</span> a[<span class="dv">2</span>] <span class="op">*</span> b[j <span class="op">-</span> <span class="dv">1</span>])</span>
-<span id="crank_nicolson-15"><a href="#crank_nicolson-15" aria-hidden="true" tabindex="-1"></a>        b[j] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">/</span> (a[<span class="dv">0</span>] <span class="op">-</span> a[<span class="dv">2</span>] <span class="op">*</span> b[j <span class="op">-</span> <span class="dv">1</span>])</span>
-<span id="crank_nicolson-16"><a href="#crank_nicolson-16" aria-hidden="true" tabindex="-1"></a>    c[<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> (zL <span class="op">+</span> bL <span class="op">*</span> u[<span class="op">-</span><span class="dv">2</span>]) <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> bL <span class="op">*</span> b[<span class="op">-</span><span class="dv">2</span>])</span>
-<span id="crank_nicolson-17"><a href="#crank_nicolson-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(L <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
-<span id="crank_nicolson-18"><a href="#crank_nicolson-18" aria-hidden="true" tabindex="-1"></a>        c[j] <span class="op">=</span> u[j] <span class="op">+</span> b[j] <span class="op">*</span> c[j <span class="op">+</span> <span class="dv">1</span>]</span>
-<span id="crank_nicolson-19"><a href="#crank_nicolson-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c</span>
-<span id="crank_nicolson-20"><a href="#crank_nicolson-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-21"><a href="#crank_nicolson-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-22"><a href="#crank_nicolson-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist):</span>
-<span id="crank_nicolson-23"><a href="#crank_nicolson-23" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
-<span id="crank_nicolson-24"><a href="#crank_nicolson-24" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> Dist <span class="op">/</span> M</span>
-<span id="crank_nicolson-25"><a href="#crank_nicolson-25" aria-hidden="true" tabindex="-1"></a>    dx2 <span class="op">=</span> dx<span class="op">**</span><span class="dv">2</span></span>
-<span id="crank_nicolson-26"><a href="#crank_nicolson-26" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(dx)</span>
-<span id="crank_nicolson-27"><a href="#crank_nicolson-27" aria-hidden="true" tabindex="-1"></a>    sig2 <span class="op">=</span> sigma<span class="op">**</span><span class="dv">2</span></span>
-<span id="crank_nicolson-28"><a href="#crank_nicolson-28" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> sig2 <span class="op">/</span> <span class="dv">2</span></span>
-<span id="crank_nicolson-29"><a href="#crank_nicolson-29" aria-hidden="true" tabindex="-1"></a>    St <span class="op">=</span> S0 <span class="op">*</span> np.exp(Dist)</span>
-<span id="crank_nicolson-30"><a href="#crank_nicolson-30" aria-hidden="true" tabindex="-1"></a>    Sb <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>Dist)</span>
-<span id="crank_nicolson-31"><a href="#crank_nicolson-31" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.zeros(<span class="dv">4</span>)</span>
-<span id="crank_nicolson-32"><a href="#crank_nicolson-32" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">0</span>] <span class="op">=</span> r <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span> <span class="op">/</span> dt <span class="op">+</span> sig2 <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx2)</span>
-<span id="crank_nicolson-33"><a href="#crank_nicolson-33" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">1</span>] <span class="op">=</span> sig2 <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx2) <span class="op">+</span> nu <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx)</span>
-<span id="crank_nicolson-34"><a href="#crank_nicolson-34" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">2</span>] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">-</span> nu <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx)</span>
-<span id="crank_nicolson-35"><a href="#crank_nicolson-35" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">3</span>] <span class="op">=</span> <span class="op">-</span>a[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">/</span> dt</span>
-<span id="crank_nicolson-36"><a href="#crank_nicolson-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-37"><a href="#crank_nicolson-37" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> M <span class="op">+</span> <span class="dv">1</span></span>
-<span id="crank_nicolson-38"><a href="#crank_nicolson-38" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.zeros(L)</span>
-<span id="crank_nicolson-39"><a href="#crank_nicolson-39" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> Sb</span>
-<span id="crank_nicolson-40"><a href="#crank_nicolson-40" aria-hidden="true" tabindex="-1"></a>    y[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
-<span id="crank_nicolson-41"><a href="#crank_nicolson-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L):</span>
-<span id="crank_nicolson-42"><a href="#crank_nicolson-42" aria-hidden="true" tabindex="-1"></a>        S <span class="op">*=</span> u</span>
-<span id="crank_nicolson-43"><a href="#crank_nicolson-43" aria-hidden="true" tabindex="-1"></a>        y[j] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
-<span id="crank_nicolson-44"><a href="#crank_nicolson-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-45"><a href="#crank_nicolson-45" aria-hidden="true" tabindex="-1"></a>    z1 <span class="op">=</span> <span class="dv">0</span></span>
-<span id="crank_nicolson-46"><a href="#crank_nicolson-46" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> <span class="dv">1</span></span>
-<span id="crank_nicolson-47"><a href="#crank_nicolson-47" aria-hidden="true" tabindex="-1"></a>    zL <span class="op">=</span> St <span class="op">-</span> St <span class="op">/</span> u</span>
-<span id="crank_nicolson-48"><a href="#crank_nicolson-48" aria-hidden="true" tabindex="-1"></a>    bL <span class="op">=</span> <span class="dv">1</span></span>
-<span id="crank_nicolson-49"><a href="#crank_nicolson-49" aria-hidden="true" tabindex="-1"></a>    CallV <span class="op">=</span> crank_nicolson(a, y, L, z1, b1, zL, bL)</span>
-<span id="crank_nicolson-50"><a href="#crank_nicolson-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-51"><a href="#crank_nicolson-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
-<span id="crank_nicolson-52"><a href="#crank_nicolson-52" aria-hidden="true" tabindex="-1"></a>        CallV <span class="op">=</span> crank_nicolson(a, CallV, L, z1, b1, zL, bL)</span>
-<span id="crank_nicolson-53"><a href="#crank_nicolson-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CallV[M]</span>
-<span id="crank_nicolson-54"><a href="#crank_nicolson-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-55"><a href="#crank_nicolson-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-56"><a href="#crank_nicolson-56" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
-<span id="crank_nicolson-57"><a href="#crank_nicolson-57" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span></span>
-<span id="crank_nicolson-58"><a href="#crank_nicolson-58" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">90</span></span>
-<span id="crank_nicolson-59"><a href="#crank_nicolson-59" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
-<span id="crank_nicolson-60"><a href="#crank_nicolson-60" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="crank_nicolson-61"><a href="#crank_nicolson-61" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
-<span id="crank_nicolson-62"><a href="#crank_nicolson-62" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span></span>
-<span id="crank_nicolson-63"><a href="#crank_nicolson-63" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
-<span id="crank_nicolson-64"><a href="#crank_nicolson-64" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">50</span></span>
-<span id="crank_nicolson-65"><a href="#crank_nicolson-65" aria-hidden="true" tabindex="-1"></a>Dist <span class="op">=</span> <span class="dv">3</span></span>
-<span id="crank_nicolson-66"><a href="#crank_nicolson-66" aria-hidden="true" tabindex="-1"></a>Bar <span class="op">=</span> <span class="dv">85</span></span>
-<span id="crank_nicolson-67"><a href="#crank_nicolson-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="crank_nicolson-68"><a href="#crank_nicolson-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
-<span id="crank_nicolson-69"><a href="#crank_nicolson-69" aria-hidden="true" tabindex="-1"></a>    <span class="st">"European Call Crank-Nicolson:"</span>,</span>
-<span id="crank_nicolson-70"><a href="#crank_nicolson-70" aria-hidden="true" tabindex="-1"></a>    european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist),</span>
-<span id="crank_nicolson-71"><a href="#crank_nicolson-71" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> crank_nicolson(a, y, L, z1, b1, zL, bL):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    u[<span class="dv">0</span>] <span class="op">=</span> z1</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    b[<span class="dv">0</span>] <span class="op">=</span> b1</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        z[j] <span class="op">=</span> a[<span class="dv">3</span>] <span class="op">*</span> y[j] <span class="op">+</span> a[<span class="dv">1</span>] <span class="op">*</span> y[j <span class="op">+</span> <span class="dv">1</span>] <span class="op">+</span> a[<span class="dv">2</span>] <span class="op">*</span> y[j <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        u[j] <span class="op">=</span> (a[<span class="dv">2</span>] <span class="op">*</span> u[j <span class="op">-</span> <span class="dv">1</span>] <span class="op">+</span> z[j]) <span class="op">/</span> (a[<span class="dv">0</span>] <span class="op">-</span> a[<span class="dv">2</span>] <span class="op">*</span> b[j <span class="op">-</span> <span class="dv">1</span>])</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        b[j] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">/</span> (a[<span class="dv">0</span>] <span class="op">-</span> a[<span class="dv">2</span>] <span class="op">*</span> b[j <span class="op">-</span> <span class="dv">1</span>])</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    c[<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> (zL <span class="op">+</span> bL <span class="op">*</span> u[<span class="op">-</span><span class="dv">2</span>]) <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> bL <span class="op">*</span> b[<span class="op">-</span><span class="dv">2</span>])</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(L <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        c[j] <span class="op">=</span> u[j] <span class="op">+</span> b[j] <span class="op">*</span> c[j <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist):</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> Dist <span class="op">/</span> M</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    dx2 <span class="op">=</span> dx <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(dx)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    sig2 <span class="op">=</span> sigma <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> sig2 <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    St <span class="op">=</span> S0 <span class="op">*</span> np.exp(Dist)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    Sb <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>Dist)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.zeros(<span class="dv">4</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">0</span>] <span class="op">=</span> r <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span> <span class="op">/</span> dt <span class="op">+</span> sig2 <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx2)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">1</span>] <span class="op">=</span> sig2 <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx2) <span class="op">+</span> nu <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">2</span>] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">-</span> nu <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">3</span>] <span class="op">=</span> <span class="op">-</span>a[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">/</span> dt</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> M <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.zeros(L)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> Sb</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    y[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L):</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        S <span class="op">*=</span> u</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        y[j] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    z1 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    zL <span class="op">=</span> St <span class="op">-</span> St <span class="op">/</span> u</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    bL <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    CallV <span class="op">=</span> crank_nicolson(a, y, L, z1, b1, zL, bL)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        CallV <span class="op">=</span> crank_nicolson(a, CallV, L, z1, b1, zL, bL)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CallV[M]</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">90</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>Dist <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>Bar <span class="op">=</span> <span class="dv">85</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"European Call Crank-Nicolson:"</span>, european_call_crank_nicolson(S0, K, r, sigma, q, T, N, M, Dist))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>European Call Crank-Nicolson: 15.113207926084973</code></pre>
@@ -744,48 +769,44 @@ C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC
 <div id="my_code_block" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="my_code_block"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="my_code_block-1"><a href="#my_code_block-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar):</span>
-<span id="my_code_block-2"><a href="#my_code_block-2" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> Dist <span class="op">/</span> M</span>
-<span id="my_code_block-3"><a href="#my_code_block-3" aria-hidden="true" tabindex="-1"></a>    DistBot <span class="op">=</span> np.log(S0) <span class="op">-</span> np.log(Bar)</span>
-<span id="my_code_block-4"><a href="#my_code_block-4" aria-hidden="true" tabindex="-1"></a>    NumBotSteps <span class="op">=</span> <span class="bu">int</span>(np.ceil(DistBot <span class="op">/</span> dx))</span>
-<span id="my_code_block-5"><a href="#my_code_block-5" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> DistBot <span class="op">/</span> NumBotSteps</span>
-<span id="my_code_block-6"><a href="#my_code_block-6" aria-hidden="true" tabindex="-1"></a>    NumTopSteps <span class="op">=</span> <span class="bu">int</span>(np.ceil(Dist <span class="op">/</span> dx))</span>
-<span id="my_code_block-7"><a href="#my_code_block-7" aria-hidden="true" tabindex="-1"></a>    DistTop <span class="op">=</span> NumTopSteps <span class="op">*</span> dx</span>
-<span id="my_code_block-8"><a href="#my_code_block-8" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> NumBotSteps <span class="op">+</span> NumTopSteps <span class="op">+</span> <span class="dv">1</span></span>
-<span id="my_code_block-9"><a href="#my_code_block-9" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
-<span id="my_code_block-10"><a href="#my_code_block-10" aria-hidden="true" tabindex="-1"></a>    dx2 <span class="op">=</span> dx<span class="op">**</span><span class="dv">2</span></span>
-<span id="my_code_block-11"><a href="#my_code_block-11" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(dx)</span>
-<span id="my_code_block-12"><a href="#my_code_block-12" aria-hidden="true" tabindex="-1"></a>    sig2 <span class="op">=</span> sigma<span class="op">**</span><span class="dv">2</span></span>
-<span id="my_code_block-13"><a href="#my_code_block-13" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> sig2 <span class="op">/</span> <span class="dv">2</span></span>
-<span id="my_code_block-14"><a href="#my_code_block-14" aria-hidden="true" tabindex="-1"></a>    St <span class="op">=</span> S0 <span class="op">*</span> np.exp(DistTop)</span>
-<span id="my_code_block-15"><a href="#my_code_block-15" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.zeros(<span class="dv">4</span>)</span>
-<span id="my_code_block-16"><a href="#my_code_block-16" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">0</span>] <span class="op">=</span> r <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span> <span class="op">/</span> dt <span class="op">+</span> sig2 <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx2)</span>
-<span id="my_code_block-17"><a href="#my_code_block-17" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">1</span>] <span class="op">=</span> sig2 <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx2) <span class="op">+</span> nu <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx)</span>
-<span id="my_code_block-18"><a href="#my_code_block-18" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">2</span>] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">-</span> nu <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx)</span>
-<span id="my_code_block-19"><a href="#my_code_block-19" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">3</span>] <span class="op">=</span> <span class="op">-</span>a[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">/</span> dt</span>
-<span id="my_code_block-20"><a href="#my_code_block-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="my_code_block-21"><a href="#my_code_block-21" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.zeros(L)</span>
-<span id="my_code_block-22"><a href="#my_code_block-22" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> Bar</span>
-<span id="my_code_block-23"><a href="#my_code_block-23" aria-hidden="true" tabindex="-1"></a>    y[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
-<span id="my_code_block-24"><a href="#my_code_block-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L):</span>
-<span id="my_code_block-25"><a href="#my_code_block-25" aria-hidden="true" tabindex="-1"></a>        S <span class="op">*=</span> u</span>
-<span id="my_code_block-26"><a href="#my_code_block-26" aria-hidden="true" tabindex="-1"></a>        y[j] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
-<span id="my_code_block-27"><a href="#my_code_block-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="my_code_block-28"><a href="#my_code_block-28" aria-hidden="true" tabindex="-1"></a>    z1 <span class="op">=</span> <span class="dv">0</span></span>
-<span id="my_code_block-29"><a href="#my_code_block-29" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> <span class="dv">0</span></span>
-<span id="my_code_block-30"><a href="#my_code_block-30" aria-hidden="true" tabindex="-1"></a>    zL <span class="op">=</span> St <span class="op">-</span> St <span class="op">/</span> u</span>
-<span id="my_code_block-31"><a href="#my_code_block-31" aria-hidden="true" tabindex="-1"></a>    bL <span class="op">=</span> <span class="dv">1</span></span>
-<span id="my_code_block-32"><a href="#my_code_block-32" aria-hidden="true" tabindex="-1"></a>    CallV <span class="op">=</span> crank_nicolson(a, y, L, z1, b1, zL, bL)</span>
-<span id="my_code_block-33"><a href="#my_code_block-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="my_code_block-34"><a href="#my_code_block-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
-<span id="my_code_block-35"><a href="#my_code_block-35" aria-hidden="true" tabindex="-1"></a>        CallV <span class="op">=</span> crank_nicolson(a, CallV, L, z1, b1, zL, bL)</span>
-<span id="my_code_block-36"><a href="#my_code_block-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CallV[NumBotSteps]</span>
-<span id="my_code_block-37"><a href="#my_code_block-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="my_code_block-38"><a href="#my_code_block-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="my_code_block-39"><a href="#my_code_block-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
-<span id="my_code_block-40"><a href="#my_code_block-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Down and Out Call CN:"</span>,</span>
-<span id="my_code_block-41"><a href="#my_code_block-41" aria-hidden="true" tabindex="-1"></a>    down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar),</span>
-<span id="my_code_block-42"><a href="#my_code_block-42" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> Dist <span class="op">/</span> M</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    DistBot <span class="op">=</span> np.log(S0) <span class="op">-</span> np.log(Bar)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    NumBotSteps <span class="op">=</span> <span class="bu">int</span>(np.ceil(DistBot <span class="op">/</span> dx))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> DistBot <span class="op">/</span> NumBotSteps</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    NumTopSteps <span class="op">=</span> <span class="bu">int</span>(np.ceil(Dist <span class="op">/</span> dx))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    DistTop <span class="op">=</span> NumTopSteps <span class="op">*</span> dx</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> NumBotSteps <span class="op">+</span> NumTopSteps <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    dx2 <span class="op">=</span> dx <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(dx)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    sig2 <span class="op">=</span> sigma <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> sig2 <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    St <span class="op">=</span> S0 <span class="op">*</span> np.exp(DistTop)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.zeros(<span class="dv">4</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">0</span>] <span class="op">=</span> r <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span> <span class="op">/</span> dt <span class="op">+</span> sig2 <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx2)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">1</span>] <span class="op">=</span> sig2 <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx2) <span class="op">+</span> nu <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> dx)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">2</span>] <span class="op">=</span> a[<span class="dv">1</span>] <span class="op">-</span> nu <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> dx)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    a[<span class="dv">3</span>] <span class="op">=</span> <span class="op">-</span>a[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">/</span> dt</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.zeros(L)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> Bar</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    y[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, L):</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        S <span class="op">*=</span> u</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        y[j] <span class="op">=</span> <span class="bu">max</span>(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    z1 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    zL <span class="op">=</span> St <span class="op">-</span> St <span class="op">/</span> u</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    bL <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    CallV <span class="op">=</span> crank_nicolson(a, y, L, z1, b1, zL, bL)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N <span class="op">-</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        CallV <span class="op">=</span> crank_nicolson(a, CallV, L, z1, b1, zL, bL)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CallV[NumBotSteps]</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Down and Out Call CN:"</span>, down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Down and Out Call CN: 13.780367670052469</code></pre>
@@ -794,23 +815,29 @@ C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC
 </section>
 <section id="exercises" class="level2" data-number="16.8">
 <h2 data-number="16.8" class="anchored" data-anchor-id="exercises"><span class="header-section-number">16.8</span> Exercises</h2>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 16.1</strong></span> Create a python program to compare the estimates of the value of a discretely sampled barrier option given by the functions Down_And_Out_Call_MC created before and the function Down_And_Out_Call_CN. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above <span class="math inline">\(\log S(0)\)</span> in the Crank-Nicolson algorithm.</p>
+<div id="Exercise-16.1" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 16.1</strong></summary><div>Create a python program to compare the estimates of the value of a discretely sampled barrier option given by the functions Down_And_Out_Call_MC created before and the function Down_And_Out_Call_CN. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above <span class="math inline">\(\log S(0)\)</span> in the Crank-Nicolson algorithm.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 16.2</strong></span> Create a python function Up_And_Out_Put_CN to value an up-and-out put option by the Crank-Nicolson method.</p>
+<div id="Exercise-16.2" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 16.2</strong></summary><div>Create a python function Up_And_Out_Put_CN to value an up-and-out put option by the Crank-Nicolson method.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 16.3</strong></span> Create a python function European_Call_Explicit that uses the explicit method <a href="#eq-fdtrinomial" class="quarto-xref">Equation&nbsp;<span>16.10</span></a> to value a European call option.</p>
+<div id="Exercise-16.3" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 16.3</strong></summary><div>Create a python function European_Call_Explicit that uses the explicit method <a href="#eq-fdtrinomial" class="quarto-xref">Equation&nbsp;<span>16.10</span></a> to value a European call option.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 16.4</strong></span> Write <a href="#eq-implicit" class="quarto-xref">Equation&nbsp;<span>16.11</span></a> for the implicit method, together with boundary conditions of the form <a href="#eq-crank4aa" class="quarto-xref">Equation&nbsp;<span>16.19</span></a> - <a href="#eq-crank4bb" class="quarto-xref">Equation&nbsp;<span>16.20</span></a> as a matrix system and solve for <span class="math inline">\(u_j\)</span> and <span class="math inline">\(b_j\)</span> in <a href="#eq-crank101" class="quarto-xref">Equation&nbsp;<span>16.21</span></a> - <a href="#eq-crankC_L" class="quarto-xref">Equation&nbsp;<span>16.22</span></a>, as in the subsection that defines the function CrankNicolson.</p>
+<div id="Exercise-16.4" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 16.4</strong></summary><div>Write <a href="#eq-implicit" class="quarto-xref">Equation&nbsp;<span>16.11</span></a> for the implicit method, together with boundary conditions of the form <a href="#eq-crank4aa" class="quarto-xref">Equation&nbsp;<span>16.19</span></a> - <a href="#eq-crank4bb" class="quarto-xref">Equation&nbsp;<span>16.20</span></a> as a matrix system and solve for <span class="math inline">\(u_j\)</span> and <span class="math inline">\(b_j\)</span> in <a href="#eq-crank101" class="quarto-xref">Equation&nbsp;<span>16.21</span></a> - <a href="#eq-crankC_L" class="quarto-xref">Equation&nbsp;<span>16.22</span></a>, as in the subsection that defines the function CrankNicolson.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 16.5</strong></span> Create a python function Implicit that solves the system of equations in the preceding exercise.</p>
+<div id="Exercise-16.5" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 16.5</strong></summary><div>Create a python function Implicit that solves the system of equations in the preceding exercise.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 16.6</strong></span> Create a python function European_Call_Implicit that uses the implicit method to value a European call option.</p>
+<div id="Exercise-16.6" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 16.6</strong></summary><div>Create a python function European_Call_Implicit that uses the implicit method to value a European call option.<p></p>
+</div></details>
 </div>
 
 

@@ -77,6 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-bb6b93f51bf5a7975605005bd985cc1c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/quarto-contrib/foldbox/foldbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -110,6 +111,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<style>
+.Definition {
+  --color1: #d999d3;
+  --color2: #a01793;
+}
+.DONE {
+  --color1: #cce7b1;
+  --color2: #86b754;
+}
+.Theorem {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.Corollary {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.Feature {
+  --color1: #c0c0c0;
+  --color2: #808080;
+}
+.TODO {
+  --color1: #e7b1b4;
+  --color2: #8c3236;
+}
+.Exercise {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+</style>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
@@ -538,27 +569,27 @@ Y(t) = Y(0) + \sum_{i=1}^N \Delta Y_{t_i}
 <div id="cell-simulated_ito" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cell-simulated_ito"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cell-simulated_ito-1"><a href="#cell-simulated_ito-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cell-simulated_ito-2"><a href="#cell-simulated_ito-2" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
-<span id="cell-simulated_ito-3"><a href="#cell-simulated_ito-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cell-simulated_ito-4"><a href="#cell-simulated_ito-4" aria-hidden="true" tabindex="-1"></a><span class="co">n = 1000</span></span>
-<span id="cell-simulated_ito-5"><a href="#cell-simulated_ito-5" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1</span></span>
-<span id="cell-simulated_ito-6"><a href="#cell-simulated_ito-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cell-simulated_ito-7"><a href="#cell-simulated_ito-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function and its first and second derivative</span></span>
-<span id="cell-simulated_ito-8"><a href="#cell-simulated_ito-8" aria-hidden="true" tabindex="-1"></a><span class="co">G = lambda x: np.exp(x)</span></span>
-<span id="cell-simulated_ito-9"><a href="#cell-simulated_ito-9" aria-hidden="true" tabindex="-1"></a><span class="co">DG = lambda x: np.exp(x)</span></span>
-<span id="cell-simulated_ito-10"><a href="#cell-simulated_ito-10" aria-hidden="true" tabindex="-1"></a><span class="co">DDG = lambda x: np.exp(x)</span></span>
-<span id="cell-simulated_ito-11"><a href="#cell-simulated_ito-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Build G'(x)\,\mathrm{d} B</span></span>
-<span id="cell-simulated_ito-12"><a href="#cell-simulated_ito-12" aria-hidden="true" tabindex="-1"></a><span class="co">GdB = np.zeros(shape = (n, m))</span></span>
-<span id="cell-simulated_ito-13"><a href="#cell-simulated_ito-13" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[0] = np.repeat(DG(0), m) * inc[0]</span></span>
-<span id="cell-simulated_ito-14"><a href="#cell-simulated_ito-14" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[1:] = DG(Bt[0:n - 1]) * inc[1:]</span></span>
-<span id="cell-simulated_ito-15"><a href="#cell-simulated_ito-15" aria-hidden="true" tabindex="-1"></a><span class="co">SI = np.zeros(shape = (n, m))</span></span>
-<span id="cell-simulated_ito-16"><a href="#cell-simulated_ito-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Stochastic Integral is cumulative sum of G'(B)dB plus initial</span></span>
-<span id="cell-simulated_ito-17"><a href="#cell-simulated_ito-17" aria-hidden="true" tabindex="-1"></a><span class="co">SI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G(0)</span></span>
-<span id="cell-simulated_ito-18"><a href="#cell-simulated_ito-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare Ito's Lemma </span></span>
-<span id="cell-simulated_ito-19"><a href="#cell-simulated_ito-19" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cell-simulated_ito-20"><a href="#cell-simulated_ito-20" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], SI[:,0])</span></span>
-<span id="cell-simulated_ito-21"><a href="#cell-simulated_ito-21" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">n = 1000</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function and its first and second derivative</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">G = lambda x: np.exp(x)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">DG = lambda x: np.exp(x)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">DDG = lambda x: np.exp(x)</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Build G'(x)\,\mathrm{d} B</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">GdB = np.zeros(shape = (n, m))</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[0] = np.repeat(DG(0), m) * inc[0]</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[1:] = DG(Bt[0:n - 1]) * inc[1:]</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">SI = np.zeros(shape = (n, m))</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Stochastic Integral is cumulative sum of G'(B)dB plus initial</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">SI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G(0)</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare Ito's Lemma </span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], SI[:,0])</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>&lt;&gt;:1: SyntaxWarning:
@@ -569,7 +600,7 @@ invalid escape sequence '\,'
 
 invalid escape sequence '\,'
 
-C:\Users\kerry\AppData\Local\Temp\ipykernel_7432\100999839.py:1: SyntaxWarning:
+C:\Users\kerry\AppData\Local\Temp\ipykernel_5108\100999839.py:1: SyntaxWarning:
 
 invalid escape sequence '\,'
 </code></pre>
@@ -583,11 +614,11 @@ invalid escape sequence '\,'
 <div id="cell-simulated_exact" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cell-simulated_exact"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cell-simulated_exact-1"><a href="#cell-simulated_exact-1" aria-hidden="true" tabindex="-1"></a><span class="co"># exact solution</span></span>
-<span id="cell-simulated_exact-2"><a href="#cell-simulated_exact-2" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cell-simulated_exact-3"><a href="#cell-simulated_exact-3" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cell-simulated_exact-4"><a href="#cell-simulated_exact-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], G(Bt[1:n + 1, 0]))</span></span>
-<span id="cell-simulated_exact-5"><a href="#cell-simulated_exact-5" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#exact solution</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], G(Bt[1:n + 1, 0]))</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div id="simulated_exact" class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>'\nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], G(Bt[1:n + 1, 0]))\n'</code></pre>
@@ -598,12 +629,12 @@ invalid escape sequence '\,'
 <div id="cell-correction" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cell-correction"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cell-correction-1"><a href="#cell-correction-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cell-correction-2"><a href="#cell-correction-2" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = np.zeros(shape = (n, m))</span></span>
-<span id="cell-correction-3"><a href="#cell-correction-3" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)</span></span>
-<span id="cell-correction-4"><a href="#cell-correction-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cell-correction-5"><a href="#cell-correction-5" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], QVV[:,0])</span></span>
-<span id="cell-correction-6"><a href="#cell-correction-6" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = np.zeros(shape = (n, m))</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], QVV[:,0])</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div id="correction" class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>'\nQVV = np.zeros(shape = (n, m))\nQVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)\nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], QVV[:,0])\n'</code></pre>
@@ -810,18 +841,8 @@ S(t)=S(0)\exp\left(\mu t- \sigma^2 t/2 + \sigma B(t)\right)
 \mathrm{d} \log S(t) = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B(t)\;.
 \qquad(6.25)\]</span></span></p>
 <p>We conclude:</p>
-<div class="callout callout-style-default callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<div class="calculator">
 <p>The equation <span class="math display">\[\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\]</span> is equivalent to the equation <span class="math display">\[\mathrm{d} \log S(t) = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B(t)\; .\]</span> The solution of both equations is <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>6.22</span></a> or the equivalent <a href="#eq-exponential2" class="quarto-xref">Equation&nbsp;<span>6.24</span></a>.</p>
-</div>
 </div>
 <p>Over a discrete time interval <span class="math inline">\(\Delta t\)</span>, <a href="#eq-exponential3" class="quarto-xref">Equation&nbsp;<span>6.25</span></a> implies that the change in the logarithm of <span class="math inline">\(S\)</span> is <span id="eq-exponential11"><span class="math display">\[
 \Delta \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\Delta t+ \sigma\,\Delta B\;.
@@ -831,59 +852,59 @@ Tip
 \qquad(6.27)\]</span></span></p>
 <p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S(t_{i-1})\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S(t_{i-1})} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>6.27</span></a>. Thus, the geometric Brownian motion model <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.23</span></a> implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_Vol.html" class="quarto-xref"><span>Chapter 13</span></a>).</p>
 <p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>6.26</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
-<div id="22028d3e" class="cell" data-execution_count="4">
+<div id="b9f855cb" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="22028d3e"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="22028d3e-1"><a href="#22028d3e-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="22028d3e-2"><a href="#22028d3e-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
-<span id="22028d3e-3"><a href="#22028d3e-3" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
-<span id="22028d3e-4"><a href="#22028d3e-4" aria-hidden="true" tabindex="-1"></a><span class="co">import matplotlib.pyplot as plt</span></span>
-<span id="22028d3e-5"><a href="#22028d3e-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
-<span id="22028d3e-6"><a href="#22028d3e-6" aria-hidden="true" tabindex="-1"></a><span class="co">n = 10000</span></span>
-<span id="22028d3e-7"><a href="#22028d3e-7" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
-<span id="22028d3e-8"><a href="#22028d3e-8" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1000</span></span>
-<span id="22028d3e-9"><a href="#22028d3e-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate)</span></span>
-<span id="22028d3e-10"><a href="#22028d3e-10" aria-hidden="true" tabindex="-1"></a><span class="co">r = 0.1</span></span>
-<span id="22028d3e-11"><a href="#22028d3e-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="22028d3e-12"><a href="#22028d3e-12" aria-hidden="true" tabindex="-1"></a><span class="co">sig = 0.2</span></span>
-<span id="22028d3e-13"><a href="#22028d3e-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="22028d3e-14"><a href="#22028d3e-14" aria-hidden="true" tabindex="-1"></a><span class="co">S0 = 42</span></span>
-<span id="22028d3e-15"><a href="#22028d3e-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="22028d3e-16"><a href="#22028d3e-16" aria-hidden="true" tabindex="-1"></a><span class="co">T = 0.5</span></span>
-<span id="22028d3e-17"><a href="#22028d3e-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
-<span id="22028d3e-18"><a href="#22028d3e-18" aria-hidden="true" tabindex="-1"></a><span class="co">dt = T/m</span></span>
-<span id="22028d3e-19"><a href="#22028d3e-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
-<span id="22028d3e-20"><a href="#22028d3e-20" aria-hidden="true" tabindex="-1"></a><span class="co">drift = (r-0.5*sig**2)</span></span>
-<span id="22028d3e-21"><a href="#22028d3e-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="22028d3e-22"><a href="#22028d3e-22" aria-hidden="true" tabindex="-1"></a><span class="co">vol = sig * np.sqrt(dt)</span></span>
-<span id="22028d3e-23"><a href="#22028d3e-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="22028d3e-24"><a href="#22028d3e-24" aria-hidden="true" tabindex="-1"></a><span class="co">t = np.array(range(0,m + 1,1)) * dt</span></span>
-<span id="22028d3e-25"><a href="#22028d3e-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="22028d3e-26"><a href="#22028d3e-26" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
-<span id="22028d3e-27"><a href="#22028d3e-27" aria-hidden="true" tabindex="-1"></a><span class="co">seed= 2020</span></span>
-<span id="22028d3e-28"><a href="#22028d3e-28" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
-<span id="22028d3e-29"><a href="#22028d3e-29" aria-hidden="true" tabindex="-1"></a><span class="co">np.random.seed(seed)</span></span>
-<span id="22028d3e-30"><a href="#22028d3e-30" aria-hidden="true" tabindex="-1"></a><span class="co">inc = np.zeros(shape = (m + 1, n))</span></span>
-<span id="22028d3e-31"><a href="#22028d3e-31" aria-hidden="true" tabindex="-1"></a><span class="co">inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))</span></span>
-<span id="22028d3e-32"><a href="#22028d3e-32" aria-hidden="true" tabindex="-1"></a><span class="co">St = np.zeros(shape = (m + 1, n))</span></span>
-<span id="22028d3e-33"><a href="#22028d3e-33" aria-hidden="true" tabindex="-1"></a><span class="co">St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
-<span id="22028d3e-34"><a href="#22028d3e-34" aria-hidden="true" tabindex="-1"></a><span class="co">St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
-<span id="22028d3e-35"><a href="#22028d3e-35" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="22028d3e-36"><a href="#22028d3e-36" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t,St[:,1])</span></span>
-<span id="22028d3e-37"><a href="#22028d3e-37" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">import matplotlib.pyplot as plt</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">n = 10000</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1000</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate)</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">r = 0.1</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">sig = 0.2</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">S0 = 42</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">T = 0.5</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">dt = T/m</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">drift = (r-0.5*sig**2)</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">vol = sig * np.sqrt(dt)</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">t = np.array(range(0,m + 1,1)) * dt</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">seed= 2020</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">np.random.seed(seed)</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">inc = np.zeros(shape = (m + 1, n))</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">St = np.zeros(shape = (m + 1, n))</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t,St[:,1])</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>'\n# Simulate Geometric Brownian Motion\nimport numpy as np\nimport matplotlib.pyplot as plt\n# number of paths\nn = 10000\n#number of divisions\nm = 1000\n# Interest rate (We set the drift equal to the interest rate)\nr = 0.1\n# Volatility\nsig = 0.2\n# Initial Stock Price\nS0 = 42\n# Maturity\nT = 0.5\n# Delta t\ndt = T/m\n# Drift\ndrift = (r-0.5*sig**2)\n# Volatility\nvol = sig * np.sqrt(dt)\n\nt = np.array(range(0,m + 1,1)) * dt\n\n# seed for random generator\nseed= 2020\n# define a random generator\nnp.random.seed(seed)\ninc = np.zeros(shape = (m + 1, n))\ninc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))\nSt = np.zeros(shape = (m + 1, n))\nSt = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nSt1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nplt.figure(figsize=(9,6))\nplt.plot(t,St[:,1])\n'</code></pre>
 </div>
 </div>
 <p>The plot below is the distribution of the simulated stock price at <span class="math inline">\(T\)</span>.</p>
-<div id="eca2d683" class="cell" data-execution_count="5">
+<div id="69416085" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="eca2d683"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="eca2d683-1"><a href="#eca2d683-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="eca2d683-2"><a href="#eca2d683-2" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="eca2d683-3"><a href="#eca2d683-3" aria-hidden="true" tabindex="-1"></a><span class="co">a=plt.hist(St[m,:], bins=100)</span></span>
-<span id="eca2d683-4"><a href="#eca2d683-4" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">a=plt.hist(St[m,:], bins=100)</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>'\nplt.figure(figsize=(9,6))\na=plt.hist(St[m,:], bins=100)\n'</code></pre>
@@ -964,53 +985,63 @@ Tip
 </section>
 <section id="exercises" class="level2" data-number="6.9">
 <h2 data-number="6.9" class="anchored" data-anchor-id="exercises"><span class="header-section-number">6.9</span> Exercises</h2>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.1</strong></span> Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider the function <span class="math display">\[X(t)=\mathrm{e}^t\; .\]</span> Write a code, which computes and plots <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span>, where <span class="math display">\[\Delta X_{t_i} = X_{t_i}-X(t_{i-1}) = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .\]</span> <!-- Hint: The sum can be computed as follows.
+<div id="Exercise-6.1" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.1</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider the function <span class="math display">\[X(t)=\mathrm{e}^t\; .\]</span> Write a code, which computes and plots <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span>, where <span class="math display">\[\Delta X_{t_i} = X_{t_i}-X(t_{i-1}) = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .\]</span> <!-- Hint: The sum can be computed as follows.
 \begin{verbatim}
 sum = 0
 For i = 1 To N
     DeltaX = Exp(i/N)-Exp((i-1)/N)
     sum = sum + DeltaX * DeltaX
 Next i
-\end{verbatim} --></p>
+\end{verbatim} --><p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.2</strong></span> Repeat the previous problem for the function <span class="math inline">\(X(t) = t^3\)</span>. In both this and the previous problem, what happens to <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>?</p>
+<div id="Exercise-6.2" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.2</strong></summary><div>Repeat the previous problem for the function <span class="math inline">\(X(t) = t^3\)</span>. In both this and the previous problem, what happens to <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.3</strong></span> Either use the code provided or write a code to compute <span class="math inline">\(\sum_{i=1}^N [\Delta B_{t_i}]^2\)</span>, where <span class="math inline">\(B\)</span> is a simulated Brownian motion. For a given <span class="math inline">\(T\)</span>, what happens to the sum as <span class="math inline">\(N \rightarrow \infty\)</span>?</p>
+<div id="Exercise-6.3" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.3</strong></summary><div>Either use the code provided or write a code to compute <span class="math inline">\(\sum_{i=1}^N [\Delta B_{t_i}]^2\)</span>, where <span class="math inline">\(B\)</span> is a simulated Brownian motion. For a given <span class="math inline">\(T\)</span>, what happens to the sum as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.4</strong></span> Repeat the previous problem to compute <span class="math inline">\(\sum_{i=1}^N [\Delta B_{t_i}]^3\)</span>, where <span class="math inline">\(B\)</span> is a simulated Brownian motion. For a given <span class="math inline">\(T\)</span>, what happens to the sum as <span class="math inline">\(N \rightarrow \infty\)</span>?</p>
+<div id="Exercise-6.4" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.4</strong></summary><div>Repeat the previous problem to compute <span class="math inline">\(\sum_{i=1}^N [\Delta B_{t_i}]^3\)</span>, where <span class="math inline">\(B\)</span> is a simulated Brownian motion. For a given <span class="math inline">\(T\)</span>, what happens to the sum as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.5</strong></span> Repeat the previous problem, computing instead <span class="math inline">\(\sum_{i=1}^N |\Delta B_{t_i}|\)</span> where <span class="math inline">\(| \cdot |\)</span> denotes the absolute value. What happens to this sum as <span class="math inline">\(N \rightarrow \infty\)</span>?</p>
+<div id="Exercise-6.5" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.5</strong></summary><div>Repeat the previous problem, computing instead <span class="math inline">\(\sum_{i=1}^N |\Delta B_{t_i}|\)</span> where <span class="math inline">\(| \cdot |\)</span> denotes the absolute value. What happens to this sum as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.6</strong></span> Use Ito’s Lemma to derive the stochastic differential equation for <span class="math inline">\(S(t)^2\)</span>. Argue that <span class="math inline">\(S(t)^2\)</span> is Geometric Brownian Motion and find <span class="math inline">\(E[S(t)^2]\)</span>.</p>
+<div id="Exercise-6.6" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.6</strong></summary><div>Use Ito’s Lemma to derive the stochastic differential equation for <span class="math inline">\(S(t)^2\)</span>. Argue that <span class="math inline">\(S(t)^2\)</span> is Geometric Brownian Motion and find <span class="math inline">\(E[S(t)^2]\)</span>.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.7</strong></span> Ito’s Lemma can be used in different ways to get the same answer. For example, let <span class="math inline">\(X(t) = a t + b B(t)\)</span> and use Ito’s lemma on the function <span class="math inline">\(e^{X(t)}\)</span>. Alternatively, let <span class="math inline">\(f(t, B(t)) = e^{a t + bB(t)}\)</span>. Use Ito’s lemma on <span class="math inline">\(f(,)\)</span>.</p>
+<div id="Exercise-6.7" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.7</strong></summary><div>Ito’s Lemma can be used in different ways to get the same answer. For example, let <span class="math inline">\(X(t) = a t + b B(t)\)</span> and use Ito’s lemma on the function <span class="math inline">\(e^{X(t)}\)</span>. Alternatively, let <span class="math inline">\(f(t, B(t)) = e^{a t + bB(t)}\)</span>. Use Ito’s lemma on <span class="math inline">\(f(,)\)</span>.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.8</strong></span> Use the facts <span class="math inline">\(e^{x+y}=e^x \times e^y\)</span> and <span class="math inline">\(\frac{e^x}{e^y} = e^{x-y}\)</span> to deduce the drift and volatility of the product and ratio of two Geometric Brownian motions.</p>
+<div id="Exercise-6.8" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.8</strong></summary><div>Use the facts <span class="math inline">\(e^{x+y}=e^x \times e^y\)</span> and <span class="math inline">\(\frac{e^x}{e^y} = e^{x-y}\)</span> to deduce the drift and volatility of the product and ratio of two Geometric Brownian motions.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.9</strong></span> Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider a geometric Brownian motion <span class="math display">\[\frac{\mathrm{d} Z}{Z} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .\]</span> An approximate path <span class="math inline">\(\tilde{Z}(t)\)</span> of the geometric Brownian motion can be simulated as <span id="eq-exponential111"><span class="math display">\[
+<div id="Exercise-6.9" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.9</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider a geometric Brownian motion <span class="math display">\[\frac{\mathrm{d} Z}{Z} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .\]</span> An approximate path <span class="math inline">\(\tilde{Z}(t)\)</span> of the geometric Brownian motion can be simulated as <span id="eq-exponential111"><span class="math display">\[
 \Delta \tilde{Z}_{t_i} = \tilde{Z}(t_{i-1}) \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
 \qquad(6.33)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z(t)\)</span> and an approximate path <span class="math inline">\(\tilde{Z}(t)\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>6.33</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}(0) = Z(0)\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
 For <span class="math inline">\(N\)</span> larger than about <span class="math inline">\(100 T\)</span>, the approximation will look perfect—you won’t be able to tell that there are two plots in the figure. One reason this is true is an exact formula is <span id="eq-exponential112"><span class="math display">\[
 Z_{t_i} = Z(t_{i-1}) \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
-\qquad(6.34)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B(t)} \approx 1+ \sigma \Delta B(t) +\frac{1}{2}\sigma^2 (\Delta B(t))^2\)</span> and <span class="math inline">\((\,\mathrm{d} B(t))^2=\Delta t\)</span>.</p>
+\qquad(6.34)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B(t)} \approx 1+ \sigma \Delta B(t) +\frac{1}{2}\sigma^2 (\Delta B(t))^2\)</span> and <span class="math inline">\((\,\mathrm{d} B(t))^2=\Delta t\)</span>.<p></p>
+</div></details>
 </div>
-<div id="exr-nolabel" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 6.10</strong></span> Use simulation to find <span class="math inline">\(E^*[e^{-r T}{\mathbf{1}}_{\{S(t) \ge K\}}]\)</span> in the risk-neutral probability where <span class="math display">\[\begin{equation*}
+<div id="Exercise-6.10" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.10</strong></summary><div>Use simulation to find <span class="math inline">\(E^*[e^{-r T}{\mathbf{1}}_{\{S(t) \ge K\}}]\)</span> in the risk-neutral probability where <span class="math display">\[\begin{equation*}
 \,\mathrm{d} S(t)= r S(t) \,\mathrm{d} t + \sigma S(t) \,\mathrm{d} B(t)^*
 \end{equation*}\]</span> Verify that <span class="math inline">\(S(t)/e^{r t}\)</span> is a martingale in the <span class="math inline">\(*\)</span> measure where <span class="math inline">\(B^*\)</span> is a Brownian motion. Then use simulation to find <span class="math inline">\(S(0)E^S[\frac{1}{S(t)} {\mathbf{1}}_{\{S(t) \ge K\}}]\)</span> in the pricing measure which uses the share as numeraire where <span class="math display">\[\begin{equation*}
 \,\mathrm{d} S(t) = (r + \sigma^2) S(t) \,\mathrm{d} t + \sigma S(t) \,\mathrm{d} B(t)^S
 \end{equation*}\]</span> so the log satisfies <span class="math display">\[\begin{equation*}
 \log(S(t)) = \log(S(0)) + (r + \frac{\sigma^2}{2})t + \sigma B(t)^S
-\end{equation*}\]</span> You should verify <span class="math inline">\(e^{rt}/S(t)\)</span> is a martingale in the <span class="math inline">\(S\)</span> measure where <span class="math inline">\(B^S\)</span> is a Brownian motion. Both estimates should be the same up to simulation error and give the time zero value of the random payoff <span class="math inline">\({\mathbf{1}}_{\{S(t) \ge K\}}\)</span> which is a random variable equal to <span class="math inline">\(1\)</span> if <span class="math inline">\(S(t)\ge K\)</span> and <span class="math inline">\(0\)</span> otherwise. You should choose the values for <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(T\)</span>, and <span class="math inline">\(K\)</span>.</p>
+\end{equation*}\]</span> You should verify <span class="math inline">\(e^{rt}/S(t)\)</span> is a martingale in the <span class="math inline">\(S\)</span> measure where <span class="math inline">\(B^S\)</span> is a Brownian motion. Both estimates should be the same up to simulation error and give the time zero value of the random payoff <span class="math inline">\({\mathbf{1}}_{\{S(t) \ge K\}}\)</span> which is a random variable equal to <span class="math inline">\(1\)</span> if <span class="math inline">\(S(t)\ge K\)</span> and <span class="math inline">\(0\)</span> otherwise. You should choose the values for <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(T\)</span>, and <span class="math inline">\(K\)</span>.<p></p>
+</div></details>
 </div>
 
 

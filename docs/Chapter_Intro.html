@@ -77,6 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-bb6b93f51bf5a7975605005bd985cc1c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/quarto-contrib/foldbox/foldbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -110,6 +111,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<style>
+.Feature {
+  --color1: #c0c0c0;
+  --color2: #808080;
+}
+.Theorem {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.TODO {
+  --color1: #e7b1b4;
+  --color2: #8c3236;
+}
+.Definition {
+  --color1: #d999d3;
+  --color2: #a01793;
+}
+.Corollary {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+.DONE {
+  --color1: #cce7b1;
+  --color2: #86b754;
+}
+.Exercise {
+  --color1: #ebda6c;
+  --color2: #544a05;
+}
+</style>
 
 
 </head>
@@ -406,71 +437,77 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="aapl-table" class="cell" data-execute="auto" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="aapl-table"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="aapl-table-1"><a href="#aapl-table-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="aapl-table-2"><a href="#aapl-table-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="aapl-table-3"><a href="#aapl-table-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
-<span id="aapl-table-4"><a href="#aapl-table-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytz</span>
-<span id="aapl-table-5"><a href="#aapl-table-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
-<span id="aapl-table-6"><a href="#aapl-table-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-7"><a href="#aapl-table-7" aria-hidden="true" tabindex="-1"></a>est <span class="op">=</span> pytz.timezone(<span class="st">"US/Eastern"</span>)</span>
-<span id="aapl-table-8"><a href="#aapl-table-8" aria-hidden="true" tabindex="-1"></a>fmt <span class="op">=</span> <span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st"> %H:%M:%S"</span></span>
-<span id="aapl-table-9"><a href="#aapl-table-9" aria-hidden="true" tabindex="-1"></a>now <span class="op">=</span> datetime.today().astimezone(est).strftime(fmt)</span>
-<span id="aapl-table-10"><a href="#aapl-table-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-11"><a href="#aapl-table-11" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span>  <span class="co"># ticker to pull</span></span>
-<span id="aapl-table-12"><a href="#aapl-table-12" aria-hidden="true" tabindex="-1"></a>kind <span class="op">=</span> <span class="st">"call"</span>  <span class="co"># call or put</span></span>
-<span id="aapl-table-13"><a href="#aapl-table-13" aria-hidden="true" tabindex="-1"></a>maturity <span class="op">=</span> <span class="dv">4</span>  <span class="co"># option maturity in order of maturities trading</span></span>
-<span id="aapl-table-14"><a href="#aapl-table-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-15"><a href="#aapl-table-15" aria-hidden="true" tabindex="-1"></a>tick <span class="op">=</span> yf.Ticker(ticker.upper())</span>
-<span id="aapl-table-16"><a href="#aapl-table-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-17"><a href="#aapl-table-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull last stock price</span></span>
-<span id="aapl-table-18"><a href="#aapl-table-18" aria-hidden="true" tabindex="-1"></a>close <span class="op">=</span> tick.history().iloc[<span class="op">-</span><span class="dv">1</span>].Close</span>
-<span id="aapl-table-19"><a href="#aapl-table-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-20"><a href="#aapl-table-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Get maturity date</span></span>
-<span id="aapl-table-21"><a href="#aapl-table-21" aria-hidden="true" tabindex="-1"></a>date <span class="op">=</span> tick.options[maturity]</span>
-<span id="aapl-table-22"><a href="#aapl-table-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-23"><a href="#aapl-table-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull options data</span></span>
-<span id="aapl-table-24"><a href="#aapl-table-24" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tick.option_chain(date).calls <span class="cf">if</span> kind <span class="op">==</span> <span class="st">"call"</span> <span class="cf">else</span> tick.option_chain(date).puts</span>
-<span id="aapl-table-25"><a href="#aapl-table-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-26"><a href="#aapl-table-26" aria-hidden="true" tabindex="-1"></a>df.lastTradeDate <span class="op">=</span> df.lastTradeDate.<span class="bu">map</span>(<span class="kw">lambda</span> x: x.astimezone(est).strftime(fmt))</span>
-<span id="aapl-table-27"><a href="#aapl-table-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-28"><a href="#aapl-table-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting</span></span>
-<span id="aapl-table-29"><a href="#aapl-table-29" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [</span>
-<span id="aapl-table-30"><a href="#aapl-table-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"strike"</span>,</span>
-<span id="aapl-table-31"><a href="#aapl-table-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bid"</span>,</span>
-<span id="aapl-table-32"><a href="#aapl-table-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ask"</span>,</span>
-<span id="aapl-table-33"><a href="#aapl-table-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastPrice"</span>,</span>
-<span id="aapl-table-34"><a href="#aapl-table-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"change"</span>,</span>
-<span id="aapl-table-35"><a href="#aapl-table-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"percentChange"</span>,</span>
-<span id="aapl-table-36"><a href="#aapl-table-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastTradeDate"</span>,</span>
-<span id="aapl-table-37"><a href="#aapl-table-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"volume"</span>,</span>
-<span id="aapl-table-38"><a href="#aapl-table-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"openInterest"</span>,</span>
-<span id="aapl-table-39"><a href="#aapl-table-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"impliedVolatility"</span>,</span>
-<span id="aapl-table-40"><a href="#aapl-table-40" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="aapl-table-41"><a href="#aapl-table-41" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[cols]</span>
-<span id="aapl-table-42"><a href="#aapl-table-42" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"impliedVolatility"</span>] <span class="op">=</span> df[<span class="st">"impliedVolatility"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
-<span id="aapl-table-43"><a href="#aapl-table-43" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"change"</span>] <span class="op">=</span> df[<span class="st">"change"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="aapl-table-44"><a href="#aapl-table-44" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"percentChange"</span>] <span class="op">=</span> (df[<span class="st">"percentChange"</span>] <span class="op">/</span> <span class="dv">100</span>).<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
-<span id="aapl-table-45"><a href="#aapl-table-45" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> [</span>
-<span id="aapl-table-46"><a href="#aapl-table-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Strike"</span>,</span>
-<span id="aapl-table-47"><a href="#aapl-table-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Bid"</span>,</span>
-<span id="aapl-table-48"><a href="#aapl-table-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ask"</span>,</span>
-<span id="aapl-table-49"><a href="#aapl-table-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Last Price"</span>,</span>
-<span id="aapl-table-50"><a href="#aapl-table-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Change"</span>,</span>
-<span id="aapl-table-51"><a href="#aapl-table-51" aria-hidden="true" tabindex="-1"></a>    <span class="st">"% Change"</span>,</span>
-<span id="aapl-table-52"><a href="#aapl-table-52" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Time of Last Trade"</span>,</span>
-<span id="aapl-table-53"><a href="#aapl-table-53" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Volume"</span>,</span>
-<span id="aapl-table-54"><a href="#aapl-table-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Open Interest"</span>,</span>
-<span id="aapl-table-55"><a href="#aapl-table-55" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implied Volatility"</span>,</span>
-<span id="aapl-table-56"><a href="#aapl-table-56" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="aapl-table-57"><a href="#aapl-table-57" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">"Strike"</span>)</span>
-<span id="aapl-table-58"><a href="#aapl-table-58" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Maturity date of options:</span><span class="ch">\t</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="aapl-table-59"><a href="#aapl-table-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Code executed at </span><span class="ch">\t</span><span class="sc">{</span>now<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="aapl-table-60"><a href="#aapl-table-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Last </span><span class="sc">{</span>ticker<span class="sc">.</span>upper()<span class="sc">}</span><span class="ss"> price was </span><span class="ch">\t</span><span class="ss">$</span><span class="sc">{</span>close<span class="sc">:.2f}</span><span class="ss">."</span>)</span>
-<span id="aapl-table-61"><a href="#aapl-table-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="aapl-table-62"><a href="#aapl-table-62" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_rows"</span>, <span class="dv">500</span>)</span>
-<span id="aapl-table-63"><a href="#aapl-table-63" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_columns"</span>, <span class="dv">500</span>)</span>
-<span id="aapl-table-64"><a href="#aapl-table-64" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.width"</span>, <span class="dv">1000</span>)</span>
-<span id="aapl-table-65"><a href="#aapl-table-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytz</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>est <span class="op">=</span> pytz.timezone(<span class="st">'US/Eastern'</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>fmt <span class="op">=</span> <span class="st">'%Y-%m-</span><span class="sc">%d</span><span class="st"> %H:%M:%S'</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>now <span class="op">=</span> datetime.today().astimezone(est).strftime(fmt)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span>         <span class="co"># ticker to pull</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>kind <span class="op">=</span> <span class="st">"call"</span>           <span class="co"># call or put</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>maturity <span class="op">=</span> <span class="dv">4</span>            <span class="co"># option maturity in order of maturities trading</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>tick <span class="op">=</span> yf.Ticker(ticker.upper())</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull last stock price</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>close <span class="op">=</span> tick.history().iloc[<span class="op">-</span><span class="dv">1</span>].Close</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Get maturity date</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>date <span class="op">=</span> tick.options[maturity]</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull options data</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    tick.option_chain(date).calls</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> kind <span class="op">==</span> <span class="st">"call"</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> tick.option_chain(date).puts</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>df.lastTradeDate <span class="op">=</span> df.lastTradeDate.<span class="bu">map</span>(</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: x.astimezone(est).strftime(fmt)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"strike"</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bid"</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ask"</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastPrice"</span>,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"change"</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">"percentChange"</span>,</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastTradeDate"</span>,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">"volume"</span>,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"openInterest"</span>,</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"impliedVolatility"</span>,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[cols]</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"impliedVolatility"</span>] <span class="op">=</span> df[<span class="st">"impliedVolatility"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"change"</span>] <span class="op">=</span> df[<span class="st">"change"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"percentChange"</span>] <span class="op">=</span> (df[<span class="st">"percentChange"</span>]<span class="op">/</span><span class="dv">100</span>).<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> [</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Strike"</span>,</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Bid"</span>,</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ask"</span>,</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Last Price"</span>,</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Change"</span>,</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="st">"% Change"</span>,</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Time of Last Trade"</span>,</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Volume"</span>,</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Open Interest"</span>,</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implied Volatility"</span>,</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>] </span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">"Strike"</span>)</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Maturity date of options:</span><span class="ch">\t</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Code executed at </span><span class="ch">\t</span><span class="sc">{</span>now<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Last </span><span class="sc">{</span>ticker<span class="sc">.</span>upper()<span class="sc">}</span><span class="ss"> price was </span><span class="ch">\t</span><span class="ss">$</span><span class="sc">{</span>close<span class="sc">:.2f}</span><span class="ss">."</span>)</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">500</span>)</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="dv">500</span>)</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.width'</span>, <span class="dv">1000</span>)</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Maturity date of options:   2025-01-31
@@ -529,50 +566,56 @@ Strike
 <div id="32ce6552" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="32ce6552"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="32ce6552-1"><a href="#32ce6552-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull options data</span></span>
-<span id="32ce6552-2"><a href="#32ce6552-2" aria-hidden="true" tabindex="-1"></a>kind <span class="op">=</span> <span class="st">"put"</span></span>
-<span id="32ce6552-3"><a href="#32ce6552-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tick.option_chain(date).calls <span class="cf">if</span> kind <span class="op">==</span> <span class="st">"call"</span> <span class="cf">else</span> tick.option_chain(date).puts</span>
-<span id="32ce6552-4"><a href="#32ce6552-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="32ce6552-5"><a href="#32ce6552-5" aria-hidden="true" tabindex="-1"></a>df.lastTradeDate <span class="op">=</span> df.lastTradeDate.<span class="bu">map</span>(<span class="kw">lambda</span> x: x.astimezone(est).strftime(fmt))</span>
-<span id="32ce6552-6"><a href="#32ce6552-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="32ce6552-7"><a href="#32ce6552-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting</span></span>
-<span id="32ce6552-8"><a href="#32ce6552-8" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [</span>
-<span id="32ce6552-9"><a href="#32ce6552-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"strike"</span>,</span>
-<span id="32ce6552-10"><a href="#32ce6552-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bid"</span>,</span>
-<span id="32ce6552-11"><a href="#32ce6552-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ask"</span>,</span>
-<span id="32ce6552-12"><a href="#32ce6552-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastPrice"</span>,</span>
-<span id="32ce6552-13"><a href="#32ce6552-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"change"</span>,</span>
-<span id="32ce6552-14"><a href="#32ce6552-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"percentChange"</span>,</span>
-<span id="32ce6552-15"><a href="#32ce6552-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastTradeDate"</span>,</span>
-<span id="32ce6552-16"><a href="#32ce6552-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"volume"</span>,</span>
-<span id="32ce6552-17"><a href="#32ce6552-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"openInterest"</span>,</span>
-<span id="32ce6552-18"><a href="#32ce6552-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"impliedVolatility"</span>,</span>
-<span id="32ce6552-19"><a href="#32ce6552-19" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="32ce6552-20"><a href="#32ce6552-20" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[cols]</span>
-<span id="32ce6552-21"><a href="#32ce6552-21" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"impliedVolatility"</span>] <span class="op">=</span> df[<span class="st">"impliedVolatility"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
-<span id="32ce6552-22"><a href="#32ce6552-22" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"change"</span>] <span class="op">=</span> df[<span class="st">"change"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="32ce6552-23"><a href="#32ce6552-23" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"percentChange"</span>] <span class="op">=</span> (df[<span class="st">"percentChange"</span>] <span class="op">/</span> <span class="dv">100</span>).<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
-<span id="32ce6552-24"><a href="#32ce6552-24" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> [</span>
-<span id="32ce6552-25"><a href="#32ce6552-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Strike"</span>,</span>
-<span id="32ce6552-26"><a href="#32ce6552-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Bid"</span>,</span>
-<span id="32ce6552-27"><a href="#32ce6552-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ask"</span>,</span>
-<span id="32ce6552-28"><a href="#32ce6552-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Last Price"</span>,</span>
-<span id="32ce6552-29"><a href="#32ce6552-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Change"</span>,</span>
-<span id="32ce6552-30"><a href="#32ce6552-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"% Change"</span>,</span>
-<span id="32ce6552-31"><a href="#32ce6552-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Time of Last Trade"</span>,</span>
-<span id="32ce6552-32"><a href="#32ce6552-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Volume"</span>,</span>
-<span id="32ce6552-33"><a href="#32ce6552-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Open Interest"</span>,</span>
-<span id="32ce6552-34"><a href="#32ce6552-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implied Volatility"</span>,</span>
-<span id="32ce6552-35"><a href="#32ce6552-35" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="32ce6552-36"><a href="#32ce6552-36" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">"Strike"</span>)</span>
-<span id="32ce6552-37"><a href="#32ce6552-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Maturity date of options:</span><span class="ch">\t</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="32ce6552-38"><a href="#32ce6552-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Code executed at </span><span class="ch">\t</span><span class="sc">{</span>now<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="32ce6552-39"><a href="#32ce6552-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Last </span><span class="sc">{</span>ticker<span class="sc">.</span>upper()<span class="sc">}</span><span class="ss"> price was </span><span class="ch">\t</span><span class="ss">$</span><span class="sc">{</span>close<span class="sc">:.2f}</span><span class="ss">."</span>)</span>
-<span id="32ce6552-40"><a href="#32ce6552-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="32ce6552-41"><a href="#32ce6552-41" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_rows"</span>, <span class="dv">500</span>)</span>
-<span id="32ce6552-42"><a href="#32ce6552-42" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_columns"</span>, <span class="dv">500</span>)</span>
-<span id="32ce6552-43"><a href="#32ce6552-43" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.width"</span>, <span class="dv">1000</span>)</span>
-<span id="32ce6552-44"><a href="#32ce6552-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull options data</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>kind <span class="op">=</span> <span class="st">"put"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    tick.option_chain(date).calls</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> kind <span class="op">==</span> <span class="st">"call"</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> tick.option_chain(date).puts</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>df.lastTradeDate <span class="op">=</span> df.lastTradeDate.<span class="bu">map</span>(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: x.astimezone(est).strftime(fmt)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"strike"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bid"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ask"</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastPrice"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"change"</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"percentChange"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lastTradeDate"</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"volume"</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"openInterest"</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"impliedVolatility"</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[cols]</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"impliedVolatility"</span>] <span class="op">=</span> df[<span class="st">"impliedVolatility"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"change"</span>] <span class="op">=</span> df[<span class="st">"change"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"percentChange"</span>] <span class="op">=</span> (df[<span class="st">"percentChange"</span>]<span class="op">/</span><span class="dv">100</span>).<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.1%}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> [</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Strike"</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Bid"</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ask"</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Last Price"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Change"</span>,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"% Change"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Time of Last Trade"</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Volume"</span>,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Open Interest"</span>,</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implied Volatility"</span>,</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>] </span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">"Strike"</span>)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Maturity date of options:</span><span class="ch">\t</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Code executed at </span><span class="ch">\t</span><span class="sc">{</span>now<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Last </span><span class="sc">{</span>ticker<span class="sc">.</span>upper()<span class="sc">}</span><span class="ss"> price was </span><span class="ch">\t</span><span class="ss">$</span><span class="sc">{</span>close<span class="sc">:.2f}</span><span class="ss">."</span>)</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">500</span>)</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="dv">500</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.width'</span>, <span class="dv">1000</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Maturity date of options:   2025-01-31
