@@ -535,61 +535,65 @@ E_{t_{i}}\left[\sigma_{i+3}^2\right] = E_{t_{i}}\left[E_{t_{i+1}}\left[\sigma_{i
 <div id="3c2bafa4" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd):</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = initial volatility</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    dt = length of each time period (Delta t)</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    theta = theta parameter for GARCH</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    kappa = kappa parameter for GARCH</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    lambd = lambda parameter for GARCH</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    LogS <span class="op">=</span> np.log(S)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    Sqrdt <span class="op">=</span> np.sqrt(dt)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> kappa <span class="op">*</span> theta</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> kappa) <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> lambd)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> kappa) <span class="op">*</span> lambd</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    time <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    stock_price <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    stock_price[<span class="dv">0</span>] <span class="op">=</span> S</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    volatility[<span class="dv">0</span>] <span class="op">=</span> sigma    </span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        time[i] <span class="op">=</span> i <span class="op">*</span> dt</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> sigma <span class="op">*</span> np.random.randn()</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        LogS <span class="op">=</span> LogS <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">*</span> sigma) <span class="op">*</span> dt <span class="op">+</span> Sqrdt <span class="op">*</span> y</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> np.exp(LogS)</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        stock_price[i] <span class="op">=</span> S</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        sigma <span class="op">=</span> np.sqrt(a <span class="op">+</span> b <span class="op">*</span> y <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> c <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>)</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        volatility[i] <span class="op">=</span> sigma</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    df_garch <span class="op">=</span> pd.DataFrame({<span class="st">'Time'</span>: time, <span class="st">'Stock Price'</span>: stock_price, <span class="st">'Volatility'</span>: volatility})</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    df_garch.to_csv(<span class="st">'garch_simulation.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_garch</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage:</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>       <span class="co"># Initial stock price</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span>   <span class="co"># Initial volatility</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>      <span class="co"># Risk-free rate</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>      <span class="co"># Dividend yield</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">252</span>    <span class="co"># Length of each time period (daily)</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>       <span class="co"># Number of time periods (one year)</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.1</span>   <span class="co"># Theta parameter for GARCH</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">0.1</span>   <span class="co"># Kappa parameter for GARCH</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>lambd <span class="op">=</span> <span class="fl">0.9</span>   <span class="co"># Lambda parameter for GARCH</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>df_garch <span class="op">=</span> simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd)</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_garch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="3c2bafa4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="3c2bafa4-1"><a href="#3c2bafa4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="3c2bafa4-2"><a href="#3c2bafa4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="3c2bafa4-3"><a href="#3c2bafa4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-4"><a href="#3c2bafa4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-5"><a href="#3c2bafa4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd):</span>
+<span id="3c2bafa4-6"><a href="#3c2bafa4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="3c2bafa4-7"><a href="#3c2bafa4-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="3c2bafa4-8"><a href="#3c2bafa4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="3c2bafa4-9"><a href="#3c2bafa4-9" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = initial volatility</span></span>
+<span id="3c2bafa4-10"><a href="#3c2bafa4-10" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="3c2bafa4-11"><a href="#3c2bafa4-11" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="3c2bafa4-12"><a href="#3c2bafa4-12" aria-hidden="true" tabindex="-1"></a><span class="co">    dt = length of each time period (Delta t)</span></span>
+<span id="3c2bafa4-13"><a href="#3c2bafa4-13" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
+<span id="3c2bafa4-14"><a href="#3c2bafa4-14" aria-hidden="true" tabindex="-1"></a><span class="co">    theta = theta parameter for GARCH</span></span>
+<span id="3c2bafa4-15"><a href="#3c2bafa4-15" aria-hidden="true" tabindex="-1"></a><span class="co">    kappa = kappa parameter for GARCH</span></span>
+<span id="3c2bafa4-16"><a href="#3c2bafa4-16" aria-hidden="true" tabindex="-1"></a><span class="co">    lambd = lambda parameter for GARCH</span></span>
+<span id="3c2bafa4-17"><a href="#3c2bafa4-17" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="3c2bafa4-18"><a href="#3c2bafa4-18" aria-hidden="true" tabindex="-1"></a>    LogS <span class="op">=</span> np.log(S)</span>
+<span id="3c2bafa4-19"><a href="#3c2bafa4-19" aria-hidden="true" tabindex="-1"></a>    Sqrdt <span class="op">=</span> np.sqrt(dt)</span>
+<span id="3c2bafa4-20"><a href="#3c2bafa4-20" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> kappa <span class="op">*</span> theta</span>
+<span id="3c2bafa4-21"><a href="#3c2bafa4-21" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> kappa) <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> lambd)</span>
+<span id="3c2bafa4-22"><a href="#3c2bafa4-22" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> kappa) <span class="op">*</span> lambd</span>
+<span id="3c2bafa4-23"><a href="#3c2bafa4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-24"><a href="#3c2bafa4-24" aria-hidden="true" tabindex="-1"></a>    time <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="3c2bafa4-25"><a href="#3c2bafa4-25" aria-hidden="true" tabindex="-1"></a>    stock_price <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="3c2bafa4-26"><a href="#3c2bafa4-26" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="3c2bafa4-27"><a href="#3c2bafa4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-28"><a href="#3c2bafa4-28" aria-hidden="true" tabindex="-1"></a>    stock_price[<span class="dv">0</span>] <span class="op">=</span> S</span>
+<span id="3c2bafa4-29"><a href="#3c2bafa4-29" aria-hidden="true" tabindex="-1"></a>    volatility[<span class="dv">0</span>] <span class="op">=</span> sigma</span>
+<span id="3c2bafa4-30"><a href="#3c2bafa4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-31"><a href="#3c2bafa4-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="3c2bafa4-32"><a href="#3c2bafa4-32" aria-hidden="true" tabindex="-1"></a>        time[i] <span class="op">=</span> i <span class="op">*</span> dt</span>
+<span id="3c2bafa4-33"><a href="#3c2bafa4-33" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> sigma <span class="op">*</span> np.random.randn()</span>
+<span id="3c2bafa4-34"><a href="#3c2bafa4-34" aria-hidden="true" tabindex="-1"></a>        LogS <span class="op">=</span> LogS <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">*</span> sigma) <span class="op">*</span> dt <span class="op">+</span> Sqrdt <span class="op">*</span> y</span>
+<span id="3c2bafa4-35"><a href="#3c2bafa4-35" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> np.exp(LogS)</span>
+<span id="3c2bafa4-36"><a href="#3c2bafa4-36" aria-hidden="true" tabindex="-1"></a>        stock_price[i] <span class="op">=</span> S</span>
+<span id="3c2bafa4-37"><a href="#3c2bafa4-37" aria-hidden="true" tabindex="-1"></a>        sigma <span class="op">=</span> np.sqrt(a <span class="op">+</span> b <span class="op">*</span> y<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> c <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="3c2bafa4-38"><a href="#3c2bafa4-38" aria-hidden="true" tabindex="-1"></a>        volatility[i] <span class="op">=</span> sigma</span>
+<span id="3c2bafa4-39"><a href="#3c2bafa4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-40"><a href="#3c2bafa4-40" aria-hidden="true" tabindex="-1"></a>    df_garch <span class="op">=</span> pd.DataFrame(</span>
+<span id="3c2bafa4-41"><a href="#3c2bafa4-41" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"Time"</span>: time, <span class="st">"Stock Price"</span>: stock_price, <span class="st">"Volatility"</span>: volatility}</span>
+<span id="3c2bafa4-42"><a href="#3c2bafa4-42" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="3c2bafa4-43"><a href="#3c2bafa4-43" aria-hidden="true" tabindex="-1"></a>    df_garch.to_csv(<span class="st">"garch_simulation.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="3c2bafa4-44"><a href="#3c2bafa4-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_garch</span>
+<span id="3c2bafa4-45"><a href="#3c2bafa4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-46"><a href="#3c2bafa4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-47"><a href="#3c2bafa4-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage:</span></span>
+<span id="3c2bafa4-48"><a href="#3c2bafa4-48" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="3c2bafa4-49"><a href="#3c2bafa4-49" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span>  <span class="co"># Initial volatility</span></span>
+<span id="3c2bafa4-50"><a href="#3c2bafa4-50" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Risk-free rate</span></span>
+<span id="3c2bafa4-51"><a href="#3c2bafa4-51" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>  <span class="co"># Dividend yield</span></span>
+<span id="3c2bafa4-52"><a href="#3c2bafa4-52" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="dv">252</span>  <span class="co"># Length of each time period (daily)</span></span>
+<span id="3c2bafa4-53"><a href="#3c2bafa4-53" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>  <span class="co"># Number of time periods (one year)</span></span>
+<span id="3c2bafa4-54"><a href="#3c2bafa4-54" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.1</span>  <span class="co"># Theta parameter for GARCH</span></span>
+<span id="3c2bafa4-55"><a href="#3c2bafa4-55" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">0.1</span>  <span class="co"># Kappa parameter for GARCH</span></span>
+<span id="3c2bafa4-56"><a href="#3c2bafa4-56" aria-hidden="true" tabindex="-1"></a>lambd <span class="op">=</span> <span class="fl">0.9</span>  <span class="co"># Lambda parameter for GARCH</span></span>
+<span id="3c2bafa4-57"><a href="#3c2bafa4-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3c2bafa4-58"><a href="#3c2bafa4-58" aria-hidden="true" tabindex="-1"></a>df_garch <span class="op">=</span> simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd)</span>
+<span id="3c2bafa4-59"><a href="#3c2bafa4-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_garch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>         Time  Stock Price  Volatility
@@ -638,64 +642,81 @@ v(t_{i+1}) = \max\left\{0,v(t_i) + \kappa \big[\theta-v(t_i)\big]\,\Delta t + \g
 <div id="1674aac1" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho):</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">    V0 = initial variance</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">    dt = length of each time period (Delta t)</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">    theta = long-term variance (mean of variance)</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">    kappa = rate of mean reversion of variance</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility of variance</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">    rho = correlation between the two Wiener processes</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    LogS <span class="op">=</span> np.log(S)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    Sqrdt <span class="op">=</span> np.sqrt(dt)</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    time <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    stock_price <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    stock_price[<span class="dv">0</span>] <span class="op">=</span> S</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    volatility[<span class="dv">0</span>] <span class="op">=</span> V0    </span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        time[i] <span class="op">=</span> i <span class="op">*</span> dt</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        Z1 <span class="op">=</span> np.random.randn()</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        Z2 <span class="op">=</span> np.random.randn()</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        W1 <span class="op">=</span> Z1</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        LogS <span class="op">=</span> LogS <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> volatility[i<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> np.sqrt(volatility[i<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> dt) <span class="op">*</span> W1</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> np.exp(LogS)</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        stock_price[i] <span class="op">=</span> S</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>        volatility[i] <span class="op">=</span> np.sqrt(np.maximum(volatility[i<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> volatility[i<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(volatility[i<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> dt) <span class="op">*</span> W2, <span class="dv">0</span>))</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    df_stochastic_vol <span class="op">=</span> pd.DataFrame({<span class="st">'Time'</span>: time, <span class="st">'Stock Price'</span>: stock_price, <span class="st">'Volatility'</span>: volatility})</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    df_stochastic_vol.to_csv(<span class="st">'stochastic_volatility_simulation.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_stochastic_vol</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage:</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>       <span class="co"># Initial stock price</span></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>     <span class="co"># Initial variance</span></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>      <span class="co"># Risk-free rate</span></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>      <span class="co"># Dividend yield</span></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">252</span>    <span class="co"># Length of each time period (daily)</span></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>       <span class="co"># Number of time periods (one year)</span></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Long-term variance</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">2.0</span>   <span class="co"># Rate of mean reversion of variance</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.3</span>   <span class="co"># Volatility of variance</span></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>    <span class="co"># Correlation between the two Wiener processes</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>df_stochastic_vol <span class="op">=</span> simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho)</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_stochastic_vol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="1674aac1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="1674aac1-1"><a href="#1674aac1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="1674aac1-2"><a href="#1674aac1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="1674aac1-3"><a href="#1674aac1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-4"><a href="#1674aac1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-5"><a href="#1674aac1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho):</span>
+<span id="1674aac1-6"><a href="#1674aac1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="1674aac1-7"><a href="#1674aac1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="1674aac1-8"><a href="#1674aac1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="1674aac1-9"><a href="#1674aac1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    V0 = initial variance</span></span>
+<span id="1674aac1-10"><a href="#1674aac1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="1674aac1-11"><a href="#1674aac1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="1674aac1-12"><a href="#1674aac1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    dt = length of each time period (Delta t)</span></span>
+<span id="1674aac1-13"><a href="#1674aac1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
+<span id="1674aac1-14"><a href="#1674aac1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    theta = long-term variance (mean of variance)</span></span>
+<span id="1674aac1-15"><a href="#1674aac1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    kappa = rate of mean reversion of variance</span></span>
+<span id="1674aac1-16"><a href="#1674aac1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility of variance</span></span>
+<span id="1674aac1-17"><a href="#1674aac1-17" aria-hidden="true" tabindex="-1"></a><span class="co">    rho = correlation between the two Wiener processes</span></span>
+<span id="1674aac1-18"><a href="#1674aac1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="1674aac1-19"><a href="#1674aac1-19" aria-hidden="true" tabindex="-1"></a>    LogS <span class="op">=</span> np.log(S)</span>
+<span id="1674aac1-20"><a href="#1674aac1-20" aria-hidden="true" tabindex="-1"></a>    Sqrdt <span class="op">=</span> np.sqrt(dt)</span>
+<span id="1674aac1-21"><a href="#1674aac1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-22"><a href="#1674aac1-22" aria-hidden="true" tabindex="-1"></a>    time <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="1674aac1-23"><a href="#1674aac1-23" aria-hidden="true" tabindex="-1"></a>    stock_price <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="1674aac1-24"><a href="#1674aac1-24" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="1674aac1-25"><a href="#1674aac1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-26"><a href="#1674aac1-26" aria-hidden="true" tabindex="-1"></a>    stock_price[<span class="dv">0</span>] <span class="op">=</span> S</span>
+<span id="1674aac1-27"><a href="#1674aac1-27" aria-hidden="true" tabindex="-1"></a>    volatility[<span class="dv">0</span>] <span class="op">=</span> V0</span>
+<span id="1674aac1-28"><a href="#1674aac1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-29"><a href="#1674aac1-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="1674aac1-30"><a href="#1674aac1-30" aria-hidden="true" tabindex="-1"></a>        time[i] <span class="op">=</span> i <span class="op">*</span> dt</span>
+<span id="1674aac1-31"><a href="#1674aac1-31" aria-hidden="true" tabindex="-1"></a>        Z1 <span class="op">=</span> np.random.randn()</span>
+<span id="1674aac1-32"><a href="#1674aac1-32" aria-hidden="true" tabindex="-1"></a>        Z2 <span class="op">=</span> np.random.randn()</span>
+<span id="1674aac1-33"><a href="#1674aac1-33" aria-hidden="true" tabindex="-1"></a>        W1 <span class="op">=</span> Z1</span>
+<span id="1674aac1-34"><a href="#1674aac1-34" aria-hidden="true" tabindex="-1"></a>        W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
+<span id="1674aac1-35"><a href="#1674aac1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-36"><a href="#1674aac1-36" aria-hidden="true" tabindex="-1"></a>        LogS <span class="op">=</span> (</span>
+<span id="1674aac1-37"><a href="#1674aac1-37" aria-hidden="true" tabindex="-1"></a>            LogS</span>
+<span id="1674aac1-38"><a href="#1674aac1-38" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> volatility[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt</span>
+<span id="1674aac1-39"><a href="#1674aac1-39" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> np.sqrt(volatility[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> dt) <span class="op">*</span> W1</span>
+<span id="1674aac1-40"><a href="#1674aac1-40" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="1674aac1-41"><a href="#1674aac1-41" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> np.exp(LogS)</span>
+<span id="1674aac1-42"><a href="#1674aac1-42" aria-hidden="true" tabindex="-1"></a>        stock_price[i] <span class="op">=</span> S</span>
+<span id="1674aac1-43"><a href="#1674aac1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-44"><a href="#1674aac1-44" aria-hidden="true" tabindex="-1"></a>        volatility[i] <span class="op">=</span> np.sqrt(</span>
+<span id="1674aac1-45"><a href="#1674aac1-45" aria-hidden="true" tabindex="-1"></a>            np.maximum(</span>
+<span id="1674aac1-46"><a href="#1674aac1-46" aria-hidden="true" tabindex="-1"></a>                volatility[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span></span>
+<span id="1674aac1-47"><a href="#1674aac1-47" aria-hidden="true" tabindex="-1"></a>                <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> volatility[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt</span>
+<span id="1674aac1-48"><a href="#1674aac1-48" aria-hidden="true" tabindex="-1"></a>                <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(volatility[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> dt) <span class="op">*</span> W2,</span>
+<span id="1674aac1-49"><a href="#1674aac1-49" aria-hidden="true" tabindex="-1"></a>                <span class="dv">0</span>,</span>
+<span id="1674aac1-50"><a href="#1674aac1-50" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="1674aac1-51"><a href="#1674aac1-51" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="1674aac1-52"><a href="#1674aac1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-53"><a href="#1674aac1-53" aria-hidden="true" tabindex="-1"></a>    df_stochastic_vol <span class="op">=</span> pd.DataFrame(</span>
+<span id="1674aac1-54"><a href="#1674aac1-54" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"Time"</span>: time, <span class="st">"Stock Price"</span>: stock_price, <span class="st">"Volatility"</span>: volatility}</span>
+<span id="1674aac1-55"><a href="#1674aac1-55" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="1674aac1-56"><a href="#1674aac1-56" aria-hidden="true" tabindex="-1"></a>    df_stochastic_vol.to_csv(<span class="st">"stochastic_volatility_simulation.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="1674aac1-57"><a href="#1674aac1-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_stochastic_vol</span>
+<span id="1674aac1-58"><a href="#1674aac1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-59"><a href="#1674aac1-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-60"><a href="#1674aac1-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage:</span></span>
+<span id="1674aac1-61"><a href="#1674aac1-61" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="1674aac1-62"><a href="#1674aac1-62" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Initial variance</span></span>
+<span id="1674aac1-63"><a href="#1674aac1-63" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Risk-free rate</span></span>
+<span id="1674aac1-64"><a href="#1674aac1-64" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>  <span class="co"># Dividend yield</span></span>
+<span id="1674aac1-65"><a href="#1674aac1-65" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="dv">252</span>  <span class="co"># Length of each time period (daily)</span></span>
+<span id="1674aac1-66"><a href="#1674aac1-66" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>  <span class="co"># Number of time periods (one year)</span></span>
+<span id="1674aac1-67"><a href="#1674aac1-67" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Long-term variance</span></span>
+<span id="1674aac1-68"><a href="#1674aac1-68" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">2.0</span>  <span class="co"># Rate of mean reversion of variance</span></span>
+<span id="1674aac1-69"><a href="#1674aac1-69" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.3</span>  <span class="co"># Volatility of variance</span></span>
+<span id="1674aac1-70"><a href="#1674aac1-70" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>  <span class="co"># Correlation between the two Wiener processes</span></span>
+<span id="1674aac1-71"><a href="#1674aac1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="1674aac1-72"><a href="#1674aac1-72" aria-hidden="true" tabindex="-1"></a>df_stochastic_vol <span class="op">=</span> simulating_stochastic_volatility(</span>
+<span id="1674aac1-73"><a href="#1674aac1-73" aria-hidden="true" tabindex="-1"></a>    S, V0, r, q, dt, N, theta, kappa, sigma, rho</span>
+<span id="1674aac1-74"><a href="#1674aac1-74" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="1674aac1-75"><a href="#1674aac1-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_stochastic_vol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>         Time  Stock Price  Volatility
@@ -718,57 +739,62 @@ v(t_{i+1}) = \max\left\{0,v(t_i) + \kappa \big[\theta-v(t_i)\big]\,\Delta t + \g
 <div id="e79fc20a" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Heston model parameters</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span>     <span class="co"># Initial stock price</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>    <span class="co"># Initial variance</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>   <span class="co"># Correlation between the two Wiener processes</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">2.0</span>  <span class="co"># Rate of mean reversion of variance</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span> <span class="co"># Long-term variance</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.3</span>  <span class="co"># Volatility of variance</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>     <span class="co"># Risk-free rate</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">1.0</span>      <span class="co"># Time to maturity</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>      <span class="co"># Number of time steps</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> N   <span class="co"># Time step size</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>n_simulations <span class="op">=</span> <span class="dv">1000</span>  <span class="co"># Number of simulations</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Preallocate arrays</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.zeros((N<span class="op">+</span><span class="dv">1</span>, n_simulations))</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> np.zeros((N<span class="op">+</span><span class="dv">1</span>, n_simulations))</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>S[<span class="dv">0</span>] <span class="op">=</span> S0</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>V[<span class="dv">0</span>] <span class="op">=</span> V0</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate the paths</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N<span class="op">+</span><span class="dv">1</span>):</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    Z1 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    Z2 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    W1 <span class="op">=</span> Z1</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    V[t] <span class="op">=</span> np.maximum(V[t<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> V[t<span class="op">-</span><span class="dv">1</span>]) <span class="op">*</span> dt <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(V[t<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W2, <span class="dv">0</span>)</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    S[t] <span class="op">=</span> S[t<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> np.exp((r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> V[t<span class="op">-</span><span class="dv">1</span>]) <span class="op">*</span> dt <span class="op">+</span> np.sqrt(V[t<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W1)</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the results</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_simulations):</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    plt.plot(S[:, i], lw<span class="op">=</span><span class="fl">0.5</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Stock Price Paths with Stochastic Volatility (Heston Model)'</span>)</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time Steps'</span>)</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Stock Price'</span>)</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the volatility paths</span></span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_simulations):</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>    plt.plot(V[:, i], lw<span class="op">=</span><span class="fl">0.5</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Variance Paths with Stochastic Volatility (Heston Model)'</span>)</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time Steps'</span>)</span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Variance'</span>)</span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="e79fc20a"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="e79fc20a-1"><a href="#e79fc20a-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="e79fc20a-2"><a href="#e79fc20a-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="e79fc20a-3"><a href="#e79fc20a-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="e79fc20a-4"><a href="#e79fc20a-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Heston model parameters</span></span>
+<span id="e79fc20a-5"><a href="#e79fc20a-5" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="e79fc20a-6"><a href="#e79fc20a-6" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Initial variance</span></span>
+<span id="e79fc20a-7"><a href="#e79fc20a-7" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>  <span class="co"># Correlation between the two Wiener processes</span></span>
+<span id="e79fc20a-8"><a href="#e79fc20a-8" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">2.0</span>  <span class="co"># Rate of mean reversion of variance</span></span>
+<span id="e79fc20a-9"><a href="#e79fc20a-9" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Long-term variance</span></span>
+<span id="e79fc20a-10"><a href="#e79fc20a-10" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.3</span>  <span class="co"># Volatility of variance</span></span>
+<span id="e79fc20a-11"><a href="#e79fc20a-11" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Risk-free rate</span></span>
+<span id="e79fc20a-12"><a href="#e79fc20a-12" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">1.0</span>  <span class="co"># Time to maturity</span></span>
+<span id="e79fc20a-13"><a href="#e79fc20a-13" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>  <span class="co"># Number of time steps</span></span>
+<span id="e79fc20a-14"><a href="#e79fc20a-14" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> N  <span class="co"># Time step size</span></span>
+<span id="e79fc20a-15"><a href="#e79fc20a-15" aria-hidden="true" tabindex="-1"></a>n_simulations <span class="op">=</span> <span class="dv">1000</span>  <span class="co"># Number of simulations</span></span>
+<span id="e79fc20a-16"><a href="#e79fc20a-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="e79fc20a-17"><a href="#e79fc20a-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Preallocate arrays</span></span>
+<span id="e79fc20a-18"><a href="#e79fc20a-18" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.zeros((N <span class="op">+</span> <span class="dv">1</span>, n_simulations))</span>
+<span id="e79fc20a-19"><a href="#e79fc20a-19" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> np.zeros((N <span class="op">+</span> <span class="dv">1</span>, n_simulations))</span>
+<span id="e79fc20a-20"><a href="#e79fc20a-20" aria-hidden="true" tabindex="-1"></a>S[<span class="dv">0</span>] <span class="op">=</span> S0</span>
+<span id="e79fc20a-21"><a href="#e79fc20a-21" aria-hidden="true" tabindex="-1"></a>V[<span class="dv">0</span>] <span class="op">=</span> V0</span>
+<span id="e79fc20a-22"><a href="#e79fc20a-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="e79fc20a-23"><a href="#e79fc20a-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate the paths</span></span>
+<span id="e79fc20a-24"><a href="#e79fc20a-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="e79fc20a-25"><a href="#e79fc20a-25" aria-hidden="true" tabindex="-1"></a>    Z1 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
+<span id="e79fc20a-26"><a href="#e79fc20a-26" aria-hidden="true" tabindex="-1"></a>    Z2 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
+<span id="e79fc20a-27"><a href="#e79fc20a-27" aria-hidden="true" tabindex="-1"></a>    W1 <span class="op">=</span> Z1</span>
+<span id="e79fc20a-28"><a href="#e79fc20a-28" aria-hidden="true" tabindex="-1"></a>    W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
+<span id="e79fc20a-29"><a href="#e79fc20a-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="e79fc20a-30"><a href="#e79fc20a-30" aria-hidden="true" tabindex="-1"></a>    V[t] <span class="op">=</span> np.maximum(</span>
+<span id="e79fc20a-31"><a href="#e79fc20a-31" aria-hidden="true" tabindex="-1"></a>        V[t <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="e79fc20a-32"><a href="#e79fc20a-32" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> V[t <span class="op">-</span> <span class="dv">1</span>]) <span class="op">*</span> dt</span>
+<span id="e79fc20a-33"><a href="#e79fc20a-33" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(V[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W2,</span>
+<span id="e79fc20a-34"><a href="#e79fc20a-34" aria-hidden="true" tabindex="-1"></a>        <span class="dv">0</span>,</span>
+<span id="e79fc20a-35"><a href="#e79fc20a-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="e79fc20a-36"><a href="#e79fc20a-36" aria-hidden="true" tabindex="-1"></a>    S[t] <span class="op">=</span> S[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp((r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> V[t <span class="op">-</span> <span class="dv">1</span>]) <span class="op">*</span> dt <span class="op">+</span> np.sqrt(V[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W1)</span>
+<span id="e79fc20a-37"><a href="#e79fc20a-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="e79fc20a-38"><a href="#e79fc20a-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the results</span></span>
+<span id="e79fc20a-39"><a href="#e79fc20a-39" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="e79fc20a-40"><a href="#e79fc20a-40" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_simulations):</span>
+<span id="e79fc20a-41"><a href="#e79fc20a-41" aria-hidden="true" tabindex="-1"></a>    plt.plot(S[:, i], lw<span class="op">=</span><span class="fl">0.5</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="e79fc20a-42"><a href="#e79fc20a-42" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Stock Price Paths with Stochastic Volatility (Heston Model)"</span>)</span>
+<span id="e79fc20a-43"><a href="#e79fc20a-43" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time Steps"</span>)</span>
+<span id="e79fc20a-44"><a href="#e79fc20a-44" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Stock Price"</span>)</span>
+<span id="e79fc20a-45"><a href="#e79fc20a-45" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="e79fc20a-46"><a href="#e79fc20a-46" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="e79fc20a-47"><a href="#e79fc20a-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="e79fc20a-48"><a href="#e79fc20a-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the volatility paths</span></span>
+<span id="e79fc20a-49"><a href="#e79fc20a-49" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="e79fc20a-50"><a href="#e79fc20a-50" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_simulations):</span>
+<span id="e79fc20a-51"><a href="#e79fc20a-51" aria-hidden="true" tabindex="-1"></a>    plt.plot(V[:, i], lw<span class="op">=</span><span class="fl">0.5</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="e79fc20a-52"><a href="#e79fc20a-52" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Variance Paths with Stochastic Volatility (Heston Model)"</span>)</span>
+<span id="e79fc20a-53"><a href="#e79fc20a-53" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time Steps"</span>)</span>
+<span id="e79fc20a-54"><a href="#e79fc20a-54" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Variance"</span>)</span>
+<span id="e79fc20a-55"><a href="#e79fc20a-55" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="e79fc20a-56"><a href="#e79fc20a-56" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -789,82 +815,100 @@ v(t_{i+1}) = \max\left\{0,v(t_i) + \kappa \big[\theta-v(t_i)\big]\,\Delta t + \g
 <div id="c22dd68f" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm, kurtosis</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho, n_simulations):</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">    V0 = initial variance</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">    dt = length of each time period (Delta t)</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">    theta = long-term variance (mean of variance)</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">    kappa = rate of mean reversion of variance</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility of variance</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">    rho = correlation between the two Wiener processes</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">    n_simulations = number of simulations</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    LogS <span class="op">=</span> np.log(S)</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    Sqrdt <span class="op">=</span> np.sqrt(dt)</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    log_returns <span class="op">=</span> []</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_simulations):</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        stock_price <span class="op">=</span> S</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        variance <span class="op">=</span> V0</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N):</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>            Z1 <span class="op">=</span> np.random.randn()</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>            Z2 <span class="op">=</span> np.random.randn()</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>            W1 <span class="op">=</span> Z1</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>            W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>            log_return <span class="op">=</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> variance) <span class="op">*</span> dt <span class="op">+</span> np.sqrt(variance <span class="op">*</span> dt) <span class="op">*</span> W1</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>            LogS <span class="op">=</span> np.log(stock_price) <span class="op">+</span> log_return</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>            stock_price <span class="op">=</span> np.exp(LogS)</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>            variance <span class="op">=</span> np.maximum(variance <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> variance) <span class="op">*</span> dt <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(variance <span class="op">*</span> dt) <span class="op">*</span> W2, <span class="dv">0</span>)</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>            log_returns.append(log_return)</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_returns</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage:</span></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>       <span class="co"># Initial stock price</span></span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>     <span class="co"># Initial variance</span></span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>      <span class="co"># Risk-free rate</span></span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>      <span class="co"># Dividend yield</span></span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">252</span>    <span class="co"># Length of each time period (daily)</span></span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>       <span class="co"># Number of time periods (one year)</span></span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Long-term variance</span></span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">0.2</span>   <span class="co"># Rate of mean reversion of variance</span></span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.3</span>   <span class="co"># Volatility of variance</span></span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>    <span class="co"># Correlation between the two Wiener processes</span></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>n_simulations <span class="op">=</span> <span class="dv">1000</span>  <span class="co"># Number of simulations</span></span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>log_returns <span class="op">=</span> simulating_stochastic_volatility(S, V0, r, q, dt, N, theta, kappa, sigma, rho, n_simulations)</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the distribution of log returns</span></span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>sns.histplot(log_returns, bins<span class="op">=</span><span class="dv">100</span>, kde<span class="op">=</span><span class="va">True</span>, stat<span class="op">=</span><span class="st">"density"</span>, color<span class="op">=</span><span class="st">"blue"</span>, label<span class="op">=</span><span class="st">"Simulated Log Returns"</span>)</span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>xmin, xmax <span class="op">=</span> plt.xlim()</span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(xmin, xmax, <span class="dv">100</span>)</span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> norm.pdf(x, np.mean(log_returns), np.std(log_returns))</span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>plt.plot(x, p, <span class="st">'k'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"Normal Distribution"</span>)</span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribution of Log Returns with Stochastic Volatility'</span>)</span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Log Return'</span>)</span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Density'</span>)</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Display kurtosis</span></span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>kurt <span class="op">=</span> kurtosis(log_returns)</span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>plt.figtext(<span class="fl">0.15</span>, <span class="fl">0.8</span>, <span class="ss">f'Kurtosis: </span><span class="sc">{</span>kurt<span class="sc">:.2f}</span><span class="ss">'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="c22dd68f"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="c22dd68f-1"><a href="#c22dd68f-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="c22dd68f-2"><a href="#c22dd68f-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="c22dd68f-3"><a href="#c22dd68f-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="c22dd68f-4"><a href="#c22dd68f-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="c22dd68f-5"><a href="#c22dd68f-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm, kurtosis</span>
+<span id="c22dd68f-6"><a href="#c22dd68f-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-7"><a href="#c22dd68f-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-8"><a href="#c22dd68f-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulating_stochastic_volatility(</span>
+<span id="c22dd68f-9"><a href="#c22dd68f-9" aria-hidden="true" tabindex="-1"></a>    S, V0, r, q, dt, N, theta, kappa, sigma, rho, n_simulations</span>
+<span id="c22dd68f-10"><a href="#c22dd68f-10" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="c22dd68f-11"><a href="#c22dd68f-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="c22dd68f-12"><a href="#c22dd68f-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="c22dd68f-13"><a href="#c22dd68f-13" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="c22dd68f-14"><a href="#c22dd68f-14" aria-hidden="true" tabindex="-1"></a><span class="co">    V0 = initial variance</span></span>
+<span id="c22dd68f-15"><a href="#c22dd68f-15" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="c22dd68f-16"><a href="#c22dd68f-16" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="c22dd68f-17"><a href="#c22dd68f-17" aria-hidden="true" tabindex="-1"></a><span class="co">    dt = length of each time period (Delta t)</span></span>
+<span id="c22dd68f-18"><a href="#c22dd68f-18" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
+<span id="c22dd68f-19"><a href="#c22dd68f-19" aria-hidden="true" tabindex="-1"></a><span class="co">    theta = long-term variance (mean of variance)</span></span>
+<span id="c22dd68f-20"><a href="#c22dd68f-20" aria-hidden="true" tabindex="-1"></a><span class="co">    kappa = rate of mean reversion of variance</span></span>
+<span id="c22dd68f-21"><a href="#c22dd68f-21" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility of variance</span></span>
+<span id="c22dd68f-22"><a href="#c22dd68f-22" aria-hidden="true" tabindex="-1"></a><span class="co">    rho = correlation between the two Wiener processes</span></span>
+<span id="c22dd68f-23"><a href="#c22dd68f-23" aria-hidden="true" tabindex="-1"></a><span class="co">    n_simulations = number of simulations</span></span>
+<span id="c22dd68f-24"><a href="#c22dd68f-24" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="c22dd68f-25"><a href="#c22dd68f-25" aria-hidden="true" tabindex="-1"></a>    LogS <span class="op">=</span> np.log(S)</span>
+<span id="c22dd68f-26"><a href="#c22dd68f-26" aria-hidden="true" tabindex="-1"></a>    Sqrdt <span class="op">=</span> np.sqrt(dt)</span>
+<span id="c22dd68f-27"><a href="#c22dd68f-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-28"><a href="#c22dd68f-28" aria-hidden="true" tabindex="-1"></a>    log_returns <span class="op">=</span> []</span>
+<span id="c22dd68f-29"><a href="#c22dd68f-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-30"><a href="#c22dd68f-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_simulations):</span>
+<span id="c22dd68f-31"><a href="#c22dd68f-31" aria-hidden="true" tabindex="-1"></a>        stock_price <span class="op">=</span> S</span>
+<span id="c22dd68f-32"><a href="#c22dd68f-32" aria-hidden="true" tabindex="-1"></a>        variance <span class="op">=</span> V0</span>
+<span id="c22dd68f-33"><a href="#c22dd68f-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N):</span>
+<span id="c22dd68f-34"><a href="#c22dd68f-34" aria-hidden="true" tabindex="-1"></a>            Z1 <span class="op">=</span> np.random.randn()</span>
+<span id="c22dd68f-35"><a href="#c22dd68f-35" aria-hidden="true" tabindex="-1"></a>            Z2 <span class="op">=</span> np.random.randn()</span>
+<span id="c22dd68f-36"><a href="#c22dd68f-36" aria-hidden="true" tabindex="-1"></a>            W1 <span class="op">=</span> Z1</span>
+<span id="c22dd68f-37"><a href="#c22dd68f-37" aria-hidden="true" tabindex="-1"></a>            W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
+<span id="c22dd68f-38"><a href="#c22dd68f-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-39"><a href="#c22dd68f-39" aria-hidden="true" tabindex="-1"></a>            log_return <span class="op">=</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> variance) <span class="op">*</span> dt <span class="op">+</span> np.sqrt(variance <span class="op">*</span> dt) <span class="op">*</span> W1</span>
+<span id="c22dd68f-40"><a href="#c22dd68f-40" aria-hidden="true" tabindex="-1"></a>            LogS <span class="op">=</span> np.log(stock_price) <span class="op">+</span> log_return</span>
+<span id="c22dd68f-41"><a href="#c22dd68f-41" aria-hidden="true" tabindex="-1"></a>            stock_price <span class="op">=</span> np.exp(LogS)</span>
+<span id="c22dd68f-42"><a href="#c22dd68f-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-43"><a href="#c22dd68f-43" aria-hidden="true" tabindex="-1"></a>            variance <span class="op">=</span> np.maximum(</span>
+<span id="c22dd68f-44"><a href="#c22dd68f-44" aria-hidden="true" tabindex="-1"></a>                variance</span>
+<span id="c22dd68f-45"><a href="#c22dd68f-45" aria-hidden="true" tabindex="-1"></a>                <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> variance) <span class="op">*</span> dt</span>
+<span id="c22dd68f-46"><a href="#c22dd68f-46" aria-hidden="true" tabindex="-1"></a>                <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(variance <span class="op">*</span> dt) <span class="op">*</span> W2,</span>
+<span id="c22dd68f-47"><a href="#c22dd68f-47" aria-hidden="true" tabindex="-1"></a>                <span class="dv">0</span>,</span>
+<span id="c22dd68f-48"><a href="#c22dd68f-48" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="c22dd68f-49"><a href="#c22dd68f-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-50"><a href="#c22dd68f-50" aria-hidden="true" tabindex="-1"></a>            log_returns.append(log_return)</span>
+<span id="c22dd68f-51"><a href="#c22dd68f-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-52"><a href="#c22dd68f-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_returns</span>
+<span id="c22dd68f-53"><a href="#c22dd68f-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-54"><a href="#c22dd68f-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-55"><a href="#c22dd68f-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage:</span></span>
+<span id="c22dd68f-56"><a href="#c22dd68f-56" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="c22dd68f-57"><a href="#c22dd68f-57" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Initial variance</span></span>
+<span id="c22dd68f-58"><a href="#c22dd68f-58" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Risk-free rate</span></span>
+<span id="c22dd68f-59"><a href="#c22dd68f-59" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>  <span class="co"># Dividend yield</span></span>
+<span id="c22dd68f-60"><a href="#c22dd68f-60" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="dv">252</span>  <span class="co"># Length of each time period (daily)</span></span>
+<span id="c22dd68f-61"><a href="#c22dd68f-61" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>  <span class="co"># Number of time periods (one year)</span></span>
+<span id="c22dd68f-62"><a href="#c22dd68f-62" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Long-term variance</span></span>
+<span id="c22dd68f-63"><a href="#c22dd68f-63" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">0.2</span>  <span class="co"># Rate of mean reversion of variance</span></span>
+<span id="c22dd68f-64"><a href="#c22dd68f-64" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.3</span>  <span class="co"># Volatility of variance</span></span>
+<span id="c22dd68f-65"><a href="#c22dd68f-65" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>  <span class="co"># Correlation between the two Wiener processes</span></span>
+<span id="c22dd68f-66"><a href="#c22dd68f-66" aria-hidden="true" tabindex="-1"></a>n_simulations <span class="op">=</span> <span class="dv">1000</span>  <span class="co"># Number of simulations</span></span>
+<span id="c22dd68f-67"><a href="#c22dd68f-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-68"><a href="#c22dd68f-68" aria-hidden="true" tabindex="-1"></a>log_returns <span class="op">=</span> simulating_stochastic_volatility(</span>
+<span id="c22dd68f-69"><a href="#c22dd68f-69" aria-hidden="true" tabindex="-1"></a>    S, V0, r, q, dt, N, theta, kappa, sigma, rho, n_simulations</span>
+<span id="c22dd68f-70"><a href="#c22dd68f-70" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="c22dd68f-71"><a href="#c22dd68f-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-72"><a href="#c22dd68f-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the distribution of log returns</span></span>
+<span id="c22dd68f-73"><a href="#c22dd68f-73" aria-hidden="true" tabindex="-1"></a>sns.histplot(</span>
+<span id="c22dd68f-74"><a href="#c22dd68f-74" aria-hidden="true" tabindex="-1"></a>    log_returns,</span>
+<span id="c22dd68f-75"><a href="#c22dd68f-75" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="c22dd68f-76"><a href="#c22dd68f-76" aria-hidden="true" tabindex="-1"></a>    kde<span class="op">=</span><span class="va">True</span>,</span>
+<span id="c22dd68f-77"><a href="#c22dd68f-77" aria-hidden="true" tabindex="-1"></a>    stat<span class="op">=</span><span class="st">"density"</span>,</span>
+<span id="c22dd68f-78"><a href="#c22dd68f-78" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"blue"</span>,</span>
+<span id="c22dd68f-79"><a href="#c22dd68f-79" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">"Simulated Log Returns"</span>,</span>
+<span id="c22dd68f-80"><a href="#c22dd68f-80" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="c22dd68f-81"><a href="#c22dd68f-81" aria-hidden="true" tabindex="-1"></a>xmin, xmax <span class="op">=</span> plt.xlim()</span>
+<span id="c22dd68f-82"><a href="#c22dd68f-82" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(xmin, xmax, <span class="dv">100</span>)</span>
+<span id="c22dd68f-83"><a href="#c22dd68f-83" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> norm.pdf(x, np.mean(log_returns), np.std(log_returns))</span>
+<span id="c22dd68f-84"><a href="#c22dd68f-84" aria-hidden="true" tabindex="-1"></a>plt.plot(x, p, <span class="st">"k"</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"Normal Distribution"</span>)</span>
+<span id="c22dd68f-85"><a href="#c22dd68f-85" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of Log Returns with Stochastic Volatility"</span>)</span>
+<span id="c22dd68f-86"><a href="#c22dd68f-86" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Log Return"</span>)</span>
+<span id="c22dd68f-87"><a href="#c22dd68f-87" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Density"</span>)</span>
+<span id="c22dd68f-88"><a href="#c22dd68f-88" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="c22dd68f-89"><a href="#c22dd68f-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-90"><a href="#c22dd68f-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Display kurtosis</span></span>
+<span id="c22dd68f-91"><a href="#c22dd68f-91" aria-hidden="true" tabindex="-1"></a>kurt <span class="op">=</span> kurtosis(log_returns)</span>
+<span id="c22dd68f-92"><a href="#c22dd68f-92" aria-hidden="true" tabindex="-1"></a>plt.figtext(<span class="fl">0.15</span>, <span class="fl">0.8</span>, <span class="ss">f"Kurtosis: </span><span class="sc">{</span>kurt<span class="sc">:.2f}</span><span class="ss">"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="c22dd68f-93"><a href="#c22dd68f-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c22dd68f-94"><a href="#c22dd68f-94" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -904,66 +948,70 @@ J_t = \sum_{i=1}^{N_t} (Y_i - 1)
 <div id="cell-Simulate_Jump_Diffusion" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_jump_diffusion(S0, mu, sigma, lamb, m, delta, T, N):</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate a jump diffusion process.</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">    S0     : float - initial stock price</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">    mu     : float - drift rate</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma  : float - volatility</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">    lamb   : float - intensity of the Poisson process</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">    m      : float - mean of the jump size distribution</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">    delta  : float - standard deviation of the jump size distribution</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">    T      : float - total time</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">    N      : int   - number of time steps</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">    t      : numpy array - time points</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">    S      : numpy array - simulated stock prices</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> np.linspace(<span class="dv">0</span>, T, N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    S[<span class="dv">0</span>] <span class="op">=</span> S0</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        Z <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>)  <span class="co"># Normal random variable for the diffusion part</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        J <span class="op">=</span> np.random.poisson(lamb <span class="op">*</span> dt)  <span class="co"># Poisson random variable for jumps</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Sum of log-normal distributed jumps</span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        Y <span class="op">=</span> np.<span class="bu">sum</span>(np.random.normal(m, delta, J))</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update stock price</span></span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        S[i] <span class="op">=</span> S[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp((mu <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(dt) <span class="op">*</span> Z <span class="op">+</span> Y)</span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t, S</span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters</span></span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span>         <span class="co"># Initial stock price</span></span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">0.1</span>         <span class="co"># Drift rate</span></span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span>      <span class="co"># Volatility</span></span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>lamb <span class="op">=</span> <span class="fl">0.75</span>      <span class="co"># Intensity of the Poisson process (average number of jumps per unit time)</span></span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="fl">0.02</span>         <span class="co"># Mean of the jump size distribution (log-normal)</span></span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>delta <span class="op">=</span> <span class="fl">0.1</span>      <span class="co"># Standard deviation of the jump size distribution (log-normal)</span></span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">1.0</span>          <span class="co"># Total time (1 year)</span></span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span>         <span class="co"># Number of time steps</span></span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate the jump diffusion process</span></span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>t, S <span class="op">=</span> simulate_jump_diffusion(S0, mu, sigma, lamb, m, delta, T, N)</span>
-<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the simulated stock prices</span></span>
-<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>plt.plot(t, S, label<span class="op">=</span><span class="st">'Jump Diffusion Process'</span>)</span>
-<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Simulated Stock Price using Jump Diffusion Model'</span>)</span>
-<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time (years)'</span>)</span>
-<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Stock Price'</span>)</span>
-<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cell-Simulate_Jump_Diffusion"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cell-Simulate_Jump_Diffusion-1"><a href="#cell-Simulate_Jump_Diffusion-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cell-Simulate_Jump_Diffusion-2"><a href="#cell-Simulate_Jump_Diffusion-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cell-Simulate_Jump_Diffusion-3"><a href="#cell-Simulate_Jump_Diffusion-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-4"><a href="#cell-Simulate_Jump_Diffusion-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-5"><a href="#cell-Simulate_Jump_Diffusion-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_jump_diffusion(S0, mu, sigma, lamb, m, delta, T, N):</span>
+<span id="cell-Simulate_Jump_Diffusion-6"><a href="#cell-Simulate_Jump_Diffusion-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cell-Simulate_Jump_Diffusion-7"><a href="#cell-Simulate_Jump_Diffusion-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate a jump diffusion process.</span></span>
+<span id="cell-Simulate_Jump_Diffusion-8"><a href="#cell-Simulate_Jump_Diffusion-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-9"><a href="#cell-Simulate_Jump_Diffusion-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cell-Simulate_Jump_Diffusion-10"><a href="#cell-Simulate_Jump_Diffusion-10" aria-hidden="true" tabindex="-1"></a><span class="co">    S0     : float - initial stock price</span></span>
+<span id="cell-Simulate_Jump_Diffusion-11"><a href="#cell-Simulate_Jump_Diffusion-11" aria-hidden="true" tabindex="-1"></a><span class="co">    mu     : float - drift rate</span></span>
+<span id="cell-Simulate_Jump_Diffusion-12"><a href="#cell-Simulate_Jump_Diffusion-12" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma  : float - volatility</span></span>
+<span id="cell-Simulate_Jump_Diffusion-13"><a href="#cell-Simulate_Jump_Diffusion-13" aria-hidden="true" tabindex="-1"></a><span class="co">    lamb   : float - intensity of the Poisson process</span></span>
+<span id="cell-Simulate_Jump_Diffusion-14"><a href="#cell-Simulate_Jump_Diffusion-14" aria-hidden="true" tabindex="-1"></a><span class="co">    m      : float - mean of the jump size distribution</span></span>
+<span id="cell-Simulate_Jump_Diffusion-15"><a href="#cell-Simulate_Jump_Diffusion-15" aria-hidden="true" tabindex="-1"></a><span class="co">    delta  : float - standard deviation of the jump size distribution</span></span>
+<span id="cell-Simulate_Jump_Diffusion-16"><a href="#cell-Simulate_Jump_Diffusion-16" aria-hidden="true" tabindex="-1"></a><span class="co">    T      : float - total time</span></span>
+<span id="cell-Simulate_Jump_Diffusion-17"><a href="#cell-Simulate_Jump_Diffusion-17" aria-hidden="true" tabindex="-1"></a><span class="co">    N      : int   - number of time steps</span></span>
+<span id="cell-Simulate_Jump_Diffusion-18"><a href="#cell-Simulate_Jump_Diffusion-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-19"><a href="#cell-Simulate_Jump_Diffusion-19" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cell-Simulate_Jump_Diffusion-20"><a href="#cell-Simulate_Jump_Diffusion-20" aria-hidden="true" tabindex="-1"></a><span class="co">    t      : numpy array - time points</span></span>
+<span id="cell-Simulate_Jump_Diffusion-21"><a href="#cell-Simulate_Jump_Diffusion-21" aria-hidden="true" tabindex="-1"></a><span class="co">    S      : numpy array - simulated stock prices</span></span>
+<span id="cell-Simulate_Jump_Diffusion-22"><a href="#cell-Simulate_Jump_Diffusion-22" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cell-Simulate_Jump_Diffusion-23"><a href="#cell-Simulate_Jump_Diffusion-23" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cell-Simulate_Jump_Diffusion-24"><a href="#cell-Simulate_Jump_Diffusion-24" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> np.linspace(<span class="dv">0</span>, T, N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cell-Simulate_Jump_Diffusion-25"><a href="#cell-Simulate_Jump_Diffusion-25" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cell-Simulate_Jump_Diffusion-26"><a href="#cell-Simulate_Jump_Diffusion-26" aria-hidden="true" tabindex="-1"></a>    S[<span class="dv">0</span>] <span class="op">=</span> S0</span>
+<span id="cell-Simulate_Jump_Diffusion-27"><a href="#cell-Simulate_Jump_Diffusion-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-28"><a href="#cell-Simulate_Jump_Diffusion-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cell-Simulate_Jump_Diffusion-29"><a href="#cell-Simulate_Jump_Diffusion-29" aria-hidden="true" tabindex="-1"></a>        Z <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>)  <span class="co"># Normal random variable for the diffusion part</span></span>
+<span id="cell-Simulate_Jump_Diffusion-30"><a href="#cell-Simulate_Jump_Diffusion-30" aria-hidden="true" tabindex="-1"></a>        J <span class="op">=</span> np.random.poisson(lamb <span class="op">*</span> dt)  <span class="co"># Poisson random variable for jumps</span></span>
+<span id="cell-Simulate_Jump_Diffusion-31"><a href="#cell-Simulate_Jump_Diffusion-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-32"><a href="#cell-Simulate_Jump_Diffusion-32" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Sum of log-normal distributed jumps</span></span>
+<span id="cell-Simulate_Jump_Diffusion-33"><a href="#cell-Simulate_Jump_Diffusion-33" aria-hidden="true" tabindex="-1"></a>        Y <span class="op">=</span> np.<span class="bu">sum</span>(np.random.normal(m, delta, J))</span>
+<span id="cell-Simulate_Jump_Diffusion-34"><a href="#cell-Simulate_Jump_Diffusion-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-35"><a href="#cell-Simulate_Jump_Diffusion-35" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update stock price</span></span>
+<span id="cell-Simulate_Jump_Diffusion-36"><a href="#cell-Simulate_Jump_Diffusion-36" aria-hidden="true" tabindex="-1"></a>        S[i] <span class="op">=</span> S[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp(</span>
+<span id="cell-Simulate_Jump_Diffusion-37"><a href="#cell-Simulate_Jump_Diffusion-37" aria-hidden="true" tabindex="-1"></a>            (mu <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(dt) <span class="op">*</span> Z <span class="op">+</span> Y</span>
+<span id="cell-Simulate_Jump_Diffusion-38"><a href="#cell-Simulate_Jump_Diffusion-38" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cell-Simulate_Jump_Diffusion-39"><a href="#cell-Simulate_Jump_Diffusion-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-40"><a href="#cell-Simulate_Jump_Diffusion-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t, S</span>
+<span id="cell-Simulate_Jump_Diffusion-41"><a href="#cell-Simulate_Jump_Diffusion-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-42"><a href="#cell-Simulate_Jump_Diffusion-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-43"><a href="#cell-Simulate_Jump_Diffusion-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters</span></span>
+<span id="cell-Simulate_Jump_Diffusion-44"><a href="#cell-Simulate_Jump_Diffusion-44" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="cell-Simulate_Jump_Diffusion-45"><a href="#cell-Simulate_Jump_Diffusion-45" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="fl">0.1</span>  <span class="co"># Drift rate</span></span>
+<span id="cell-Simulate_Jump_Diffusion-46"><a href="#cell-Simulate_Jump_Diffusion-46" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span>  <span class="co"># Volatility</span></span>
+<span id="cell-Simulate_Jump_Diffusion-47"><a href="#cell-Simulate_Jump_Diffusion-47" aria-hidden="true" tabindex="-1"></a>lamb <span class="op">=</span> <span class="fl">0.75</span>  <span class="co"># Intensity of the Poisson process (average number of jumps per unit time)</span></span>
+<span id="cell-Simulate_Jump_Diffusion-48"><a href="#cell-Simulate_Jump_Diffusion-48" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="fl">0.02</span>  <span class="co"># Mean of the jump size distribution (log-normal)</span></span>
+<span id="cell-Simulate_Jump_Diffusion-49"><a href="#cell-Simulate_Jump_Diffusion-49" aria-hidden="true" tabindex="-1"></a>delta <span class="op">=</span> <span class="fl">0.1</span>  <span class="co"># Standard deviation of the jump size distribution (log-normal)</span></span>
+<span id="cell-Simulate_Jump_Diffusion-50"><a href="#cell-Simulate_Jump_Diffusion-50" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">1.0</span>  <span class="co"># Total time (1 year)</span></span>
+<span id="cell-Simulate_Jump_Diffusion-51"><a href="#cell-Simulate_Jump_Diffusion-51" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span>  <span class="co"># Number of time steps</span></span>
+<span id="cell-Simulate_Jump_Diffusion-52"><a href="#cell-Simulate_Jump_Diffusion-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-53"><a href="#cell-Simulate_Jump_Diffusion-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate the jump diffusion process</span></span>
+<span id="cell-Simulate_Jump_Diffusion-54"><a href="#cell-Simulate_Jump_Diffusion-54" aria-hidden="true" tabindex="-1"></a>t, S <span class="op">=</span> simulate_jump_diffusion(S0, mu, sigma, lamb, m, delta, T, N)</span>
+<span id="cell-Simulate_Jump_Diffusion-55"><a href="#cell-Simulate_Jump_Diffusion-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cell-Simulate_Jump_Diffusion-56"><a href="#cell-Simulate_Jump_Diffusion-56" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the simulated stock prices</span></span>
+<span id="cell-Simulate_Jump_Diffusion-57"><a href="#cell-Simulate_Jump_Diffusion-57" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cell-Simulate_Jump_Diffusion-58"><a href="#cell-Simulate_Jump_Diffusion-58" aria-hidden="true" tabindex="-1"></a>plt.plot(t, S, label<span class="op">=</span><span class="st">"Jump Diffusion Process"</span>)</span>
+<span id="cell-Simulate_Jump_Diffusion-59"><a href="#cell-Simulate_Jump_Diffusion-59" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Simulated Stock Price using Jump Diffusion Model"</span>)</span>
+<span id="cell-Simulate_Jump_Diffusion-60"><a href="#cell-Simulate_Jump_Diffusion-60" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time (years)"</span>)</span>
+<span id="cell-Simulate_Jump_Diffusion-61"><a href="#cell-Simulate_Jump_Diffusion-61" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Stock Price"</span>)</span>
+<span id="cell-Simulate_Jump_Diffusion-62"><a href="#cell-Simulate_Jump_Diffusion-62" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cell-Simulate_Jump_Diffusion-63"><a href="#cell-Simulate_Jump_Diffusion-63" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cell-Simulate_Jump_Diffusion-64"><a href="#cell-Simulate_Jump_Diffusion-64" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -985,84 +1033,102 @@ J_t = \sum_{i=1}^{N_t} (Y_i - 1)
 <div id="ee2982c2" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> brentq</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Heston model parameters</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span>      <span class="co"># Initial stock price</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>     <span class="co"># Initial variance</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>      <span class="co"># Risk-free rate</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.01</span>      <span class="co"># Dividend yield</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span>         <span class="co"># Time to maturity (in years)</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">0.25</span>   <span class="co"># Rate of mean reversion of variance</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Long-term variance</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.5</span>   <span class="co"># Volatility of variance</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.2</span>    <span class="co"># Correlation between the two Wiener processes</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">252</span>    <span class="co"># Length of each time period (daily)</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>       <span class="co"># Number of time periods (one year)</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>n_simulations <span class="op">=</span> <span class="dv">10000</span>  <span class="co"># Number of simulations</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_heston_paths(S0, V0, r, q, T, kappa, theta, sigma, rho, dt, N, n_simulations):</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros((N <span class="op">+</span> <span class="dv">1</span>, n_simulations))</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.zeros((N <span class="op">+</span> <span class="dv">1</span>, n_simulations))</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    S[<span class="dv">0</span>] <span class="op">=</span> S0</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    V[<span class="dv">0</span>] <span class="op">=</span> V0</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>        Z1 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        Z2 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        W1 <span class="op">=</span> Z1</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>        V[t] <span class="op">=</span> np.maximum(V[t<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> V[t<span class="op">-</span><span class="dv">1</span>]) <span class="op">*</span> dt <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(V[t<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W2, <span class="dv">0</span>)</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>        S[t] <span class="op">=</span> S[t<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> np.exp((r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> V[t<span class="op">-</span><span class="dv">1</span>]) <span class="op">*</span> dt <span class="op">+</span> np.sqrt(V[t<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W1)</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> S, V</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call_price(S, K, T, r, sigma):</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    call_price <span class="op">=</span> S <span class="op">*</span> norm.cdf(d1) <span class="op">-</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(d2)</span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> call_price</span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> implied_volatility(C, S, K, T, r):</span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> objective_function(sigma):</span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> black_scholes_call_price(S, K, T, r, sigma) <span class="op">-</span> C</span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> brentq(objective_function, <span class="fl">0.001</span>, <span class="fl">5.0</span>)</span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.nan</span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate paths using the Heston model</span></span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>S_paths, _ <span class="op">=</span> simulate_heston_paths(S0, V0, r, q, T, kappa, theta, sigma, rho, dt, N, n_simulations)</span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate option prices at different strike prices</span></span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>strike_prices <span class="op">=</span> np.linspace(<span class="dv">90</span>, <span class="dv">120</span>, <span class="dv">20</span>)</span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>call_prices <span class="op">=</span> np.zeros_like(strike_prices)</span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, K <span class="kw">in</span> <span class="bu">enumerate</span>(strike_prices):</span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>    call_payoffs <span class="op">=</span> np.maximum(S_paths[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> K, <span class="dv">0</span>)</span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>    call_prices[i] <span class="op">=</span> np.mean(call_payoffs) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate implied volatilities</span></span>
-<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>implied_vols <span class="op">=</span> [implied_volatility(C, S0, K, T, r) <span class="cf">for</span> C, K <span class="kw">in</span> <span class="bu">zip</span>(call_prices, strike_prices)]</span>
-<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter out NaN values that may occur</span></span>
-<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>valid_indices <span class="op">=</span> <span class="op">~</span>np.isnan(implied_vols)</span>
-<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>strike_prices <span class="op">=</span> strike_prices[valid_indices]</span>
-<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>implied_vols <span class="op">=</span> np.array(implied_vols)[valid_indices]</span>
-<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the implied volatility smile</span></span>
-<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>plt.plot(strike_prices, implied_vols, label<span class="op">=</span><span class="st">'Implied Volatility'</span>, marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Implied Volatility Smile'</span>)</span>
-<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Strike Price'</span>)</span>
-<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Implied Volatility'</span>)</span>
-<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="ee2982c2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="ee2982c2-1"><a href="#ee2982c2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="ee2982c2-2"><a href="#ee2982c2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="ee2982c2-3"><a href="#ee2982c2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="ee2982c2-4"><a href="#ee2982c2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> brentq</span>
+<span id="ee2982c2-5"><a href="#ee2982c2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-6"><a href="#ee2982c2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Heston model parameters</span></span>
+<span id="ee2982c2-7"><a href="#ee2982c2-7" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span>  <span class="co"># Initial stock price</span></span>
+<span id="ee2982c2-8"><a href="#ee2982c2-8" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Initial variance</span></span>
+<span id="ee2982c2-9"><a href="#ee2982c2-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Risk-free rate</span></span>
+<span id="ee2982c2-10"><a href="#ee2982c2-10" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.01</span>  <span class="co"># Dividend yield</span></span>
+<span id="ee2982c2-11"><a href="#ee2982c2-11" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span>  <span class="co"># Time to maturity (in years)</span></span>
+<span id="ee2982c2-12"><a href="#ee2982c2-12" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">0.25</span>  <span class="co"># Rate of mean reversion of variance</span></span>
+<span id="ee2982c2-13"><a href="#ee2982c2-13" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.04</span>  <span class="co"># Long-term variance</span></span>
+<span id="ee2982c2-14"><a href="#ee2982c2-14" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># Volatility of variance</span></span>
+<span id="ee2982c2-15"><a href="#ee2982c2-15" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.2</span>  <span class="co"># Correlation between the two Wiener processes</span></span>
+<span id="ee2982c2-16"><a href="#ee2982c2-16" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="dv">252</span>  <span class="co"># Length of each time period (daily)</span></span>
+<span id="ee2982c2-17"><a href="#ee2982c2-17" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>  <span class="co"># Number of time periods (one year)</span></span>
+<span id="ee2982c2-18"><a href="#ee2982c2-18" aria-hidden="true" tabindex="-1"></a>n_simulations <span class="op">=</span> <span class="dv">10000</span>  <span class="co"># Number of simulations</span></span>
+<span id="ee2982c2-19"><a href="#ee2982c2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-20"><a href="#ee2982c2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-21"><a href="#ee2982c2-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_heston_paths(</span>
+<span id="ee2982c2-22"><a href="#ee2982c2-22" aria-hidden="true" tabindex="-1"></a>    S0, V0, r, q, T, kappa, theta, sigma, rho, dt, N, n_simulations</span>
+<span id="ee2982c2-23"><a href="#ee2982c2-23" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="ee2982c2-24"><a href="#ee2982c2-24" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> np.zeros((N <span class="op">+</span> <span class="dv">1</span>, n_simulations))</span>
+<span id="ee2982c2-25"><a href="#ee2982c2-25" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.zeros((N <span class="op">+</span> <span class="dv">1</span>, n_simulations))</span>
+<span id="ee2982c2-26"><a href="#ee2982c2-26" aria-hidden="true" tabindex="-1"></a>    S[<span class="dv">0</span>] <span class="op">=</span> S0</span>
+<span id="ee2982c2-27"><a href="#ee2982c2-27" aria-hidden="true" tabindex="-1"></a>    V[<span class="dv">0</span>] <span class="op">=</span> V0</span>
+<span id="ee2982c2-28"><a href="#ee2982c2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-29"><a href="#ee2982c2-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="ee2982c2-30"><a href="#ee2982c2-30" aria-hidden="true" tabindex="-1"></a>        Z1 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
+<span id="ee2982c2-31"><a href="#ee2982c2-31" aria-hidden="true" tabindex="-1"></a>        Z2 <span class="op">=</span> np.random.normal(size<span class="op">=</span>n_simulations)</span>
+<span id="ee2982c2-32"><a href="#ee2982c2-32" aria-hidden="true" tabindex="-1"></a>        W1 <span class="op">=</span> Z1</span>
+<span id="ee2982c2-33"><a href="#ee2982c2-33" aria-hidden="true" tabindex="-1"></a>        W2 <span class="op">=</span> rho <span class="op">*</span> Z1 <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> Z2</span>
+<span id="ee2982c2-34"><a href="#ee2982c2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-35"><a href="#ee2982c2-35" aria-hidden="true" tabindex="-1"></a>        V[t] <span class="op">=</span> np.maximum(</span>
+<span id="ee2982c2-36"><a href="#ee2982c2-36" aria-hidden="true" tabindex="-1"></a>            V[t <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="ee2982c2-37"><a href="#ee2982c2-37" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> kappa <span class="op">*</span> (theta <span class="op">-</span> V[t <span class="op">-</span> <span class="dv">1</span>]) <span class="op">*</span> dt</span>
+<span id="ee2982c2-38"><a href="#ee2982c2-38" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(V[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W2,</span>
+<span id="ee2982c2-39"><a href="#ee2982c2-39" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span>,</span>
+<span id="ee2982c2-40"><a href="#ee2982c2-40" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="ee2982c2-41"><a href="#ee2982c2-41" aria-hidden="true" tabindex="-1"></a>        S[t] <span class="op">=</span> S[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp(</span>
+<span id="ee2982c2-42"><a href="#ee2982c2-42" aria-hidden="true" tabindex="-1"></a>            (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> V[t <span class="op">-</span> <span class="dv">1</span>]) <span class="op">*</span> dt <span class="op">+</span> np.sqrt(V[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> dt) <span class="op">*</span> W1</span>
+<span id="ee2982c2-43"><a href="#ee2982c2-43" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="ee2982c2-44"><a href="#ee2982c2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-45"><a href="#ee2982c2-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> S, V</span>
+<span id="ee2982c2-46"><a href="#ee2982c2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-47"><a href="#ee2982c2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-48"><a href="#ee2982c2-48" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call_price(S, K, T, r, sigma):</span>
+<span id="ee2982c2-49"><a href="#ee2982c2-49" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="ee2982c2-50"><a href="#ee2982c2-50" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="ee2982c2-51"><a href="#ee2982c2-51" aria-hidden="true" tabindex="-1"></a>    call_price <span class="op">=</span> S <span class="op">*</span> norm.cdf(d1) <span class="op">-</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(d2)</span>
+<span id="ee2982c2-52"><a href="#ee2982c2-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> call_price</span>
+<span id="ee2982c2-53"><a href="#ee2982c2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-54"><a href="#ee2982c2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-55"><a href="#ee2982c2-55" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> implied_volatility(C, S, K, T, r):</span>
+<span id="ee2982c2-56"><a href="#ee2982c2-56" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> objective_function(sigma):</span>
+<span id="ee2982c2-57"><a href="#ee2982c2-57" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> black_scholes_call_price(S, K, T, r, sigma) <span class="op">-</span> C</span>
+<span id="ee2982c2-58"><a href="#ee2982c2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-59"><a href="#ee2982c2-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="ee2982c2-60"><a href="#ee2982c2-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> brentq(objective_function, <span class="fl">0.001</span>, <span class="fl">5.0</span>)</span>
+<span id="ee2982c2-61"><a href="#ee2982c2-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="ee2982c2-62"><a href="#ee2982c2-62" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.nan</span>
+<span id="ee2982c2-63"><a href="#ee2982c2-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-64"><a href="#ee2982c2-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-65"><a href="#ee2982c2-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate paths using the Heston model</span></span>
+<span id="ee2982c2-66"><a href="#ee2982c2-66" aria-hidden="true" tabindex="-1"></a>S_paths, _ <span class="op">=</span> simulate_heston_paths(</span>
+<span id="ee2982c2-67"><a href="#ee2982c2-67" aria-hidden="true" tabindex="-1"></a>    S0, V0, r, q, T, kappa, theta, sigma, rho, dt, N, n_simulations</span>
+<span id="ee2982c2-68"><a href="#ee2982c2-68" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="ee2982c2-69"><a href="#ee2982c2-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-70"><a href="#ee2982c2-70" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate option prices at different strike prices</span></span>
+<span id="ee2982c2-71"><a href="#ee2982c2-71" aria-hidden="true" tabindex="-1"></a>strike_prices <span class="op">=</span> np.linspace(<span class="dv">90</span>, <span class="dv">120</span>, <span class="dv">20</span>)</span>
+<span id="ee2982c2-72"><a href="#ee2982c2-72" aria-hidden="true" tabindex="-1"></a>call_prices <span class="op">=</span> np.zeros_like(strike_prices)</span>
+<span id="ee2982c2-73"><a href="#ee2982c2-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-74"><a href="#ee2982c2-74" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, K <span class="kw">in</span> <span class="bu">enumerate</span>(strike_prices):</span>
+<span id="ee2982c2-75"><a href="#ee2982c2-75" aria-hidden="true" tabindex="-1"></a>    call_payoffs <span class="op">=</span> np.maximum(S_paths[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="ee2982c2-76"><a href="#ee2982c2-76" aria-hidden="true" tabindex="-1"></a>    call_prices[i] <span class="op">=</span> np.mean(call_payoffs) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="ee2982c2-77"><a href="#ee2982c2-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-78"><a href="#ee2982c2-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate implied volatilities</span></span>
+<span id="ee2982c2-79"><a href="#ee2982c2-79" aria-hidden="true" tabindex="-1"></a>implied_vols <span class="op">=</span> [</span>
+<span id="ee2982c2-80"><a href="#ee2982c2-80" aria-hidden="true" tabindex="-1"></a>    implied_volatility(C, S0, K, T, r) <span class="cf">for</span> C, K <span class="kw">in</span> <span class="bu">zip</span>(call_prices, strike_prices)</span>
+<span id="ee2982c2-81"><a href="#ee2982c2-81" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="ee2982c2-82"><a href="#ee2982c2-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-83"><a href="#ee2982c2-83" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter out NaN values that may occur</span></span>
+<span id="ee2982c2-84"><a href="#ee2982c2-84" aria-hidden="true" tabindex="-1"></a>valid_indices <span class="op">=</span> <span class="op">~</span>np.isnan(implied_vols)</span>
+<span id="ee2982c2-85"><a href="#ee2982c2-85" aria-hidden="true" tabindex="-1"></a>strike_prices <span class="op">=</span> strike_prices[valid_indices]</span>
+<span id="ee2982c2-86"><a href="#ee2982c2-86" aria-hidden="true" tabindex="-1"></a>implied_vols <span class="op">=</span> np.array(implied_vols)[valid_indices]</span>
+<span id="ee2982c2-87"><a href="#ee2982c2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="ee2982c2-88"><a href="#ee2982c2-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the implied volatility smile</span></span>
+<span id="ee2982c2-89"><a href="#ee2982c2-89" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="ee2982c2-90"><a href="#ee2982c2-90" aria-hidden="true" tabindex="-1"></a>plt.plot(strike_prices, implied_vols, label<span class="op">=</span><span class="st">"Implied Volatility"</span>, marker<span class="op">=</span><span class="st">"o"</span>)</span>
+<span id="ee2982c2-91"><a href="#ee2982c2-91" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Implied Volatility Smile"</span>)</span>
+<span id="ee2982c2-92"><a href="#ee2982c2-92" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Strike Price"</span>)</span>
+<span id="ee2982c2-93"><a href="#ee2982c2-93" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Implied Volatility"</span>)</span>
+<span id="ee2982c2-94"><a href="#ee2982c2-94" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="ee2982c2-95"><a href="#ee2982c2-95" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="ee2982c2-96"><a href="#ee2982c2-96" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -1141,58 +1207,65 @@ J_t = \sum_{i=1}^{N_t} (Y_i - 1)
 <div id="variance_swap_pricing" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate <span class="im">import</span> interp1d</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> indicator_function(condition):</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="cf">if</span> condition <span class="cf">else</span> <span class="dv">0</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_variance_swap_strike(S, r, T, options_data):</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract call and put prices</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    call_data <span class="op">=</span> options_data[options_data[<span class="st">'Type'</span>] <span class="op">==</span> <span class="st">'call'</span>].copy()</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    put_data <span class="op">=</span> options_data[options_data[<span class="st">'Type'</span>] <span class="op">==</span> <span class="st">'put'</span>].copy()</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Interpolate call and put prices</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    strikes <span class="op">=</span> np.unique(options_data[<span class="st">'Strike'</span>])</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    call_interp <span class="op">=</span> interp1d(call_data[<span class="st">'Strike'</span>], call_data[<span class="st">'Price'</span>], fill_value<span class="op">=</span><span class="st">"extrapolate"</span>)</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    put_interp <span class="op">=</span> interp1d(put_data[<span class="st">'Strike'</span>], put_data[<span class="st">'Price'</span>], fill_value<span class="op">=</span><span class="st">"extrapolate"</span>)</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Integrate using numerical methods (trapezoidal rule)</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    K_min, K_max <span class="op">=</span> strikes.<span class="bu">min</span>(), strikes.<span class="bu">max</span>()</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> np.linspace(K_min, S<span class="op">*</span>np.exp(r<span class="op">*</span>T), <span class="dv">500</span>)</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    integral1 <span class="op">=</span> np.trapezoid(put_interp(K) <span class="op">/</span> K<span class="op">**</span><span class="dv">2</span>, K)</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> np.linspace(S<span class="op">*</span>np.exp(r<span class="op">*</span>T),K_max, <span class="dv">500</span>)</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    integral2 <span class="op">=</span> np.trapezoid(call_interp(K) <span class="op">/</span> K<span class="op">**</span><span class="dv">2</span>, K)</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the variance swap strike</span></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    variance_swap_strike <span class="op">=</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> (integral1<span class="op">+</span>integral2) <span class="op">/</span> T)</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> variance_swap_strike</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="fl">150.0</span>  <span class="co"># Current stock price</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.01</span>  <span class="co"># Risk-free rate</span></span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># Time to maturity (6 months)</span></span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Fetch options data from Yahoo Finance</span></span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>stock <span class="op">=</span> yf.Ticker(ticker)</span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>expiry <span class="op">=</span> stock.options[<span class="dv">0</span>]</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>opt_chain <span class="op">=</span> stock.option_chain(expiry)</span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>calls <span class="op">=</span> opt_chain.calls[[<span class="st">'strike'</span>, <span class="st">'lastPrice'</span>]].copy()</span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>puts <span class="op">=</span> opt_chain.puts[[<span class="st">'strike'</span>, <span class="st">'lastPrice'</span>]].copy()</span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>calls.columns <span class="op">=</span> [<span class="st">'Strike'</span>, <span class="st">'Price'</span>]</span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>puts.columns <span class="op">=</span> [<span class="st">'Strike'</span>, <span class="st">'Price'</span>]</span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>calls[<span class="st">'Type'</span>] <span class="op">=</span> <span class="st">'call'</span></span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>puts[<span class="st">'Type'</span>] <span class="op">=</span> <span class="st">'put'</span></span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>options_data <span class="op">=</span> pd.concat([calls, puts])</span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the variance swap strike</span></span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>variance_swap_strike <span class="op">=</span> calculate_variance_swap_strike(S, r, T, options_data)</span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Variance Swap Strike: </span><span class="sc">{</span>variance_swap_strike<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="variance_swap_pricing"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="variance_swap_pricing-1"><a href="#variance_swap_pricing-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="variance_swap_pricing-2"><a href="#variance_swap_pricing-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="variance_swap_pricing-3"><a href="#variance_swap_pricing-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate <span class="im">import</span> interp1d</span>
+<span id="variance_swap_pricing-4"><a href="#variance_swap_pricing-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="variance_swap_pricing-5"><a href="#variance_swap_pricing-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="variance_swap_pricing-6"><a href="#variance_swap_pricing-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-7"><a href="#variance_swap_pricing-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-8"><a href="#variance_swap_pricing-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> indicator_function(condition):</span>
+<span id="variance_swap_pricing-9"><a href="#variance_swap_pricing-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="cf">if</span> condition <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="variance_swap_pricing-10"><a href="#variance_swap_pricing-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-11"><a href="#variance_swap_pricing-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-12"><a href="#variance_swap_pricing-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_variance_swap_strike(S, r, T, options_data):</span>
+<span id="variance_swap_pricing-13"><a href="#variance_swap_pricing-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract call and put prices</span></span>
+<span id="variance_swap_pricing-14"><a href="#variance_swap_pricing-14" aria-hidden="true" tabindex="-1"></a>    call_data <span class="op">=</span> options_data[options_data[<span class="st">"Type"</span>] <span class="op">==</span> <span class="st">"call"</span>].copy()</span>
+<span id="variance_swap_pricing-15"><a href="#variance_swap_pricing-15" aria-hidden="true" tabindex="-1"></a>    put_data <span class="op">=</span> options_data[options_data[<span class="st">"Type"</span>] <span class="op">==</span> <span class="st">"put"</span>].copy()</span>
+<span id="variance_swap_pricing-16"><a href="#variance_swap_pricing-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-17"><a href="#variance_swap_pricing-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Interpolate call and put prices</span></span>
+<span id="variance_swap_pricing-18"><a href="#variance_swap_pricing-18" aria-hidden="true" tabindex="-1"></a>    strikes <span class="op">=</span> np.unique(options_data[<span class="st">"Strike"</span>])</span>
+<span id="variance_swap_pricing-19"><a href="#variance_swap_pricing-19" aria-hidden="true" tabindex="-1"></a>    call_interp <span class="op">=</span> interp1d(</span>
+<span id="variance_swap_pricing-20"><a href="#variance_swap_pricing-20" aria-hidden="true" tabindex="-1"></a>        call_data[<span class="st">"Strike"</span>], call_data[<span class="st">"Price"</span>], fill_value<span class="op">=</span><span class="st">"extrapolate"</span></span>
+<span id="variance_swap_pricing-21"><a href="#variance_swap_pricing-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="variance_swap_pricing-22"><a href="#variance_swap_pricing-22" aria-hidden="true" tabindex="-1"></a>    put_interp <span class="op">=</span> interp1d(</span>
+<span id="variance_swap_pricing-23"><a href="#variance_swap_pricing-23" aria-hidden="true" tabindex="-1"></a>        put_data[<span class="st">"Strike"</span>], put_data[<span class="st">"Price"</span>], fill_value<span class="op">=</span><span class="st">"extrapolate"</span></span>
+<span id="variance_swap_pricing-24"><a href="#variance_swap_pricing-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="variance_swap_pricing-25"><a href="#variance_swap_pricing-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-26"><a href="#variance_swap_pricing-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Integrate using numerical methods (trapezoidal rule)</span></span>
+<span id="variance_swap_pricing-27"><a href="#variance_swap_pricing-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-28"><a href="#variance_swap_pricing-28" aria-hidden="true" tabindex="-1"></a>    K_min, K_max <span class="op">=</span> strikes.<span class="bu">min</span>(), strikes.<span class="bu">max</span>()</span>
+<span id="variance_swap_pricing-29"><a href="#variance_swap_pricing-29" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> np.linspace(K_min, S <span class="op">*</span> np.exp(r <span class="op">*</span> T), <span class="dv">500</span>)</span>
+<span id="variance_swap_pricing-30"><a href="#variance_swap_pricing-30" aria-hidden="true" tabindex="-1"></a>    integral1 <span class="op">=</span> np.trapezoid(put_interp(K) <span class="op">/</span> K<span class="op">**</span><span class="dv">2</span>, K)</span>
+<span id="variance_swap_pricing-31"><a href="#variance_swap_pricing-31" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> np.linspace(S <span class="op">*</span> np.exp(r <span class="op">*</span> T), K_max, <span class="dv">500</span>)</span>
+<span id="variance_swap_pricing-32"><a href="#variance_swap_pricing-32" aria-hidden="true" tabindex="-1"></a>    integral2 <span class="op">=</span> np.trapezoid(call_interp(K) <span class="op">/</span> K<span class="op">**</span><span class="dv">2</span>, K)</span>
+<span id="variance_swap_pricing-33"><a href="#variance_swap_pricing-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-34"><a href="#variance_swap_pricing-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the variance swap strike</span></span>
+<span id="variance_swap_pricing-35"><a href="#variance_swap_pricing-35" aria-hidden="true" tabindex="-1"></a>    variance_swap_strike <span class="op">=</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> (integral1 <span class="op">+</span> integral2) <span class="op">/</span> T)</span>
+<span id="variance_swap_pricing-36"><a href="#variance_swap_pricing-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> variance_swap_strike</span>
+<span id="variance_swap_pricing-37"><a href="#variance_swap_pricing-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-38"><a href="#variance_swap_pricing-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-39"><a href="#variance_swap_pricing-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="variance_swap_pricing-40"><a href="#variance_swap_pricing-40" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"AAPL"</span></span>
+<span id="variance_swap_pricing-41"><a href="#variance_swap_pricing-41" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="fl">150.0</span>  <span class="co"># Current stock price</span></span>
+<span id="variance_swap_pricing-42"><a href="#variance_swap_pricing-42" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.01</span>  <span class="co"># Risk-free rate</span></span>
+<span id="variance_swap_pricing-43"><a href="#variance_swap_pricing-43" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># Time to maturity (6 months)</span></span>
+<span id="variance_swap_pricing-44"><a href="#variance_swap_pricing-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-45"><a href="#variance_swap_pricing-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Fetch options data from Yahoo Finance</span></span>
+<span id="variance_swap_pricing-46"><a href="#variance_swap_pricing-46" aria-hidden="true" tabindex="-1"></a>stock <span class="op">=</span> yf.Ticker(ticker)</span>
+<span id="variance_swap_pricing-47"><a href="#variance_swap_pricing-47" aria-hidden="true" tabindex="-1"></a>expiry <span class="op">=</span> stock.options[<span class="dv">0</span>]</span>
+<span id="variance_swap_pricing-48"><a href="#variance_swap_pricing-48" aria-hidden="true" tabindex="-1"></a>opt_chain <span class="op">=</span> stock.option_chain(expiry)</span>
+<span id="variance_swap_pricing-49"><a href="#variance_swap_pricing-49" aria-hidden="true" tabindex="-1"></a>calls <span class="op">=</span> opt_chain.calls[[<span class="st">"strike"</span>, <span class="st">"lastPrice"</span>]].copy()</span>
+<span id="variance_swap_pricing-50"><a href="#variance_swap_pricing-50" aria-hidden="true" tabindex="-1"></a>puts <span class="op">=</span> opt_chain.puts[[<span class="st">"strike"</span>, <span class="st">"lastPrice"</span>]].copy()</span>
+<span id="variance_swap_pricing-51"><a href="#variance_swap_pricing-51" aria-hidden="true" tabindex="-1"></a>calls.columns <span class="op">=</span> [<span class="st">"Strike"</span>, <span class="st">"Price"</span>]</span>
+<span id="variance_swap_pricing-52"><a href="#variance_swap_pricing-52" aria-hidden="true" tabindex="-1"></a>puts.columns <span class="op">=</span> [<span class="st">"Strike"</span>, <span class="st">"Price"</span>]</span>
+<span id="variance_swap_pricing-53"><a href="#variance_swap_pricing-53" aria-hidden="true" tabindex="-1"></a>calls[<span class="st">"Type"</span>] <span class="op">=</span> <span class="st">"call"</span></span>
+<span id="variance_swap_pricing-54"><a href="#variance_swap_pricing-54" aria-hidden="true" tabindex="-1"></a>puts[<span class="st">"Type"</span>] <span class="op">=</span> <span class="st">"put"</span></span>
+<span id="variance_swap_pricing-55"><a href="#variance_swap_pricing-55" aria-hidden="true" tabindex="-1"></a>options_data <span class="op">=</span> pd.concat([calls, puts])</span>
+<span id="variance_swap_pricing-56"><a href="#variance_swap_pricing-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="variance_swap_pricing-57"><a href="#variance_swap_pricing-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the variance swap strike</span></span>
+<span id="variance_swap_pricing-58"><a href="#variance_swap_pricing-58" aria-hidden="true" tabindex="-1"></a>variance_swap_strike <span class="op">=</span> calculate_variance_swap_strike(S, r, T, options_data)</span>
+<span id="variance_swap_pricing-59"><a href="#variance_swap_pricing-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Variance Swap Strike: </span><span class="sc">{</span>variance_swap_strike<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Variance Swap Strike: 0.7973</code></pre>

@@ -510,39 +510,42 @@ F_i(0) = \mathcal{R}_i(0)\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
 <div id="market_model_cap" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_call(F, K, P, sigma, T):</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(F <span class="op">/</span> K) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> P <span class="op">*</span> (F <span class="op">*</span> norm.cdf(d1) <span class="op">-</span> K <span class="op">*</span> norm.cdf(d2))</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> market_model_cap(P0, P, rbar, sigma, N, t0, dt):</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> rbar <span class="op">*</span> dt</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> t0 <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> P[<span class="dv">0</span>] <span class="op">*</span> <span class="bu">max</span>(<span class="dv">0</span>, <span class="dv">1</span> <span class="op">/</span> P[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">1</span> <span class="op">-</span> rbar <span class="op">*</span> dt)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        F <span class="op">=</span> P0 <span class="op">/</span> P[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        cap_value <span class="op">=</span> black_call(F, K, P[<span class="dv">0</span>], sigma, t0)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N):</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        F <span class="op">=</span> P[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">/</span> P[i] <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        cap_value <span class="op">+=</span> black_call(F, K, P[i], sigma, t0 <span class="op">+</span> i <span class="op">*</span> dt)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> cap_value</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>P0 <span class="op">=</span> <span class="fl">0.95</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> [<span class="fl">0.92</span>, <span class="fl">0.89</span>, <span class="fl">0.85</span>, <span class="fl">0.80</span>]</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>rbar <span class="op">=</span> <span class="fl">0.03</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">2</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Market Model Cap:"</span>, market_model_cap(P0, P, rbar, sigma, N, t0, dt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="market_model_cap"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="market_model_cap-1"><a href="#market_model_cap-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="market_model_cap-2"><a href="#market_model_cap-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="market_model_cap-3"><a href="#market_model_cap-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-4"><a href="#market_model_cap-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-5"><a href="#market_model_cap-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_call(F, K, P, sigma, T):</span>
+<span id="market_model_cap-6"><a href="#market_model_cap-6" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(F <span class="op">/</span> K) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="market_model_cap-7"><a href="#market_model_cap-7" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="market_model_cap-8"><a href="#market_model_cap-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> P <span class="op">*</span> (F <span class="op">*</span> norm.cdf(d1) <span class="op">-</span> K <span class="op">*</span> norm.cdf(d2))</span>
+<span id="market_model_cap-9"><a href="#market_model_cap-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-10"><a href="#market_model_cap-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-11"><a href="#market_model_cap-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> market_model_cap(P0, P, rbar, sigma, N, t0, dt):</span>
+<span id="market_model_cap-12"><a href="#market_model_cap-12" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> rbar <span class="op">*</span> dt</span>
+<span id="market_model_cap-13"><a href="#market_model_cap-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> t0 <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="market_model_cap-14"><a href="#market_model_cap-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> P[<span class="dv">0</span>] <span class="op">*</span> <span class="bu">max</span>(<span class="dv">0</span>, <span class="dv">1</span> <span class="op">/</span> P[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">1</span> <span class="op">-</span> rbar <span class="op">*</span> dt)</span>
+<span id="market_model_cap-15"><a href="#market_model_cap-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="market_model_cap-16"><a href="#market_model_cap-16" aria-hidden="true" tabindex="-1"></a>        F <span class="op">=</span> P0 <span class="op">/</span> P[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">1</span></span>
+<span id="market_model_cap-17"><a href="#market_model_cap-17" aria-hidden="true" tabindex="-1"></a>        cap_value <span class="op">=</span> black_call(F, K, P[<span class="dv">0</span>], sigma, t0)</span>
+<span id="market_model_cap-18"><a href="#market_model_cap-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-19"><a href="#market_model_cap-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N):</span>
+<span id="market_model_cap-20"><a href="#market_model_cap-20" aria-hidden="true" tabindex="-1"></a>        F <span class="op">=</span> P[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">/</span> P[i] <span class="op">-</span> <span class="dv">1</span></span>
+<span id="market_model_cap-21"><a href="#market_model_cap-21" aria-hidden="true" tabindex="-1"></a>        cap_value <span class="op">+=</span> black_call(F, K, P[i], sigma, t0 <span class="op">+</span> i <span class="op">*</span> dt)</span>
+<span id="market_model_cap-22"><a href="#market_model_cap-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-23"><a href="#market_model_cap-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> cap_value</span>
+<span id="market_model_cap-24"><a href="#market_model_cap-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-25"><a href="#market_model_cap-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-26"><a href="#market_model_cap-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="market_model_cap-27"><a href="#market_model_cap-27" aria-hidden="true" tabindex="-1"></a>P0 <span class="op">=</span> <span class="fl">0.95</span></span>
+<span id="market_model_cap-28"><a href="#market_model_cap-28" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> [<span class="fl">0.92</span>, <span class="fl">0.89</span>, <span class="fl">0.85</span>, <span class="fl">0.80</span>]</span>
+<span id="market_model_cap-29"><a href="#market_model_cap-29" aria-hidden="true" tabindex="-1"></a>rbar <span class="op">=</span> <span class="fl">0.03</span></span>
+<span id="market_model_cap-30"><a href="#market_model_cap-30" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="market_model_cap-31"><a href="#market_model_cap-31" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4</span></span>
+<span id="market_model_cap-32"><a href="#market_model_cap-32" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="market_model_cap-33"><a href="#market_model_cap-33" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="market_model_cap-34"><a href="#market_model_cap-34" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">2</span></span>
+<span id="market_model_cap-35"><a href="#market_model_cap-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="market_model_cap-36"><a href="#market_model_cap-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Market Model Cap:"</span>, market_model_cap(P0, P, rbar, sigma, N, t0, dt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Market Model Cap: 0.09810002490023066</code></pre>
@@ -599,33 +602,37 @@ P(t,t_0)- P(t,t_N) \;+ \;\text{Value of Receiver Swaption}.
 <div id="payer_swaption" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> margrabe(S1, S2, sigma, q1, q2, T):</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    sigma2 <span class="op">=</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> T</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S1 <span class="op">/</span> S2) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma2) <span class="op">/</span> np.sqrt(sigma2)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> np.sqrt(sigma2)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> S1 <span class="op">*</span> norm.cdf(d1) <span class="op">-</span> S2 <span class="op">*</span> norm.cdf(d2)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> market_model_payer_swaption(P0, P, rbar, sigma, N, T, dt):</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    floating_leg_value <span class="op">=</span> P0 <span class="op">-</span> P[N <span class="op">-</span> <span class="dv">1</span>]</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    fixed_leg_value <span class="op">=</span> P[<span class="dv">0</span>]</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N):</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        fixed_leg_value <span class="op">+=</span> P[i]</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    fixed_leg_value <span class="op">*=</span> rbar <span class="op">*</span> dt</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> margrabe(floating_leg_value, fixed_leg_value, sigma, <span class="dv">0</span>, <span class="dv">0</span>, T)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>P0 <span class="op">=</span> <span class="fl">0.95</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> [<span class="fl">0.92</span>, <span class="fl">0.89</span>, <span class="fl">0.85</span>, <span class="fl">0.80</span>]</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>rbar <span class="op">=</span> <span class="fl">0.03</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">2</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Market Model Payer Swaption:"</span>, market_model_payer_swaption(P0, P, rbar, sigma, N, T, dt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="payer_swaption"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="payer_swaption-1"><a href="#payer_swaption-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> margrabe(S1, S2, sigma, q1, q2, T):</span>
+<span id="payer_swaption-2"><a href="#payer_swaption-2" aria-hidden="true" tabindex="-1"></a>    sigma2 <span class="op">=</span> sigma<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> T</span>
+<span id="payer_swaption-3"><a href="#payer_swaption-3" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S1 <span class="op">/</span> S2) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma2) <span class="op">/</span> np.sqrt(sigma2)</span>
+<span id="payer_swaption-4"><a href="#payer_swaption-4" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> np.sqrt(sigma2)</span>
+<span id="payer_swaption-5"><a href="#payer_swaption-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> S1 <span class="op">*</span> norm.cdf(d1) <span class="op">-</span> S2 <span class="op">*</span> norm.cdf(d2)</span>
+<span id="payer_swaption-6"><a href="#payer_swaption-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="payer_swaption-7"><a href="#payer_swaption-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="payer_swaption-8"><a href="#payer_swaption-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> market_model_payer_swaption(P0, P, rbar, sigma, N, T, dt):</span>
+<span id="payer_swaption-9"><a href="#payer_swaption-9" aria-hidden="true" tabindex="-1"></a>    floating_leg_value <span class="op">=</span> P0 <span class="op">-</span> P[N <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="payer_swaption-10"><a href="#payer_swaption-10" aria-hidden="true" tabindex="-1"></a>    fixed_leg_value <span class="op">=</span> P[<span class="dv">0</span>]</span>
+<span id="payer_swaption-11"><a href="#payer_swaption-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N):</span>
+<span id="payer_swaption-12"><a href="#payer_swaption-12" aria-hidden="true" tabindex="-1"></a>        fixed_leg_value <span class="op">+=</span> P[i]</span>
+<span id="payer_swaption-13"><a href="#payer_swaption-13" aria-hidden="true" tabindex="-1"></a>    fixed_leg_value <span class="op">*=</span> rbar <span class="op">*</span> dt</span>
+<span id="payer_swaption-14"><a href="#payer_swaption-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="payer_swaption-15"><a href="#payer_swaption-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> margrabe(floating_leg_value, fixed_leg_value, sigma, <span class="dv">0</span>, <span class="dv">0</span>, T)</span>
+<span id="payer_swaption-16"><a href="#payer_swaption-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="payer_swaption-17"><a href="#payer_swaption-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="payer_swaption-18"><a href="#payer_swaption-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="payer_swaption-19"><a href="#payer_swaption-19" aria-hidden="true" tabindex="-1"></a>P0 <span class="op">=</span> <span class="fl">0.95</span></span>
+<span id="payer_swaption-20"><a href="#payer_swaption-20" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> [<span class="fl">0.92</span>, <span class="fl">0.89</span>, <span class="fl">0.85</span>, <span class="fl">0.80</span>]</span>
+<span id="payer_swaption-21"><a href="#payer_swaption-21" aria-hidden="true" tabindex="-1"></a>rbar <span class="op">=</span> <span class="fl">0.03</span></span>
+<span id="payer_swaption-22"><a href="#payer_swaption-22" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="payer_swaption-23"><a href="#payer_swaption-23" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4</span></span>
+<span id="payer_swaption-24"><a href="#payer_swaption-24" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="payer_swaption-25"><a href="#payer_swaption-25" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="payer_swaption-26"><a href="#payer_swaption-26" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">2</span></span>
+<span id="payer_swaption-27"><a href="#payer_swaption-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="payer_swaption-28"><a href="#payer_swaption-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
+<span id="payer_swaption-29"><a href="#payer_swaption-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Market Model Payer Swaption:"</span>,</span>
+<span id="payer_swaption-30"><a href="#payer_swaption-30" aria-hidden="true" tabindex="-1"></a>    market_model_payer_swaption(P0, P, rbar, sigma, N, T, dt),</span>
+<span id="payer_swaption-31"><a href="#payer_swaption-31" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Market Model Payer Swaption: 0.09810051508638021</code></pre>
