@@ -43,178 +43,6 @@ So we can think of this model as a known expected continuously compunded investm
 
 Historically, these deterministic mathematics trace back to Issac Newton who developed the classical laws of motion.  The model of noise was developed by Ito to account for random disturbances, such as unpredictable wind gusts,  to a deterministic model, for example, in a model predicting the position of a falling object.
 
-This chapter has three objectives.  The first is to introduce the concept of a Brownian motion.  A Brownian motion is a random process (a variable that changes randomly over time) that evolves continuously in time and has the property that its change over any time period is normally distributed with mean zero and variance equal to the length of the time period.  The mean zero feature means that a Brownian motion is a martingale.  We will also give a different characterization (Levy's theorem) emphasizing the quadratic variation process, which is a property of the paths (how the variable evolves over time, in a given state of the world) of the process.  
-
-The second objective is to explain Ito's formula, which is the chain rule for stochastic calculus.  In the Black-Scholes model, the stock price is assumed to satisfy
-$$\frac{\mathrm{d} S}{S}=\mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,$$
-where $B$ is a Brownian motion.  In the case that the stock pays no dividend, the rate of return is its price change $\mathrm{d} S$ divided by the initial price $S$, so the model states that the expected rate of return in each instant $\mathrm{d} t$  is $\mu\,\mathrm{d} t$ (of course, $t$ denotes time, so $\mathrm{d} t$ is the change in time).  The variance of the rate of return depends on $\sigma$.  This model can be equivalently written in terms of the natural logarithm of $S$, which we will write as $\log S$.  The above equation for the rate of return is equivalent to
-$$\mathrm{d}\,\log S = \left(\mu - \frac{1}{2}\sigma^2\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .$$
-We will explain this equivalence and other similar calculations that are useful for pricing derivatives.
-
-The third objective is to explain how, when we change numeraires, as described in the previous chapter, we can calculate the expectation in the fundamental pricing @eq-formula.  The question is what effect does changing the numeraire (and hence the probability measure) have on the distribution of an asset price.  
-
-Everything in the remainder of the book is based on the mathematics presented in this chapter.  For easy reference, the essential formulas have been highlighted in boxes.  
-
-
-
-
-## Simulating a Brownian Motion {#sec-s_simulatingbrownian}
-We begin with the fact that changes in the value of a Brownian motion \index{Brownian motion} are normally distributed with mean zero and variance equal to the length of the time period.  Let $B(t)$ denote the value of a Brownian motion at time $t$.  Then for any date $u>t$, given the information at time $t$, the random variable $B(u) - B(t)$ is normally distributed with mean zero and variance equal to $u-t$.  Unless stated otherwise, our convention will be that a Brownian motion starts at $B(0)=0$.
-
-We can generate an approximate Brownian motion in Python.  To do so, we take a small time period $\Delta t$ and define the value at the end of the period to be the value of the Brownian motion at the beginning plus a normally distributed variable with mean 0 and variance $\Delta t$.  In the following procedure, we input the length $T=0.5$ of the entire time period over which the Brownian motion is to be simulated.  One input the is number $n=10000$ of time periods of length $\Delta t$ within the full interval $[0,T]$.  The length $\Delta t$ of each individual time period is then calculated as $T/n$.  The quality of the approximation of this simulation to a true Brownian motion will be always be improved by increasing the number $n$.  Plotting the output of the procedure creates a picture of what we call a path of the Brownian motion, which means that it shows the value taken at each time in one state of the world.  The procedure generates $m=2$ paths which can be interpreted as the values of the Brownian motion in another state of the world.  In other words, the path of the Brownian motion is itself random, depending in this approximation on the numbers produced by Python's random number generating function.  The random number generator np.random.normal(loc = 0, scale = vol,size = (n,m)) is an algorithm which produces numbers which mimic $n \times m$ normally distributed random variables with mean 0 (loc=0) and standard deviation $\sqrt{\Delta t}$ (scale=vol).  By setting the seed=1234 the generator is initialized and we will always get the same output whenever we run the code. The Brownian path is just the cumulative sum of $n$ of the normal increments.  
-
-
-```{python}
-#| label: Simulated Brownian Motion
-#| fig-cap: "Simulated Brownian Motion"
-import numpy as np
-import matplotlib.pyplot as plt
-
-# number of subdivisions
-n = 10000
-# number of paths
-m = 2
-# last date
-T = 0.5
-# delta t
-dt = T/n
-# volatility is standard deviation
-vol = np.sqrt(dt)
-# seed for random generator
-seed= 1234
-# define a random generator
-np.random.seed(seed)
-
-# generate "dB" for each date on each path distributed N(0,vol)
-inc = np.random.normal(loc = 0, scale = vol,size = (n,m))
-Bt = np.zeros(shape = (n + 1, m))
-
-# Brownian path starts at 0 and is cumulative sum of the dB
-Bt[1:] = inc.cumsum(axis = 0)
-# Could do previous step in a loop
-for i in range(1, n + 1):
-    Bt[i] = Bt[i - 1] + inc[i - 1]
-
-# plot one path
-t = np.array(range(0, n + 1, 1)) * dt
-plt.figure(figsize=(9,6))
-plt.plot(t,Bt[:,0])
-plt.xlabel("Time")
-plt.ylabel("Brownian Motion")
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- ^[The generation of normally distributed random numbers in Excel is discussed in Appendix~A.  The function RandN() here is user-created (to simplify typing) to equal the function Application.NormSInv(Rnd()) supplied in VBA.  The construction $\text{sqrt\,\mathrm{d} t]*z$ scales the standard normal $z$ so that its standard deviation is $\sqrt{\Delta t}$ and hence its variance is $\Delta t$, as desired.  The subroutine creates two columns of data below the active cell in the Excel worksheet with headings Time and Brownian Motion.  To plot the path of the Brownian motion, select the two columns and insert an XY (Scatter) chart, with data points connected by lines.} -->
-
-<!-- <!-- \addcontentsline{lof}{figure}{Simulating Brownian Motion}
-\begin{verbatim}
-Sub Simulating_Brownian_Motion()
-Dim T, \,\mathrm{d} t, Sqr\,\mathrm{d} t, BrownianMotion, i, N
-T = InputBox("Enter the length of the time period (t)")
-N = InputBox("Enter the number of periods (N)")
-\,\mathrm{d} t = T / N
-Sqr\,\mathrm{d} t = Sqr(\,\mathrm{d} t)
-ActiveCell.Value = "Time"
-ActiveCell.Offset(0, 1) = "Brownian Motion"
-ActiveCell.Offset(1, 0) = 0   ' beginning time
-ActiveCell.Offset(1, 1) = 0   ' beginning value of Brownian motion
-BrownianMotion = 0
-For i = 1 To N
-  ActiveCell.Offset(i + 1, 0) = i * dt          ' next time
-  BrownianMotion = BrownianMotion + Sqr\,\mathrm{d} t * RandN()
-  ActiveCell.Offset(i + 1, 1) = BrownianMotion  ' next value
-Next i
-End Sub -->
-<!-- \end{verbatim} --> -->
-
-
-
-
-## Quadratic Variation {#sec-s_quadraticvariation}
-If we take a large number $n$ of time steps in the simulation of the preceding section, we will see the distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price.   
-The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
-
-Consider a discrete partition 
-$$0=t_0 < t_1 < t_2 < \cdots < t_N=T$$
-of the time interval $[0,T]$.  Let $B$ be a Brownian motion and calculate the sum of squared changes
-$$\sum_{i=1}^N [\Delta B_{t_i}]^2\; ,$$
-where $\Delta B_{t_i}$ denotes the change $B_{t_i}-B(t_{i-1}).$  If we consider finer partitions with the length of each time interval $t_i-t_{i-1}$ going to zero, the limit of the sum is called the quadratic variation of the process.  \index{quadratic variation} For a Brownian motion, the quadratic variation over an interval $[0,T]$ is equal to $T$ with probability one.  Here is a plot of the quadratic variation.  For large values of $n$, it is equal to $t$.
-
-```{python}
-#| label: Quadratic Variation
-#| fig-cap: "Quadratic Variation"
-# quadratic variation
-Q = np.zeros(shape = (n, m))
-# Generate \,\mathrm{d} B^2
-Q = (Bt[1:n + 1] - Bt[0:n])**2
-
-# Quadratic variation is the cumulative sum of \,\mathrm{d} B^2
-QV = np.zeros(shape = (n + 1, m))
-QV[1:] = Q.cumsum(axis = 0)
-plt.figure(figsize=(9,6))
-plt.plot(t,QV[:,0])
-plt.xlabel("Time")
-plt.ylabel("Quadratic Variation")
-```
-
-
-
-
-
-
-The functions with which we are normally familiar are continuously differentiable.  If $X$ is a continuously differentiable function of time (in each state of the world), then the quadratic variation of $X$ will be zero.  A simple example is a linear function: $X(t) = at$ for some constant $a$.  Then, taking $t_i-t_{i-1} = \Delta t = T/N$ for each $i$, the sum of squared changes is
-$$\sum_{i=1}^N [\Delta X_{t_i}]^2 = \sum_{i=1}^N  [a\,\Delta t]^2 = Na^2 (\Delta t)^2 = Na^2 \left(\frac{T}{N}\right)^2 = \frac{a^2T^2}{N} \rightarrow 0$$
-as $N \rightarrow \infty$.  Essentially the same argument shows that the quadratic variation of any continuously differentiable function is zero, because such a function is approximately linear at each point.  Below is a plot of the quadratic variation for the function $X(t)=t$.  Look carefully at the scale of the y-axis
-
-```{python}
-#| label: squaredvariation
-#| fig-cap: "Approximate Squared Variation of $f(t)=t$"
-# Plot \,\mathrm{d} t^2
-plt.figure(figsize=(9,6))
-plt.plot(t,t * dt **2)
-```
-
-
-
-Thus, the jiggling of a Brownian motion, which leads to the nonzero quadratic variation, is quite unusual.  To explain exactly how unusual it is, it is helpful to introduce the concept of total variation, \index{total variation} which is defined in the same way as quadratic variation but with the squared changes $[\Delta B_{t_i}]^2$ replaced by the absolute value of the changes $|\Delta B_{t_i}|.$  If the quadratic variation of a continuous function is nonzero, then its total variation is necessarily infinite, so each path of a Brownian motion has infinite total variation (with probability one).  It was mentioned above that, with a large number of time steps in the simulation of the preceding section, one could see the distinctive jiggling property of a Brownian motion.  This is not quite right.  Any plot drawn by a pencil (or a laser printer, for that matter) must have finite total variation, because the total variation is the total distance traveled by the pencil.  Hence, no matter how many time steps one uses, one will never create a continuous plot with the nonzero quadratic variation (and infinite total variation) that a Brownian path has.  Another way to understand this is to consider focusing on a small segment of a plot and viewing it with a magnifying glass.  If the segment is small enough, and excluding the finite number of kinks that a pencil can draw in the plot of a function, it will look approximately like a straight line under the magnifying glass (with slope equal to the derivative of the function).  However, if one could view a segment of a path of a true Brownian motion under a magnifying glass, it would look much the same as the entire picture does to the naked eye---no matter how small the segment, one would still see the characteristic jiggling.
-
-
-To better visualize the convergence of the quadratic for a handfull of simulated paths of a standard Brownian motion, we encourage readers to interact with the plot below.
-
-::: {#fig-interactive_quad_var}
-<iframe wi\,\mathrm{d} th="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/quad_var_plot"></iframe>
-
-Convergence of quadratic variation for a standard Brownian motion
-:::
-
-One may well question why we should be interested in this curious mathematical object.  The reason is that asset pricing inherently involves martingales (variables that evolve randomly over time in such a way that their expected changes are always zero), as our fundamental pricing @eq-formula establishes.  Furthermore, continuous processes (variables whose paths are continuous functions of time) are much more tractable mathematically than are processes that can jump at some instants.  More importantly, it is possible in a mathematical model with continuous processes to define perfect hedges much more readily than it is in a model involving jump processes.  So, we are led to a study of continuous martingales.  An important fact is that any non-constant continuous martingale must have infinite total variation!  So, the normal functions with which we are familiar are left behind once we enter the study of continuous martingales.  
-
-There remains perhaps the question of why we focus on Brownian motion within the world of continuous martingales.  The answer here is that any continuous martingale is really just a transformation of a Brownian motion.  This is a consequence of the following important fact, which is known as Levy's theorem: \index{Levy's theorem}
-
-::: {.callout-tip}
-## 
-A continuous martingale is a Brownian motion if and only if its quadratic variation over each interval $[0,T]$ equals $T$.
-:::
-
-Thus, among continuous martingales, a Brownian motion is defined by the condition that the quadratic variation over each interval $[0,T]$ is equal to $T$.  This is really just a normalization.  A different continuous martingale may have a different quadratic variation, but it can be converted to a Brownian motion just by deforming the time scale.  Furthermore, many continuous martingales can be constructed as stochastic integrals with respect to a Brownian motion.  We take up this topic in the next section.
 
 ## Ito Processes {#sec-s_itoprocesses}
 An Ito process is a variable $X$ that changes over time as \index{Ito process}
@@ -349,8 +177,15 @@ $$e^{B(t)}=1 + \int_0^t e^{B_s} d B_s + \frac{1}{2}\int_0^t e^{B_s} ds$$
 using the discretization
 $$\Delta e^{B(t)}= e^{B(t)} \Delta B(t) + \frac{1}{2} e^{B(t)} \Delta t $$
 ```{python}
-#| label: Simulated Ito Formula
+#| label: simulated_ito
 #| fig-cap: "Simulated Ito Formula"
+
+"""
+import numpy as np
+
+n = 1000
+m = 1
+
 # Define a function and its first and second derivative
 G = lambda x: np.exp(x)
 DG = lambda x: np.exp(x)
@@ -365,24 +200,29 @@ SI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G(0)
 # Compare Ito's Lemma 
 plt.figure(figsize=(9,6))
 plt.plot(t[0:n], SI[:,0])
+"""
 ```
 Below is the exact simulated solution $e^{B(t)}$.  It is almost impossible to see a difference.
 ```{python}
-#| label: Simulated Exact Solution
+#| label: simulated_exact
 #| fig-cap: "Simulated Exact Solution"
 #exact solution
+"""
 plt.figure(figsize=(9,6))
 plt.plot(t[0:n], G(Bt[1:n + 1, 0]))
+"""
 ```
 Below we plot the $\int_0^t \frac{1}{2} g''(B_s) ds$ term.  Without this term the two plots above will not match.
+
 ```{python}
 #| label: correction
 #| fig-cap: "Second Derivative Term in Ito's Formula"
-# Correction term in Ito formula
+"""
 QVV = np.zeros(shape = (n, m))
 QVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)
 plt.figure(figsize=(9,6))
 plt.plot(t[0:n], QVV[:,0])
+"""
 ```
 
 To see the accuracy of Ito's approximation over different amounts of subdivisions, as well as the impact of the second derivative term $\int_0^t (1/2)g''(B_s)ds$, we encourage readers to interact with the plot below.
@@ -656,6 +496,7 @@ This means that $r_i$ is normally distributed with mean $\mu-\sigma^2/2$ and var
 We can simulate a path of $S$ by simulating the changes $\Delta \log S$.  The random variable $\sigma \Delta B$  in  @eq-exponential11 has a normal distribution with zero mean and variance equal to $\sigma^2\Delta t$.  We simulate it as $\sigma\sqrt{\Delta t}$ multiplied by a standard normal.  The code below simulates $n=10000$ paths with $m=1000$ time steps. There are some features of the simulation which will prove useful later.  The drift $\mu$ is labelled the interest rate $r=0.1$.  Other parameters are $\sigma = 0.2$, and $T=0.5$.  The drift of the log stock price is labelled $drift=r-\frac{\sigma^2}{2}$.  The plot output is one of the simulated sample paths.  In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, $n=1$.  Given a simulated mean zero normal random variable, $z$, changing the sign to $-z$ is also a simulated normal random variable with zero mean and the same standard deviation.  As a result, we have two simulations for the stock price labelled $St$ and $St1$, but we only plot one sample path for $St$. 
 
 ```{python}
+"""
 # Simulate Geometric Brownian Motion
 import numpy as np
 import matplotlib.pyplot as plt
@@ -691,15 +532,17 @@ St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
 St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
 plt.figure(figsize=(9,6))
 plt.plot(t,St[:,1])
-
+"""
 
 
 
 ```
 The plot below is the distribution of the simulated stock price at $T$.
 ```{python}
+"""
 plt.figure(figsize=(9,6))
 a=plt.hist(St[m,:], bins=100)
+"""
 ```
 
 
