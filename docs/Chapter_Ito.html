@@ -112,21 +112,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
 </script>
 <style>
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
 }
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
 }
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
+}
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
-}
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
 }
 </style>
 
@@ -465,7 +465,7 @@ X(t) = r X(t) \,\mathrm{d} t ~~~\text{or} ~~~\frac{d X(t)}{\,\mathrm{d} t} = r X
 <p>The solution is <span class="math inline">\(X(t) = X(0) e^{r T}\)</span> which is easily verified by taking the derivative <span class="math inline">\(\frac{d}{\,\mathrm{d} t}e^{r t} X(t) = r X(t)\)</span> or by inserting the solution into the integral equation. This is also the limiting value of the discretely compunded interest as the number of compounding periods <span class="math inline">\(n\)</span> goes to infinity:</p>
 <p><span class="math display">\[X(t)=\lim_{t \rightarrow \infty} \left(1+r \frac{T}{N}\right)^{N}.\]</span></p>
 <p>This can be verified by taking the log of <span class="math inline">\(\left(1+r \frac{T}{N}\right)^{N}\)</span> and using l’Hospital’s rule. Given the initial wealth, <span class="math inline">\(X(0)\)</span> and the rate of change <span class="math inline">\(r X(t)\)</span> (which, if the unit of account is dollars, is in units dollars / time), we can we solve for the value of our wealth at all times.</p>
-<p>However, most investments involve risk. We might think that part of the return is more or less known while a portion of the investment is random or risky. Therefore we would like a model which can be written as <span class="math display">\[ d X(t) = \mu X(t) \,\mathrm{d} t + \text{`noise'} \times X(t). \]</span></p>
+<p>However, most investments involve risk. We might think that part of the return is more or less known while a portion of the investment is random or risky. Therefore we would like a model which can be written as <span class="math display">\[ \,\mathrm{d}X(t) = \mu X(t) \,\mathrm{d} t + \text{`noise'} \times X(t). \]</span></p>
 <p>It makes sense that the units of the noise should be in the unit of account (dollars) and it should have zero mean but it is not obvious how to make sense of a noisy change over an instant. In the next section we examine the most popular choice for this model, namely Brownian motion. Loosely speaking, we can take expectations to get</p>
 <p><span class="math display">\[ d E[X(t)]= \mu E[X(t)] \,\mathrm{d} t\]</span></p>
 <p>which gives a solution</p>
@@ -570,12 +570,12 @@ invalid escape sequence '\,'
 
 invalid escape sequence '\,'
 
-C:\Users\kerry\AppData\Local\Temp\ipykernel_18644\100999839.py:1: SyntaxWarning:
+C:\Users\kerry\AppData\Local\Temp\ipykernel_9428\100999839.py:1: SyntaxWarning:
 
 invalid escape sequence '\,'
 </code></pre>
 </div>
-<div id="simulated_ito" class="cell-output cell-output-display" data-execution_count="6">
+<div id="simulated_ito" class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>"\nimport numpy as np\n\nn = 1000\nm = 1\n\n# Define a function and its first and second derivative\nG = lambda x: np.exp(x)\nDG = lambda x: np.exp(x)\nDDG = lambda x: np.exp(x)\n# Build G'(x)\\,\\mathrm{d} B\nGdB = np.zeros(shape = (n, m))\nGdB[0] = np.repeat(DG(0), m) * inc[0]\nGdB[1:] = DG(Bt[0:n - 1]) * inc[1:]\nSI = np.zeros(shape = (n, m))\n# Stochastic Integral is cumulative sum of G'(B)dB plus initial\nSI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G(0)\n# Compare Ito's Lemma \nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], SI[:,0])\n"</code></pre>
 <p>Simulated Ito Formula</p>
 </div>
@@ -590,7 +590,7 @@ invalid escape sequence '\,'
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], G(Bt[1:n + 1, 0]))</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="simulated_exact" class="cell-output cell-output-display" data-execution_count="7">
+<div id="simulated_exact" class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>'\nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], G(Bt[1:n + 1, 0]))\n'</code></pre>
 <p>Simulated Exact Solution</p>
 </div>
@@ -606,7 +606,7 @@ invalid escape sequence '\,'
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], QVV[:,0])</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="correction" class="cell-output cell-output-display" data-execution_count="8">
+<div id="correction" class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>'\nQVV = np.zeros(shape = (n, m))\nQVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)\nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], QVV[:,0])\n'</code></pre>
 <p>Second Derivative Term in Ito’s Formula</p>
 </div>
@@ -750,7 +750,7 @@ S(t)=S(0)\exp\left(\mu t- \sigma^2 t/2 + \sigma B(t)\right)
 \qquad(6.27)\]</span></span></p>
 <p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S(t_{i-1})\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S(t_{i-1})} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>6.27</span></a>. Thus, the geometric Brownian motion model <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.23</span></a> implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_Vol.html" class="quarto-xref"><span>Chapter 13</span></a>).</p>
 <p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>6.26</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
-<div id="7f252b99" class="cell" data-execution_count="4">
+<div id="42b0bf45" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -791,12 +791,12 @@ S(t)=S(0)\exp\left(\mu t- \sigma^2 t/2 + \sigma B(t)\right)
 <span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t,St[:,1])</span></span>
 <span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>'\n# Simulate Geometric Brownian Motion\nimport numpy as np\nimport matplotlib.pyplot as plt\n# number of paths\nn = 10000\n#number of divisions\nm = 1000\n# Interest rate (We set the drift equal to the interest rate)\nr = 0.1\n# Volatility\nsig = 0.2\n# Initial Stock Price\nS0 = 42\n# Maturity\nT = 0.5\n# Delta t\ndt = T/m\n# Drift\ndrift = (r-0.5*sig**2)\n# Volatility\nvol = sig * np.sqrt(dt)\n\nt = np.array(range(0,m + 1,1)) * dt\n\n# seed for random generator\nseed= 2020\n# define a random generator\nnp.random.seed(seed)\ninc = np.zeros(shape = (m + 1, n))\ninc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))\nSt = np.zeros(shape = (m + 1, n))\nSt = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nSt1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nplt.figure(figsize=(9,6))\nplt.plot(t,St[:,1])\n'</code></pre>
 </div>
 </div>
 <p>The plot below is the distribution of the simulated stock price at <span class="math inline">\(T\)</span>.</p>
-<div id="dcf82caf" class="cell" data-execution_count="5">
+<div id="89b4f87b" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -804,7 +804,7 @@ S(t)=S(0)\exp\left(\mu t- \sigma^2 t/2 + \sigma B(t)\right)
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">a=plt.hist(St[m,:], bins=100)</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>'\nplt.figure(figsize=(9,6))\na=plt.hist(St[m,:], bins=100)\n'</code></pre>
 </div>
 </div>

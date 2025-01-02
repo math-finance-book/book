@@ -132,6 +132,10 @@ div.csl-indent {
   });
 </script>
 <style>
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
@@ -139,10 +143,6 @@ div.csl-indent {
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
 }
 .Extra {
   --color1: #d5deed;
@@ -484,7 +484,7 @@ window.Quarto = {
 <section id="monte-carlo-valuation-of-a-european-call" class="level3">
 <h3 class="anchored" data-anchor-id="monte-carlo-valuation-of-a-european-call">Monte Carlo Valuation of a European Call</h3>
 <p>We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions. We will also estimate the delta by each of the methods described in <a href="#sec-s_montecarlogreeks1" class="quarto-xref"><span>Section 14.3</span></a> and~<span class="math inline">\(\ref{s_montecarlogreeks2}\)</span>. Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates. We use the code in Chapter <a href="Chapter_Ito.html" class="quarto-xref"><span>Chapter 6</span></a>. In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process. Therefore we set <span class="math inline">\(m=1\)</span>. However, we use a large number of paths, <span class="math inline">\(n=10000\)</span> to get a large sample of terminal stock prices.</p>
-<div id="b3464fa8" class="cell" data-execution_count="1">
+<div id="c07ec73c" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
@@ -527,7 +527,7 @@ window.Quarto = {
 </details>
 </div>
 <p>As before, this code generates two samples <span class="math inline">\(St\)</span>, which adds the simulated standard (zero mean) normal random variable, and <span class="math inline">\(St1\)</span> which subtracts the simulated (zero mean) standard normal random variable. Each sample produces and estimate for the Black-Scholes European call option.</p>
-<div id="3c2d8656" class="cell" data-execution_count="2">
+<div id="2ac5b275" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cc<span class="op">=</span>np.maximum(St[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
@@ -547,7 +547,7 @@ The average of the two estimates= 4.739635467026771</code></pre>
 </div>
 </div>
 <p>The true call price is given by</p>
-<div id="9d9d60d4" class="cell" data-execution_count="3">
+<div id="45fb2362" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
@@ -598,7 +598,7 @@ The average of the two estimates= 4.739635467026771</code></pre>
 <h2 data-number="14.2" class="anchored" data-anchor-id="sec-s_controlvariates"><span class="header-section-number">14.2</span> Control Variates in Monte Carlo</h2>
 <p> Another approach to increasing the efficiency of the Monte Carlo method is to adjust the estimated mean (option value) based on the known mean of another related variable. We can explain this in terms of linear regression in statistics. Suppose we have a random sample <span class="math inline">\(\{x_1,\ldots,x_M\}\)</span> of a variable <span class="math inline">\(x\)</span> with unknown mean <span class="math inline">\(\mu\)</span>, and suppose we have a corresponding sample <span class="math inline">\(\{y_1,\ldots,y_M\}\)</span> of another variable <span class="math inline">\(y\)</span> with known mean <span class="math inline">\(\phi\)</span>. Then an efficient estimate of <span class="math inline">\(\mu\)</span> is <span class="math inline">\(\hat{\mu} = \bar{x} + \hat{\beta} (\phi-\bar{y})\)</span>, where <span class="math inline">\(\bar{x}\)</span> and <span class="math inline">\(\bar{y}\)</span> denote the sample means of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, and where <span class="math inline">\(\hat{\beta}\)</span> is the coefficient of <span class="math inline">\(y\)</span> in the linear regression of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span> (i.e., the estimate of <span class="math inline">\(\beta\)</span> in the linear model <span class="math inline">\(x = \alpha +\beta y + \varepsilon\)</span>). The standard Monte Carlo method, which we have described thus far, simply estimates the mean of <span class="math inline">\(x\)</span> as <span class="math inline">\(\bar{x}\)</span>. The control variate method adjusts the estimate by adding <span class="math inline">\(\hat{\beta} (\phi-\bar{y})\)</span>. To understand this correction, assume for example that the true <span class="math inline">\(\beta\)</span> is positive. If the random sample is such that <span class="math inline">\(\bar{y}&lt;\phi\)</span>, then it must be that small values of <span class="math inline">\(y\)</span> were over-represented in the sample. Since <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> tend to move up and down together (this is the meaning of a positive <span class="math inline">\(\beta\)</span>) it is likely that small values of <span class="math inline">\(x\)</span> were also over-represented in the sample. Therefore, one should adjust the sample mean of <span class="math inline">\(x\)</span> upwards in order to estimate <span class="math inline">\(\mu\)</span>. The best adjustment will take into account the extent to which small values of <span class="math inline">\(y\)</span> were over-represented (i.e., the difference between <span class="math inline">\(\bar{y}\)</span> and <span class="math inline">\(\phi\)</span>) and the strength of the relation between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> (which the estimate <span class="math inline">\(\hat{\beta}\)</span> represents). The efficient correction of this sort is also the simplest: just add <span class="math inline">\(\hat{\beta}(\phi-\bar{y})\)</span> to <span class="math inline">\(\bar{x}\)</span>. In practice, the estimation of <span class="math inline">\(\hat{\beta}\)</span> may be omitted and one may simply take <span class="math inline">\(\hat{\beta}=1\)</span>, if the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> can be assumed to be one-for-one. If <span class="math inline">\(\beta\)</span> is to be estimated, the estimate (by ordinary least squares) is <span class="math display">\[\hat{\beta} = \frac{\sum_{i=1}^M x_iy_i - M\bar{x}\bar{y}}{\sum_{i=1}^M y_i^2 - M\bar{y}^2}\; .\]</span> In general, the correction term <span class="math inline">\(\hat{\beta}(\phi-\bar{y})\)</span> will have a nonzero mean, which introduces a bias in the estimate of <span class="math inline">\(\mu\)</span>. To eliminate the bias, one can compute <span class="math inline">\(\hat{\beta}\)</span> from a pre-sample of <span class="math inline">\(\{x,y\}\)</span> values.</p>
 <p>As an example of a control variate, in our simulation code to estimate the Black Scholes price for a call option we can use the stock price itself. The known stock price is the inout price <span class="math inline">\(S0\)</span>. The simulation also produces an estimate for the stock price as the dicsounted expected value of the terminal stock price <span class="math inline">\(\hat{S}=\sum_{i=1}^{n} e^{- r T } St(m,i)\)</span> where <span class="math inline">\(St(m,i)\)</span> is the <span class="math inline">\(i\)</span>th simulated stock price at time <span class="math inline">\(T\)</span>. Theoretically these should be the same umber, but due to error they typically wil not be the same.</p>
-<div id="3edfd3af" class="cell" data-execution_count="4">
+<div id="9a18c3cd" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>SS<span class="op">=</span>np.mean(St[m,:])<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
@@ -613,7 +613,7 @@ The error is = -0.058999995779316805</code></pre>
 </div>
 </div>
 <p>The error is <span class="math inline">\(S0-\hat{S}\)</span> which corresponds to <span class="math inline">\(\phi-y\)</span> above. We then compute <span class="math inline">\(\hat{\beta}\)</span> and comute the improved estimate <span class="math display">\[ \text{new estimate}= \text{original estimate} +\hat{\beta}(S0-\hat{S}) \]</span> In the code below we do this procedure for both samples and average the updates.</p>
-<div id="c2ab05c6" class="cell" data-execution_count="5">
+<div id="61d26d86" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hatbeta<span class="op">=</span> np.cov(St[m,:],cc)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(St[m,],cc)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
@@ -639,7 +639,7 @@ The average of the updated estimates = 4.751969152451551</code></pre>
 </div>
 </div>
 <p>We can compare this to the exact Black Scholes formula from before.</p>
-<div id="0afc7340" class="cell" data-execution_count="6">
+<div id="6db59bd9" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The exact Black Scholes Price is='</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -732,7 +732,7 @@ z &amp;=  \begin{cases} 1 &amp; \text{if} S_u(T)&gt;K&gt;S_d(T)\; ,\\
 <p>where <span class="math inline">\(\nu = r-q-\sigma^2/2\)</span> and <span class="math inline">\(z\)</span> is a standard normal. Given that there are <span class="math inline">\(N\)</span> time periods of length <span class="math inline">\(\Delta t\)</span>, we need to generate <span class="math inline">\(N\)</span> standard normals to generate a stock price path. If we generate <span class="math inline">\(M\)</span> paths to obtain a sample of <span class="math inline">\(M\)</span> option values, then we will need to generate <span class="math inline">\(MN\)</span> standard normals.</p>
 <p>Consider for example a floating-strike lookback call. The formula for this option given in <a href="Chapter_Exotics.html#sec-s_lookbacks" class="quarto-xref"><span>Section 12.7</span></a> assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price. In practice, the minimum will be computed by recording the price at a discrete number of dates. We can value the discretely sampled lookback using Monte-Carlo by choosing <span class="math inline">\(\Delta t\)</span> to be the interval of time (e.g., a day or week) at which the price is recorded. For example, if the contract calls for weekly observation, we will attain maximum precision by setting <span class="math inline">\(N\)</span> to be the number of weeks before the option matures.</p>
 <p>For most path dependent options, a possible starting point is to generate an array of <span class="math inline">\(n\)</span> paths but since we want the entire path we choose the number of time steps that is appropriate for our application. We can use the same code as in Section @#sec-s_mc_europeans if we are working in a Black Scholes setting.</p>
-<div id="95b114f1" class="cell" data-execution_count="7">
+<div id="5d8f0822" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
@@ -775,7 +775,7 @@ z &amp;=  \begin{cases} 1 &amp; \text{if} S_u(T)&gt;K&gt;S_d(T)\; ,\\
 </details>
 </div>
 <p>As before this code generates two samples the original and the antithetic. The output is an array of <span class="math inline">\(n\)</span> sample paths with <span class="math inline">\(m\)</span> time steps. The sample can also be used to find the value of a floating strike lookback call.</p>
-<div id="21e212c3" class="cell" data-execution_count="8">
+<div id="af7389d8" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> floating_strike_call(S, r, sigma, q, T, SMin):</span>
@@ -812,7 +812,7 @@ The exact formula is= 7.231056939691567</code></pre>
 </div>
 </div>
 <p>To value the fixed strike lookback call option with time <span class="math inline">\(T\)</span> payoff <span class="math inline">\(\max(\max_{0\le t \le T} S_t.0)\)</span>, we simply add the following</p>
-<div id="17884f71" class="cell" data-execution_count="9">
+<div id="7b0aeab7" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Stmax<span class="op">=</span>np.maximum(np.<span class="bu">max</span>(St,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">-</span>K,<span class="dv">0</span>)</span>
@@ -845,7 +845,7 @@ x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;.
 y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S(t_i)/N} - K^*,0\right)\;.
 \]</span> The mean <span class="math inline">\(\phi\)</span> of <span class="math inline">\(y\)</span> under the risk-neutral probability is given in the pricing <a href="Chapter_Exotics.html#eq-disc_geom_avg_call" class="quarto-xref">Equation&nbsp;<span>12.48</span></a>. We can use the sample mean of <span class="math inline">\(y\)</span> and its known mean <span class="math inline">\(\phi\)</span> to adjust the sample mean of <span class="math inline">\(x\)</span> as an estimator of the value of the average-price call. Generally, the estimated adjustment coefficient <span class="math inline">\(\hat{\beta}\)</span> will be quite close to 1.</p>
 <p>Again we can get a sample of payoffs using our stock price samples.</p>
-<div id="1324eeb0" class="cell" data-execution_count="10">
+<div id="24376d7f" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>average <span class="op">=</span> np.mean(St,axis<span class="op">=</span><span class="dv">0</span>)</span>
@@ -863,7 +863,7 @@ The average of the estimates= 3.2640153062378374</code></pre>
 </div>
 </div>
 <p>We now construct a control variate, the geometric asian option which has a known formula for its value.</p>
-<div id="8309afaf" class="cell" data-execution_count="11">
+<div id="c250d7b3" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call(S, K, r, sigma, q, T):</span>
@@ -921,7 +921,7 @@ The error in the second estimate= -0.5530078187436307</code></pre>
 <p>Next we estimate the beta. As discussed before, we could simply set beta=1. Alternatively, if we estimate beta from the simulated sample, then our update could be biased. Instead we compute an independent sample from which we estimate beta. We then estimate the updated estimate for both samples from the formula <span class="math display">\[
 \text{new estimate} = \text{original estimate} + \beta * \text{error}
 \]</span></p>
-<div id="529bfe57" class="cell" data-execution_count="12">
+<div id="a270b75f" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>incpre <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
@@ -965,7 +965,7 @@ The average of the updated values is= 2.7528664341140585</code></pre>
 \]</span> where <span class="math inline">\(Z\)</span> is defined as <span class="math display">\[
 Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 \]</span> The random variable <span class="math inline">\(Z\)</span> is also a standard normal, and the correlation between <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z\)</span> is <span class="math inline">\(\rho\)</span>.</p>
-<div id="00b9b9ed" class="cell" data-execution_count="13">
+<div id="f0aa2652" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate 2 Geometric Brownian Motions</span></span>
@@ -1017,7 +1017,7 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 \Delta \log S_1 &amp;= \nu_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,\\
 \Delta \log S_2 &amp;= \nu_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
 \end{align*}\]</span> where <span class="math inline">\(\nu_i = r-q_1-\sigma_i^2/2\)</span> and the <span class="math inline">\(Z_i\)</span> are independent standard normals.</p>
-<div id="6afb50af" class="cell" data-execution_count="14">
+<div id="a1d28c7a" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
@@ -1027,7 +1027,7 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 </details>
 </div>
 <p>We can also construct antithetic variables.</p>
-<div id="1f23eb9a" class="cell" data-execution_count="15">
+<div id="fd593327" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
@@ -1037,7 +1037,7 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 </details>
 </div>
 <p>Given this sample, we can estimate the value of a best of 2 option with payoff <span class="math inline">\(\max(S_{1T},S_{2T})\)</span>.</p>
-<div id="a6f12d95" class="cell" data-execution_count="16">
+<div id="ffdf95c5" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(St1[m,:],St2[m,:])</span>
@@ -1091,7 +1091,7 @@ AA^\top = \text{covariance matrix}
 \log S_i(T) = \log S_i(0) +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,
 \]</span> where the <span class="math inline">\(Z_j\)</span> are independent standard normals. Given the simulated values of the <span class="math inline">\(\log S_i(T)\)</span>, the value at maturity of the basket option is readily computed. The estimate of the date–0 value is then computed as the discounted average of the simulated values at maturity.</p>
 <p>For our two asset example we compute the value of a call opttion on an equally weighted porfotlio.</p>
-<div id="7698deb8" class="cell" data-execution_count="17">
+<div id="c23a7af2" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>w<span class="op">=</span><span class="fl">0.5</span></span>
@@ -1111,7 +1111,7 @@ The average of the estimates= 4.674364753984721</code></pre>
 </div>
 </div>
 <p>Below is a three asset basket option whihc uses the numpy cholesky decomposition. In contrast to the above routine, this routine is does not have the option to generate the entire path, although this can be easily modeified.</p>
-<div id="b918c8f7" class="cell" data-execution_count="18">
+<div id="695a6a57" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1211,7 +1211,7 @@ The average estimate of the basket option value= 5.312623607991936</code></pre>
 </div>
 </div>
 <p>We can generate the entire path of multiple assets to value, for example, lookback options on a basket. The code below values the same European basket option as above only it calculates <span class="math inline">\(m=2\)</span> time steps; a lookback can be created by changing the payoffs and increasing <span class="math inline">\(m\)</span>.</p>
-<div id="e089f838" class="cell" data-execution_count="19">
+<div id="1c62a72b" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
