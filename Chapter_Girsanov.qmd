@@ -2,25 +2,25 @@
 
 # Girsanov's Theorem {#sec-c_girsanov}
 
-
-
-## Numeraires and Probabilities {#sec-s_girsanov}
-When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  (Likewise, a martingale is unlikely to remain a martingale when we change probabilities.)  However, the Brownian motion $B$ will still be an Ito process under the new probability measure.  In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire) this will always be true for us.]  Changing probabilities only changes the drift of an Ito process.  
+When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  However, the Brownian motion $B$ will still be an Ito process under the new probability measure.  In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire) this will always be true for us.]  Changing probabilities only changes the drift of an Ito process.  
 
 In a sense, this should not be surprising.  It was noted in @sec-s_quadraticvariation that a Brownian motion $B$ can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval $[0,T]$ is equal to $T$.  Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in $B$) but it will not affect how each path jiggles. So, under the new probability measure, $B$ should still be like a Brownian motion but it may have a nonzero drift.  If we consider a general Ito process, the reasoning is the same.  The diffusion coefficient $\sigma$ determines how much each path jiggles, and this is unaffected by changing the probability measure.  Furthermore, instantaneous covariances---the $(\mathrm{d} X)(\mathrm{d} Y)$ terms---between Ito processes are unaffected by changing the probability measure.  Only the drifts are affected.
 
-As explained in @sec-s_introoptions, we need to know the distribution of the underlying under probability measures corresponding to different numeraires.  Let $S$ be the price of an asset that has a constant dividend yield $q$, and, as in @sec-s_reinvestingdividends, let $V_t=\mathrm{e}^{qt}S_t$.  This is the price of the portfolio in which all dividends are reinvested, and we have 
+## Changing Measures {#sec-s_girsanov}
+
+As explained in @sec-c_arbitrage, we need to know the distribution of the underlying under probability measures corresponding to different numeraires.  Let $S$ be the price of an asset that has a constant dividend yield $q$, and, as in @sec-s_reinvestingdividends, let $V_t=\mathrm{e}^{qt}S_t$.  This is the price of the portfolio in which all dividends are reinvested, and we have 
 $$\frac{\mathrm{d} V}{V} = q\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\; .$$
 Let $Y$ be the price of another another asset that does not pay dividends.  Let $r_t$ denote the instantaneous risk-free rate at date $t$ and let $R_t = \exp\left(\int_0^t r_s\,\mathrm{d} s\right)$.  Assume
 \begin{align*}
- \frac{\mathrm{d} S}{S} &= \mu_s\,\mathrm{d} t+\sigma_s\,\mathrm{d} B_s\; ,\\
- \frac{\mathrm{d} Y}{Y} &= \mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y\;,
+ \frac{\mathrm{d} S}{S} &= \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,\\
+ \frac{\mathrm{d} Y}{Y} &= \theta\,\mathrm{d} t+\phi\,\mathrm{d} W\;,
 \end{align*}
-where $B_s$ and $B_y$ are Brownian motions under the actual probability measure with correlation $\rho$, and where $\mu_s, \mu_y, \sigma_s, \sigma_y$ and $\rho$ can be quite general random pro\-cesses.  
-We consider the dynamics of the asset price $S$ under three different probability measures.  In each case, we follow the same steps: (i) we note that the ratio of an asset price to the numeraire asset price must be a martingale, (ii) we use Ito's formula to calculate the drift of this ratio, and (iii) we use the fact that the drift of a martingale must be zero to compute the drift of $\mathrm{d} S/S$.
+where $B$ and $W$ are Brownian motions under the actual probability measure with correlation $\rho$, and where $\mu, \theta, \sigma, \phi$ and $\rho$ can be quite general random processes.  
+
+We consider the dynamics of the asset price $S$ under three different probability measures.  In each case, we follow the same steps: (i) we note that the ratio of an asset price to the numeraire asset price must be a martingale, (ii) we use Ito's formula to calculate the drift of this ratio, and (iii) we use the fact that the drift of a martingale must be zero to compute the drift of $\mathrm{d} S/S$.  Rather than executing these steps, we could instead apply a general result called Girsanov's Theorem, which is discussed at the end of this chapter.
 
 
-### Risk-Neutral Probabilities
+### Risk-Neutral Probability
 Under the risk-neutral probability, $Z_t$ defined as 
 $$Z_t = \frac{V_t}{R_t} = \exp\left(-\int_0^t r_s\,\mathrm{d} s\right)V_t$$
 is a martingale.  Using the compounding/discounting rule, we have
@@ -30,10 +30,10 @@ For $Z$ to be a martingale, the drift ($\mathrm{d} t$ part) of $\mathrm{d} Z/Z$ 
 ::: Rule
 ## 
 $$
-\frac{\mathrm{d} S}{S} =( r-q)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
+\frac{\mathrm{d} S}{S} =( r-q)\,\mathrm{d} t+\sigma\,\mathrm{d} B^*\;,
 $$ {#eq-riskneutral11}
 
-where $B^*_s$ is a Brownian motion under the risk-neutral probability. 
+where $B^*$ is a Brownian motion under the risk-neutral probability. 
 :::
  
 
@@ -50,82 +50,83 @@ S$ is $(r -q + \sigma^2_s)\,\mathrm{d} t$.  We conclude that:
 ::: Rule
 ## 
 $$
-\frac{\mathrm{d} S}{S} = (r-q+ \sigma^2_s)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
+\frac{\mathrm{d} S}{S} = (r-q+ \sigma^2_s)\,\mathrm{d} t+\sigma\,\mathrm{d} B^*\;,
 $$ {#eq-own11}
 
-where now $B^*_s$ denotes a Brownian motion when $V_t=\mathrm{e}^{qt}S_t$ is the numeraire.
+where now $B^*$ denotes a Brownian motion when $V_t=\mathrm{e}^{qt}S_t$ is the numeraire.
 :::
 
 
 
 ### Another Risky Asset as the Numeraire
-When $Y$ is the numeraire, $Z_t$ defined as 
+When the other non-dividend paying asset with price $Y$ is the numeraire, $Z_t$ defined as 
 $$Z_t = \frac{V_t}{Y_t}$$ must be a martingale.  Using again the rule for ratios, we have
 \begin{align*}
 \frac{\mathrm{d} Z}{Z} &= \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y}- \left(\frac{\mathrm{d} V}{V}\right)\left(\frac{\mathrm{d} Y}{Y}\right) + \left(\frac{\mathrm{d} Y}{Y}\right)^2\\
-& = \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y} -\rho\sigma_s\sigma_y\,\mathrm{d} t+\sigma_y^2\,\mathrm{d} t\\
-&= \frac{\mathrm{d} S}{S} -\frac{\mathrm{d} Y}{Y} + (q-\rho\sigma_s\sigma_y\,\mathrm{d} t+\sigma_y^2)\,\mathrm{d} t\; .
+& = \frac{\mathrm{d} V}{V} -\frac{\mathrm{d} Y}{Y} -\rho\sigma\phi\,\mathrm{d} t+\phi^2\,\mathrm{d} t\\
+&= \frac{\mathrm{d} S}{S} -\frac{\mathrm{d} Y}{Y} + (q-\rho\sigma\phi\,\mathrm{d} t+\phi^2)\,\mathrm{d} t\; .
 \end{align*}
 We can apply our previous example to compute the dynamics of $Y$ when $Y$ is the numeraire.  This shows that the drift of $\mathrm{d} Y/Y$ is $(r+ \sigma^2_y)\,\mathrm{d} t$.  Because the drift of $\mathrm{d} Z/Z$ must be zero, it follows that the drift of $\mathrm{d} S/S$ is
-$(r-q+ \rho\sigma_s\sigma_y)\,\mathrm{d} t$.  We conclude that:
+$(r-q+ \rho\sigma\phi)\,\mathrm{d} t$.  We conclude that:
 
 ::: Rule
 ## 
 $$
-\frac{\mathrm{d} S}{S} = (r-q+ \rho\sigma_s\sigma_y)\,\mathrm{d} t+\sigma_s\,\mathrm{d} B^*_s\;,
+\frac{\mathrm{d} S}{S} = (r-q+ \rho\sigma\phi)\,\mathrm{d} t+\sigma\,\mathrm{d} B^*\;,
 $$ {#eq-other11}
 
-where  $B^*_s$ denotes a Brownian motion under the probability measure corresponding to the non-dividend-paying risky asset $Y$ being the numeraire, and where $\rho$ is the correlation of $S$ and $Y$.
+where  $B^*$ denotes a Brownian motion under the probability measure corresponding to the non-dividend-paying risky asset $Y$ being the numeraire, and where $\rho$ is the correlation of $S$ and $Y$.
 :::
 
 
-Notice that @eq-other11, while more complicated, is also more general than the others.  In fact, it includes  @eq-riskneutral11 and @eq-own11 as special cases: (i) if $Y$ is the price of the instantaneously risk-free asset, then $\sigma_y=0$ and @eq-other11 simplifies to @eq-riskneutral11, and (ii) if $Y=
-V$, then $\sigma_y=\sigma_s$ and $\rho=1$, so @eq-other11 simplifies to @eq-own11.
+Notice that @eq-other11, while more complicated, is also more general than the others.  In fact, it includes  @eq-riskneutral11 and @eq-own11 as special cases: (i) if $Y$ is the price of the instantaneously risk-free asset, then $\phi=0$ and @eq-other11 simplifies to @eq-riskneutral11, and (ii) if $Y=
+V$, then $\phi=\sigma$ and $\rho=1$, so @eq-other11 simplifies to @eq-own11.
 
-### Further Discussion
+::: Extra
 
-It would be natural for one to ask at this point: what is the Brownian motion $B^*_s$ and where did it come from?  We have argued that once we know the drift, and the fact that the volatility does not change, we can immediately write down, for example, 
-$$\frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B^*_s$$
-for a Brownian motion $B^*_s$ under the risk-neutral probability.  To answer this question, we will give here the definition of $B^*_s$ under the risk-neutral probability.  The definition shows that we are justified in writing down  @eq-riskneutral11--@eq-other11, but we will not repeat the definition each time we make a statement of this sort.     
+It is natural to ask at this point: What is the Brownian motion $B^*$ and where did it come from?  We have argued that once we know the drift, and the fact that the volatility does not change, we can immediately write down, for example, 
+$$\frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma\,\mathrm{d} B^*$$
+for a Brownian motion $B^*$ under the risk-neutral probability.  To answer this question, we will give here the definition of $B^*$ under the risk-neutral probability.  The definition shows that we are justified in writing down  @eq-riskneutral11--@eq-other11, but we will not repeat the definition each time we make a statement of this sort.     
 
 We showed that $Z$ is a martingale under the risk-neutral probability, where $Z$ satisfies
 $$
-\frac{\mathrm{d} Z}{Z} = (q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = (q-r+\mu_s)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B_s\;.
+\frac{\mathrm{d} Z}{Z} = (q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = (q-r+\mu)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;.
 $$ {#eq-numeraire101}
 
-Define $B^*_s_0 = 0$ and
+Define $B^*_0 = 0$ and
 $$
-\mathrm{d} B^*_s = \left(\frac{q-r+\mu_s}{\sigma_s}\right)\,\mathrm{d} t + \mathrm{d} B_s\;.
+\mathrm{d} B^* = \left(\frac{q-r+\mu}{\sigma}\right)\,\mathrm{d} t + \mathrm{d} B\;.
 $$ {#eq-numeraire102}
 
 Then 
-$$\mathrm{d} B^*_s = \frac{1}{\sigma_s}\left(\frac{\mathrm{d} Z}{Z}\right)$$
+$$\mathrm{d} B^* = \frac{1}{\sigma}\left(\frac{\mathrm{d} Z}{Z}\right)$$
 and hence is a continuous martingale under the risk-neutral probability.  We can compute its quadratic variation as
-$$(\mathrm{d} B^*_s)^2 = \left(\frac{q-r+\mu_s}{\sigma_s}\right)^2(\mathrm{d} t)^2 + 2\left(\frac{q-r+\mu_s}{\sigma_s}\right)(\mathrm{d} t)(\mathrm{d} B_s) + (\mathrm{d} B_s)^2 = \mathrm{d} t\; .$$
-Therefore, by Levy's theorem (@sec-s_quadraticvariation), $B^*_s$ is a Brownian motion under the risk-neutral probability.   From  @eq-numeraire101 and @eq-numeraire102 we have
-$$(q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = \sigma_s\,\mathrm{d} B^*_s \quad \Longleftrightarrow \quad \frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma_s\,\mathrm{d} B^*_s\;,$$
+$$(\mathrm{d} B^*)^2 = \left(\frac{q-r+\mu}{\sigma}\right)^2(\mathrm{d} t)^2 + 2\left(\frac{q-r+\mu}{\sigma}\right)(\mathrm{d} t)(\mathrm{d} B) + (\mathrm{d} B)^2 = \mathrm{d} t\; .$$
+Therefore, by Levy's theorem (@sec-s_quadraticvariation), $B^*$ is a Brownian motion under the risk-neutral probability.   From  @eq-numeraire101 and @eq-numeraire102 we have
+$$(q-r)\,\mathrm{d} t + \frac{\mathrm{d} S}{S} = \sigma\,\mathrm{d} B^* \quad \Longleftrightarrow \quad \frac{\mathrm{d} S}{S} = (r-q)\,\mathrm{d} t + \sigma\,\mathrm{d} B^*\;,$$
 as in  @eq-riskneutral11.
+:::
 
-## Tail Probabilities of Geometric Brownian Motions {#sec-tailprobs}
+## Tail Probabilities {#sec-tailprobs}
 
 For each of the numeraires discussed in the previous section, we have
 $$
 \mathrm{d} \log S = \alpha\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
 $$ {#eq-tailprob1}
 
-for some $\alpha$ and $\sigma$, where $B$ is a Brownian motion under the probability measure associated with the numeraire.  Specifically, $\sigma=\sigma_s$, $B=B^*_s$, and
+for some $\alpha$ and $\sigma$, where $B$ is a Brownian motion under the probability measure associated with the numeraire.  Specifically, $\sigma=\sigma$, $B=B^*$, and
 
 
 
 \renewcommand{\labelenumi}{(\arabic{enumi})}
-1. for the risk-neutral probability, $\alpha = r-q-\sigma_s^2/2$,
-2. when $\mathrm{e}^{qt}S_t$ is the numeraire, $\alpha = r-q +\sigma_s^2/2$,
-3. when another risky asset price $Y$ is the numeraire, $\alpha = r-q+\rho\sigma_s\sigma_y-\sigma_s^2/2$.
+1. for the risk-neutral probability, $\alpha = r-q-\sigma^2/2$,
+2. when $\mathrm{e}^{qt}S_t$ is the numeraire, $\alpha = r-q +\sigma^2/2$,
+3. when another risky asset price $Y$ is the numeraire, $\alpha = r-q+\rho\sigma\phi-\sigma^2/2$.
 
 
 
 We will assume in this section that $\alpha$ and $\sigma$ are constants.
-The essential calculation in pricing options, as we will see in the next chapter and in @sec-c_exotics, is to compute $\text{prob}(S_t>K)$ and $\text{prob}(S_t<K)$ for a constant $K$ (the strike price of an option), where $\text{prob}$ denotes the probabilities at date $0$ (the date we are pricing an option) associated with a particular numeraire.  
+The essential calculation in pricing options is to compute $\text{prob}(S_t>K)$ and $\text{prob}(S_t<K)$ for a constant $K$ (the strike price of an option), where $\text{prob}$ denotes the probabilities at date $0$ (the date we are pricing an option) associated with a particular numeraire.  
 
 @eq-tailprob1 gives us
 $$\log S_t = \log S_0 + \alpha T + \sigma B_t\; .$$
@@ -176,3 +177,5 @@ $$ {#eq-tailprob02}
 
 where $d$ is defined in @eq-tailprob3.
 :::
+
+## Girsanov's Theorem
