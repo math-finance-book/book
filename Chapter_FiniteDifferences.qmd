@@ -4,14 +4,14 @@
 
 In this chapter we will see how to estimate derivative values by numerically solving the partial differential equation (pde) that the derivative value satisfies, using finite difference methods.  More advanced discussions of this topic can be found in Wilmott, DeWynne and Howison [@WDH], Wilmott [@Wilmott], and Tavella [@Tavella],  among other places.   We will only consider derivatives written on a single underlying asset, but the ideas generalize to derivatives written on multiple underlying assets (e.g., basket and spread options) in much the same way that binomial models can be applied to derivatives on multiple underlying assets.  The curse of dimensionality is the same for finite difference methods as for binomial models---the computation time increases exponentially with the number of underlying assets.
 
-## Fundamental PDE {#sec-fundamentalpde}
+## Fundamental PD\\E {#sec-fundamentalpde}
 
 \index{fundamental pde}Consider an asset with price $S$ and constant dividend yield $q$.  
 Set $X=\log S$.  Then we have
 $$\mathrm{d} X = \nu\,\mathrm{d} t+\sigma\,\mathrm{d} B\; ,$$
 where $\nu =r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-neutral probability.
 
-Let $T$ denote the maturity date of a derivative security.  At time $t$ (when the remaining time to maturity is $T-t$), assume the price of the derivative can be represented as $C(t,X(t))$.^[If the price of the derivative is a function of the asset price $S$ and time, then we can always write it in this form as a function of the natural logarithm of $S$ and time.]  
+Let $T$ denote the maturity date of a derivative security.  At time $t$ (when the remaining time to maturity is $T-t$), assume the price of the derivative can be represented as $C(t,X_t)$.^[If the price of the derivative is a function of the asset price $S$ and time, then we can always write it in this form as a function of the natural logarithm of $S$ and time.]  
 Since $C$ is a function of $t$ and $X$, Ito's formula implies
 
 $$
@@ -52,9 +52,9 @@ $$ {#eq-4}
 
 In this form, the pde is similar to important equations in physics, in particular the equation for how heat propagates through a rod over time.  In fact, it can be transformed exactly into the heat equation, which is how Black and Scholes originally solved the option valuation problem.  The terminal condition for a call option, $C = \max(S-K,0)$, can be viewed as defining $C$ over the $X$ dimension at $\tau=0$, just as the temperature along the length of the rod might be specified at an initial date, and as $\tau$ increases $C$ changes at each point $X$ according to @eq-4, which is similar, as noted, to the equation for the change in temperature at a point on the rod as time passes.
 
-## Discretizing the PDE
+## Discretizing the PD\\E
 
-To numerically solve the fundamental pde, we consider a discrete grid on the $(t,x)$ space.  We label the time points as $t_0, t_1, t_2, \ldots, t_N$, and the $x$ points as $x_{-M}, x_{-M+1}, \ldots, x_0, x_1, \ldots, x_M$, with $t_0=0$, $t_N=T$, and $x_0=\log S(0)$.  The equation should hold for $-\infty< x < \infty$, but obviously we will have to bound this space, and we have denoted the upper and lower bounds by $x_M$ and $x_{-M}$ here.  We take the points to be evenly spaced and set $\Delta t= t_i-t_{i-1}$ and $\Delta x = x_j -x_{j-1}$ for any $i$ and $j$.
+To numerically solve the fundamental pde, we consider a discrete grid on the $(t,x)$ space.  We label the time points as $t_0, t_1, t_2, \ldots, t_N$, and the $x$ points as $x_{-M}, x_{-M+1}, \ldots, x_0, x_1, \ldots, x_M$, with $t_0=0$, $t_N=T$, and $x_0=\log S_0$.  The equation should hold for $-\infty< x < \infty$, but obviously we will have to bound this space, and we have denoted the upper and lower bounds by $x_M$ and $x_{-M}$ here.  We take the points to be evenly spaced and set $\Delta t= t_i-t_{i-1}$ and $\Delta x = x_j -x_{j-1}$ for any $i$ and $j$.
 
 For specificity, we will consider a call option, though the discussion in this section applies to any derivative.  We will compute a value for the call at each of the points on the grid.  Then we return the value of the call at the point $(t_0,x_0)$.  
 
@@ -324,7 +324,7 @@ We then successively obtain $C_{L-1}, C_{L-2}, \ldots, C_1$ from  @eq-crank101.
 
 We will demonstrate the Crank-Nicolson method by valuing a European call.  Any other path-independent European derivative is valued in the same way, by appropriately redefining the value of the derivative at the final date and redefining the constants $z_1$ and $z_L$ in the boundary conditions @eq-crank4aa - @eq-crank4bb at the bottom and top of the grid.  
 
-As elsewhere in this chapter, $N$ denotes the number of time periods, and $2M+1$ will be the number of $x$ values on the grid.  We use the symbol $D$ to denote the distance of the top (or bottom) of the grid from $\log S(0)$.  In other words, $D = x_M-x_0$.  A reasonable value for $D$ would be three standard deviations for $\log S$, which would mean $D = |\nu|T +3 \sigma\sqrt{T}$. For example, for a one-year option on a stock with a volatility of 30\%, it should suffice to input $D=1$.  
+As elsewhere in this chapter, $N$ denotes the number of time periods, and $2M+1$ will be the number of $x$ values on the grid.  We use the symbol $D$ to denote the distance of the top (or bottom) of the grid from $\log S_0$.  In other words, $D = x_M-x_0$.  A reasonable value for $D$ would be three standard deviations for $\log S$, which would mean $D = |\nu|T +3 \sigma\sqrt{T}$. For example, for a one-year option on a stock with a volatility of 30\%, it should suffice to input $D=1$.  
 
 As should be clear, the program is conceptually very similar to a binomial model.  The difference is that the backing up procedure, which involves node-by-node discounting in a binomial model, here is accomplished via the Crank-Nicolson algorithm.^[We use a different variable ($y$) for the call values at the final date---and consequently need to separate the first step of backing up (to the penultimate date) and the other steps of backing up (to date zero).  See Appendix~A for more discussion.]  
 
@@ -420,7 +420,7 @@ For barrier options, the boundary information @eq-cn_boundary can be replaced by
 
 To price a down-and-out (or up-and-out option), we put the bottom (or top) of the grid at the boundary.  The boundary condition that we use is that the value at the boundary is zero.   We will consider the example of a down-and-out call option.  In this case, the boundary condition at the bottom of the grid is @eq-crank4aa with $z_1=0$ and $b_1 = 0$.  The boundary condition at the top is the same as for an ordinary call.  We can easily handle a rebate paid when the option is knocked out by inputting the value of the rebate as $z_1$.  
 
-The main new issue that we encounter in valuing barriers is locating the boundary of the grid at the barrier.  For the down-and-out, we will input the value of the stock price at which the option is knocked out as `Bar`.  We want the bottom of the grid to lie at the natural logarithm of this number.  This will influence our choice of the space step $\Delta x$, because we want to have an integer number of steps between the bottom of the grid and $\log S(0)$.  We assume that the value $M$ input by the user represents the desired number of space steps above $\log S(0)$.  We start with $\Delta x=D/M$ as an initial estimate of the size of the space step.  We then decrease it, if necessary, to ensure that the distance between `Bar` and $\log S(0)$ is an integer multiple of $\Delta x$.  We then increase $M$, if necessary, to ensure that the top of the grid will still be at or above $D+\log S(0)$.  Finally, we define the top of the grid to be at $\log S(0) +M \cdot \Delta x$.  
+The main new issue that we encounter in valuing barriers is locating the boundary of the grid at the barrier.  For the down-and-out, we will input the value of the stock price at which the option is knocked out as `Bar`.  We want the bottom of the grid to lie at the natural logarithm of this number.  This will influence our choice of the space step $\Delta x$, because we want to have an integer number of steps between the bottom of the grid and $\log S_0$.  We assume that the value $M$ input by the user represents the desired number of space steps above $\log S_0$.  We start with $\Delta x=D/M$ as an initial estimate of the size of the space step.  We then decrease it, if necessary, to ensure that the distance between `Bar` and $\log S_0$ is an integer multiple of $\Delta x$.  We then increase $M$, if necessary, to ensure that the top of the grid will still be at or above $D+\log S_0$.  Finally, we define the top of the grid to be at $\log S_0 +M \cdot \Delta x$.  
 
 ```{python}
 
@@ -473,7 +473,7 @@ print("Down and Out Call CN:", down_and_out_call_cn(S0, K, r, sigma, q, T, N, M,
 ## Exercises
 
 ::: Exercise
- Create a python program to compare the estimates of the value of a discretely sampled barrier option given by the functions Down_And_Out_Call_MC created before and the function Down_And_Out_Call_CN.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above $\log S(0)$ in the Crank-Nicolson algorithm.  
+ Create a python program to compare the estimates of the value of a discretely sampled barrier option given by the functions Down_And_Out_Call_MC created before and the function Down_And_Out_Call_CN.  Allow the user to input $S$, $K$, $r$, $\sigma$, $q$, the knock-out barrier, the number of Monte Carlo simulations, and the number of space steps above $\log S_0$ in the Crank-Nicolson algorithm.  
 :::
 
 ::: Exercise

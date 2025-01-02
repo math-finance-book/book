@@ -132,6 +132,14 @@ div.csl-indent {
   });
 </script>
 <style>
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
+}
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
+}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
@@ -139,14 +147,6 @@ div.csl-indent {
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
-}
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
-}
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
 }
 </style>
 
@@ -482,26 +482,26 @@ window.Quarto = {
 \sum_{i=0}^N \frac{N!}{i!(N-i)!}p^i(1-p)^{N-i}\max(u^id^{N-i}S-K,0)\;.
 \qquad(15.2)\]</span></span></p>
 <p>Multiplying the expectation by <span class="math inline">\(\mathrm{e}^{-rT}\)</span> yields the option value.</p>
-<p>It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section. In the Monte-Carlo method for valuing a European call option, we generate <span class="math inline">\(M\)</span> random values for <span class="math inline">\(S(T)\)</span> and estimate the expectation <span class="math inline">\(E^R[\max(0,S(T)-K)]\)</span> by averaging the <span class="math inline">\(M\)</span> values. This amounts to approximating the distribution of <span class="math inline">\(S(T)\)</span> by an <span class="math inline">\(M\)</span>–point distribution, each point being assigned equal probability. In the binomial method, we choose a particular set of points for <span class="math inline">\(S(T)\)</span> and assign the probabilities specified above in order to approximate the distribution of <span class="math inline">\(S(T)\)</span>. Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of <span class="math inline">\(S(T)\)</span> as the number of points increases. However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods <span class="math inline">\(N\)</span> in the binomial model than we would need simulations <span class="math inline">\(M\)</span> in the Monte-Carlo method. Thus, the binomial method will be much faster. Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options. On the other hand, as mentioned in the previous section, to value a path-dependent option in an <span class="math inline">\(N\)</span>–period binomial tree would require the analysis of <span class="math inline">\(2^N\)</span> separate paths, so Monte Carlo may be faster for path-dependent options. Finally, as we will discuss in <a href="#sec-s_curse" class="quarto-xref"><span>Section 15.6</span></a>, Monte Carlo may be faster for options on multiple assets.</p>
-<p>There is an important alternative method for calculating the sum <a href="#eq-binomialsum" class="quarto-xref">Equation&nbsp;<span>15.2</span></a>, which is usually called backward induction. We will describe it here and implement it in the next section to value American options. We begin at the last date, where there are <span class="math inline">\(N+1\)</span> nodes. We calculate the option value at each of these nodes, storing the value at the bottom node as <span class="math inline">\(C(0)\)</span>, the value at the next node up as <span class="math inline">\(C(1)\)</span>, etc. This is illustrated in the diagram on the next page. Then we step back to the penultimate date. At each node at this date, we calculate the option value as the discounted expectation of its value at the last date. From each node, there are two nodes that can be reached at the next date, corresponding to a down move or an up move. So, the option value is calculated as <span id="eq-binomial001"><span class="math display">\[
+<p>It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section. In the Monte-Carlo method for valuing a European call option, we generate <span class="math inline">\(M\)</span> random values for <span class="math inline">\(S_T\)</span> and estimate the expectation <span class="math inline">\(\\E^R[\max(0,S_T-K)]\)</span> by averaging the <span class="math inline">\(M\)</span> values. This amounts to approximating the distribution of <span class="math inline">\(S_T\)</span> by an <span class="math inline">\(M\)</span>–point distribution, each point being assigned equal probability. In the binomial method, we choose a particular set of points for <span class="math inline">\(S_T\)</span> and assign the probabilities specified above in order to approximate the distribution of <span class="math inline">\(S_T\)</span>. Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of <span class="math inline">\(S_T\)</span> as the number of points increases. However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods <span class="math inline">\(N\)</span> in the binomial model than we would need simulations <span class="math inline">\(M\)</span> in the Monte-Carlo method. Thus, the binomial method will be much faster. Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options. On the other hand, as mentioned in the previous section, to value a path-dependent option in an <span class="math inline">\(N\)</span>–period binomial tree would require the analysis of <span class="math inline">\(2^N\)</span> separate paths, so Monte Carlo may be faster for path-dependent options. Finally, as we will discuss in <a href="#sec-s_curse" class="quarto-xref"><span>Section 15.6</span></a>, Monte Carlo may be faster for options on multiple assets.</p>
+<p>There is an important alternative method for calculating the sum <a href="#eq-binomialsum" class="quarto-xref">Equation&nbsp;<span>15.2</span></a>, which is usually called backward induction. We will describe it here and implement it in the next section to value American options. We begin at the last date, where there are <span class="math inline">\(N+1\)</span> nodes. We calculate the option value at each of these nodes, storing the value at the bottom node as <span class="math inline">\(C_0\)</span>, the value at the next node up as <span class="math inline">\(C(1)\)</span>, etc. This is illustrated in the diagram on the next page. Then we step back to the penultimate date. At each node at this date, we calculate the option value as the discounted expectation of its value at the last date. From each node, there are two nodes that can be reached at the next date, corresponding to a down move or an up move. So, the option value is calculated as <span id="eq-binomial001"><span class="math display">\[
 C = \mathrm{e}^{-r\Delta t}p\,C_{\text{up}} + \mathrm{e}^{-r\Delta t}(1-p)C_{\text{down}}\;.
 \qquad(15.3)\]</span></span></p>
 <p>In terms of the vector notation shown in the figure below, the down move from node <span class="math inline">\(i\)</span> is also node <span class="math inline">\(i\)</span> and the up move is <span class="math inline">\(i+1\)</span>. So, we write over the elements of the <span class="math inline">\(C\)</span> vector as <span id="eq-binomial002"><span class="math display">\[
 C(i) = \mathrm{e}^{-r\Delta t}p\,C(i+1) + \mathrm{e}^{-r\Delta t}(1-p)C(i)\;.
 \qquad(15.4)\]</span></span></p>
-<p>Discounting back through the tree like this, we reach date <span class="math inline">\(0\)</span> and return the option value as <span class="math inline">\(C(0)\)</span>. The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option. This approach is essential for assessing the value of early exercise.</p>
+<p>Discounting back through the tree like this, we reach date <span class="math inline">\(0\)</span> and return the option value as <span class="math inline">\(C_0\)</span>. The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option. This approach is essential for assessing the value of early exercise.</p>
 <p><img src="images/fig2.png" class="img-fluid"></p>
 </section>
 <section id="sec-s_binomialparameters" class="level2" data-number="15.2">
 <h2 data-number="15.2" class="anchored" data-anchor-id="sec-s_binomialparameters"><span class="header-section-number">15.2</span> Binomial Parameters</h2>
 <p>Several different ways have been proposed for matching the binomial model to the continuous-time model. Consider an <span class="math inline">\(N\)</span>–period binomial model for a time period of <span class="math inline">\(T\)</span> years. This means that the length of each period is <span class="math inline">\(\Delta t = T/N\)</span>. In the continuous-time model, over a discrete time period <span class="math inline">\(\Delta t\)</span>, we have <span class="math display">\[\Delta \log S =\mathrm{n}u\,\Delta t + \sigma\,\Delta B\; ,\]</span> where <span class="math inline">\(\mathrm{n}u = r-q-\sigma^2/2\)</span> and <span class="math inline">\(B\)</span> is a Brownian motion under the risk-neutral probability. The mean and variance, under the risk-neutral probability, of <span class="math inline">\(\Delta \log S\)</span> in the continuous-time model are <span class="math display">\[\begin{align*}
-E^R[\Delta \log S] &amp;= \mathrm{n}u\,\Delta t\; ,\\
+\\E^R[\Delta \log S] &amp;= \mathrm{n}u\,\Delta t\; ,\\
 \mathrm{var}^R[\Delta \log S]&amp;=\sigma^2\Delta t\; ,
 \end{align*}\]</span> so <span class="math display">\[\begin{align*}
-\frac{E^R[\Delta \log S]}{\Delta t} &amp;= \mathrm{n}u\; ,\\
+\frac{\\E^R[\Delta \log S]}{\Delta t} &amp;= \mathrm{n}u\; ,\\
 \frac{\mathrm{var}^R[\Delta \log S]}{\Delta t}&amp;=\sigma^2\;.
 \end{align*}\]</span> In the binomial model, we have <span class="math display">\[\begin{align*}
-\frac{E^R\big[\Delta \log S\big]}{\Delta t} &amp;=\frac{p\,\log u+(1-p)\log d}{\Delta t}\; ,\\
+\frac{\\E^R\big[\Delta \log S\big]}{\Delta t} &amp;=\frac{p\,\log u+(1-p)\log d}{\Delta t}\; ,\\
 \frac{\mathrm{var}^R\big[\Delta \log S\big] }{\Delta t}&amp;=\frac{p\,(1-p)(\log u-\log d)^2}{\Delta t}\;.
 \end{align*}\]</span> In order for the binomial model to converge in the appropriate sense to the continuous-time model as the number of periods <span class="math inline">\(N \rightarrow \infty\)</span> keeping the total amount of time <span class="math inline">\(T\)</span> fixed (equivalently, as <span class="math inline">\(\Delta t \rightarrow 0\)</span>), it is sufficient that <span class="math display">\[\begin{align*}
 \frac{p\log u+(1-p)\log d}{\Delta t} &amp;\rightarrow \mathrm{n}u\; ,\\
@@ -526,7 +526,7 @@ d = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t - \sigma\sqrt{\Delta
 <section id="binomial-valuation-of-european-options" class="level3">
 <h3 class="anchored" data-anchor-id="binomial-valuation-of-european-options">Binomial Valuation of European Options</h3>
 <p>The binomial model for path-independent European options can be implemented as follows. We will use the Cox-Ross-Rubinstein parameters. We first define the binomial parameters and some useful constants, denoting the probability <span class="math inline">\(p\,\)</span> of an up move as <span class="math inline">\(pu\)</span> and the probability <span class="math inline">\(1-p\)</span> of a down move as <span class="math inline">\(pd\)</span>. The routine below uses the combinatoric function comb(N,i) to compute the term <span class="math inline">\(\frac{N !}{i! (N-i)!}\)</span>.</p>
-<div id="6509cb59" class="cell" data-execution_count="1">
+<div id="5907272a" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -561,7 +561,7 @@ d = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t - \sigma\sqrt{\Delta
 </div>
 </div>
 <p>The Black Scholes value is shown below.</p>
-<div id="d2d6ce42" class="cell" data-execution_count="2">
+<div id="aa9e22c5" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
@@ -598,7 +598,7 @@ d = \exp\left(\left((r-q-\frac{1}{2}\sigma^2\right)\Delta t - \sigma\sqrt{\Delta
 </div>
 </div>
 <p>An alternative way to calculate te value of the call is to use a loop. This takes longer to run but is perhaps easier to understand.</p>
-<div id="26f533aa" class="cell" data-execution_count="3">
+<div id="be72f6a5" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(times<span class="op">+</span><span class="dv">1</span>):</span>
@@ -634,7 +634,7 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 <section id="binomial-valuation-of-american-options" class="level3">
 <h3 class="anchored" data-anchor-id="binomial-valuation-of-american-options">Binomial Valuation of American Options</h3>
 <p>We will consider an American put. It may also be optimal to exercise an American call early, if there is a positive dividend yield, and the same procedure can be used for American calls. We begin as in the previous subsection by defining the binomial parameters, some useful constants, and the stock price at the last date. We also record the value of the lowest stock price where we exercise at the last date <span class="math inline">\(ex[n]\)</span>.</p>
-<div id="ed00344a" class="cell" data-execution_count="4">
+<div id="5a491d20" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -680,8 +680,8 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 <span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>        ex[n] <span class="op">=</span> S[j]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Now we do the backward induction. Note that a period is the time period between successive dates. In a one-period model, there are two dates (the beginning and end) and in general there are <span class="math inline">\(N+1\)</span> dates in an <span class="math inline">\(N\)</span>–period model. We index the dates as <span class="math inline">\(i=0,\ldots,N\)</span>. At each date we start by defining the stock price at the bottom node. At date <span class="math inline">\(i\)</span> there have been <span class="math inline">\(i\)</span> past periods, so the bottom node corresponds to <span class="math inline">\(i\)</span> down moves. The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value). Having already dealt with the bottom node (<span class="math inline">\(j=0\)</span>) we loop over the nodes <span class="math inline">\(j=1,\ldots,i\)</span> at each date <span class="math inline">\(i\)</span>, increasing the stock price by a factor of <span class="math inline">\(u^2\)</span> each time. When we have backed up to date <span class="math inline">\(0\)</span>, we return the put value <span class="math inline">\(AP(0)\)</span>, the value at the bottom node, which is the only node at date <span class="math inline">\(0\)</span>.</p>
-<div id="b83a8cf4" class="cell" data-execution_count="5">
+<p>Now we do the backward induction. Note that a period is the time period between successive dates. In a one-period model, there are two dates (the beginning and end) and in general there are <span class="math inline">\(N+1\)</span> dates in an <span class="math inline">\(N\)</span>–period model. We index the dates as <span class="math inline">\(i=0,\ldots,N\)</span>. At each date we start by defining the stock price at the bottom node. At date <span class="math inline">\(i\)</span> there have been <span class="math inline">\(i\)</span> past periods, so the bottom node corresponds to <span class="math inline">\(i\)</span> down moves. The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value). Having already dealt with the bottom node (<span class="math inline">\(j=0\)</span>) we loop over the nodes <span class="math inline">\(j=1,\ldots,i\)</span> at each date <span class="math inline">\(i\)</span>, increasing the stock price by a factor of <span class="math inline">\(u^2\)</span> each time. When we have backed up to date <span class="math inline">\(0\)</span>, we return the put value <span class="math inline">\(AP_0\)</span>, the value at the bottom node, which is the only node at date <span class="math inline">\(0\)</span>.</p>
+<div id="a5df6fbb" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
@@ -724,7 +724,7 @@ P(i) = \max\big(K-u^{i}d^{n-i}S, \;\mathrm{e}^{-r\Delta t}p\,P(i+1) + \mathrm{e}
 </div>
 </div>
 <p>The above code runs slowly due to the loops and looping is inefficient in Python. Below we provide a code which generatee the same answer except one of the loops is replaced by vector calculations. The program creates the stock price for each time in a vector and uses vector comparisons to calcualte the maximum of the early exercise and waiting. To understand the code, it is probably a good idea to print out vec1 and vec to see how the exponents are calulated at each node. This procedure is necessary to speed up the execution since loops are inefficient in Python.</p>
-<div id="c1ce1bcd" class="cell" data-execution_count="6">
+<div id="b91e930d" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -840,7 +840,7 @@ p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2
 \]</span></p>
 <p>While there are many choices for the parameterization they are not completely arbitrary. The probability <span class="math inline">\(p_m =2/3\)</span> roughly corresponds to plus or minus one standard devation of a normal distribution and the up and down probabilities capture the tails. There are other parameterizations which can work ust as well.</p>
 <p>Conceptually, although there are three states and only two assets and the market is incomplete, the model converges to the Black Scholes model but there is no direct replication strategy. Nevertheless, we are modelling the price in a risk-neutral probability. More importantly it does potentially give a better estimate of derivative prices.</p>
-<div id="1124ece8" class="cell" data-execution_count="7">
+<div id="13500a23" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -916,7 +916,7 @@ p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2
 </div>
 </div>
 <p>We again provide a program which does the same calculation using loops. It is much slower. We use the same parametrs and preamble as before and just outline the steps. As in the binomial model, we start at the last date and build <span class="math inline">\(2n+1\)</span> terminal stock prices. We also keep track of the highest stock price which we exercise.</p>
-<div id="ef4f8c84" class="cell" data-execution_count="8">
+<div id="9793f8d2" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -959,7 +959,7 @@ p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2
 </details>
 </div>
 <p>We then move backwards. There are two loops. The inner loop builds the stock price, the value, and exercise boundary at each time and the outer loop moves backwards in time.</p>
-<div id="4815dc71" class="cell" data-execution_count="9">
+<div id="66e2a227" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
@@ -1008,19 +1008,19 @@ If an option is not exercised at date <span class="math inline">\(N-1\)</span> i
 with
 <p>at date <span class="math inline">\(N-1\)</span> (of course this also means that we do not need to compute the intrinsic value at date <span class="math inline">\(N\)</span>). This idea can be effectively used in binomial valuation of any option for which there is a closed-form solution (like the Black-Scholes formula) for the value of the corresponding European option in a continuous-time model.</p>
 <p>Broadie and Detemple combine the use of the Black-Scholes formula at date <span class="math inline">\(N-1\)</span> with Richardson extrapolation. Richardson extrapolation is a method that may improve the efficiency of any algorithm by extrapolating to the limit. In the case of a binomial model, the idea is to extrapolate the values calculated for different numbers of periods (different <span class="math inline">\(N\)</span>’s) to try to estimate the value for <span class="math inline">\(N=\infty\)</span>.</p>
-<p>It is easier to work with convergence to zero than convergence to infinity, so define <span class="math inline">\(x=1/N\)</span>. For any value of <span class="math inline">\(N\)</span>, the binomial model will return a value, which is an estimate of the option value and which we denote as <span class="math inline">\(y=f(x)\)</span>. We would like to know the value at <span class="math inline">\(N=\infty\)</span>, which in this notation is <span class="math inline">\(f(0)\)</span>. Of course, we cannot calculate <span class="math inline">\(f(0)\)</span>, because we do not know the function <span class="math inline">\(f\)</span>, but we can approximate <span class="math inline">\(f\)</span> by a known function <span class="math inline">\(g\)</span> and then estimate <span class="math inline">\(f(0)\)</span> by <span class="math inline">\(g(0)\)</span>.</p>
-<p>A linear approximation is the simplest and is shown by Broadie and Detemple to be quite effective. For a linear approximation, we would take <span class="math display">\[g(x) = a + bx\]</span> for parameters <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> to be determined. We can input values <span class="math inline">\(N_1\)</span> and <span class="math inline">\(N_2 = 2N_1\)</span> for the number of periods, run the binomial model for each, set <span class="math inline">\(x_i=1/N_i\)</span>, and define <span class="math inline">\(y_i=f(x_i)\)</span> to be the value of the option returned by the binomial model when the number of periods is <span class="math inline">\(N_i\)</span>. Then we force <span class="math inline">\(g(x_i)=f(x_i)\)</span> for <span class="math inline">\(i=1,2\)</span> by solving the equations <span class="math display">\[y_i=a + bx_i\]</span> for <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>. Of course, <span class="math inline">\(g(0) = a\)</span>, so we will return the constant <span class="math inline">\(a\)</span> as our estimate of <span class="math inline">\(f(0)\)</span>. This is simpler than it may appear—we put <span class="math display">\[\begin{equation*}\begin{array}{rclcl}
+<p>It is easier to work with convergence to zero than convergence to infinity, so define <span class="math inline">\(x=1/N\)</span>. For any value of <span class="math inline">\(N\)</span>, the binomial model will return a value, which is an estimate of the option value and which we denote as <span class="math inline">\(y=f(x)\)</span>. We would like to know the value at <span class="math inline">\(N=\infty\)</span>, which in this notation is <span class="math inline">\(f_0\)</span>. Of course, we cannot calculate <span class="math inline">\(f_0\)</span>, because we do not know the function <span class="math inline">\(f\)</span>, but we can approximate <span class="math inline">\(f\)</span> by a known function <span class="math inline">\(g\)</span> and then estimate <span class="math inline">\(f_0\)</span> by <span class="math inline">\(g_0\)</span>.</p>
+<p>A linear approximation is the simplest and is shown by Broadie and Detemple to be quite effective. For a linear approximation, we would take <span class="math display">\[g(x) = a + bx\]</span> for parameters <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> to be determined. We can input values <span class="math inline">\(N_1\)</span> and <span class="math inline">\(N_2 = 2N_1\)</span> for the number of periods, run the binomial model for each, set <span class="math inline">\(x_i=1/N_i\)</span>, and define <span class="math inline">\(y_i=f(x_i)\)</span> to be the value of the option returned by the binomial model when the number of periods is <span class="math inline">\(N_i\)</span>. Then we force <span class="math inline">\(g(x_i)=f(x_i)\)</span> for <span class="math inline">\(i=1,2\)</span> by solving the equations <span class="math display">\[y_i=a + bx_i\]</span> for <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>. Of course, <span class="math inline">\(g_0 = a\)</span>, so we will return the constant <span class="math inline">\(a\)</span> as our estimate of <span class="math inline">\(f_0\)</span>. This is simpler than it may appear—we put <span class="math display">\[\begin{equation*}\begin{array}{rclcl}
 y_1 &amp;= &amp;a + bx_1 &amp;= &amp;a+2bx_2\;,\\
 y_2 &amp;= &amp; &amp;  &amp; a + bx_2 \;,
 \end{array}\end{equation*}\]</span> and subtracting gives us <span class="math inline">\(y_1-y_2 = bx_2\)</span>, which implies from the bottom equation that <span class="math inline">\(a = 2y_2-y_1\)</span>. We can think of <span class="math inline">\(N_2\)</span> as being the number of periods we want to use in the binomial model, in which case <span class="math inline">\(y_2\)</span> would be our estimate of the option value. Richardson extrapolation here means also running the binomial model for half as many periods (<span class="math inline">\(N_1 = N_2/2\)</span>) and adding the difference of the estimates <span class="math inline">\(y_2-y_1\)</span> to the estimate <span class="math inline">\(y_2\)</span>.</p>
 <p>Richardson extrapolation can be viewed as cancelling the first-order term in the Taylor series expansion of <span class="math inline">\(f\)</span>. We have <span class="math display">\[\begin{align*}
-y_1 = f(x_1) &amp;= f(0) + f'(0)x_1 + \text{higher order terms} \\
-&amp; = f(0) + 2f'(0)x_2 + \text{higher order terms}\;,\\
-y_2 = f(x_2) &amp;= f(0) + f'(0)x_2 + \text{higher order terms}\;.
-\end{align*}\]</span> This implies <span class="math display">\[2y_2-y_1 = f(0) + \text{difference of higher order terms}\;.\]</span> Having eliminated the first-order term, one can hope to obtain a closer approximation to <span class="math inline">\(f(0)\)</span>.</p>
+y_1 = f(x_1) &amp;= f_0 + f'_0x_1 + \text{higher order terms} \\
+&amp; = f_0 + 2f'_0x_2 + \text{higher order terms}\;,\\
+y_2 = f(x_2) &amp;= f_0 + f'_0x_2 + \text{higher order terms}\;.
+\end{align*}\]</span> This implies <span class="math display">\[2y_2-y_1 = f_0 + \text{difference of higher order terms}\;.\]</span> Having eliminated the first-order term, one can hope to obtain a closer approximation to <span class="math inline">\(f_0\)</span>.</p>
 <p>We now show hot to implement this in Pyhton.<br>
 First we create a binomial valuation program that replaces (i) calculation of the intrinsic value at maturity and (ii) calculation of the value at the penultimate date as the larger of intrinsic value and the discounted value at maturity with (iii) calculation of the value at the penultimate date as the larger of intrinsic value and the Black-Scholes value of a European option with one period to maturity.</p>
-<div id="8290baf8" class="cell" data-execution_count="10">
+<div id="84d3806e" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses blackscholes(S0, K, r, q, sig, T, call = False)</span></span>
@@ -1090,7 +1090,7 @@ First we create a binomial valuation program that replaces (i) calculation of th
 </details>
 </div>
 <p>Now we create a program that uses Richardson extrapolation from a binomial model with N periods and a binomial model with N/2 periods to estimate the value from a binomial model with an infinite number of periods. We use the previous program as our binomial model. The number of time steps <span class="math inline">\(n\)</span> must be even so <span class="math inline">\(n/2\)</span> is an integer. In the following we initally use <span class="math inline">\(n=20\)</span>, which is smaller than the the number of steps in the previous binomial american option routines.</p>
-<div id="86945281" class="cell" data-execution_count="11">
+<div id="94c5f24d" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1147,8 +1147,8 @@ p_{uu}+p_{ud} = \frac{1}{2}+\frac{\nu_1\Delta t}{2\log u_1}\;,
 p_{uu}+p_{du} = \frac{1}{2}+\frac{\nu_2\Delta t}{2\log u_2}\;.
 \qquad(15.17)\]</span></span></p>
 <p>In the continuous time model, over a discrete time period <span class="math inline">\(\Delta t\)</span>, the covariance of <span class="math inline">\(\Delta \log S_1\)</span> and <span class="math inline">\(\Delta \log S_2\)</span> is <span class="math inline">\(\rho\sigma_1\sigma_2\Delta t\)</span>. In the binomial model, with <span class="math inline">\(d_i=1/u_i\)</span>, we have <span class="math display">\[
-E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\;.
-\]</span> Given that <span class="math inline">\(E[\Delta\log S_i] =\nu_i\Delta t\)</span>, this implies a covariance of <span class="math display">\[
+\\E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\;.
+\]</span> Given that <span class="math inline">\(\\E[\Delta\log S_i] =\nu_i\Delta t\)</span>, this implies a covariance of <span class="math display">\[
 (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \nu_1\nu_2(\Delta t)^2\;.
 \]</span> Matching the covariance in the binomial model to the covariance in the continuous-time model therefore implies <span id="eq-prob3"><span class="math display">\[
 p_{uu}-p_{ud}-p_{du}+p_{dd} =\frac{\rho\sigma_1\sigma_2\Delta t + \nu_1\nu_2(\Delta t)^2}{\log u_1\log u_2}\;.
@@ -1176,8 +1176,8 @@ The computation time required for a spread call option is therefore roughly the 
 </div></details>
 </div>
 <div id="Exercise-15.5" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.5</strong></summary><div>A shout option is an option where the holder is entitled to shout at any time before the expiration of the option. Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at the money option with the same expiration as the original option. The payoff to this option if the holder shouts at time <span class="math inline">\(\tau\)</span> is thus given as <span class="math inline">\(\max(0, S(\tau)-K, S(T)-K )\)</span> where <span class="math inline">\(K\)</span> is the original strike price.<br>
-1) Show that it is better to shout at some time where <span class="math inline">\(S(\tau)&gt;K\)</span> than to never shout at all. 2) Modify the code for an American put to find the optimal exercise boundary for a shout option. Hint: The payoffs on the last nodes of the tree are simply <span class="math inline">\((S_T - K)^+\)</span>. Then work backwards. The `immediate exercise value’ which is the present value of <span class="math inline">\(S(t)-K\)</span>, (<span class="math inline">\(e^{-r(T-t)} (S(t) -K)\)</span>) plus the Black Scholes value (use a python function) of an at the money option with expiration <span class="math inline">\(T-t\)</span>. Choose the maximum of these values at each node. For each time store the highest price at which you exersize. The first node (time 0) then gives the price. Plot the exercise boundary.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.5</strong></summary><div>A shout option is an option where the holder is entitled to shout at any time before the expiration of the option. Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at the money option with the same expiration as the original option. The payoff to this option if the holder shouts at time <span class="math inline">\(\tau\)</span> is thus given as <span class="math inline">\(\max(0, S(\tau)-K, S_T-K )\)</span> where <span class="math inline">\(K\)</span> is the original strike price.<br>
+1) Show that it is better to shout at some time where <span class="math inline">\(S(\tau)&gt;K\)</span> than to never shout at all. 2) Modify the code for an American put to find the optimal exercise boundary for a shout option. Hint: The payoffs on the last nodes of the tree are simply <span class="math inline">\((S_T - K)^+\)</span>. Then work backwards. The `immediate exercise value’ which is the present value of <span class="math inline">\(S_t-K\)</span>, (<span class="math inline">\(e^{-r(T-t)} (S_t -K)\)</span>) plus the Black Scholes value (use a python function) of an at the money option with expiration <span class="math inline">\(T-t\)</span>. Choose the maximum of these values at each node. For each time store the highest price at which you exersize. The first node (time 0) then gives the price. Plot the exercise boundary.<p></p>
 </div></details>
 </div>
 <!-- ::: {#exr-e_GARCHimpliedvols}

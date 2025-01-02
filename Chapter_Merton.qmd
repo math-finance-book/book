@@ -8,13 +8,13 @@ Unless explicitly stated otherwise, we will not assume in this chapter the exist
 
 Naturally, all of the option-pricing formulas discussed in this chapter are quite similar.  The similarity can be seen from the Black-Scholes formula for a call option, which we can write as follows (replacing $d_1$ by $x$ and $d_2$ by $y$):
 $$
-\mathrm{e}^{-qT}S(0)\mathrm{N}(x) - \mathrm{e}^{-rT}K\mathrm{N}(y)\;,
+\mathrm{e}^{-qT}S_0\mathrm{N}(x) - \mathrm{e}^{-rT}K\mathrm{N}(y)\;,
 $$ {#eq-blackscholesagain}
 
 where
 
 $$ 
-x=\frac{\log\left(\frac{S(0)}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
+x=\frac{\log\left(\frac{S_0}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
 $$ {#eq-d1again}
 
 $$
@@ -22,26 +22,26 @@ y = x -\sigma\sqrt{T}\;.
 $$ {#eq-d2again}
 
 
-Note that $\mathrm{e}^{-qT}S(0)$ is the present value at date $0$ of the stock that would be acquired if the option is exercised, because it is the cost that one must pay at date $0$ to have one share of the stock at date $T$ with no withdrawal of dividends in the interim.  Obviously, $\mathrm{e}^{-rT}K$ is the present value of the cash that is paid if the option is exercised.  Moreover, $x$ is equal to
-$$\frac{\log \left(\frac{\mathrm{e}^{-qT}S(0)}{\mathrm{e}^{-rT}K} \right)+ \frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\; ,$$
+Note that $\mathrm{e}^{-qT}S_0$ is the present value at date $0$ of the stock that would be acquired if the option is exercised, because it is the cost that one must pay at date $0$ to have one share of the stock at date $T$ with no withdrawal of dividends in the interim.  Obviously, $\mathrm{e}^{-rT}K$ is the present value of the cash that is paid if the option is exercised.  Moreover, $x$ is equal to
+$$\frac{\log \left(\frac{\mathrm{e}^{-qT}S_0}{\mathrm{e}^{-rT}K} \right)+ \frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\; ,$$
 and the logarithm in the numerator is of the ratio of present values.  All of the option pricing formulas in this chapter have the same form:  the present value of the asset to be acquired multiplied by $\mathrm{N}(x)$ minus the present value of the asset to be delivered multiplied by $\mathrm{N}(y)$.  Moreover in each case $x$ is the logarithm of the ratio of present values plus one-half $\sigma^2T$ all divided by $\sigma\sqrt{T}$, and in each case $y$ is defined by @eq-d2again.  Notice that the Black-Scholes put option formula has this structure also.  The Black-Scholes put option formula is
 $$
-\mathrm{e}^{-rT}K\mathrm{N}(x) - \mathrm{e}^{-qT}S(0)\mathrm{N}(y)\;,
+\mathrm{e}^{-rT}K\mathrm{N}(x) - \mathrm{e}^{-qT}S_0\mathrm{N}(y)\;,
 $$ {#eq-blackscholesputagain}
 
 where
 
 $$
 x =-d_2
- =  - \frac{\log\left(\frac{S(0)}{K}\right)+\left(r-q-\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
+ =  - \frac{\log\left(\frac{S_0}{K}\right)+\left(r-q-\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
 $$
 $$
-=\frac{\log \left(\frac{\mathrm{e}^{-rT}K}{\mathrm{e}^{-qT}S(0)} \right)+ \frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
+=\frac{\log \left(\frac{\mathrm{e}^{-rT}K}{\mathrm{e}^{-qT}S_0} \right)+ \frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
 $$ {#eq-d2again2}
 
 $$
 y=-d_1
- = - \frac{\log\left(\frac{S(0)}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
+ = - \frac{\log\left(\frac{S_0}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
 =x - \sigma\sqrt{T}\;.
 $$
 This similarity is discussed further in later, where the pricing formulas are implemented in Python.
@@ -51,8 +51,8 @@ This similarity is discussed further in later, where the pricing formulas are im
 ## Margrabe's Formula {#sec-s_margrabe}
 
 Consider two assets with prices $S_1$ and $S_2$ and a European option to exchange asset 2 for asset 1 at date $T$.  The value of the option at maturity is
-$$\max(0,S_1(T)-S_2(T))\; .$$
-Note that there is no real difference between a put and a call:  the exchange option \index{exchange option} can be viewed as a call on the first asset with random strike $S_2(T)$ or as a put on the second asset with random strike $S_1(T)$.
+$$\max(0,S_1_T-S_2_T)\; .$$
+Note that there is no real difference between a put and a call:  the exchange option \index{exchange option} can be viewed as a call on the first asset with random strike $S_2_T$ or as a put on the second asset with random strike $S_1_T$.
 
 Assume the assets pay constant dividend yields $q_i$ and assume the prices satisfy
 $$\frac{\mathrm{d} S_i}{S_i} = \mu_i\,\mathrm{d} t+\sigma_i\,\mathrm{d} B_i$$
@@ -70,13 +70,13 @@ The following is the formula of Margrabe [@Margrabe]: \index{Margrabe's formula}
 ## 
 The value of a European option to exchange two assets at date $T$  is
 $$
-\mathrm{e}^{-q_1 T}S_1(0)\mathrm{N}(d_1)-\mathrm{e}^{-q_2 T}S_2(0)\mathrm{N}(d_2)\;,
+\mathrm{e}^{-q_1 T}S_1_0\mathrm{N}(d_1)-\mathrm{e}^{-q_2 T}S_2_0\mathrm{N}(d_2)\;,
 $$ {#eq-margrabeoption}
 
 where 
 
 $$
-d_1= \frac{\log\left(\frac{S_1(0)}{S_2(0)}\right)+\left(q_2-q_1+
+d_1= \frac{\log\left(\frac{S_1_0}{S_2_0}\right)+\left(q_2-q_1+
 \frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;,
 $$ {#eq-margrabe_d1}
 
@@ -90,16 +90,16 @@ $$ {#eq-margrabe_d2}
 
 
 Margrabe's derivation is a very simple argument based on the Black-Scholes formula.  We noted in @sec-c_foreignexchange that the Black-Scholes formula does not depend on the currency---if the underlying asset and risk-free asset are dollar denominated, the formula gives the dollar value of an option; if they are yen denominated, the formula gives the yen value of an option, etc.  So we can take the currency to be units of the second asset; i.e., we will use the second asset as numeraire.  With this numeraire, the value of the first asset is $S_1/S_2$.  The value of the exchange option at maturity is
-$$\max(0,S_1(T)-S_2(T)) = S_2(T)\max\left(0,\frac{S_1(T)}{S_2(T)}-1\right)\; .$$
-This is the value in the natural currency (e.g., dollars).  The value using the second asset as numeraire is obtained by dividing by $S_2(T)$, so it is
-$$\max\left(0,\frac{S_1(T)}{S_2(T)}-1\right)\; .$$
-This is the value of a standard call option, the underlying being the first asset measured in units of the second.  We can apply the Black-Scholes formula to obtain the  value of the option (in units of the second asset) at date $0$.  Multiplying this value by $S_2(0)$ will give the option value in the natural currency.
+$$\max(0,S_1_T-S_2_T) = S_2_T\max\left(0,\frac{S_1_T}{S_2_T}-1\right)\; .$$
+This is the value in the natural currency (e.g., dollars).  The value using the second asset as numeraire is obtained by dividing by $S_2_T$, so it is
+$$\max\left(0,\frac{S_1_T}{S_2_T}-1\right)\; .$$
+This is the value of a standard call option, the underlying being the first asset measured in units of the second.  We can apply the Black-Scholes formula to obtain the  value of the option (in units of the second asset) at date $0$.  Multiplying this value by $S_2_0$ will give the option value in the natural currency.
 
 The risk-free rate when the second asset is the numeraire is the dividend yield on the second asset $q_2$.  To see this, note that the price of the second asset is always equal to one; moreover, an investment in the second asset will accumulate at the rate $q_2$ via reinvestment of dividends.  Therefore, $q_2$ is a risk-free rate of return.
 
-The dividend yield on the first asset remains $q_1$.  To see this, note that the dividend paid in the natural currency is $q_1S_1(t)\,\mathrm{d} t$ in an instant $\mathrm{d} t$ and the value of this dividend using the second asset as numeraire is $[q_1S_1(t)/S_2(t)]\,\mathrm{d} t$, which is the fraction $q_1\,\mathrm{d} t$ of the value $S_1(t)/S_2(t)$ of the first asset using the second asset as numeraire.  
+The dividend yield on the first asset remains $q_1$.  To see this, note that the dividend paid in the natural currency is $q_1S_1_t\,\mathrm{d} t$ in an instant $\mathrm{d} t$ and the value of this dividend using the second asset as numeraire is $[q_1S_1_t/S_2_t]\,\mathrm{d} t$, which is the fraction $q_1\,\mathrm{d} t$ of the value $S_1_t/S_2_t$ of the first asset using the second asset as numeraire.  
 
-The volatility of the first asset using the second as numeraire is the volatility of the ratio $S_1(t)/S_2(t)$, which is $\sigma$ defined in @eq-margrabesigma.  Applying the Black-Scholes formula with these inputs yields Margrabe's formula directly.^[Of course, it is possible to give a direct proof, without relying on the Black-Scholes formula.  A sketch is given in @sec-s_margrabecomplete]. 
+The volatility of the first asset using the second as numeraire is the volatility of the ratio $S_1_t/S_2_t$, which is $\sigma$ defined in @eq-margrabesigma.  Applying the Black-Scholes formula with these inputs yields Margrabe's formula directly.^[Of course, it is possible to give a direct proof, without relying on the Black-Scholes formula.  A sketch is given in @sec-s_margrabecomplete]. 
 
 In terms of programming, we could of course write entirely separate programs for the options discussed so far and those to be discussed in this chapter but it will become clear that they have common structure.  As discussed in the introduction to this chapter, each is the present value of what is received upon exercise multiplied by $\mathrm{N}(x)$ minus the present value of what is delivered upon exercise multiplied by $\mathrm{N}(y)$ and $x$ in each case is the logarithm of the ratio of present values plus one-half $\sigma^2T$, all divided by $\sigma\sqrt{T}$.  Thus, we first write a code for a generic option price. Later we use this generic option price function to price other options. 
 
@@ -183,7 +183,7 @@ Black [@Black] gives formulas for the values of options on futures contracts whe
 
 We consider a forward contract that matures at some date $T'$ and a call or put option on the forward that matures at $T \leq T'$.  The meaning of a call option on a forward \index{forward option} is that exercise of the call creates a long position in the forward contract with forward price equal to the strike price of the option.  The long forward contract means that the investor will receive the underlying asset at $T'$ and pay the forward price (the strike of the option) at $T'$.  Thus, the strike price is not paid at the date of exercise but instead is paid when the underlying asset is delivered.  Symmetrically, the exercise of a put creates a short position in the forward contract with forward price equal to the strike of the put, which means that the exerciser must deliver the underlying at $T'$ and will receive the strike price at $T'$.
 
-We will denote the market forward price by $F(t)$.  We assume the forward price satisfies
+We will denote the market forward price by $F_t$.  We assume the forward price satisfies
 $$
 \frac{\mathrm{d} F}{F} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\;,
 $$ {#eq-dforward}
@@ -191,7 +191,7 @@ $$ {#eq-dforward}
 where $B$ is a Brownian motion.  As before, $\mu$ can be a quite general random process.  We will assume in this section that the volatility $\sigma$ is a constant and generalize to a time-varying (but non-random) volatility in @sec-s_volatility.  In @sec-s_merton, we will discuss the relations of the forward price and its volatility to the price and volatility of the underlying.
 
 
-Black's formulas are particularly useful when interest rates are assumed to be random, as we will see in Part~\ref{p_fixedincome} of the book when we study fixed income derivatives.  Therefore, we do not assume here that there is a constant risk-free rate. Instead we will assume that there is a discount bond that pays \$1 at date $T'$.  It is called a discount bond \index{discount bond} because its price is the appropriate discount factor for computing the present value of nonrandom cash flows at date $T'$.  Such a bond is also called a zero coupon bond \index{zero coupon bond} because it does not pay any cash flows until $T'$, when it pays its face value (which we take simply for convenience to be \$1).   We will let $P(t,T')$ denote the price of the bond at date $t$.^[In this section we could drop the $T'$ in $P(t,T')$ and simply write $P(t)$, because we only consider one maturity date, but we will use the same notation when discussing multiple maturities in Part~\ref{p_fixedincome].}
+Black's formulas are particularly useful when interest rates are assumed to be random, as we will see in Part~\ref{p_fixedincome} of the book when we study fixed income derivatives.  Therefore, we do not assume here that there is a constant risk-free rate. Instead we will assume that there is a discount bond that pays \$1 at date $T'$.  It is called a discount bond \index{discount bond} because its price is the appropriate discount factor for computing the present value of nonrandom cash flows at date $T'$.  Such a bond is also called a zero coupon bond \index{zero coupon bond} because it does not pay any cash flows until $T'$, when it pays its face value (which we take simply for convenience to be \$1).   We will let $P(t,T')$ denote the price of the bond at date $t$.^[In this section we could drop the $T'$ in $P(t,T')$ and simply write $P_t$, because we only consider one maturity date, but we will use the same notation when discussing multiple maturities in Part~\ref{p_fixedincome].}
 
 Black's formulas are: \index{Black's formula}
 
@@ -200,18 +200,18 @@ Black's formulas are: \index{Black's formula}
 The values at date $0$ of European options with strike $K$ and maturity $T$  on a forward contract with maturity $T'$ are
 
 $$
-\text{Call Price} =P(0,T')F(0)\mathrm{N}(d_1)-P(0,T')K\mathrm{N}(d_2)\; ,
+\text{Call Price} =P(0,T')F_0\mathrm{N}(d_1)-P(0,T')K\mathrm{N}(d_2)\; ,
 $$ {#eq-black}
 
 $$
-\text{Put Price} =P(0,T')K\mathrm{N}(-d_2)-P(0,T')F(0)\mathrm{N}(-d_1)\; ,
+\text{Put Price} =P(0,T')K\mathrm{N}(-d_2)-P(0,T')F_0\mathrm{N}(-d_1)\; ,
 $$ {#eq-black_put}
 
 $$
 $$
 where
 $$
-d_1= \frac{\log\left(\frac{F(0)}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
+d_1= \frac{\log\left(\frac{F_0}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
 $$ {#eq-black_d1}
 
 $$
@@ -222,26 +222,26 @@ $$ {#eq-black_d2}
 :::
 
 
-Black's formulas are a simple consequence of Margrabe's formula.  To see this, we first need to describe the value of an option on a forward at the maturity date $T$ of the option.  Consider a call option.  Exercise of the call results in a long forward position with forward price $K$.  The value of the long forward is given by its market price $F(T)$, but we must keep in mind that the forward price is not paid until the underlying is delivered at date $T'$.  So suppose that you exercise the call and then sell a forward contract at the market forward price $F(T)$.  The delivery/receipt obligations of the long and short forwards cancel, leaving you with the obligation to pay $K$ dollars at date $T'$ and with an asset of $F(T)$ dollars to be received at date $T'$.  The value of the net cash flow at date $T$ is $P(T,T')[F(T)-K]$.  This is the value if exercised, so the value of the call at date $T$ is
+Black's formulas are a simple consequence of Margrabe's formula.  To see this, we first need to describe the value of an option on a forward at the maturity date $T$ of the option.  Consider a call option.  Exercise of the call results in a long forward position with forward price $K$.  The value of the long forward is given by its market price $F_T$, but we must keep in mind that the forward price is not paid until the underlying is delivered at date $T'$.  So suppose that you exercise the call and then sell a forward contract at the market forward price $F_T$.  The delivery/receipt obligations of the long and short forwards cancel, leaving you with the obligation to pay $K$ dollars at date $T'$ and with an asset of $F_T$ dollars to be received at date $T'$.  The value of the net cash flow at date $T$ is $P(T,T')[F_T-K]$.  This is the value if exercised, so the value of the call at date $T$ is
 $$
-\max\big(0, P(T,T')[F(T)-K]\big) = \max\big(0,P(T,T')F(T)-P(T,T')K\big)\;.
+\max\big(0, P(T,T')[F_T-K]\big) = \max\big(0,P(T,T')F_T-P(T,T')K\big)\;.
 $$ {#eq-blackcallexchange1}
 
 We can write this as
 $$
-\max(0,S_1(T)-S_2(T))
+\max(0,S_1_T-S_2_T)
 $$ {#eq-blackcallexchange2}
 
 if we define
 $$
-S_1(t) = P(t,T')F(t) \quad \text{and} \quad S_2(t) = P(t,T')K
+S_1_t = P(t,T')F_t \quad \text{and} \quad S_2_t = P(t,T')K
 $$ {#eq-blackexchange}
 
 for $t=T$ (and more generally for $t \leq T$).  Thus, the value at maturity of a call option on a forward is the value at maturity of an option to exchange the two assets with prices $S_1$ and $S_2$ (we will establish in a moment that $S_1$ and $S_2$ are actually asset prices).  It follows that the value at date $0$ of a call option on a forward is the value at date $0$ of an option to exchange the two assets.
 
-Now consider a put option on a forward.  Exercising the put and unwinding the short forward position by buying a forward at the market price $F(T)$ will leave one with a net cash flow of $K-F(T)$ to be received at the maturity date $T'$ of the forward.  Therefore the value of the put at maturity is
+Now consider a put option on a forward.  Exercising the put and unwinding the short forward position by buying a forward at the market price $F_T$ will leave one with a net cash flow of $K-F_T$ to be received at the maturity date $T'$ of the forward.  Therefore the value of the put at maturity is
 $$
-\max(0,P(T,T')[K-F(T)]) = \max(S_2(T)-S_1(T))\;.
+\max(0,P(T,T')[K-F_T]) = \max(S_2_T-S_1_T)\;.
 $$ {#eq-blackputexchange}
 
 Therefore, the value at date $0$ of the put option on a forward must be the value at date $0$ of an exchange option, where asset one in @eq-blackexchange is exchanged for asset two.
@@ -255,28 +255,28 @@ The key assumption in deriving Margrabe's formula is that the volatility of the 
 \end{align*}
 The purpose of the last equality displayed here is to emphasize that we should take the volatility of $K/F$ to be the positive number $\sigma$.  We can do this by using $-B$ as the Brownian motion instead of $B$.^[This is really nothing more than the usual convention of defining the standard deviation of a random variable to be the positive square root of the variance.] Thus, we can apply Margrabe's formula to value calls and puts on forwards (once we verify that $S_1$ and $S_2$ are indeed asset prices).  
 
-To obtain Black's @eq-black for a call on a forward from Margrabe's @eq-margrabeoption, we simply substitute $S_1(0)=P(0,T')F(0)$, $S_2(0)=P(0,T')K$, $q_1=0$ and $q_2=0$ in Margrabe's formula.   A put option is the reverse exchange, so Margrabe's formula gives
+To obtain Black's @eq-black for a call on a forward from Margrabe's @eq-margrabeoption, we simply substitute $S_1_0=P(0,T')F_0$, $S_2_0=P(0,T')K$, $q_1=0$ and $q_2=0$ in Margrabe's formula.   A put option is the reverse exchange, so Margrabe's formula gives
 $$
-P(0,T')K\mathrm{N}(d^m_1) - P(0,T')F(0)\mathrm{N}(d^m_2)\;,
+P(0,T')K\mathrm{N}(d^m_1) - P(0,T')F_0\mathrm{N}(d^m_2)\;,
 $$ {#eq-margrabeput}
 
 where
 \begin{align*}
-d^m_1&= \frac{\log\left(\frac{P(0,T')K}{P(0,T')F(0)}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\; ,\\
+d^m_1&= \frac{\log\left(\frac{P(0,T')K}{P(0,T')F_0}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\; ,\\
 d^m_2 &=d^m_1-\sigma\sqrt{T}.
 \end{align*}
 We introduce the superscript $m$ here to distinguish these numbers in Margrabe's formula from the $d_1$ and $d_2$ defined in @eq-black_d1 and @eq-black_d2.  Notice that
 \begin{align*}
-d^m_1& = -\frac{\log\left(\frac{F(0)}{K}\right)-\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}} = -d_2\\
-d^m_2 &= -\frac{\log\left(\frac{F(0)}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}} =-d_1,
+d^m_1& = -\frac{\log\left(\frac{F_0}{K}\right)-\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}} = -d_2\\
+d^m_2 &= -\frac{\log\left(\frac{F_0}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}} =-d_1,
 \end{align*}
 so Margrabe's @eq-margrabeput is the same as Black's @eq-black_put for a put option on a forward.
 
-We still need to explain why $S_1$ and $S_2$ defined in @eq-blackexchange are asset prices, in fact the prices of non-dividend-paying assets since we have taken $q_1=q_2=0$ in applying Margrabe's formula.  The case of $S_2$ should be clear: it is the price of $K$ units of the discount bond maturing at $T'$.  The case of $S_1$ is more subtle.  It is the price of the following portfolio constructed at date $0$ and held until date $T$: go long one forward contract and buy $F(0)$ units of the discount bond maturing at $T'$.  The value at date $t$ of the bonds in the portfolio is $F(0)P(t,T')$.  The value at date $t$ of the long forward contract can be seen by considering unwinding it by selling a forward at date $t$ at the market price $F(t)$.  This cancels the delivery/receipt obligations on the underlying and results in a net cash flow of $F(t)-F(0)$ to be received at date $T'$.  The value at date $t$ of this future cash flow is $P(t,T')[F(t)-F(0)]$ and when we add this to the value of the bonds we obtain $P(t,T')F(t) = S_1(t)$.
+We still need to explain why $S_1$ and $S_2$ defined in @eq-blackexchange are asset prices, in fact the prices of non-dividend-paying assets since we have taken $q_1=q_2=0$ in applying Margrabe's formula.  The case of $S_2$ should be clear: it is the price of $K$ units of the discount bond maturing at $T'$.  The case of $S_1$ is more subtle.  It is the price of the following portfolio constructed at date $0$ and held until date $T$: go long one forward contract and buy $F_0$ units of the discount bond maturing at $T'$.  The value at date $t$ of the bonds in the portfolio is $F_0P(t,T')$.  The value at date $t$ of the long forward contract can be seen by considering unwinding it by selling a forward at date $t$ at the market price $F_t$.  This cancels the delivery/receipt obligations on the underlying and results in a net cash flow of $F_t-F_0$ to be received at date $T'$.  The value at date $t$ of this future cash flow is $P(t,T')[F_t-F_0]$ and when we add this to the value of the bonds we obtain $P(t,T')F_t = S_1_t$.
 
 Put-call parity \index{put-call parity} for options on forwards is
-$$\text{Call Price}  + P(0,T')K = \text{Put Price}  + P(0,T')F(0)\; .$$
-The left-hand side is the cost of the call and $K$ units of the discount bond, which have value $\max(F(T),K)P(T,T')$ at time $T$.  The right-hand side is the cost of the put option and $F(0)$ units of the discount bond, which, together with a long forward contract initiated at date $0$, also have value $\max(F(T),K)P(T,T')$ at time $T$.
+$$\text{Call Price}  + P(0,T')K = \text{Put Price}  + P(0,T')F_0\; .$$
+The left-hand side is the cost of the call and $K$ units of the discount bond, which have value $\max(F_T,K)P(T,T')$ at time $T$.  The right-hand side is the cost of the put option and $F_0$ units of the discount bond, which, together with a long forward contract initiated at date $0$, also have value $\max(F_T,K)P(T,T')$ at time $T$.
 
 As in the case of exchange option, we can also write one-line programs for pricing options on futures and forwards.
 
@@ -328,19 +328,19 @@ print("Black Put:", black_put(F, K, P, sigma, T))
 ## Merton's Formula {#sec-s_merton}
 Now we reconsider the Black-Scholes model but without assuming there is a constant risk-free rate.  We assume instead that there is a discount bond maturing at the same date as the option.  Letting $T$ denote the maturity date of the option and discount bond, we write the price of the discount bond at dates $t \leq T$ as $P(t,T)$.  We continue to assume that the stock has a constant dividend yield $q$ but we make a different assumption about volatility---instead of assuming that the volatility of the stock is constant, we assume that the volatility of its forward price is constant.  We relax this to allow time-varying but non-random volatility of the forward price in @sec-s_volatility.
 
-The forward contract we consider is a forward contract for the stock maturing at the date $T$ that the option matures.  Let $F(t)$ denote the forward price for this contract at dates $0 \leq t\leq T$.  Because the forward price must equal the spot price at the maturity of a forward contract, we have $F(T)=S(T)$.  Consider a call option on the forward, with the call maturing at $T$ also.  In the notation of the previous section, we have $T'=T$ and hence $P(T,T')=1$ (the discount bond is worth \$1 at maturity).  Therefore the value @eq-blackcallexchange1 of the call on the forward at its maturity $T$ is
-$$\max(0,F(T)-K) = \max(0,S(T)-K)\; ,$$
+The forward contract we consider is a forward contract for the stock maturing at the date $T$ that the option matures.  Let $F_t$ denote the forward price for this contract at dates $0 \leq t\leq T$.  Because the forward price must equal the spot price at the maturity of a forward contract, we have $F_T=S_T$.  Consider a call option on the forward, with the call maturing at $T$ also.  In the notation of the previous section, we have $T'=T$ and hence $P(T,T')=1$ (the discount bond is worth \$1 at maturity).  Therefore the value @eq-blackcallexchange1 of the call on the forward at its maturity $T$ is
+$$\max(0,F_T-K) = \max(0,S_T-K)\; ,$$
 which is the same as the value of the call on the stock.  Therefore, the value at date $0$ of the call on the stock must equal the value at date $0$ of the call on the forward, and we can use Black's @eq-black for a call option on a forward to price a call option on the stock, assuming the forward price has a constant volatility. 
 
 Likewise, the value at the maturity date $T$ of a put option on the same forward contract is, from @eq-blackputexchange,
-$$\max(0,K-F(T)) = \max(0,K-S(T))\; .$$
+$$\max(0,K-F_T) = \max(0,K-S_T)\; .$$
 Hence, we can use Black's @eq-black_put to price a put option on the stock, assuming the forward price has a constant volatility.
 
-It is not necessary that the forward contract be traded, because we can create a synthetic forward using the stock.  To create a synthetic forward at date $t$ we buy $\mathrm{e}^{-q(T-t)}$ shares of the stock at cost $\mathrm{e}^{-q(T-t)}S(t)$.  With reinvestment of dividends, this will accumulate to one share at date $T$.  We finance the purchase of the stock by shorting $\mathrm{e}^{-q(T-t)}S(t)/P(t,T)$ units of the discount bond.  This results in a liability of $\mathrm{e}^{-q(T-t)}S(t)/P(t,T)$ dollars at date $T$, so the forward purchase is arranged by promising to pay $\mathrm{e}^{-q(T-t)}S(t)/P(t,T)$ dollars at the delivery date; i.e., the forward price is^[If there is a constant risk-free rate $r$, then it must be that $P(t,T) = \mathrm{e}^{-r(T-t)}$, so  @eq-forwardprice becomes 
-$$F(t) = \mathrm{e}^{(r-q)(T-t)}S(t)\; ,$$
+It is not necessary that the forward contract be traded, because we can create a synthetic forward using the stock.  To create a synthetic forward at date $t$ we buy $\mathrm{e}^{-q(T-t)}$ shares of the stock at cost $\mathrm{e}^{-q(T-t)}S_t$.  With reinvestment of dividends, this will accumulate to one share at date $T$.  We finance the purchase of the stock by shorting $\mathrm{e}^{-q(T-t)}S_t/P(t,T)$ units of the discount bond.  This results in a liability of $\mathrm{e}^{-q(T-t)}S_t/P(t,T)$ dollars at date $T$, so the forward purchase is arranged by promising to pay $\mathrm{e}^{-q(T-t)}S_t/P(t,T)$ dollars at the delivery date; i.e., the forward price is^[If there is a constant risk-free rate $r$, then it must be that $P(t,T) = \mathrm{e}^{-r(T-t)}$, so  @eq-forwardprice becomes 
+$$F_t = \mathrm{e}^{(r-q)(T-t)}S_t\; ,$$
 which is the same as the covered interest parity condition @eq-forwardexchangerate---recall that we interpret the exchange rate as the price of an asset with dividend yield $q=r_f$.}
 $$
-F(t) = \frac{\mathrm{e}^{-q(T-t)}S(t)}{P(t,T)}\;.
+F_t = \frac{\mathrm{e}^{-q(T-t)}S_t}{P(t,T)}\;.
 $$ {#eq-forwardprice}
 
 The assumption we need to apply Black's formulas is that
@@ -350,23 +350,23 @@ $$ {#eq-mertonforward}
 
 where $B$ is a Brownian motion, $\mu$ can be a quite general random process, and $\sigma$ is a constant. At the end of this section, we will discuss the meaning of this assumption in terms of the volatilities of the stock and bond and their correlation.
 
-Under this assumption, the following formulas originally due to Merton [@Merton] follow immediately from Black's formulas @eq-black - @eq-black_d2  by substituting $F(0) = \mathrm{e}^{-qT}S(0)/P(0,T)$.
+Under this assumption, the following formulas originally due to Merton [@Merton] follow immediately from Black's formulas @eq-black - @eq-black_d2  by substituting $F_0 = \mathrm{e}^{-qT}S_0/P(0,T)$.
 
 ::: Rule
 ## 
 Assuming the forward price has a constant volatility $\sigma$, the values at date $0$ of European calls and puts maturing at date $T$ on a stock with a constant dividend yield $q$ are
 
 $$
-\text{Call Price}  = \mathrm{e}^{-q T}S(0)\mathrm{N}(d_1)-P(0,T)K\mathrm{N}(d_2)\;,
+\text{Call Price}  = \mathrm{e}^{-q T}S_0\mathrm{N}(d_1)-P(0,T)K\mathrm{N}(d_2)\;,
 $$ {#eq-mertoncall}
 
 $$
-\text{Put Price} = P(0,T)K\mathrm{N}(-d_2) - \mathrm{e}^{-qT}S(0)\mathrm{N}(-d_1)\;,
+\text{Put Price} = P(0,T)K\mathrm{N}(-d_2) - \mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;,
 $$ {#eq-mertonput}
 
 where
 $$
-d_1= \frac{\log\left(\frac{S(0)}{KP(0,T)}\right)-qT+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
+d_1= \frac{\log\left(\frac{S_0}{KP(0,T)}\right)-qT+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
 $$ {#eq-merton_d1}
 
 $$
@@ -390,15 +390,15 @@ Substituting this into the expressions above, we have:
 Assuming the forward price has a constant volatility $\sigma$, the values at date $0$ of European calls and puts maturing at date $T$ on a stock with a constant dividend yield $q$ are
 
 $$
-\text{Call Price} =\mathrm{e}^{-q T}S(0)\mathrm{N}(d_1)-\mathrm{e}^{-yT}K\mathrm{N}(d_2)\;,
+\text{Call Price} =\mathrm{e}^{-q T}S_0\mathrm{N}(d_1)-\mathrm{e}^{-yT}K\mathrm{N}(d_2)\;,
 $$ {#eq-merton}
 
 $$
-\text{Put Price} =\mathrm{e}^{-yT}K\mathrm{N}(-d_2)-\mathrm{e}^{-q T}S(0)\mathrm{N}(-d_1), 
+\text{Put Price} =\mathrm{e}^{-yT}K\mathrm{N}(-d_2)-\mathrm{e}^{-q T}S_0\mathrm{N}(-d_1), 
 $$ {#eq-merton2}
 
 $$
-d_1 = \frac{\log\left(\frac{S(0)}{K}\right)+\left(y-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;,
+d_1 = \frac{\log\left(\frac{S_0}{K}\right)+\left(y-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;,
 $$ {#eq-merton_d1again}
 
 $$
@@ -411,7 +411,7 @@ $$ {#eq-merton_d2again}
 
 This shows that the Merton call and put formulas can be calculated from the Black-Scholes call and put functions given in @sec-c_blackscholes by inputting the yield of the discount bond as the risk-free rate and by inputting the volatility of the forward price as $\sigma$.
 
-If one wants to assume that there is a constant risk-free rate, then the discount bond price will have to be $\mathrm{e}^{-rT}$ and its yield will be the risk-free rate $r$.  In this case, the forward price is $\mathrm{e}^{(r-q)T}S(0)$ and it has the same volatility as $S$.  Making these substitutions, the Merton formulas @eq-merton - @eq-merton_d2again are the same as the Black-Scholes formulas.  However, the Merton formulas are an important generalization.  It is common practice to use the yield of the discount bond as the risk-free rate that is input into the Black-Scholes formulas.  The Merton formulas justify this practice.  It is less common to attempt to estimate the volatility of the forward price and use this (as one should since the risk-free rate really is not constant) as the volatility in the Black-Scholes-Merton formulas.  However, this does little damage for pricing short-term options, because the volatility of the forward price---see @eq-mertonsigma below---will be approximately the same as the volatility of the underlying for short-term options, due to the low volatility of short-term bond prices.  Moreover, when one computes an implied volatility from the Black-Scholes formula (using the discount bond yield as the risk-free rate),  it should be regarded as the market's view of the forward price volatility, and it is perfectly appropriate to input it into the Black-Scholes-Merton formulas to price another option (assuming of course that the forward price volatility can be regarded as constant).
+If one wants to assume that there is a constant risk-free rate, then the discount bond price will have to be $\mathrm{e}^{-rT}$ and its yield will be the risk-free rate $r$.  In this case, the forward price is $\mathrm{e}^{(r-q)T}S_0$ and it has the same volatility as $S$.  Making these substitutions, the Merton formulas @eq-merton - @eq-merton_d2again are the same as the Black-Scholes formulas.  However, the Merton formulas are an important generalization.  It is common practice to use the yield of the discount bond as the risk-free rate that is input into the Black-Scholes formulas.  The Merton formulas justify this practice.  It is less common to attempt to estimate the volatility of the forward price and use this (as one should since the risk-free rate really is not constant) as the volatility in the Black-Scholes-Merton formulas.  However, this does little damage for pricing short-term options, because the volatility of the forward price---see @eq-mertonsigma below---will be approximately the same as the volatility of the underlying for short-term options, due to the low volatility of short-term bond prices.  Moreover, when one computes an implied volatility from the Black-Scholes formula (using the discount bond yield as the risk-free rate),  it should be regarded as the market's view of the forward price volatility, and it is perfectly appropriate to input it into the Black-Scholes-Merton formulas to price another option (assuming of course that the forward price volatility can be regarded as constant).
 
 The volatility of the forward price can be computed in terms of the  volatilities and correlation of the stock and discount bond as follows.  Assume that \index{forward price volatility}
 
@@ -419,7 +419,7 @@ The volatility of the forward price can be computed in terms of the  volatilitie
 \frac{\mathrm{d} S}{S}& = \mu_s\,\mathrm{d} t + \sigma_s\,\mathrm{d} B_s\; ,\\
 \frac{\mathrm{d} P}{P}& = \mu_p\,\mathrm{d} t + \sigma_p\,\mathrm{d} B_p,
 \end{align*}
-where $B_s$ and $B_p$ are Brownian motions with correlation $\rho$.  Then  @eq-volatilityproduct and @eq-volatilityratio show that the volatility of $F(t) = \mathrm{e}^{-q(T-t)}S(t)/P(t,T)$ is $\sigma$ defined as 
+where $B_s$ and $B_p$ are Brownian motions with correlation $\rho$.  Then  @eq-volatilityproduct and @eq-volatilityratio show that the volatility of $F_t = \mathrm{e}^{-q(T-t)}S_t/P(t,T)$ is $\sigma$ defined as 
 $$
 \sigma = \sqrt{\sigma_s^2+\sigma_p^2 - 2\rho\sigma_s\sigma_p}\;.
 $$ {#eq-mertonsigma}
@@ -436,29 +436,29 @@ where the drifts $\mu_i$, the volatilities $\sigma_i$ and the correlation $\rho$
 $$\sigma = \sqrt{\sigma_1^2 + \sigma_2^2 - 2\rho\sigma_1\sigma_2}$$
 of the ratio of asset prices is constant.  
 
-Consider an option maturing at date $T$ to exchange the second asset for the first asset at date $T'\geq T$.  To understand the value of the option at date $T$, suppose it is exercised.  To unwind the positions in the two assets, one can sell a forward contract on the asset to be received and buy a forward contract on the asset to be delivered, with the forward contracts maturing at the date of the exchange.  Then the difference $F_1(T)-F_2(T)$ in the forward prices is a cash flow to be received/paid at the exchange date $T'$ and its value at date $T$ is $P(T,T')[F_1(T)-F_2(T)]$.  Therefore, the value of the option at its maturity $T$ is
-$$\max(0,P(T,T')F_1(T) - P(T,T')F_2(T))\; .$$
+Consider an option maturing at date $T$ to exchange the second asset for the first asset at date $T'\geq T$.  To understand the value of the option at date $T$, suppose it is exercised.  To unwind the positions in the two assets, one can sell a forward contract on the asset to be received and buy a forward contract on the asset to be delivered, with the forward contracts maturing at the date of the exchange.  Then the difference $F_1_T-F_2_T$ in the forward prices is a cash flow to be received/paid at the exchange date $T'$ and its value at date $T$ is $P(T,T')[F_1_T-F_2_T]$.  Therefore, the value of the option at its maturity $T$ is
+$$\max(0,P(T,T')F_1_T - P(T,T')F_2_T)\; .$$
 As in @sec-s_black, this valuation does not require the existence of traded forward contracts, because synthetic forwards can be created.  Also as in @sec-s_black we know that
-$$S^*_1(t) = P(t,T')F_1(t) \quad \text{and} \quad S^*_2(t) = P(t,T')F_2(t)$$
+$$S^*_1_t = P(t,T')F_1_t \quad \text{and} \quad S^*_2_t = P(t,T')F_2_t$$
 are the prices of non-dividend-paying assets.  Therefore, the option to exchange the assets at date $T'$ must have the same value as an option to exchange at date $T$ the assets with prices $S^*_i$.  
 
 We recall here the arbitrage @eq-forwardprice for the forward prices (making the change that here the forwards mature at $T'$):
-$$F_i(t) =  \frac{\mathrm{e}^{-q_i(T'-t)}S_i(t)}{P(t,T')}\; .$$
+$$F_i_t =  \frac{\mathrm{e}^{-q_i(T'-t)}S_i_t}{P(t,T')}\; .$$
 Thus,
-$$S^*_i(t) = \mathrm{e}^{-q_i(T'-t)}S_i(t)\; .$$
-This implies that the volatility of the ratio $S_1^*/S_2^*$ is the same as the volatility of the ratio $S_1/S_2$.  Therefore, we can price a deferred exchange option from Margrabe's formula, inputting the prices $S^*_i(0) = \mathrm{e}^{-q_iT'}S_i(0)$ as the initial asset prices and zero as their dividend yields.  This formula is:
+$$S^*_i_t = \mathrm{e}^{-q_i(T'-t)}S_i_t\; .$$
+This implies that the volatility of the ratio $S_1^*/S_2^*$ is the same as the volatility of the ratio $S_1/S_2$.  Therefore, we can price a deferred exchange option from Margrabe's formula, inputting the prices $S^*_i_0 = \mathrm{e}^{-q_iT'}S_i_0$ as the initial asset prices and zero as their dividend yields.  This formula is:
 
 ::: Rule
 ## 
 The value of a European option maturing at date $T$ to exchange two assets at date $T'$ is
 $$
-\mathrm{e}^{-q_1 T'}S_1(0)\mathrm{N}(d_1)-\mathrm{e}^{-q_2 T'}S_2(0)\mathrm{N}(d_2)\;,
+\mathrm{e}^{-q_1 T'}S_1_0\mathrm{N}(d_1)-\mathrm{e}^{-q_2 T'}S_2_0\mathrm{N}(d_2)\;,
 $$ {#eq-margrabedeferredoption}
 
 where 
 
 $$
-d_1= \frac{\log\left(\frac{S_1(0)}{S_2(0)}\right)+(q_2-q_1)T'+
+d_1= \frac{\log\left(\frac{S_1_0}{S_2_0}\right)+(q_2-q_1)T'+
 \frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
 $$ {#eq-margrabedeferred_d1}
 
@@ -510,9 +510,9 @@ print("Margrabe Deferred:", margrabe_deferred(S1, S2, sigma, q1, q2, Tmat, Texch
 ## Greeks and Hedging {#sec-s_forwardhedging}
 
 The Greeks for the Margrabe and Black formulas can be calculated in the same way that we calculated them in @sec-c_blackscholes for the Black-Scholes formula.  In analogy with @eq-greeksimplify, it can be shown for the Margrabe formula that
-$$\mathrm{e}^{-q_1T}S_1(0)\mathrm{n}d(d_1) = \mathrm{e}^{-q_2T}S_2(0)\mathrm{n}d(d_2)\; ,$$
-and again this simplifies the calculations.  This equation applies to the Black call formula by taking $q_1=q_2=0$, $S_1(0)=P(0,T')F(0)$, and $S_2(0)=P(0,T')K$, leading to
-$$F(0)\mathrm{n}d(d_1) = K\mathrm{n}d(d_2)\; .$$
+$$\mathrm{e}^{-q_1T}S_1_0\mathrm{n}d(d_1) = \mathrm{e}^{-q_2T}S_2_0\mathrm{n}d(d_2)\; ,$$
+and again this simplifies the calculations.  This equation applies to the Black call formula by taking $q_1=q_2=0$, $S_1_0=P(0,T')F_0$, and $S_2_0=P(0,T')K$, leading to
+$$F_0\mathrm{n}d(d_1) = K\mathrm{n}d(d_2)\; .$$
 The Greeks for the Black call formula and the Margrabe formula are: \index{Greeks}
 
 
@@ -525,27 +525,27 @@ The Greeks for the Black call formula and the Margrabe formula are: \index{Greek
 \frac{\partial}{\partial F} &= P(0,T')\mathrm{N}(d_1)  % Black delta1
 &\frac{\partial}{\partial S_1}&= \mathrm{e}^{-q_1T}\mathrm{N}(d_1)\\ % Margrabe delta1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\frac{\partial}{\partial P} &= F(0)\mathrm{N}(d_1)-K\mathrm{N}(d_2)% Black delta2
+\frac{\partial}{\partial P} &= F_0\mathrm{N}(d_1)-K\mathrm{N}(d_2)% Black delta2
 &\frac{\partial}{\partial S_2}&=-\mathrm{e}^{-q_2T}\mathrm{N}(d_2)\\ % Margrabe delta2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\frac{\partial^2}{\partial F^2} &= \frac{P(0,T')\mathrm{n}d(d_1)}{\sigma\sqrt{T}F(0)}  % Black gamma1
-&\frac{\partial^2}{\partial S_1^2}&= \frac{\mathrm{e}^{-q_1T}\mathrm{n}d(d_1)}{\sigma\sqrt{T}S_1(0)}\\ % Margrabe gamma1
+\frac{\partial^2}{\partial F^2} &= \frac{P(0,T')\mathrm{n}d(d_1)}{\sigma\sqrt{T}F_0}  % Black gamma1
+&\frac{\partial^2}{\partial S_1^2}&= \frac{\mathrm{e}^{-q_1T}\mathrm{n}d(d_1)}{\sigma\sqrt{T}S_1_0}\\ % Margrabe gamma1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frac{\partial^2}{\partial P^2} &= 0 % Black gamma2
-&\frac{\partial^2}{\partial S_2^2}&=\frac{\mathrm{e}^{-q_2T}\mathrm{n}d(d_2)}{\sigma\sqrt{T}S_2(0)}\\ %Margrabe gamma2
+&\frac{\partial^2}{\partial S_2^2}&=\frac{\mathrm{e}^{-q_2T}\mathrm{n}d(d_2)}{\sigma\sqrt{T}S_2_0}\\ %Margrabe gamma2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frac{\partial^2}{\partial F \partial P} &= \mathrm{N}(d_1)&\frac{\partial^2}{\partial S_1 \partial S_2}% Black crossgamma
-&= -\frac{\mathrm{e}^{-q_1T}\mathrm{n}d(d_1)}{\sigma\sqrt{T}S_2(0)}\\ % Margrabe crossgamma
+&= -\frac{\mathrm{e}^{-q_1T}\mathrm{n}d(d_1)}{\sigma\sqrt{T}S_2_0}\\ % Margrabe crossgamma
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
--\frac{\partial}{\partial T} &= -\frac{\sigma P(0,T')F(0)\mathrm{n}d(d_1)}{2\sqrt{T}}%Black theta part1
-& -\frac{\partial}{\partial T}&=q_1\mathrm{e}^{-q_1T}S_1(0)\mathrm{N}(d_1)\\ %Margrabe theta part1
+-\frac{\partial}{\partial T} &= -\frac{\sigma P(0,T')F_0\mathrm{n}d(d_1)}{2\sqrt{T}}%Black theta part1
+& -\frac{\partial}{\partial T}&=q_1\mathrm{e}^{-q_1T}S_1_0\mathrm{N}(d_1)\\ %Margrabe theta part1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-& &&-q_2\mathrm{e}^{-q_2T}S_2(0)\mathrm{N}(d_2)\\ % Margrabe theta part2
+& &&-q_2\mathrm{e}^{-q_2T}S_2_0\mathrm{N}(d_2)\\ % Margrabe theta part2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-&&&-\frac{\sigma \mathrm{e}^{-q_1T}S_1(0)\mathrm{n}d(d_1)}{2\sqrt{T}}\\ % Margrabe theta part3
+&&&-\frac{\sigma \mathrm{e}^{-q_1T}S_1_0\mathrm{n}d(d_1)}{2\sqrt{T}}\\ % Margrabe theta part3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\frac{\partial}{\partial \sigma} &= \sqrt{T}P(0,T')F(0)\mathrm{n}d(d_1) % Black vega
-&\frac{\partial}{\partial \sigma}&=\sqrt{T}\mathrm{e}^{-q_1T}S_1(0)\mathrm{n}d(d_1) % Margrabe vega
+\frac{\partial}{\partial \sigma} &= \sqrt{T}P(0,T')F_0\mathrm{n}d(d_1) % Black vega
+&\frac{\partial}{\partial \sigma}&=\sqrt{T}\mathrm{e}^{-q_1T}S_1_0\mathrm{n}d(d_1) % Margrabe vega
 \end{align*}
 
 :::
@@ -554,9 +554,9 @@ The Greeks for the Black call formula and the Margrabe formula are: \index{Greek
 
 Hedging for the Margrabe formula is much the same as for the Black-Scholes formula.  We would delta-hedge a \index{delta hedge} written exchange option by holding $\delta_1=\mathrm{e}^{-q_1T}\mathrm{N}(d_1)$ shares of the first asset and $\delta_2 =- \mathrm{e}^{-q_2T}\mathrm{N}(d_2)$ shares of the second asset (which means shorting the second asset).  This position would be financed by borrowing at the risk-free rate (or shorting the discount bond).  The same argument that we used in @sec-s_deltahedging shows that this zero-cost portfolio will have a zero return if continuously rebalanced.
 
-Because the Black formulas are a special case of the Margrabe formula, we can delta-hedge options on forwards in the same way.  Putting $q_1=q_2=0$, $S_1(0)=P(0,T')F(0)$ and $S_2(0)=P(0,T')K$, we would delta-hedge a written call option by buying $\mathrm{N}(d_1)$ shares of the first asset and shorting $\mathrm{N}(d_2)$ shares of the second, where $d_1$ and $d_2$ are defined in the Margrabe formulas @eq-margrabe_d1 and @eq-margrabe_d2 and equivalently in the Black formulas @eq-black_d1 and @eq-black_d2.  This position would be financed by shorting the discount bond to raise the difference between the cost of the portfolio and the option value so that the cost of the total portfolio (including the short discount bond) equals the option value.  However, the first asset here consists of a long forward contract plus $F(0)$ units of the discount bond, and the second asset is $K$ units of the discount bond.  Furthermore, we are using the discount bond to finance the position (including the buying and shorting of the discount bond!).  We can conclude that buying $\mathrm{N}(d_1)$ units of the first asset means that we should buy $\mathrm{N}(d_1)$ forward contracts.  This has zero cost.  Therefore, the portfolio value will equal the value of the discount bonds, and this must equal the option value.  So, we actually invest the option value  
-$$P(0,T')F(0)\mathrm{N}(d_1) - P(0,T')K\mathrm{N}(d_2)\; ,$$
-in the discount bond, which means buying $F(0)\mathrm{N}(d_1)-K\mathrm{N}(d_2)$ units of the bond.
+Because the Black formulas are a special case of the Margrabe formula, we can delta-hedge options on forwards in the same way.  Putting $q_1=q_2=0$, $S_1_0=P(0,T')F_0$ and $S_2_0=P(0,T')K$, we would delta-hedge a written call option by buying $\mathrm{N}(d_1)$ shares of the first asset and shorting $\mathrm{N}(d_2)$ shares of the second, where $d_1$ and $d_2$ are defined in the Margrabe formulas @eq-margrabe_d1 and @eq-margrabe_d2 and equivalently in the Black formulas @eq-black_d1 and @eq-black_d2.  This position would be financed by shorting the discount bond to raise the difference between the cost of the portfolio and the option value so that the cost of the total portfolio (including the short discount bond) equals the option value.  However, the first asset here consists of a long forward contract plus $F_0$ units of the discount bond, and the second asset is $K$ units of the discount bond.  Furthermore, we are using the discount bond to finance the position (including the buying and shorting of the discount bond!).  We can conclude that buying $\mathrm{N}(d_1)$ units of the first asset means that we should buy $\mathrm{N}(d_1)$ forward contracts.  This has zero cost.  Therefore, the portfolio value will equal the value of the discount bonds, and this must equal the option value.  So, we actually invest the option value  
+$$P(0,T')F_0\mathrm{N}(d_1) - P(0,T')K\mathrm{N}(d_2)\; ,$$
+in the discount bond, which means buying $F_0\mathrm{N}(d_1)-K\mathrm{N}(d_2)$ units of the bond.
 
 A more direct analysis of hedging options on forwards is possible and instructive.  We will consider that topic further in @sec-s_hedgingforwards.
 
@@ -579,10 +579,10 @@ The difference between futures and forward contracts is that futures are marked 
 
 
 We consider the idealized case in which the futures contract is continuously marked to market.  Assume there is an instantaneously risk-free asset with rate of return $r$, which could vary randomly over time, and define, as in @sec-c_arbitrage,
-$$R(t) = \exp\left(\int_0^t r(s)\,ds\right)\; ,$$
+$$R_t = \exp\left(\int_0^t r(s)\,ds\right)\; ,$$
 which is the value at date $t$ of a \$1 investment in the asset at date $0$, with interest continuously reinvested.
-Let $T'$ denote the maturity of the futures contract, and let $F^*(t)$ denote the futures price at dates $t \leq T'$ (the $^*$ notation is to distinguish the futures price from the forward price $F$).
-Consider the portfolio strategy that starts with zero dollars and one long futures contract at price $F^*(0)$ and which continuously invests and withdraws from the risk-free asset the gains and losses on the futures contract.  Let $V(t)$ denote the value of this portfolio at date $t$.  The change in the value of the portfolio at any instant is the interest earned (or paid, if $V<0$) on the risk-free asset plus the gain/loss on the futures.  This means that
+Let $T'$ denote the maturity of the futures contract, and let $F^*_t$ denote the futures price at dates $t \leq T'$ (the $^*$ notation is to distinguish the futures price from the forward price $F$).
+Consider the portfolio strategy that starts with zero dollars and one long futures contract at price $F^*_0$ and which continuously invests and withdraws from the risk-free asset the gains and losses on the futures contract.  Let $V_t$ denote the value of this portfolio at date $t$.  The change in the value of the portfolio at any instant is the interest earned (or paid, if $V<0$) on the risk-free asset plus the gain/loss on the futures.  This means that
 $$\mathrm{d} V = rV\,\mathrm{d} t + \mathrm{d} F^*\; .$$
 Because all gains and losses on this portfolio are reinvested, $V$ is the price of a non-dividend-paying asset.  Therefore, under the risk-neutral probability (i.e., using $R$ as the numeraire), the ratio $V/R$ must be a martingale and hence have zero drift.  From Ito's formula,
 \begin{align*}
@@ -593,17 +593,17 @@ Because all gains and losses on this portfolio are reinvested, $V$ is the price 
 Thus, the drift of $V/R$ being zero implies the drift of $F^*$ is zero.  We need to assume (and can assume) that $F^*$ is an Ito process with finite expected quadratic variation---cf. condition @eq-regularity1---in which case the absence
 of a drift implies that it is a martingale.  
 
-Now we turn to fact (2).  Consider a forward contract with maturity $T'$ and a discount bond also maturing at $T'$.  Let $F(t)$ denote the forward price and let $P(t,T')$ denote the price of the discount bond at dates $t \leq T'$.  We observed in @sec-s_black that there is a non-dividend paying asset with price $P(t,T')F(t)$.  When we use the discount bond as the numeraire, the ratio $P(t,T')F(t)/P(t,T') = F(t)$ must be a martingale, which is fact (2).  Because of this fact, a probability measure  corresponding to a discount bond being the numeraire is called a forward measure. \index{forward measure}
+Now we turn to fact (2).  Consider a forward contract with maturity $T'$ and a discount bond also maturing at $T'$.  Let $F_t$ denote the forward price and let $P(t,T')$ denote the price of the discount bond at dates $t \leq T'$.  We observed in @sec-s_black that there is a non-dividend paying asset with price $P(t,T')F_t$.  When we use the discount bond as the numeraire, the ratio $P(t,T')F_t/P(t,T') = F_t$ must be a martingale, which is fact (2).  Because of this fact, a probability measure  corresponding to a discount bond being the numeraire is called a forward measure. \index{forward measure}
 
 Suppose now that interest rates are deterministic, that is, even if $r$ varies over time, it does so in a non-random way.  Then the discount bond price at date $0$ must be the discount factor
-$$P(0,T') = \exp\left(-\int_0^{T'} r(t)\,\mathrm{d} t\right)\; .$$
+$$P(0,T') = \exp\left(-\int_0^{T'} r_t\,\mathrm{d} t\right)\; .$$
 @eq-probSnumeraire gives the probability of any event $A$ when the discount bond is used as the numeraire as
-$$\text{prob}^P[A] = E\left[1_A\phi(T')\frac{P(T',T')}{P(0,T')}\right] = \exp\left(-\int_0^{T'} r(t)\,\mathrm{d} t\right)E[1_A\phi(T')]\; ,$$
+$$\text{prob}^P[A] = \\E\left[1_A\phi_{T'}\frac{P(T',T')}{P(0,T')}\right] = \exp\left(-\int_0^{T'} r_t\,\mathrm{d} t\right)\\E[1_A\phi_{T'}]\; ,$$
 where $\phi$ denotes the state prices.
 On the other hand, the same equation gives the probability of $A$ when $R$ is used as the numeraire as
-$$\text{prob}^R[A] = E\left[1_A\phi(T')\frac{R(T')}{R(0)}\right] = \exp\left(-\int_0^{T'} r(t)\,\mathrm{d} t\right)E[1_A\phi(T')]\; .$$
-Therefore, the two probability measures are the same, and consequently the expectations $E^P$ and $E^R$ are the same.  Now using the fact that both the futures price and the forward price must equal the spot price at maturity, we have $F^*(T') = F(T')$, and, from the martingale properties,
-$$F^*(t) = E_t^P[F^*(T')] = E_t^P[F(T')] = E_t^R[F(T')] = F(t)\; ,$$
+$$\text{prob}^R[A] = \\E\left[1_A\phi_{T'}\frac{R_{T'}}{R_0}\right] = \exp\left(-\int_0^{T'} r_t\,\mathrm{d} t\right)\\E[1_A\phi_{T'}]\; .$$
+Therefore, the two probability measures are the same, and consequently the expectations $\\E^P$ and $\\E^R$ are the same.  Now using the fact that both the futures price and the forward price must equal the spot price at maturity, we have $F^*_{T'} = F_{T'}$, and, from the martingale properties,
+$$F^*_t = \\E_t^P[F^*_{T'}] = \\E_t^P[F_{T'}] = \\E_t^R[F_{T'}] = F_t\; ,$$
 which is fact (3).
 
 
@@ -612,29 +612,29 @@ which is fact (3).
 
 Now we consider options on futures contracts, \index{futures option} assuming that interest rates are deterministic.  We just showed that in this circumstance the futures price will equal the forward price for a contract of the same maturity.  However, the values of options on a futures contract do not equal the values of options on the corresponding forward contract.  
 
-The difference is due to marking to market.  Consider futures and forward contracts with maturity $T'$ and options maturing at $T \leq T'$.  Exercise of a call option on a futures contract will roll the investor into a long futures contract with futures price equal to the market futures price at that date.  The difference $F^*(T)-K$ between the market futures price and the strike price of the option is immediately credited to the investor's margin account.  On the other hand, exercise of an option on a forward and sale of the forward results in a cash flow of $F(T) - K$ that is received at the maturity date $T'$ of the forward.  Therefore, the value at maturity of a call option on a futures contract is
-$\max(0,F^*(T)-K)$, whereas, as noted before, the value of a call option on a forward at the maturity of the option is $P(T,T')\max(0,F(T)-K)$
+The difference is due to marking to market.  Consider futures and forward contracts with maturity $T'$ and options maturing at $T \leq T'$.  Exercise of a call option on a futures contract will roll the investor into a long futures contract with futures price equal to the market futures price at that date.  The difference $F^*_T-K$ between the market futures price and the strike price of the option is immediately credited to the investor's margin account.  On the other hand, exercise of an option on a forward and sale of the forward results in a cash flow of $F_T - K$ that is received at the maturity date $T'$ of the forward.  Therefore, the value at maturity of a call option on a futures contract is
+$\max(0,F^*_T-K)$, whereas, as noted before, the value of a call option on a forward at the maturity of the option is $P(T,T')\max(0,F_T-K)$
 
 As in the analysis of options on forwards, an options on a futures contract can be viewed as an exchange option, where one exchanges the asset with price
-$S_2(t) = P(t,T)K$ at date $t\leq T$ for the asset with price $S_1(t) = P(t,T)F^*(t)$.  The asset with price $S_2$ is of course $K$ units of the discount bond maturing at $T$.  Assuming interest rates are deterministic, we have $F^*(t) = F(t)$, and we noted in @sec-s_black that $P(t,T)F(t)$ is the price of a non-dividend-paying asset.  Thus, we can apply Margrabe's formula to price call (and put) options on futures when interest rates are deterministic.  Compared to options on forwards, the difference is that the discount bonds defining the prices $S_1$ and $S_2$ mature at the maturity date of the option rather than at the maturity date of the futures or forward contract.  The result is:
+$S_2_t = P(t,T)K$ at date $t\leq T$ for the asset with price $S_1_t = P(t,T)F^*_t$.  The asset with price $S_2$ is of course $K$ units of the discount bond maturing at $T$.  Assuming interest rates are deterministic, we have $F^*_t = F_t$, and we noted in @sec-s_black that $P(t,T)F_t$ is the price of a non-dividend-paying asset.  Thus, we can apply Margrabe's formula to price call (and put) options on futures when interest rates are deterministic.  Compared to options on forwards, the difference is that the discount bonds defining the prices $S_1$ and $S_2$ mature at the maturity date of the option rather than at the maturity date of the futures or forward contract.  The result is:
 
 ::: Rule
 ## 
 When interest rates are deterministic and the futures price $F^*$ has a constant volatility $\sigma$, the values of  European calls and puts on a futures contract are
 
 $$
-\text{Call Price} =P(0,T)F^*(0)\mathrm{N}(d_1)-P(0,T)K\mathrm{N}(d_2)\; ,
+\text{Call Price} =P(0,T)F^*_0\mathrm{N}(d_1)-P(0,T)K\mathrm{N}(d_2)\; ,
 $$ {#eq-black2}
 
 $$
-\text{Put Price} =P(0,T)K\mathrm{N}(-d_2)-P(0,T)F^*(0)\mathrm{N}(-d_1)\; ,
+\text{Put Price} =P(0,T)K\mathrm{N}(-d_2)-P(0,T)F^*_0\mathrm{N}(-d_1)\; ,
 $$ {#eq-black_put2}
 
 $$
 $$
 where
 $$
-d_1= \frac{\log\left(\frac{F^*(0)}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
+d_1= \frac{\log\left(\frac{F^*_0}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma\sqrt{T}}\;,
 $$ {#eq-black_d12}
 
 $$
@@ -655,12 +655,12 @@ We will derive delta hedges for futures options in  @sec-s_hedgingforwards.
 
 ## Time-Varying Volatility {#sec-s_volatility}
 
-All of the option pricing formulas in this chapter were derived from Margrabe's formula, the main assumption of which is that the logarithm of the ratio of asset prices at date $T$ is normally distributed with variance equal to $\sigma^2T$.  As in @sec-s_timevaryingvolatility regarding the Black-Scholes formulas, the formulas in this chapter can easily be adapted to allow a time-varying but non-random volatility.  If the volatility is a non-random function $\sigma(t)$ of time, then we define $\sigma_{\text{avg}}$ to be the number such that
+All of the option pricing formulas in this chapter were derived from Margrabe's formula, the main assumption of which is that the logarithm of the ratio of asset prices at date $T$ is normally distributed with variance equal to $\sigma^2T$.  As in @sec-s_timevaryingvolatility regarding the Black-Scholes formulas, the formulas in this chapter can easily be adapted to allow a time-varying but non-random volatility.  If the volatility is a non-random function $\sigma_t$ of time, then we define $\sigma_{\text{avg}}$ to be the number such that
 $$
-\sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2(t)\,\mathrm{d} t\;.
+\sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2_t\,\mathrm{d} t\;.
 $$ {#eq-averagesigma}
  
-We should input $\sigma_{\text{avg}}$ as (i) the volatility of the ratio of asset prices in Margrabe's formula and the deferred exchange option formula if $\sigma(t)$ is the volatility of the ratio at date $t$ or as (ii) the volatility of the forward price in Black's and Merton's formulas if $\sigma(t)$ is the volatility of the forward price at date $t$.
+We should input $\sigma_{\text{avg}}$ as (i) the volatility of the ratio of asset prices in Margrabe's formula and the deferred exchange option formula if $\sigma_t$ is the volatility of the ratio at date $t$ or as (ii) the volatility of the forward price in Black's and Merton's formulas if $\sigma_t$ is the volatility of the forward price at date $t$.
 
 As in @sec-s_timevaryingvolatility, equation~@eq-averagesigma enables one to interpret and apply different implied volatilities computed at different maturities.  \index{term structure of volatility} Another circumstance in which it can be useful is in conjunction with bond price models such as the Vasicek and extended Vasicek models described in @sec-c_vasicek that imply a time-varying non-random volatility for discount bond prices.^[The volatility of a discount bond price cannot be constant because it must go to zero as the bond approaches maturity.]  If we assume a constant volatility for the price of the underlying and a constant correlation between the underlying and the discount bond, then we will have a time-varying non-random  forward price volatility via  @eq-mertonsigma, and we should input the average volatility $\sigma_{\text{avg}}$ defined in @eq-averagesigma for the forward price volatility in Black's and Merton's formulas.  As mentioned in @sec-s_merton, this will be more important for long-term options than for short-term options.
 
@@ -668,10 +668,10 @@ As in @sec-s_timevaryingvolatility, equation~@eq-averagesigma enables one to int
 
 In @sec-c_foreignexchange, we considered hedging quanto contracts with currency forwards.  In @sec-s_forwardhedging, we considered hedging options on forwards with forwards.  To present a more complete analysis of these topics, we need to discuss the gains and losses that accrue from trading forwards.
 
-Consider dates $t<u$ and a forward contract with maturity $T$.  Suppose we purchase $x(t)$ forwards at date $t$ and then change our position in forwards to $x(u)$ at time $u$.    The purchase/sale of $x(u)-x(t)$ new contracts does not affect the portfolio value, so the change in the value of the portfolio is the change in the value of the $x(t)$ contracts purchased at date $t$.  These contracts were worth zero at date $t$, because forward contracts have zero value at initiation.  Selling them at date $u$ cancels the obligation to deliver/receive the underlying, leaving one with a cash flow of $x(t)[F(u)-F(t)]$ dollars to be received at date $T$.  The value of this cash flow at date $u$ is $x(t)P(u,T)[F(u)-F(t)]$.  We can write this as
+Consider dates $t<u$ and a forward contract with maturity $T$.  Suppose we purchase $x_t$ forwards at date $t$ and then change our position in forwards to $x(u)$ at time $u$.    The purchase/sale of $x(u)-x_t$ new contracts does not affect the portfolio value, so the change in the value of the portfolio is the change in the value of the $x_t$ contracts purchased at date $t$.  These contracts were worth zero at date $t$, because forward contracts have zero value at initiation.  Selling them at date $u$ cancels the obligation to deliver/receive the underlying, leaving one with a cash flow of $x_t[F(u)-F_t]$ dollars to be received at date $T$.  The value of this cash flow at date $u$ is $x_tP(u,T)[F(u)-F_t]$.  We can write this as
 \begin{align*}
-x(t)P(u,T)[F(u)-F(t)]  &= x(t)\big[P(t,T)[F(u)-F(t)] + [P(u,T)-P(t,T)][F(u)-F(t)]\big]\\
-&= x(t)\big[P(t,T)\,\Delta F + (\Delta P)(\Delta F)\big]\;.
+x_tP(u,T)[F(u)-F_t]  &= x_t\big[P(t,T)[F(u)-F_t] + [P(u,T)-P(t,T)][F(u)-F_t]\big]\\
+&= x_t\big[P(t,T)\,\Delta F + (\Delta P)(\Delta F)\big]\;.
 \end{align*}
 This motivates the following definition:
 
@@ -680,15 +680,15 @@ This motivates the following definition:
 
 The change in the value of a portfolio of forward contracts at date $t$ is
 $$
-x(t)\big[P(t,T)\,\mathrm{d} F(t) + \mathrm{d} P(t,T)\times \mathrm{d} F(t)]\;,
+x_t\big[P(t,T)\,\mathrm{d} F_t + \mathrm{d} P(t,T)\times \mathrm{d} F_t]\;,
 $$ {#eq-changeforwardvalue}
 
-where $x(t)$ denotes the number of forward contracts held, $F(t)$ denotes the forward price, $P(t,T)$ denotes the price of a discount bond maturing at $T$, and $T$ is the maturity of the forward contract.
+where $x_t$ denotes the number of forward contracts held, $F_t$ denotes the forward price, $P(t,T)$ denotes the price of a discount bond maturing at $T$, and $T$ is the maturity of the forward contract.
 :::
 
 
 
-Hedging with futures is a bit simpler, because the gains and losses are received instantaneously (daily, at least) rather than being deferred to the contract maturity.  Letting $x(t)$ denote the number of futures contracts held at date $t$ and $F^*(t)$ the futures price, the cash flow from the contracts is $x(t)\,\mathrm{d} F^*(t)$.  This is also the change in the value of the portfolio, because marking to market means that the contracts always have zero value.  
+Hedging with futures is a bit simpler, because the gains and losses are received instantaneously (daily, at least) rather than being deferred to the contract maturity.  Letting $x_t$ denote the number of futures contracts held at date $t$ and $F^*_t$ the futures price, the cash flow from the contracts is $x_t\,\mathrm{d} F^*_t$.  This is also the change in the value of the portfolio, because marking to market means that the contracts always have zero value.  
 
 To compare hedging with futures and forwards, assume  there is a constant risk-free rate $r$.  Let $T$ denote the maturity of the futures and forward contracts.  Because there is a constant risk-free rate, we have $P(t,T) = \mathrm{e}^{-r(T-t)}$, which implies $(\mathrm{d} P)(\mathrm{d} F) =0$.  Moreover, futures prices equal forward prices.  Thus,
 
@@ -696,35 +696,35 @@ To compare hedging with futures and forwards, assume  there is a constant risk-f
 ## 
 If there is a constant risk-free rate $r$, the change in the value of a portfolio of forward contracts at date $t$ is
 $$
-x(t)\mathrm{e}^{-r(T-t)}\,\mathrm{d} F(t)
+x_t\mathrm{e}^{-r(T-t)}\,\mathrm{d} F_t
 $$ {#eq-forwardchange100}
 
 and the change in the value of a portfolio of futures contracts is
 $$
-x(t)\,\mathrm{d} F(t)\;,
+x_t\,\mathrm{d} F_t\;,
 $$ {#eq-futureschange100}
 
-where $x(t)$ denotes the number of futures/forward contracts held at date $t$, $T$ is the maturity of the futures and forward contracts and $F(t)$ is the futures (= forward) price at date $t$.
+where $x_t$ denotes the number of futures/forward contracts held at date $t$, $T$ is the maturity of the futures and forward contracts and $F_t$ is the futures (= forward) price at date $t$.
 :::
 
-Comparing @eq-forwardchange100 and @eq-futureschange100, we see that if $x(t)$ is the number of forward contracts that should be held in a hedge, then 
+Comparing @eq-forwardchange100 and @eq-futureschange100, we see that if $x_t$ is the number of forward contracts that should be held in a hedge, then 
 $$
-y(t) = \mathrm{e}^{-r(T-t)}x(t)
+y_t = \mathrm{e}^{-r(T-t)}x_t
 $$ {#eq-futuresxy}
 
 is the number of futures contracts that should be held, because with this number of contracts we have
 \begin{align*}
-\text{Change in Forward Portfolio} & = x(t)\mathrm{e}^{-r(T-t)}\,\mathrm{d} F(t)\\
-& = y(t)\,\mathrm{d} F(t)\\
+\text{Change in Forward Portfolio} & = x_t\mathrm{e}^{-r(T-t)}\,\mathrm{d} F_t\\
+& = y_t\,\mathrm{d} F_t\\
 & = \text{Change in Futures Portfolio}\;.
 \end{align*}
 In short, we don't require as many futures contracts as forward contracts, and the scaling factor to convert from forwards to futures is just the present value factor $\mathrm{e}^{-r(T-t)}$.
 
-For example, the result of @sec-s_replicatingquantos on replicating the payoff $\bar{X}S(T)$ with forward contracts leads to the following:
+For example, the result of @sec-s_replicatingquantos on replicating the payoff $\bar{X}S_T$ with forward contracts leads to the following:
 
 ::: Rule
 ## 
-To replicate the payoff $\bar{X}S(T)$ at date $T$, where $\bar{X}$ is a fixed exchange rate and $S$ is the foreign currency price of an asset, one should invest $V(t)$ units of domestic currency in the foreign asset and be short $\mathrm{e}^{(r_f-r)(T-t)}V(t)/X(t)$ currency futures at date $t$, where $V(t)$ is defined in @eq-quanto2 and $X(t)$ is the spot exchange rate.
+To replicate the payoff $\bar{X}S_T$ at date $T$, where $\bar{X}$ is a fixed exchange rate and $S$ is the foreign currency price of an asset, one should invest $V_t$ units of domestic currency in the foreign asset and be short $\mathrm{e}^{(r_f-r)(T-t)}V_t/X_t$ currency futures at date $t$, where $V_t$ is defined in @eq-quanto2 and $X_t$ is the spot exchange rate.
 :::
 
 
@@ -743,21 +743,21 @@ $$\mathrm{e}^{r(T'-T)}\mathrm{e}^{-r(T'-t)}\mathrm{N}(d_1) = \mathrm{e}^{-r(T-t)
 futures contracts.
 
 In @sec-s_forwardhedging, we derived the hedges for forward options by considering them as exchange options.  We can use @eq-changeforwardvalue to confirm that our calculations were correct.  Consider hedging a short call maturing at $T$ on a forward contract maturing at $T'$.  We can assume interest rates vary randomly and use discount bonds in the hedge.  We stated in @sec-s_forwardhedging that we  should hold 
-$F(0)\mathrm{N}(d_1)-K\mathrm{N}(d_2)$
+$F_0\mathrm{N}(d_1)-K\mathrm{N}(d_2)$
 units of the discount bond maturing at $T'$  and we should go long 
 $\mathrm{N}(d_1)$ forwards to hedge the short call. 
 This is a zero-cost portfolio when we include the proceeds from selling the call.  Using @eq-changeforwardvalue, we see that the change in the value of the portfolio will be
 $$
--\mathrm{d} C + [F(0)\mathrm{N}(d_1)-K\mathrm{N}(d_2)]\mathrm{d} P + \mathrm{N}(d_1)[P(0,T')\,\mathrm{d} F + (\mathrm{d} P)(\mathrm{d} F)]\;.
+-\mathrm{d} C + [F_0\mathrm{N}(d_1)-K\mathrm{N}(d_2)]\mathrm{d} P + \mathrm{N}(d_1)[P(0,T')\,\mathrm{d} F + (\mathrm{d} P)(\mathrm{d} F)]\;.
 $$ {#eq-forwardhedging1}
 
-The value of the call at date $t$ will be a function of $t$,  $P(t,T')$ and $F(t)$, which we write as $C(t,P,F)$.  From Ito's formula,
+The value of the call at date $t$ will be a function of $t$,  $P(t,T')$ and $F_t$, which we write as $C(t,P,F)$.  From Ito's formula,
 \begin{align*}
 \mathrm{d} C &= \frac{\partial C}{\partial t}\,\mathrm{d} t + \frac{\partial C}{\partial P}\,\mathrm{d} P + \frac{\partial C}{\partial F}\,\mathrm{d} F \\  &\qquad + \frac{1}{2}\frac{\partial^2 C}{\partial P^2}\, (\mathrm{d} P)^2   + \frac{1}{2}\frac{\partial^2 C}{\partial F^2}\, (\mathrm{d} F)^2 + \frac{\partial^2 C}{\partial F \partial P} (\mathrm{d} P)(\mathrm{d} F)\;.\\
 &=\Theta\,\mathrm{d} t + \delta_P\,\mathrm{d} P + \delta_F\,\mathrm{d} F  + \frac{1}{2}\Gamma_{PP} (\mathrm{d} P)^2 + \frac{1}{2}\Gamma_{FF} (\mathrm{d} F)^2  + \Gamma_{FP}\,(\mathrm{d} P)(\mathrm{d} F)\;,
 \end{align*}
-where the $\delta$'s and $\Gamma$'s denote the first and second partial derivatives indicated by the subscripts.  Inserting this formula into @eq-forwardhedging1 and making use of the formulas in the table in @sec-s_forwardhedging, we see that the $\mathrm{d} P$ terms cancel because $\delta_P = F(0)\mathrm{N}(d_1)-K\mathrm{N}(d_2)$.  Furthermore, the $\mathrm{d} F$ terms cancel because $\delta_F = \mathrm{N}(d_1)P(0,T')$.  Thus, there is no exposure in the portfolio to the two risky asset prices $P$ and $F$.  Furthermore, $\Gamma_{PP} = 0$ and the $(\mathrm{d} P)(\mathrm{d} F)$ terms cancel because $\Gamma_{FP} = \mathrm{N}(d_1)$.  These substitutions simplify the change @eq-forwardhedging1 in the value of the portfolio to
-$$-\Theta\,\mathrm{d} t - \frac{1}{2}\Gamma_{FF} (\mathrm{d} F)^2  = \frac{\sigma P(0,T')F(0)\mathrm{n}d(d_1)}{2\sqrt{T}}\,\mathrm{d} t  -  \frac{P(0,T')\mathrm{n}d(d_1)}{2\sigma\sqrt{T}F(0)}\,(\mathrm{d} F)^2\; ,$$
+where the $\delta$'s and $\Gamma$'s denote the first and second partial derivatives indicated by the subscripts.  Inserting this formula into @eq-forwardhedging1 and making use of the formulas in the table in @sec-s_forwardhedging, we see that the $\mathrm{d} P$ terms cancel because $\delta_P = F_0\mathrm{N}(d_1)-K\mathrm{N}(d_2)$.  Furthermore, the $\mathrm{d} F$ terms cancel because $\delta_F = \mathrm{N}(d_1)P(0,T')$.  Thus, there is no exposure in the portfolio to the two risky asset prices $P$ and $F$.  Furthermore, $\Gamma_{PP} = 0$ and the $(\mathrm{d} P)(\mathrm{d} F)$ terms cancel because $\Gamma_{FP} = \mathrm{N}(d_1)$.  These substitutions simplify the change @eq-forwardhedging1 in the value of the portfolio to
+$$-\Theta\,\mathrm{d} t - \frac{1}{2}\Gamma_{FF} (\mathrm{d} F)^2  = \frac{\sigma P(0,T')F_0\mathrm{n}d(d_1)}{2\sqrt{T}}\,\mathrm{d} t  -  \frac{P(0,T')\mathrm{n}d(d_1)}{2\sigma\sqrt{T}F_0}\,(\mathrm{d} F)^2\; ,$$
 which we can see to be zero because $(\mathrm{d} F)^2 = \sigma^2F^2\,\mathrm{d} t$.
 Thus, the hedge is perfect when continuously rebalanced.
 
@@ -767,20 +767,20 @@ A formal definition of market completeness \index{complete market} must specify 
 
 The exchange-option model of Margrabe---with two risky assets, two Brownian motions, and no risk-free asset---is obviously incomplete.  \index{incomplete market} For example, it is impossible to have exactly \$100 at date $T$.  With no risk-free asset, there is simply no way to store money.  This may seem far-fetched, but we might be interested in payoffs in real (i.e., inflation-adjusted) dollars, in which case the absence of a risk-free asset may be a normal situation.   In any case, we have not assumed a risk-free asset exists, but we have priced options without appealing to equilibrium arguments.  This deserves some clarification.
 
-As mentioned above, a formal definition of market completeness must specify which contingent claims are to be replicable.  The Margrabe model is complete for a certain set of contingent claims.  Contingent claims of the form $S_2(T)X(T)$ where $X(T)$ is a random variable depending on the relative prices $S_1(t)/S_2(t)$ for $0 \leq t\leq T$ can be replicated.  Likewise,  contingent claims of the form $S_1(T)X(T)$ can be replicated.  The payoffs of exchange options are of this form, so they can be priced by arbitrage, even though there are other contingent claims (for example, receiving exactly \$100 at date $T$) that cannot be replicated and hence cannot be priced by arbitrage.  Likewise, the Black and Merton models in which there is a zero-coupon bond but no instantaneously risk-free asset are examples of incomplete markets that are still sufficiently complete to price options by arbitrage (the options can be replicated).  The proof that the Margrabe model is complete in the sense stated here follows from the change of numeraire argument used to derive Margrabe's formula from the Black-Scholes formula (recall that the second asset is risk-free when we use it as the numeraire, so there is a risk-free asset under the new numeraire) and a proof that the Black-Scholes model is complete (which we have omitted, except to show that European options can be replicated).
+As mentioned above, a formal definition of market completeness must specify which contingent claims are to be replicable.  The Margrabe model is complete for a certain set of contingent claims.  Contingent claims of the form $S_2_TX_T$ where $X_T$ is a random variable depending on the relative prices $S_1_t/S_2_t$ for $0 \leq t\leq T$ can be replicated.  Likewise,  contingent claims of the form $S_1_TX_T$ can be replicated.  The payoffs of exchange options are of this form, so they can be priced by arbitrage, even though there are other contingent claims (for example, receiving exactly \$100 at date $T$) that cannot be replicated and hence cannot be priced by arbitrage.  Likewise, the Black and Merton models in which there is a zero-coupon bond but no instantaneously risk-free asset are examples of incomplete markets that are still sufficiently complete to price options by arbitrage (the options can be replicated).  The proof that the Margrabe model is complete in the sense stated here follows from the change of numeraire argument used to derive Margrabe's formula from the Black-Scholes formula (recall that the second asset is risk-free when we use it as the numeraire, so there is a risk-free asset under the new numeraire) and a proof that the Black-Scholes model is complete (which we have omitted, except to show that European options can be replicated).
 
 ::: Extra
  ## 
 
-We will conclude with a  proof of the Margrabe formula that does not depend on the Black-Scholes formula.   Let $x$ denote the random variable taking the value 1 when $S_1(T)>S_2(T)$ and which is 0 otherwise.  Then the value of the exchange option at maturity is $xS_1(T)-xS_2(T)$.  Let $V_i$ denote the value of the portfolio beginning with $\mathrm{e}^{-q_iT}$ units of asset $i$ at date $0$ and reinvesting dividends, to accumulate to one share at date $T$.  Then $V_i(T)=S_i(T)$ and from the fundamental pricing @eq-formula the value at date $0$ of receiving $xS_i(T)$ at date $T$ is
+We will conclude with a  proof of the Margrabe formula that does not depend on the Black-Scholes formula.   Let $x$ denote the random variable taking the value 1 when $S_1_T>S_2_T$ and which is 0 otherwise.  Then the value of the exchange option at maturity is $xS_1_T-xS_2_T$.  Let $V_i$ denote the value of the portfolio beginning with $\mathrm{e}^{-q_iT}$ units of asset $i$ at date $0$ and reinvesting dividends, to accumulate to one share at date $T$.  Then $V_i_T=S_i_T$ and from the fundamental pricing @eq-formula the value at date $0$ of receiving $xS_i_T$ at date $T$ is
 \begin{align*}
-V_i(0)E^{V_i}\left[x\frac{S_i(T)}{V_i(T)}\right] &= \mathrm{e}^{-q_iT}S_i(0)E^{V_i}[x] \\
-&= \mathrm{e}^{-q_iT}S_i(0)\times\text{prob}^{V_i}\big(V_1(T)>V_2(T)\big)\; .
+V_i_0\\E^{V_i}\left[x\frac{S_i_T}{V_i_T}\right] &= \mathrm{e}^{-q_iT}S_i_0\\E^{V_i}[x] \\
+&= \mathrm{e}^{-q_iT}S_i_0\times\text{prob}^{V_i}\big(V_1_T>V_2_T\big)\; .
 \end{align*}
-We can write the value of receiving $xS_1(T)$ as
-$$\mathrm{e}^{-q_1T}S_1(0)\times\text{prob}^{V_1}\left(\frac{V_2(T)}{V_1(T)} < 1\right)$$
-and the value of receiving $xS_2(T)$ as
-$$\mathrm{e}^{-q_2T}S_2(0)\times\text{prob}^{V_2}\left(\frac{V_1(T)}{V_2(T)} > 1\right)\;.$$
+We can write the value of receiving $xS_1_T$ as
+$$\mathrm{e}^{-q_1T}S_1_0\times\text{prob}^{V_1}\left(\frac{V_2_T}{V_1_T} < 1\right)$$
+and the value of receiving $xS_2_T$ as
+$$\mathrm{e}^{-q_2T}S_2_0\times\text{prob}^{V_2}\left(\frac{V_1_T}{V_2_T} > 1\right)\;.$$
 Note that $V_2/V_1$ is a martingale when we use $V_1$ as the numeraire and $V_1/V_2$ is a martingale when we use $V_2$ as the numeraire.  Because they are martingales, they have no drifts.  The volatility of the ratios is given in @eq-margrabesigma.  Therefore, we have
 \begin{align*}
 \frac{\mathrm{d} (V_2/V_1)}{V_2/V_1} &= \sigma \,\mathrm{d} B^*_1,\\
@@ -815,7 +815,7 @@ where $B^*_i$ is a Brownian motion when $V_i$ is used as the numeraire.  Margrab
  Modify the function `Simulated_Delta_Hedge_Profits` to compute the percentiles of gains and losses for an investor who writes a call option on a forward contract and uses a discretely-rebalanced delta hedge.  As in @exr-e_forwardhedging, you will need to create a variable to keep track of the net asset/liability from trading forwards and include it in the valuation at date $T$.
 :::
 ::: Exercise
- Consider the portfolio that promises to pay $\bar{X}S(T)$ at date $T$ and replicates the payoff using currency forwards described in @sec-s_replicatingquantos, where $\bar{X}$ is a fixed exchange rate and $S$ is the foreign currency price of an asset.  Using @eq-changeforwardvalue of gains and losses from trading forwards, verify that the portfolio is riskless.
+ Consider the portfolio that promises to pay $\bar{X}S_T$ at date $T$ and replicates the payoff using currency forwards described in @sec-s_replicatingquantos, where $\bar{X}$ is a fixed exchange rate and $S$ is the foreign currency price of an asset.  Using @eq-changeforwardvalue of gains and losses from trading forwards, verify that the portfolio is riskless.
 :::
 ::: Exercise
  Repeat the previous exercise using the futures hedge described in @sec-s_hedgingforwards.

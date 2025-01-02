@@ -30,11 +30,11 @@ $$ {#eq-binomialsum}
 
 Multiplying the expectation by $\mathrm{e}^{-rT}$ yields the option value.
 
-It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section.  In the Monte-Carlo method for valuing a European call option, we generate $M$ random values for $S(T)$ and estimate the expectation $E^R[\max(0,S(T)-K)]$ by averaging the $M$ values.  This amounts to approximating the distribution of $S(T)$ by an $M$--point distribution, each point being assigned equal probability.  In the binomial method, we choose a particular set of points for $S(T)$ and assign the probabilities specified above in order to approximate the distribution of $S(T)$.  Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of $S(T)$ as the number of points increases.  However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods $N$ in the binomial model than we would need simulations $M$ in the Monte-Carlo method.  Thus, the binomial method will be much faster.   Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options.  On the other hand, as mentioned in the previous section, to value a path-dependent option in  an $N$--period binomial tree would require the analysis of $2^N$ separate paths, so Monte Carlo may be faster for path-dependent options.  Finally, as we will discuss in @sec-s_curse, Monte Carlo may be faster for options on multiple assets.
+It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section.  In the Monte-Carlo method for valuing a European call option, we generate $M$ random values for $S_T$ and estimate the expectation $\\E^R[\max(0,S_T-K)]$ by averaging the $M$ values.  This amounts to approximating the distribution of $S_T$ by an $M$--point distribution, each point being assigned equal probability.  In the binomial method, we choose a particular set of points for $S_T$ and assign the probabilities specified above in order to approximate the distribution of $S_T$.  Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of $S_T$ as the number of points increases.  However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods $N$ in the binomial model than we would need simulations $M$ in the Monte-Carlo method.  Thus, the binomial method will be much faster.   Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options.  On the other hand, as mentioned in the previous section, to value a path-dependent option in  an $N$--period binomial tree would require the analysis of $2^N$ separate paths, so Monte Carlo may be faster for path-dependent options.  Finally, as we will discuss in @sec-s_curse, Monte Carlo may be faster for options on multiple assets.
 
 
 
-There is an important alternative method for calculating the sum @eq-binomialsum, which is usually called backward induction.  \index{backward induction} We will describe it here and implement it in the next section to value American options.  We begin at the last date, where there are $N+1$ nodes.   We calculate the option value at each of these nodes, storing the value at the bottom node as $C(0)$, the value at the next node up as $C(1)$, etc.  This is illustrated in the diagram on the next page.  Then we step back to the penultimate date.  At each node at this date, we calculate the option value as the discounted expectation of its value at the last date.  From each node, there are two nodes that can be reached at the next date, corresponding to a down move or an up move.  So, the option value is calculated as
+There is an important alternative method for calculating the sum @eq-binomialsum, which is usually called backward induction.  \index{backward induction} We will describe it here and implement it in the next section to value American options.  We begin at the last date, where there are $N+1$ nodes.   We calculate the option value at each of these nodes, storing the value at the bottom node as $C_0$, the value at the next node up as $C(1)$, etc.  This is illustrated in the diagram on the next page.  Then we step back to the penultimate date.  At each node at this date, we calculate the option value as the discounted expectation of its value at the last date.  From each node, there are two nodes that can be reached at the next date, corresponding to a down move or an up move.  So, the option value is calculated as
 $$
 C = \mathrm{e}^{-r\Delta t}p\,C_{\text{up}} + \mathrm{e}^{-r\Delta t}(1-p)C_{\text{down}}\;.
 $$ {#eq-binomial001}
@@ -44,7 +44,7 @@ $$
 C(i) = \mathrm{e}^{-r\Delta t}p\,C(i+1) + \mathrm{e}^{-r\Delta t}(1-p)C(i)\;.
 $$ {#eq-binomial002}
 
-Discounting back through the tree like this, we reach date $0$ and return the option value as $C(0)$.  The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option.  This approach is essential for assessing the value of early exercise.
+Discounting back through the tree like this, we reach date $0$ and return the option value as $C_0$.  The virtue of this procedure is that it calculates a value for the option at each node in the tree, the value being the discounted expectation of the subsequent values attained by the option.  This approach is essential for assessing the value of early exercise.
 
 ![](images/fig2.png)
 
@@ -55,17 +55,17 @@ Several different ways have been proposed for matching the binomial model to the
 $$\Delta \log S =\mathrm{n}u\,\Delta t + \sigma\,\Delta B\; ,$$
 where $\mathrm{n}u = r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-neutral probability.  The mean and variance, under the risk-neutral probability, of $\Delta \log S$ in the continuous-time model are
 \begin{align*}
-E^R[\Delta \log S] &= \mathrm{n}u\,\Delta t\; ,\\
+\\E^R[\Delta \log S] &= \mathrm{n}u\,\Delta t\; ,\\
 \mathrm{var}^R[\Delta \log S]&=\sigma^2\Delta t\; ,
 \end{align*}
 so 
 \begin{align*}
-\frac{E^R[\Delta \log S]}{\Delta t} &= \mathrm{n}u\; ,\\
+\frac{\\E^R[\Delta \log S]}{\Delta t} &= \mathrm{n}u\; ,\\
 \frac{\mathrm{var}^R[\Delta \log S]}{\Delta t}&=\sigma^2\;.
 \end{align*}
 In the binomial model, we have
 \begin{align*}
-\frac{E^R\big[\Delta \log S\big]}{\Delta t} &=\frac{p\,\log u+(1-p)\log d}{\Delta t}\; ,\\
+\frac{\\E^R\big[\Delta \log S\big]}{\Delta t} &=\frac{p\,\log u+(1-p)\log d}{\Delta t}\; ,\\
 \frac{\mathrm{var}^R\big[\Delta \log S\big] }{\Delta t}&=\frac{p\,(1-p)(\log u-\log d)^2}{\Delta t}\;.
 \end{align*}
 In order for the binomial model to converge in the appropriate sense to the continuous-time model as the number of periods $N \rightarrow \infty$ keeping the total amount of time $T$ fixed (equivalently, as $\Delta t \rightarrow 0$), it is sufficient that
@@ -263,7 +263,7 @@ for j in range(n+1):
 
 ```
 
-Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.    At each date we start by defining the stock price at the bottom node.  At date $i$ there have been $i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date $i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date $0$, we return the put value $AP(0)$, the value at the bottom node, which is the only node at date $0$. 
+Now we do the backward induction.  Note that a period is the time period between successive dates.  In a one-period model, there are two dates (the beginning and end) and in general there are $N+1$ dates in an $N$--period model.  We index the dates as $i=0,\ldots,N$.    At each date we start by defining the stock price at the bottom node.  At date $i$ there have been $i$ past periods, so the bottom node corresponds to $i$ down moves.  The put value at each node is computed as the larger of the discounted expected value and the value of immediate exercise (the intrinsic value).  Having already dealt with the bottom node ($j=0$) we loop over the nodes $j=1,\ldots,i$ at each date $i$, increasing the stock price by a factor of $u^2$ each time.  When we have backed up to date $0$, we return the put value $AP_0$, the value at the bottom node, which is the only node at date $0$. 
 ```{python}
 for i in range(n):
     S = np.zeros(n-i)
@@ -600,7 +600,7 @@ This idea can be effectively used in binomial valuation of any option for which 
 
 Broadie and Detemple combine the use of the Black-Scholes formula at date $N-1$ with \index{Richardson extrapolation} Richardson extrapolation.  Richardson extrapolation is a method that may improve the efficiency of any algorithm by extrapolating to the limit.  In the case of a binomial model, the idea is to extrapolate the values calculated for different numbers of periods (different $N$'s) to try to estimate the value for $N=\infty$.  
 
-It is easier to work with convergence to zero than convergence to infinity, so define $x=1/N$.  For any value of $N$, the binomial model will return a value, which is an estimate of the option value and which we denote as $y=f(x)$.  We would like to know the value at $N=\infty$, which in this notation is $f(0)$.  Of course, we cannot calculate $f(0)$, because we do not know the function $f$, but we can approximate $f$ by a known function $g$ and then estimate $f(0)$ by $g(0)$.
+It is easier to work with convergence to zero than convergence to infinity, so define $x=1/N$.  For any value of $N$, the binomial model will return a value, which is an estimate of the option value and which we denote as $y=f(x)$.  We would like to know the value at $N=\infty$, which in this notation is $f_0$.  Of course, we cannot calculate $f_0$, because we do not know the function $f$, but we can approximate $f$ by a known function $g$ and then estimate $f_0$ by $g_0$.
 
 A linear approximation is the simplest and is shown by Broadie and Detemple to be quite effective.  For a linear approximation, we would take 
 $$g(x) = a + bx$$
@@ -608,7 +608,7 @@ for parameters $a$ and $b$ to be determined.
 We can input values $N_1$ and $N_2 = 2N_1$ for the number of periods, run the binomial model for each, set $x_i=1/N_i$, and define $y_i=f(x_i)$ to be the value of the option returned by the binomial model when the number of periods is $N_i$.  Then we force $g(x_i)=f(x_i)$ for $i=1,2$ by solving the equations
 $$y_i=a + bx_i$$
 for $a$ and $b$.
-Of course, $g(0) = a$, so we will return the constant $a$ as our estimate of $f(0)$.  This is simpler than it may appear---we put
+Of course, $g_0 = a$, so we will return the constant $a$ as our estimate of $f_0$.  This is simpler than it may appear---we put
 \begin{equation*}\begin{array}{rclcl}
 y_1 &= &a + bx_1 &= &a+2bx_2\;,\\
 y_2 &= & &  & a + bx_2 \;,
@@ -617,14 +617,14 @@ and subtracting gives us $y_1-y_2 = bx_2$, which implies from the bottom equatio
 
 Richardson extrapolation can be viewed as cancelling the first-order term in the Taylor series expansion of $f$.  We have
 \begin{align*}
-y_1 = f(x_1) &= f(0) + f'(0)x_1 + \text{higher order terms} \\
-& = f(0) + 2f'(0)x_2 + \text{higher order terms}\;,\\
-y_2 = f(x_2) &= f(0) + f'(0)x_2 + \text{higher order terms}\;.
+y_1 = f(x_1) &= f_0 + f'_0x_1 + \text{higher order terms} \\
+& = f_0 + 2f'_0x_2 + \text{higher order terms}\;,\\
+y_2 = f(x_2) &= f_0 + f'_0x_2 + \text{higher order terms}\;.
 \end{align*}
 \noindent
 This implies
-$$2y_2-y_1 = f(0) + \text{difference of higher order terms}\;.$$
-Having eliminated the first-order term, one can hope to obtain a closer approximation to $f(0)$.
+$$2y_2-y_1 = f_0 + \text{difference of higher order terms}\;.$$
+Having eliminated the first-order term, one can hope to obtain a closer approximation to $f_0$.
 
 We now show hot to implement this in Pyhton.  
 First we create a binomial valuation program that replaces (i) calculation
@@ -774,8 +774,8 @@ $$ {#eq-prob2}
 
 In the continuous time model, over a discrete time period $\Delta t$, the covariance of $\Delta \log S_1$ and $\Delta \log S_2$ is $\rho\sigma_1\sigma_2\Delta t$.  In the binomial model, with $d_i=1/u_i$, we have
 $$
-E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\;.
-$$  Given that $E[\Delta\log S_i] =\nu_i\Delta t$, this implies a covariance of
+\\E \big[\Delta \log S_1 \times \Delta \log S_2\big] = (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2\;.
+$$  Given that $\\E[\Delta\log S_i] =\nu_i\Delta t$, this implies a covariance of
 $$
 (p_{uu}-p_{ud}-p_{du}+p_{dd})\log u_1\log u_2 - \nu_1\nu_2(\Delta t)^2\;.
 $$
@@ -817,9 +817,9 @@ Likewise, in an $N$--period model for a basket option written on three assets, t
   The early exercise premium \index{early exercise premium} is the difference between the value of an American option and the value of a European option with the same parameters.  Compute the early exercise premium for an American put and various values for the interest rate, exercise price, and stock parameters.  Under what circumstances is the early exercise premium relatively large?
 :::
 ::: Exercise
- A shout option is an option where the holder is entitled to shout at any time before the expiration of the option.  Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at the money option with the same expiration as the original option.  The payoff to this option if the holder shouts at time $\tau$ is thus given as $\max(0, S(\tau)-K, S(T)-K )$ where $K$ is the original strike price.  
+ A shout option is an option where the holder is entitled to shout at any time before the expiration of the option.  Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at the money option with the same expiration as the original option.  The payoff to this option if the holder shouts at time $\tau$ is thus given as $\max(0, S(\tau)-K, S_T-K )$ where $K$ is the original strike price.  
  1) Show that it is better to shout at some time where $S(\tau)>K$ than to never shout at all.
- 2) Modify the code for an American put to find the optimal exercise boundary for a shout option.  Hint:  The payoffs on the last nodes of the tree are simply $(S_T - K)^+$. Then work backwards. The `immediate exercise value' which is the present value of $S(t)-K$, ($e^{-r(T-t)} (S(t) -K)$) plus the Black Scholes value (use a python function) of an at the money option with expiration $T-t$.  Choose the maximum of these values at each node.  For each time store the highest price at which you exersize. The first node (time 0) then gives the price.  Plot the exercise boundary.
+ 2) Modify the code for an American put to find the optimal exercise boundary for a shout option.  Hint:  The payoffs on the last nodes of the tree are simply $(S_T - K)^+$. Then work backwards. The `immediate exercise value' which is the present value of $S_t-K$, ($e^{-r(T-t)} (S_t -K)$) plus the Black Scholes value (use a python function) of an at the money option with expiration $T-t$.  Choose the maximum of these values at each node.  For each time store the highest price at which you exersize. The first node (time 0) then gives the price.  Plot the exercise boundary.
 :::
 <!-- ::: {#exr-e_GARCHimpliedvols}
   Create an Excel worksheet in which the user inputs $S$, $r$, $\sigma$, $q$, $T$, $N$, $\kappa$, $\theta$, and $\lambda$.  Use the function \verb!European_Call_GARCH_MC! to compute call option prices for exercise prices $K=0.6S$, $0.7S$, $0,8S$, $0.9S$, $S$, $1.1S$, $1.2S$, $1.3S$ and $1.4S$, taking $M=500$ in each case.  For each computed price, use the function \verb!Black_Scholes_Call_Implied_Vol! to compute an implied Black-Scholes volatility.  Plot the implied volatilities against the exercise prices.

@@ -8,15 +8,15 @@ In this chapter, we will introduce two principal numerical methods for valuing d
 
 According to our risk-neutral pricing @eq-riskneutralformula, the value of a security paying an amount $x$ at date $T$ is
 $$
-\mathrm{e}^{-rT}E^R[x]\;.
+\mathrm{e}^{-rT}\\E^R[x]\;.
 $$ {#eq-montecarlo1}
 
 To estimate this by Monte-Carlo \index{Monte Carlo} means to simulate a sample of values for the random variable
 $x$
 and to estimate the expectation by averaging the sample values.^[Boyle~[@boyle] introduced Monte-Carlo methods for derivative valuation, including the variance-reduction methods of control variates and antithetic variates to be discussed later].  Of course, for this to work, the sample must be generated from a population having a distribution consistent with the risk-neutral probabilities.
 
-The simplest example is valuing a European option under the Black-Scholes assumptions.  Of course, for calls and puts, this is redundant, because we already have the Black-Scholes formulas.  Nevertheless, we will describe how to do this for the sake of introducing the Monte Carlo method.  In the case of a call option, the random variable $x$ in @eq-montecarlo1 is $\max(0,S(T)-K)$.  To simulate a sample of values for this random variable, we need to simulate the terminal stock price $S(T)$.  This is easy to do, because, under the Black-Scholes assumptions, the logarithm of $S(T)$ is normally distributed under the risk-neutral probability with mean $\log S(0)+\mathrm{n}u T$ and variance $\sigma^2T$, where $\mathrm{n}u=r-q-\sigma^2/2$.  Thus, we can simulate values for $\log S(T)$ as $\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z$, where $z$ is a standard normal.  We can  average the simulated values of $\max(0,S(T)-K)$, or whatever the payoff of the derivative is, and then discount at the risk-free rate to compute the date--0 value of the derivative.  This means that we generate some number $M$ of standard normals $z_i$ and estimate the option value as $\mathrm{e}^{-rT}\bar{x}$, where $\bar{x}$ is the mean of 
-$$x_i = \max\left(0,\mathrm{e}^{\log S(0)+\mathrm{n}u T + \sigma\sqrt{T}z_i}-K\right)\; .$$
+The simplest example is valuing a European option under the Black-Scholes assumptions.  Of course, for calls and puts, this is redundant, because we already have the Black-Scholes formulas.  Nevertheless, we will describe how to do this for the sake of introducing the Monte Carlo method.  In the case of a call option, the random variable $x$ in @eq-montecarlo1 is $\max(0,S_T-K)$.  To simulate a sample of values for this random variable, we need to simulate the terminal stock price $S_T$.  This is easy to do, because, under the Black-Scholes assumptions, the logarithm of $S_T$ is normally distributed under the risk-neutral probability with mean $\log S_0+\mathrm{n}u T$ and variance $\sigma^2T$, where $\mathrm{n}u=r-q-\sigma^2/2$.  Thus, we can simulate values for $\log S_T$ as $\log S_0+\mathrm{n}u T + \sigma\sqrt{T}z$, where $z$ is a standard normal.  We can  average the simulated values of $\max(0,S_T-K)$, or whatever the payoff of the derivative is, and then discount at the risk-free rate to compute the date--0 value of the derivative.  This means that we generate some number $M$ of standard normals $z_i$ and estimate the option value as $\mathrm{e}^{-rT}\bar{x}$, where $\bar{x}$ is the mean of 
+$$x_i = \max\left(0,\mathrm{e}^{\log S_0+\mathrm{n}u T + \sigma\sqrt{T}z_i}-K\right)\; .$$
 To value options that are path-dependent  we need to simulate the path of the underlying asset price.  Path-dependent options are discussed in Chaps.~\ref{c_exotics} and~\ref{c_montecarlo}.
 
 There are two main drawbacks to Monte-Carlo methods.  First, it is difficult (though not impossible) to value early-exercise features.^[Monte-Carlo methods for valuing early exercise include the stochastic mesh method of Broadie and Glasserman [@BG] and the regression method of Longstaff and Schwartz [@LS01].  Glasserman [@Glasserman] provides a good discussion of these methods and the relation between them.]  To value early exercise, we need to know the value at each date if not exercised, to compare to the intrinsic value.  One could consider performing a simulation at each date to calculate the value if not exercised, but this value depends on the option to exercise early at later dates, which cannot be calculated without knowing the value of being able to exercise early at even later dates, etc.  In contrast, the binomial model (and finite difference models discussed in @sec-c_pde) can easily handle early exercise but cannot easily handle path dependencies.  
@@ -136,8 +136,8 @@ In the context of derivative valuation, the standard application of this idea is
 
 Consider for example a non-path-dependent option in a world with constant volatility.  In each simulation $i$ ($i=1,\ldots,M$), we would generate a standard normal $Z_i$ and compute
 \begin{align*}
-\log S_i(T) &= \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma\sqrt{T}Z_i\; ,\\
-\log S_i'(T) &= \log S(0) + \left(r-q-\frac{1}{2}\sigma^2\right)T - \sigma\sqrt{T}Z_i\;.
+\log S_i_T &= \log S_0 + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma\sqrt{T}Z_i\; ,\\
+\log S_i'_T &= \log S_0 + \left(r-q-\frac{1}{2}\sigma^2\right)T - \sigma\sqrt{T}Z_i\;.
 \end{align*}
 Given the first terminal price, the value of the derivative will be some number $x_i$ and given the second it will be some number $y_i$.  The date--0 value of the derivative is estimated as
 $$\mathrm{e}^{-rT}\frac{1}{M}\sum_{i=1}^M\frac{x_i+y_i}{2}\; .$$
@@ -182,48 +182,48 @@ We can compare this to the exact Black Scholes formula from before.
 print('The exact Black Scholes Price is=', truebsc)
 ```
 
-As another example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date $0$ is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A(0)$ computed up to date $0$, assuming this average includes the price $S(0)$ at date $0$.  The average price at date $T$ will be 
-$$A(T) = \frac{\tau}{T+\tau}A(0) + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S(t_i)}{N}\right)\; .$$
-The average-price call pays $\max(0,A(T)-K)$ at its maturity $T$, and we can write this as
+As another example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date $0$ is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A_0$ computed up to date $0$, assuming this average includes the price $S_0$ at date $0$.  The average price at date $T$ will be 
+$$A_T = \frac{\tau}{T+\tau}A_0 + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S_{t_i}}{N}\right)\; .$$
+The average-price call pays $\max(0,A_T-K)$ at its maturity $T$, and we can write this as
 \begin{align*}
-\max(A(T)-K,0) &= \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S(t_i)}{N}\right) - \left(K - \frac{\tau}{T+\tau}A(0)\right), 0\right)\\
-&= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;,
+\max(A_T-K,0) &= \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S_{t_i}}{N}\right) - \left(K - \frac{\tau}{T+\tau}A_0\right), 0\right)\\
+&= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\;,
 \end{align*}
 where 
-$$K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A(0)\; .$$
+$$K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A_0\; .$$
 Therefore, the value at date $0$ of the discretely-sampled average-price call is
-$$\frac{T}{T+\tau} \,\mathrm{e}^{-rT} E^R\left[\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\right]\; .$$
+$$\frac{T}{T+\tau} \,\mathrm{e}^{-rT} \\E^R\left[\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\right]\; .$$
 In terms of the discussion above, the random variable  the mean of which we want to estimate is
-$$x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\; .$$
+$$x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\; .$$
 A random variable $y$ that will be closely correlated to $x$ is
-$$y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S(t_i)/N} - K^*,0\right)\; .$$
+$$y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S_{t_i}/N} - K^*,0\right)\; .$$
 The mean $\phi$ of $y$ under the risk-neutral probability is given in the pricing @eq-disc_geom_avg_call. 
 We can use the sample mean of $y$ and its known mean $\phi$ to adjust the sample mean of $x$ as an estimator of the value of the average-price call.  Generally, the estimated adjustment coefficient $\hat{\beta}$ will be quite close to 1.  
 
 ## Monte Carlo Greeks I: Difference Ratios {#sec-s_montecarlogreeks1}
 
-Greeks can be calculated by Monte Carlo by running the valuation program twice and computing a difference ratio, for example $(C_u-C_d)/(S_u-S_d)$ to estimate a delta.  However, to minimize the error, and minimize the number of computations required, one should use the same set of random draws to estimate the derivative value for different values of the parameter.  For path-independent options (e.g., European puts and calls) under the Black-Scholes assumptions, we only need to generate $S(T)$ and then we can compute $S_u(T)$ as $[S_u(0)/S(0)] \times S(T)$ and $S_d(T)$ as $[S_u(0)/S(0)] \times S(T)$.  We can estimate standard errors for the Greeks in the same way that we estimate the standard error of the derivative value.  
+Greeks can be calculated by Monte Carlo by running the valuation program twice and computing a difference ratio, for example $(C_u-C_d)/(S_u-S_d)$ to estimate a delta.  However, to minimize the error, and minimize the number of computations required, one should use the same set of random draws to estimate the derivative value for different values of the parameter.  For path-independent options (e.g., European puts and calls) under the Black-Scholes assumptions, we only need to generate $S_T$ and then we can compute $S_u_T$ as $[S_u_0/S_0] \times S_T$ and $S_d_T$ as $[S_u_0/S_0] \times S_T$.  We can estimate standard errors for the Greeks in the same way that we estimate the standard error of the derivative value.  
 
 Actually, there is often a better method available that is just as simple.  This is called pathwise calculation.  We will explain this in the next section.   Here we will describe how to estimate the delta and gamma of a derivative as sample means of difference ratios.
 
-Consider  initial prices for the underlying $S_u>S>S_d$.  Denote the underlying price at the option maturity in a given simulation by $S_u(T)$  when the initial underlying price is $S_u$, by $S(T)$  when the initial underlying price is $S$, and by $S_d(T)$  when the initial underlying price is $S_d$.   Under the Black-Scholes assumptions, the logarithm of the stock price at date $T$ starting from the three initial prices $S_d$, $S$ and $S_u$ is
+Consider  initial prices for the underlying $S_u>S>S_d$.  Denote the underlying price at the option maturity in a given simulation by $S_u_T$  when the initial underlying price is $S_u$, by $S_T$  when the initial underlying price is $S$, and by $S_d_T$  when the initial underlying price is $S_d$.   Under the Black-Scholes assumptions, the logarithm of the stock price at date $T$ starting from the three initial prices $S_d$, $S$ and $S_u$ is
 \begin{align*}
-\log S_d(T) &= \log S_d + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\; ,\\
-\log S(T) &= \log S + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\; ,\\
-\log S_u (T) &= \log S_u + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B(T)\;,
+\log S_d_T &= \log S_d + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B_T\; ,\\
+\log S_T &= \log S + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B_T\; ,\\
+\log S_u _T &= \log S_u + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma B_T\;,
 \end{align*}
 so 
-$$\log S_d(T) = \log S(T) + \log S_d - \log S\Longrightarrow S_d(T) = \left(\frac{S_d}{S}\right) S(T)\; ,$$
+$$\log S_d_T = \log S_T + \log S_d - \log S\Longrightarrow S_d_T = \left(\frac{S_d}{S}\right) S_T\; ,$$
 and
-$$\log S_u(T) = \log S(T) + \log S_u - \log S \Longrightarrow S_u(T) = \left(\frac{S_u}{S}\right) S(T)\; .$$
-Therefore, under the Black-Scholes assumptions, we only need to simulate $S(T)$ and then perform the multiplications indicated above to obtain $S_d(T)$ and $S_u(T)$. 
+$$\log S_u_T = \log S_T + \log S_u - \log S \Longrightarrow S_u_T = \left(\frac{S_u}{S}\right) S_T\; .$$
+Therefore, under the Black-Scholes assumptions, we only need to simulate $S_T$ and then perform the multiplications indicated above to obtain $S_d_T$ and $S_u_T$. 
 
-Consider a particular simulation and let $C_d(T)$ denote the value of the derivative at maturity  when the initial asset price is $S_d$, let  $C(T)$ denote the value of the derivative at maturity  when the initial asset price is $S$, and let $C_u(T)$ denote the value of the derivative at maturity  when the initial asset price is $S_u$.  For path-independent derivatives under the Black-Scholes assumptions, these can be computed directly from the simulation of $S(T)$ as just described.  However, the following applies to general European derivatives under general assumptions about the underlying asset price (for example, it could follow a GARCH process).
+Consider a particular simulation and let $C_d_T$ denote the value of the derivative at maturity  when the initial asset price is $S_d$, let  $C_T$ denote the value of the derivative at maturity  when the initial asset price is $S$, and let $C_u_T$ denote the value of the derivative at maturity  when the initial asset price is $S_u$.  For path-independent derivatives under the Black-Scholes assumptions, these can be computed directly from the simulation of $S_T$ as just described.  However, the following applies to general European derivatives under general assumptions about the underlying asset price (for example, it could follow a GARCH process).
 
-The estimates $C_d$, $C$ and $C_u$ of the date--0 derivative values, for the different initial prices of the underlying, are the discounted sample means of the $C_d(T)$, $C(T)$ and $C_u(T)$.
-One way to estimate the delta is $(C_u-C_d)/(S_u-S_d)$.  This is a difference of discounted sample means, multiplied by the reciprocal of $S_u-S_d$.  Equivalently, it is the sample mean of the differences $C_u(T)-C_d(T)$, multiplied by $\mathrm{e}^{-rT}/(S_u-S_d)$.  As a sample mean, its standard error can be estimated as described in @sec-c_stochasticvolatility.   The standard error is
-$$\frac{\mathrm{e}^{-rT}}{S_u-S_d}\sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^M \left[C_{ui}(T)-C_{di}(T)\right]^2 - M\left[\overline{C_{u}(T)}-\overline{C_{d}(T)}\right]^2\right)}\; ,$$ \index{standard error}
-where the overline denotes the sample mean and where $C_{ui}(T)$ [respectively, $C_{di}(T)$] denotes the value of the derivative at maturity in simulation $i$ when the initial asset price is $S_u$ [respectively, $S_d$].
+The estimates $C_d$, $C$ and $C_u$ of the date--0 derivative values, for the different initial prices of the underlying, are the discounted sample means of the $C_d_T$, $C_T$ and $C_u_T$.
+One way to estimate the delta is $(C_u-C_d)/(S_u-S_d)$.  This is a difference of discounted sample means, multiplied by the reciprocal of $S_u-S_d$.  Equivalently, it is the sample mean of the differences $C_u_T-C_d_T$, multiplied by $\mathrm{e}^{-rT}/(S_u-S_d)$.  As a sample mean, its standard error can be estimated as described in @sec-c_stochasticvolatility.   The standard error is
+$$\frac{\mathrm{e}^{-rT}}{S_u-S_d}\sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^M \left[C_{ui}_T-C_{di}_T\right]^2 - M\left[\overline{C_{u}_T}-\overline{C_{d}_T}\right]^2\right)}\; ,$$ \index{standard error}
+where the overline denotes the sample mean and where $C_{ui}_T$ [respectively, $C_{di}_T$] denotes the value of the derivative at maturity in simulation $i$ when the initial asset price is $S_u$ [respectively, $S_d$].
 
 The corresponding Monte Carlo estimate of the gamma is also a sample mean.  Simple algebra shows that @eq-binomialgamma100 is equivalent to
 $$
@@ -239,7 +239,7 @@ $$ {#eq-binomialgamma300}
 and the standard error of the gamma is
 
 \begin{multline*}\frac{\mathrm{e}^{-rT}}{\alpha^2S^2}\sqrt{\frac{1}{M(M-1)}}\\
-\times \sqrt{\sum_{i=1}^M \left[C_{ui}(T)-2C_i(T)+C_{di}(T)\right]^2 -M\left[\overline{C_{u}(T)}-2\overline{C(T)}+\overline{C_{d}(T)}\right]^2}\; .
+\times \sqrt{\sum_{i=1}^M \left[C_{ui}_T-2C_i_T+C_{di}_T\right]^2 -M\left[\overline{C_{u}_T}-2\overline{C_T}+\overline{C_{d}_T}\right]^2}\; .
 \end{multline*}
 
 
@@ -248,78 +248,78 @@ We will examine the bias in the Monte Carlo delta estimate discussed in the prec
 
 The delta estimate we have considered is the discounted sample mean of 
 $$
-\frac{C_u(T) - C_d(T)}{S_u-S_d}\;.$$ {#eq-montecarlodelta2}
+\frac{C_u_T - C_d_T}{S_u-S_d}\;.$$ {#eq-montecarlodelta2}
 
 
-This ratio takes on one of three values, depending on $S(T)$:
+This ratio takes on one of three values, depending on $S_T$:
 
 
-- If $S_u(T) \leq K$ then the option is out of the money in both the up and down cases; i.e., 
-$$C_u(T) = C_d(T) = 0\; ,$$
+- If $S_u_T \leq K$ then the option is out of the money in both the up and down cases; i.e., 
+$$C_u_T = C_d_T = 0\; ,$$
 so the ratio @eq-montecarlodelta2 is zero.
-- If $S_d(T) \geq K$ then the option is in the money in both the up and down cases; i.e.,
-\begin{align*} C_u(T) &= S_u(T) - K =\left(\frac{S_u}{S}\right)S(T) - K\; ,\\
-C_d(T) &= S_d(T) - K = \left(\frac{S_d}{S}\right)S(T) - K\;,
+- If $S_d_T \geq K$ then the option is in the money in both the up and down cases; i.e.,
+\begin{align*} C_u_T &= S_u_T - K =\left(\frac{S_u}{S}\right)S_T - K\; ,\\
+C_d_T &= S_d_T - K = \left(\frac{S_d}{S}\right)S_T - K\;,
 \end{align*}
-so the ratio  @eq-montecarlodelta2 equals $S(T)/S$.
-- If $S_u(T) > K > S_d(T)$, then the option is in the money in only the up case; i.e.,
+so the ratio  @eq-montecarlodelta2 equals $S_T/S$.
+- If $S_u_T > K > S_d_T$, then the option is in the money in only the up case; i.e.,
 \begin{align*}
-C_u(T) &= S_u(T) - K = \left(\frac{S_u}{S}\right)S(T) - K\; ,\\
-C_d(T) &= 0\;,
+C_u_T &= S_u_T - K = \left(\frac{S_u}{S}\right)S_T - K\; ,\\
+C_d_T &= 0\;,
 \end{align*}
 so the ratio @eq-montecarlodelta2 equals 
-$$\frac{\left(\frac{S_u}{S}\right)S(T) - K}{S_u-S_d} < \frac{S(T)}{S}\; .$$
+$$\frac{\left(\frac{S_u}{S}\right)S_T - K}{S_u-S_d} < \frac{S_T}{S}\; .$$
 
 
 The bias is induced by the third case above.  We can see this as follows.  We are trying to estimate
 $$
-\frac{\partial }{\partial S} \mathrm{e}^{-rT}E^R \big[\max(0,S(T)-K)\big] = \mathrm{e}^{-rT}E^R  \left[ \frac{\partial }{\partial S} \max(0,S(T)-K)\right]\;.
+\frac{\partial }{\partial S} \mathrm{e}^{-rT}\\E^R \big[\max(0,S_T-K)\big] = \mathrm{e}^{-rT}\\E^R  \left[ \frac{\partial }{\partial S} \max(0,S_T-K)\right]\;.
 $$ {#eq-montecarlodelta4}
 
-The delta estimate $(C_u-C_d)/(S_u-S_d)$ replaces the mean $E^R$ with the sample mean and replaces
+The delta estimate $(C_u-C_d)/(S_u-S_d)$ replaces the mean $\\E^R$ with the sample mean and replaces
 $$
-\frac{\partial }{\partial S} \max(0,S(T)-K)
+\frac{\partial }{\partial S} \max(0,S_T-K)
 $$ {#eq-montecarlodelta3}
 
-with the ratio @eq-montecarlodelta2.  The derivative @eq-montecarlodelta3 takes on two possible values, depending on $S(T)$---we can ignore the case $S(T)=K$ because it occurs with zero probability:
+with the ratio @eq-montecarlodelta2.  The derivative @eq-montecarlodelta3 takes on two possible values, depending on $S_T$---we can ignore the case $S_T=K$ because it occurs with zero probability:
 
 
-- If $S(T) < K$, then $\max(0,S(T)-K) = 0$ and the derivative is zero.
-- If $S(T)>K$,  then $\max(0,S(T)-K) = S(T)-K$ and the derivative equals 
-$$\frac{\partial S(T)}{\partial S}=\mathrm{e}^{(r-q-\sigma^2/2)T + \sigma B(T)} = \frac{S(T)}{S}\; .$$
+- If $S_T < K$, then $\max(0,S_T-K) = 0$ and the derivative is zero.
+- If $S_T>K$,  then $\max(0,S_T-K) = S_T-K$ and the derivative equals 
+$$\frac{\partial S_T}{\partial S}=\mathrm{e}^{(r-q-\sigma^2/2)T + \sigma B_T} = \frac{S_T}{S}\; .$$
 
-Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}E^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c_blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c_blackscholes, $V(t)=\mathrm{e}^{qt}S(t)$ denotes the value of the non-dividend-paying portfolio created from the stock).] 
+Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}\\E^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c_blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c_blackscholes, $V_t=\mathrm{e}^{qt}S_t$ denotes the value of the non-dividend-paying portfolio created from the stock).] 
 $$
-\mathrm{e}^{-rT}E^R\left[\frac{S(T)}{S} x\right]\;,
+\mathrm{e}^{-rT}\\E^R\left[\frac{S_T}{S} x\right]\;,
 $$ {#eq-montecarlodelta5}
 
 where $x$ is the random variable defined as
 \begin{equation*}
-x =  \begin{cases} 1 & \text{if $S(T)>K$}\; ,\\
+x =  \begin{cases} 1 & \text{if $S_T>K$}\; ,\\
 0 & \text{otherwise}\;.
 \end{cases}
 \end{equation*}
  On the other hand, our  analysis of the ratio @eq-montecarlodelta2 shows that the expected value of the delta estimate $(C_u-C_d)/(S_u-S_d)$ is
 $$
-\mathrm{e}^{-rT}E^R\left[\frac{S(T)}{S} y\right] + \mathrm{e}^{-rT}E^R\left[\frac{S_uS(T)-SK}{S(S_u-S_d)}z\right]\;,
+\mathrm{e}^{-rT}\\E^R\left[\frac{S_T}{S} y\right] + \mathrm{e}^{-rT}\\E^R\left[\frac{S_uS_T-SK}{S(S_u-S_d)}z\right]\;,
 $$ {#eq-montecarlodelta6}
 
 where
 \begin{align*}
-y &=  \begin{cases} 1 & \text{if} S_d(T)>K\; ,\\
+y &=  \begin{cases} 1 & \text{if} S_d_T>K\; ,\\
 0 & \text{otherwise}\;.
 \end{cases}
 \end{align*}
 and
 \begin{align*}
-z &=  \begin{cases} 1 & \text{if} S_u(T)>K>S_d(T)\; ,\\
+z &=  \begin{cases} 1 & \text{if} S_u_T>K>S_d_T\; ,\\
 0 & \text{otherwise}\;.
 \end{cases}
 \end{align*}
 To contrast @eq-montecarlodelta5 and @eq-montecarlodelta6, note that if $y=1$ then $x=1$, so the term 
-$E^R\left[\frac{S(T)}{S} y\right]$ in @eq-montecarlodelta6 is part of @eq-montecarlodelta5.  However, there are two partially offsetting errors in @eq-montecarlodelta6: $z$ sometimes equals one when $x$ is zero, and when both $z$ and $x$ are one, then the factor multiplying $z$ is smaller than the factor multiplying $x$.  In any case, the expected value @eq-montecarlodelta6  is not the same as the true delta @eq-montecarlodelta5.  As noted before, this implies that the delta estimate will be incorrect even if its standard error is zero.  The bias can be made as small as one wishes by taking the magnitude $S_u-S_d$ of the perturbation to be small, but taking the perturbation to be very small will introduce unacceptable roundoff error.
+$\\E^R\left[\frac{S_T}{S} y\right]$ in @eq-montecarlodelta6 is part of @eq-montecarlodelta5.  However, there are two partially offsetting errors in @eq-montecarlodelta6: $z$ sometimes equals one when $x$ is zero, and when both $z$ and $x$ are one, then the factor multiplying $z$ is smaller than the factor multiplying $x$.  In any case, the expected value @eq-montecarlodelta6  is not the same as the true delta @eq-montecarlodelta5.  As noted before, this implies that the delta estimate will be incorrect even if its standard error is zero.  The bias can be made as small as one wishes by taking the magnitude $S_u-S_d$ of the perturbation to be small, but taking the perturbation to be very small will introduce unacceptable roundoff error.
 
-The obvious way to estimate the delta in this situation is simply to compute the discounted sample average of $[S(T)/S]x$.  This is called a pathwise estimate \index{pathwise Monte Carlo Greeks} of the delta, because it only uses the sample paths of $S(t)$ rather than considering up and down perturbations.  This method is due to Broadie and Glasserman [@bg2]. Because the pathwise estimate is a sample average, its standard error can be computed in the usual way.
+The obvious way to estimate the delta in this situation is simply to compute the discounted sample average of $[S_T/S]x$.  This is called a pathwise estimate \index{pathwise Monte Carlo Greeks} of the delta, because it only uses the sample paths of $S_t$ rather than considering up and down perturbations.  This method is due to Broadie and Glasserman [@bg2]. Because the pathwise estimate is a sample average, its standard error can be computed in the usual way.
 
 To compute pathwise estimates in other models and for other Greeks, we need the Greek to be an expectation as on the right-hand side of @eq-montecarlodelta4.  Additional examples can be found in  Glasserman [@Glasserman] and J\"ackel [@Jackel].
 
@@ -428,30 +428,30 @@ print('The average estimate is=', (lookbck + lookbck1)/2)
 Asian and barrier options are also subject to discrete rather than continuous sampling and can be valued by Monte-Carlo in the same way as lookbacks. 
 
 
-As another example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date $0$ is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A(0)$ computed up to date $0$, assuming this average includes the price $S(0)$ at date $0$.  The average price at date $T$ will be 
+As another example,  consider the classic case of estimating the value of a discretely-sampled average-price call, using a discretely-sampled geometric-average-price call \index{average-price option} \index{geometric-average option} as a control variate.  Let $\tau$ denote the amount of time that has elapsed since the call was issued and $T$ the amount of time remaining before maturity, so the total maturity of the call is $T+\tau$.  To simplify somewhat,  assume date $0$ is the beginning of a period between observations.  Let $t_1, \ldots, t_N$ denote the remaining sampling dates, with $t_1 = \Delta t$, $t_i-t_{i-1}=\Delta t = T/N$ for each $i$, and $t_N=T$.  We will input the average price $A_0$ computed up to date $0$, assuming this average includes the price $S_0$ at date $0$.  The average price at date $T$ will be 
 $$
-A(T) = \frac{\tau}{T+\tau}A(0) + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S(t_i)}{N}\right)\;.
+A_T = \frac{\tau}{T+\tau}A_0 + \frac{T}{T+\tau}\left(\frac{\sum_{i=1}^N S_{t_i}}{N}\right)\;.
 $$
-The average-price call pays $\max(0,A(T)-K)$ at its maturity $T$, and we can write this as
+The average-price call pays $\max(0,A_T-K)$ at its maturity $T$, and we can write this as
 \begin{align*}
-\max(A(T)-K,0) &= \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S(t_i)}{N}\right) - \left(K - \frac{\tau}{T+\tau}A(0)\right), 0\right)\\
-&= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;,
+\max(A_T-K,0) &= \max\left(\frac{T}{T+\tau}\left( \frac{\sum_{i=1}^N S_{t_i}}{N}\right) - \left(K - \frac{\tau}{T+\tau}A_0\right), 0\right)\\
+&= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\;,
 \end{align*}
 where 
 $$
-K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A(0)\;.
+K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A_0\;.
 $$
 Therefore, the value at date $0$ of the discretely-sampled average-price call is
 $$
-\frac{T}{T+\tau} \,\mathrm{e}^{-rT} E^R\left[\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\right]\;.
+\frac{T}{T+\tau} \,\mathrm{e}^{-rT} \\E^R\left[\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\right]\;.
 $$
 In terms of the discussion above, the random variable  the mean of which we want to estimate is
 $$
-x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S(t_i)}{N} - K^*,0\right)\;.
+x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\;.
 $$
 A random variable $y$ that will be closely correlated to $x$ is
 $$
-y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S(t_i)/N} - K^*,0\right)\;.
+y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S_{t_i}/N} - K^*,0\right)\;.
 $$
 The mean $\phi$ of $y$ under the risk-neutral probability is given in the pricing @eq-disc_geom_avg_call. 
 We can use the sample mean of $y$ and its known mean $\phi$ to adjust the sample mean of $x$ as an estimator of the value of the average-price call.  Generally, the estimated adjustment coefficient $\hat{\beta}$ will be quite close to 1.
@@ -711,14 +711,14 @@ the Cholesky decomposition of the covariance matrix.  Given any number $L$ of as
 
 We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoa - @eq-mc_twob.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in @sec-s_mc_europeans.  The value of a basket call option at its maturity $T$ is 
 $$
-\max\left(0,\;\sum_{i=1}^L w_iS_i(T)-K\right)\; ,
+\max\left(0,\;\sum_{i=1}^L w_iS_i_T-K\right)\; ,
 $$
 where $L$ is the number of assets in the basket (portfolio) and $w_i$ is the weight of the $i$--th asset in the basket.
 The logarithm of the $i$--th asset price at maturity is simulated as
 $$
-\log S_i(T) = \log S_i(0) +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,
+\log S_i_T = \log S_i_0 +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,
 $$
-where the $Z_j$ are independent standard normals.  Given the simulated values of the $\log S_i(T)$, the value at maturity of the basket option is readily computed.  The estimate of the date--0 value is then computed as the discounted average of the simulated values at maturity.  
+where the $Z_j$ are independent standard normals.  Given the simulated values of the $\log S_i_T$, the value at maturity of the basket option is readily computed.  The estimate of the date--0 value is then computed as the discounted average of the simulated values at maturity.  
 
 For our two asset example we compute the value of a call opttion on an equally weighted porfotlio.
 

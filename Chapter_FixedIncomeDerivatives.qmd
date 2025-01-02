@@ -24,12 +24,12 @@ $$ {#eq-forward1}
 
 This rate is called a forward rate. \index{forward rate}
 
-Forward rates will be important for loans at the reset dates maturing at the subsequent payment dates.  We will denote the forward rate at date $t \leq t_i$ for a loan between $t_i$ and $t_{i+1}$ as $\mathcal{R}_i(t)$.  This rate is defined in accord with @eq-forward1, substituting the date $t_i$ for date $u$; i.e.,
+Forward rates will be important for loans at the reset dates maturing at the subsequent payment dates.  We will denote the forward rate at date $t \leq t_i$ for a loan between $t_i$ and $t_{i+1}$ as $\mathcal{R}_i_t$.  This rate is defined in accord with @eq-forward1, substituting the date $t_i$ for date $u$; i.e.,
 $$
-\frac{P(t,t_i)}{P(t,t_{i+1})}=1+\mathcal{R}_i(t)\,\Delta t\;.
+\frac{P(t,t_i)}{P(t,t_{i+1})}=1+\mathcal{R}_i_t\,\Delta t\;.
 $$ {#eq-forward2}
 
-Note that when $t=t_i$, $P(t,t_i)=1$, so $\mathcal{R}_i(t_i)=\mathcal{R}_i$ defined in @eq-spot2---i.e., the forward rate equals the spot rate at $t_i$.
+Note that when $t=t_i$, $P(t,t_i)=1$, so $\mathcal{R}_i_{t_i}=\mathcal{R}_i$ defined in @eq-spot2---i.e., the forward rate equals the spot rate at $t_i$.
 
 ## Portfolios that Pay Spot Rates {#sec-s_portfoliosspotrates}
 
@@ -40,24 +40,24 @@ This implies that the value at date $t<t_i$ of receiving $\mathcal{R}_i\,\Delta 
 
 At date $t_i$ the spot rate $\mathcal{R}_i$ becomes known.  Between $t_i$ and $t_{i+1}$, the value of receiving $\mathcal{R}_i\,\Delta t$ dollars at date $t_{i+1}$ is the present value of this known cash flow, which is $\mathcal{R}_i\,\Delta t\,P(t, t_{i+1})$.  To summarize, the value of receiving $\mathcal{R}_i\,\Delta t$ dollars at date $t_{i+1}$ is
 $$
-S_i(t) = \begin{cases} P(t,t_i)-P(t,t_{i+1}) & \text{if } t < t_{i}\; ,\\
+S_i_t = \begin{cases} P(t,t_i)-P(t,t_{i+1}) & \text{if } t < t_{i}\; ,\\
 \mathcal{R}_i\,\Delta t\, P(t,t_{i+1}) & \text{if }  t_{i} \leq t \leq t_{i+1}\;. \end{cases}
 $$ {#eq-S_i}
 
  
-Actually, we will view a caplet as an option on a forward contract and apply Black's formula.  To do this, we need to know the forward price of the asset with price $S_i(t)$ for a contract maturing at $t_{i+1}$.  We denote this forward price by $F_i(t)$.  The synthetic forward argument presented in @sec-s_merton shows that for any non-dividend paying asset with price $S$, the forward price for a contract maturing at $T$ is $S(t)/P(t,T)$.  So, $F_i$ is given by
+Actually, we will view a caplet as an option on a forward contract and apply Black's formula.  To do this, we need to know the forward price of the asset with price $S_i_t$ for a contract maturing at $t_{i+1}$.  We denote this forward price by $F_i_t$.  The synthetic forward argument presented in @sec-s_merton shows that for any non-dividend paying asset with price $S$, the forward price for a contract maturing at $T$ is $S_t/P(t,T)$.  So, $F_i$ is given by
 
 $$
-F_i(t) = \begin{cases} \frac{P(t,t_i)}{P(t,t_{i+1})}-1 & \text{if } t < t_{i}\; ,\\
+F_i_t = \begin{cases} \frac{P(t,t_i)}{P(t,t_{i+1})}-1 & \text{if } t < t_{i}\; ,\\
 \mathcal{R}_i\,\varDelta t & \text{if }  t_{i} \leq t \leq t_{i+1}\;. \end{cases}
 $$
 
 $$
-= \begin{cases}\mathcal{R}_i(t)\,\Delta t & \text{if } t < t_{i}\; ,\\
+= \begin{cases}\mathcal{R}_i_t\,\Delta t & \text{if } t < t_{i}\; ,\\
 \mathcal{R}_i\,\Delta t & \text{if }  t_{i} \leq t \leq t_{i+1}\;, \end{cases}
 $$ {#eq-F_i}
 
-where $\mathcal{R}_i(t)$ is the forward rate defined in @eq-forward2.  Thus, the asset with price $S_i(t)$ pays the spot rate at date $t_i$ times the period length at date $t_{i+1}$, and the forward price of this asset is the forward rate times the period length.
+where $\mathcal{R}_i_t$ is the forward rate defined in @eq-forward2.  Thus, the asset with price $S_i_t$ pays the spot rate at date $t_i$ times the period length at date $t_{i+1}$, and the forward price of this asset is the forward rate times the period length.
 
 
 
@@ -65,35 +65,35 @@ where $\mathcal{R}_i(t)$ is the forward rate defined in @eq-forward2.  Thus, the
 
 The valuation we will describe here is standard market practice for valuing caps and floors or at least for quoting the prices of caps and floors.  Specifically, it is standard to quote prices in terms of implied volatilities, where the volatility is to be input into Black's formula for options on forwards.  This model is sometimes called the market model. \index{market model}
 
-We can apply Black's formula to the forward contract with price $F_i$ described in the previous section.  We view the caplet \index{caplet} as a call option maturing at $t_i$ on this forward contract that matures at $t_{i+1}$.  As explained in Chapter~\ref{c_forwardexchange}, the value at the maturity date $T$ of a call option with strike $K$ on a forward contract with price $F$ maturing at $T' \geq T$ is $\max(0,F(T)-K)P(T,T')$.  Therefore, the value at maturity of a call option maturing at $t_i$ with strike $\bar{\mathcal{R}}\,\Delta t$ on the forward contract with price $F_i$ is
-$$\max(0,F_i(t_i)-\bar{\mathcal{R}}\,\Delta t)P(t_i,t_{i+1})\; .$$
-Since $F_i(t_i)=\mathcal{R}_i\,\Delta t$, this equals 
+We can apply Black's formula to the forward contract with price $F_i$ described in the previous section.  We view the caplet \index{caplet} as a call option maturing at $t_i$ on this forward contract that matures at $t_{i+1}$.  As explained in Chapter~\ref{c_forwardexchange}, the value at the maturity date $T$ of a call option with strike $K$ on a forward contract with price $F$ maturing at $T' \geq T$ is $\max(0,F_T-K)P(T,T')$.  Therefore, the value at maturity of a call option maturing at $t_i$ with strike $\bar{\mathcal{R}}\,\Delta t$ on the forward contract with price $F_i$ is
+$$\max(0,F_i_{t_i}-\bar{\mathcal{R}}\,\Delta t)P(t_i,t_{i+1})\; .$$
+Since $F_i_{t_i}=\mathcal{R}_i\,\Delta t$, this equals 
 $$
 \max(0,\mathcal{R}_i-\bar{\mathcal{R}})\,\Delta t\,P(t_i,t_{i+1})\;.
 $$ {#eq-capletvalue}
 
 This is also the value of the caplet at date $t_i$.
 
-It follows that the value of the caplet at any date $t\leq t_i$ is the value of the call option on the forward contract.  To apply Black's formula, \index{Black's formula}we need the forward price to have a constant (or at least non-randomly varying) volatility.  As noted earlier, at dates $t\leq t_i$, $F_i(t)=\mathcal{R}_i(t)\,\Delta t$, where $\mathcal{R}_i(t)$ is the forward rate, so the volatility of the forward price is the volatility of the forward rate. Black's formula yields:
+It follows that the value of the caplet at any date $t\leq t_i$ is the value of the call option on the forward contract.  To apply Black's formula, \index{Black's formula}we need the forward price to have a constant (or at least non-randomly varying) volatility.  As noted earlier, at dates $t\leq t_i$, $F_i_t=\mathcal{R}_i_t\,\Delta t$, where $\mathcal{R}_i_t$ is the forward rate, so the volatility of the forward price is the volatility of the forward rate. Black's formula yields:
 
 
 ::: Rule
 ## 
-Assuming the forward rate $\mathcal{R}_i(t)$ has a constant volatility $\sigma$, the value at date $0<t_i$ of a caplet with reset date $t_i$ and payment date $t_{i+1}$ is
+Assuming the forward rate $\mathcal{R}_i_t$ has a constant volatility $\sigma$, the value at date $0<t_i$ of a caplet with reset date $t_i$ and payment date $t_{i+1}$ is
 
 $$
-P(0,t_{i+1})\mathcal{R}_i(0)\,\Delta t\,N(d_1) - P(0,t_{i+1})\bar{\mathcal{R}}\,\Delta t\,N(d_2)\;,
+P(0,t_{i+1})\mathcal{R}_i_0\,\Delta t\,N(d_1) - P(0,t_{i+1})\bar{\mathcal{R}}\,\Delta t\,N(d_2)\;,
 $$ {#eq-blackcaplet100}
 
 and the value at date $0<t_i$ of a floorlet \index{floorlet} with reset date $t_i$ and payment date $t_{i+1}$ is
 $$
-P(0,t_{i+1})\bar{\mathcal{R}}\,\Delta t\,N(-d_2)- P(0,t_{i+1})\mathcal{R}_i(0)\,\Delta t\,N(-d_1)\;,
+P(0,t_{i+1})\bar{\mathcal{R}}\,\Delta t\,N(-d_2)- P(0,t_{i+1})\mathcal{R}_i_0\,\Delta t\,N(-d_1)\;,
 $$ {#eq-blackfloorlet100}
 
 where
 
 $$
-d_1 = \frac{\log \left(\mathcal{R}_i(0)/\bar{\mathcal{R}}\right)+\frac{1}{2}\sigma^2 t_i}{\sigma\sqrt{t_i}}\; ,
+d_1 = \frac{\log \left(\mathcal{R}_i_0/\bar{\mathcal{R}}\right)+\frac{1}{2}\sigma^2 t_i}{\sigma\sqrt{t_i}}\; ,
 $$
 $$
 d_2 = d_1 - \sigma\sqrt{t_i}\;.
@@ -109,13 +109,13 @@ On the other hand, if we add $\mathcal{R}_i\,\Delta t$ to the floorlet payment, 
 $$\mathcal{R}_i\,\Delta t + \max(0,\bar{\mathcal{R}}-\mathcal{R}_i)\,\Delta t = \max( \mathcal{R}_i,\bar{\mathcal{R}} )\,\Delta t\; .$$
 Hence, the value of a caplet plus the value of receiving $\bar{\mathcal{R}}\,\Delta t$ at date $t_{i+1}$ must equal the value of a floorlet plus the value of receiving $\mathcal{R}_i\,\Delta t$ at date $t_{i+1}$.  The value at any date $t\leq t_i$ of receiving $\bar{\mathcal{R}}\,\Delta t$ at date $t_{i+1}$ is the value of $\bar{\mathcal{R}}\,\Delta t$ discount bonds maturing at date $t_{i+1}$, which we are denoting by
 $\bar{\mathcal{R}}\,\Delta t P(t,t_{i+1})$.  The value at at any date $t\leq t_i$ of obtaining $\mathcal{R}_i\,\Delta t$ dollars at date $t_{i+1}$ is  
-$S_i(t) =P(t,t_i)-P(t,t_{i+1})$.  We conclude that
+$S_i_t =P(t,t_i)-P(t,t_{i+1})$.  We conclude that
 $$\text{ Value of Caplet} \;+ \;\bar{\mathcal{R}}\,\Delta t P(t,t_{i+1}) = \text{Value of Floorlet} \;+\; P(t,t_i)-P(t,t_{i+1})\; .$$
 
 We will compute the value of each caplet with the Black_Call function.
 In the Black_Call function, we input the forward price for the caplet with reset date $t_i$ as
 $$
-F_i(0) = \mathcal{R}_i(0)\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
+F_i_0 = \mathcal{R}_i_0\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
 $$ {#eq-capletforwardprice}
 
 as given in @eq-forward2 and @eq-F_i.  The exercise price of each caplet is $K=\bar{\mathcal{R}}\,\Delta t$.  We also need to input the discounting factor $P(0,t_{i+1})$.
@@ -172,33 +172,33 @@ The owner of a European swaption \index{swaption} has an option to enter into a 
 A payer swaption has similarities to a cap.  The owner of a cap has the right to receive the floating rate and pay the fixed rate and will do so in each period in which the floating rate is higher.  Similarly, the owner of a payer swaption has the right to receive floating and pay fixed.  However, the owner of a cap chooses each period whether to exercise his option, whereas the owner of a swaption makes a once-and-for-all decision whether to exercise, at the maturity of the swaption.  A cap is therefore a portfolio of options, whereas a swaption is an option on a portfolio.  In general of course, other things being equal, a portfolio of options is worth more than an option on a portfolio. 
 
 Consider a payer swaption with maturity date $T$ and swap rate $\bar{\mathcal{R}}$, where the underlying swap has payment dates $t_1,\ldots,t_N$ with the first reset date of the swap being $t_0 = t_1-\Delta t \geq T$.  We assume the notional principal of the swap is \$1.  Expression @eq-swapvalue100 in @sec-s_swaps gives the value at date $T$ to the payer in the swap as
-$$S(T)-Z(T)\; ,$$
+$$S_T-Z_T\; ,$$
 where we define
 
 $$
-S(t)=P(t,t_0)- P(t,t_N)\; ,
+S_t=P(t,t_0)- P(t,t_N)\; ,
 $$
 $$
-Z(t) =  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)\;.
+Z_t =  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)\;.
 $$ {#eq-fixedrateside}
 
 
-As explained in @sec-s_swaps, $S(t)$ is the value of the floating-rate payments in the swap and $Z(t)$ is the value of the fixed-rate payments.  The value of a payer swaption at its maturity $T$ is therefore
-$$\max(0,S(T)-Z(T))\; .$$
+As explained in @sec-s_swaps, $S_t$ is the value of the floating-rate payments in the swap and $Z_t$ is the value of the fixed-rate payments.  The value of a payer swaption at its maturity $T$ is therefore
+$$\max(0,S_T-Z_T)\; .$$
 We can value the swaption using Margrabe's formula \index{Margrabe's formula}for exchange options \index{exchange option} provided the ratio of prices $S/Z$ has a constant (or non-randomly varying) volatility.  The volatility of the ratio is the same as the volatility of the forward swap rate.  To see this, recall that 
-in @sec-s_swaps the forward swap rate $\mathcal{R}(t)$ was defined to be the rate such that 
-$$P(t,t_0)- P(t,t_N) = \mathcal{R}(t)\,\Delta t \sum_{i=1}^N P(t,t_i)\; ,$$
-which means that the swap would have zero value if initiated at date $t$ at the rate $\mathcal{R}(t)$---cf.\ equation~@eq-swaprate1.  Thus,
+in @sec-s_swaps the forward swap rate $\mathcal{R}_t$ was defined to be the rate such that 
+$$P(t,t_0)- P(t,t_N) = \mathcal{R}_t\,\Delta t \sum_{i=1}^N P(t,t_i)\; ,$$
+which means that the swap would have zero value if initiated at date $t$ at the rate $\mathcal{R}_t$---cf.\ equation~@eq-swaprate1.  Thus,
 \begin{equation*}
-\frac{S(t)}{Z(t)} = \frac{P(t,t_0)- P(t,t_N)}{\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)} = \frac{\mathcal{R}(t)\,\Delta t \sum_{i=1}^N P(t,t_i)}{\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)} = \frac{\mathcal{R}(t)}{\bar{\mathcal{R}}}\;,
+\frac{S_t}{Z_t} = \frac{P(t,t_0)- P(t,t_N)}{\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)} = \frac{\mathcal{R}_t\,\Delta t \sum_{i=1}^N P(t,t_i)}{\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)} = \frac{\mathcal{R}_t}{\bar{\mathcal{R}}}\;,
 \end{equation*}
-where $\mathcal{R}(t)$ is the forward swap rate.  
+where $\mathcal{R}_t$ is the forward swap rate.  
 Margrabe's formula implies:^[To improve the clarity of the typesetting, we have written  $\log(S)-\log(Z)$ in   @eq-margrabepayerswaption100d1 instead of our customary $\log(S/Z)$.]
 
 
 ::: Rule
 ## 
-Assuming the forward swap rate $\mathcal{R}(t)$ has a constant volatility $\sigma$, the date--0 value of a European payer swaption is
+Assuming the forward swap rate $\mathcal{R}_t$ has a constant volatility $\sigma$, the date--0 value of a European payer swaption is
 
 $$
 \big[P(0,t_0)-P(0,t_N)\big]N(d_1) - \left[\bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(0,t_i)\right]N(d_2)\;,
@@ -273,18 +273,18 @@ print("Market Model Payer Swaption:", market_model_payer_swaption(P0, P, rbar, s
 ```
 
 ## A Comment on Consistency {#sec-s_consistency}
-It is well known that it is inconsistent to assume both that the forward rates $\mathcal{R}_i(t)$ and 
-the forward swap rate $\mathcal{R}(t)$ have constant volatilities.  We can obtain some intuition for this as follows.  Recall that
-$$\mathcal{R}_i(t)\,\Delta t = \frac{P(t,t_i)-P(t,t_{i+1})}{P(t,t_{i+1})}\; ,$$
+It is well known that it is inconsistent to assume both that the forward rates $\mathcal{R}_i_t$ and 
+the forward swap rate $\mathcal{R}_t$ have constant volatilities.  We can obtain some intuition for this as follows.  Recall that
+$$\mathcal{R}_i_t\,\Delta t = \frac{P(t,t_i)-P(t,t_{i+1})}{P(t,t_{i+1})}\; ,$$
 and
-$$\mathcal{R}(t)\,\Delta t = \frac{P(t,t_0)-P(t,t_N)}{\sum_{i=0}^{N-1} P(t,t_{i+1})}\; .$$
-The numerator in the last equation is the sum (over $i=0,\dots,N\!-\!1$) of the numerators in the previous equation; hence, it is the sum of the $\mathcal{R}_i(t)\,\Delta t\,P(t,t_{i+1})$.  This implies that
-$$\mathcal{R}(t) = \frac{\sum_{i=0}^{N-1} P(t,t_{i+1})\mathcal{R}_i(t)}{\sum_{i=1}^{N-1}P(t,t_{i+1})}\; ,$$
+$$\mathcal{R}_t\,\Delta t = \frac{P(t,t_0)-P(t,t_N)}{\sum_{i=0}^{N-1} P(t,t_{i+1})}\; .$$
+The numerator in the last equation is the sum (over $i=0,\dots,N\!-\!1$) of the numerators in the previous equation; hence, it is the sum of the $\mathcal{R}_i_t\,\Delta t\,P(t,t_{i+1})$.  This implies that
+$$\mathcal{R}_t = \frac{\sum_{i=0}^{N-1} P(t,t_{i+1})\mathcal{R}_i_t}{\sum_{i=1}^{N-1}P(t,t_{i+1})}\; ,$$
 which we can write as
-$$\mathcal{R}(t) = \sum_{i=0}^{N-1} w_i(t) \mathcal{R}_i(t)\; ,$$
-where the weights $w_i(t)$ are defined as
-$$w_i(t) = \frac{P(t,t_{i+1})}{\sum_{i=0}^{N-1}P(t,t_{i+1})}\; .$$
-Therefore, the forward swap rate is a weighted average of the forward rates.  A sum (or average) of lognormal variables is not lognormal, so if the forward rate has a constant volatility, then the forward swap rate will not (and vice versa), absent very peculiar assumptions about the weights $w_i(t)$.
+$$\mathcal{R}_t = \sum_{i=0}^{N-1} w_i_t \mathcal{R}_i_t\; ,$$
+where the weights $w_i_t$ are defined as
+$$w_i_t = \frac{P(t,t_{i+1})}{\sum_{i=0}^{N-1}P(t,t_{i+1})}\; .$$
+Therefore, the forward swap rate is a weighted average of the forward rates.  A sum (or average) of lognormal variables is not lognormal, so if the forward rate has a constant volatility, then the forward swap rate will not (and vice versa), absent very peculiar assumptions about the weights $w_i_t$.
 This means that one should not really simultaneously use Black's formula for valuing caps (or floors) and Margrabe's formula for valuing swaptions (though there is evidence that the error introduced by doing so may be small).  In the following chapters, we will consider other models that do not suffer from this type of inconsistency.
 
 ## Caplets as Puts on Discount Bonds {#sec-s_caps2}
@@ -305,8 +305,8 @@ In the following chapters, we will describe models for valuing bond options.  Th
 
 As noted previously, the value at date $T$ of the payer swaption, if exercised, is
 $$P(T,t_0)-P(T,t_N) - \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)\; .$$
-In @sec-s_swaptions, we considered this as the difference of two pieces, the first piece being $S(T) = P(T,t_0)-P(T,t_N)$, which is the value of the floating-rate leg, and the second being 
-$Z(T) = \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, the value of the fixed-rate leg.  We can also separate it differently---the first part being $P(T,t_0)$, which is the value at the swaption maturity of the discount bond maturing at $t_0$, and the second part being    $P(T,t_N)+\bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, which is the value of a fixed-rate bond including the face value at maturity.  Thus, a payer swaption is equivalent to an option to exchange a fixed-rate coupon bond for a discount bond.  A receiver  swaption is an option to engage in the reverse exchange. \index{coupon bond option}
+In @sec-s_swaptions, we considered this as the difference of two pieces, the first piece being $S_T = P(T,t_0)-P(T,t_N)$, which is the value of the floating-rate leg, and the second being 
+$Z_T = \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, the value of the fixed-rate leg.  We can also separate it differently---the first part being $P(T,t_0)$, which is the value at the swaption maturity of the discount bond maturing at $t_0$, and the second part being    $P(T,t_N)+\bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, which is the value of a fixed-rate bond including the face value at maturity.  Thus, a payer swaption is equivalent to an option to exchange a fixed-rate coupon bond for a discount bond.  A receiver  swaption is an option to engage in the reverse exchange. \index{coupon bond option}
 
 Typically, $t_0=T$ (the swap starts at the swaption maturity), in which case $P(T,t_0)=1$ and the payer (receiver) swaption is a standard put (call) option on the coupon bond, with exercise price equal to 1.  The models developed in later chapters for valuing options on coupon bonds can therefore also be applied to value swaptions. 
 
@@ -319,7 +319,7 @@ Typically, $t_0=T$ (the swap starts at the swaption maturity), in which case $P(
   Modify the function `MarketModel_Cap` so that rather than taking `P0` and the vector `P` of discount bond prices as inputs, it looks up discount bond prices from a function `DiscountBondPrice` that returns a discount bond price for any maturity.  For example, `DiscountBondPrice` might be based on a cubic spline fit to the yield curve as discussed in @sec-s_yieldcurve.  To test the new function `MarketModel_Cap`, you will need to create a test function `DiscountBondPrice`.  For example, you could use the following, which corresponds to a rather steeply increasing yield curve, especially at the short end.
 \addcontentsline{lof}{figure}{DiscountBondPrice}
 \begin{verbatim}
-Function DiscountBondPrice(t)
+Function DiscountBondPrice_t
 DiscountBondPrice = Exp(-t * (0.01 + 0.0052 * t - 0.00012 * t ^ 2))
 End Function
 \end{verbatim}
@@ -355,15 +355,15 @@ Calculate the forward swap rate for a 10-year swap with semiannual cash flows be
 \next 
 A collar is an alternative to a forward contract.  With standard options, as mentioned in @sec-s_fundamentalconcepts, a collar consists of a long call and short put (or the reverse).  If the strike of each equals the forward price, then the collar is equivalent to a  forward and will have zero cost---by put-call parity, \index{put-call parity} both options have the same price, so the purchase of the call can be financed by selling the put.  One can also construct a zero-cost collar\index{collar}\index{zero-cost collar} with the call and put having different strikes.
 
-A swaption collar \index{collar swaption} is an alternative to a forward swap contract.  \index{forward swap} For example, consider a long receiver swaption with the underlying swap rate being $\bar{\mathcal{R}}_r$ and a short payer swaption with the underlying swap rate being $\bar{\mathcal{R}}_p > \bar{\mathcal{R}}_r$, with the swaptions having the same time to maturity $T$.  If the market swap rate $\mathcal{R}(T)$ at date $T$ is  below $\bar{\mathcal{R}}_r$ then the receiver swaption will be in the money and will be exercised---one would rather receive  $\bar{\mathcal{R}}_r$ than $\mathcal{R}(T)$ in this circumstance.  Likewise, if $\mathcal{R}(T) > \bar{\mathcal{R}}_p$ then the payer swaption will be exercised---one would rather pay $\bar{\mathcal{R}}_p$ than $\mathcal{R}(T)$ in this circumstance.  When $\bar{\mathcal{R}}_p >\mathcal{R}(T)> \bar{\mathcal{R}}_r$, neither swaption is in the money.  Thus, we have the following for the investor who is long the receiver swaption and short the payer swaption:
+A swaption collar \index{collar swaption} is an alternative to a forward swap contract.  \index{forward swap} For example, consider a long receiver swaption with the underlying swap rate being $\bar{\mathcal{R}}_r$ and a short payer swaption with the underlying swap rate being $\bar{\mathcal{R}}_p > \bar{\mathcal{R}}_r$, with the swaptions having the same time to maturity $T$.  If the market swap rate $\mathcal{R}_T$ at date $T$ is  below $\bar{\mathcal{R}}_r$ then the receiver swaption will be in the money and will be exercised---one would rather receive  $\bar{\mathcal{R}}_r$ than $\mathcal{R}_T$ in this circumstance.  Likewise, if $\mathcal{R}_T > \bar{\mathcal{R}}_p$ then the payer swaption will be exercised---one would rather pay $\bar{\mathcal{R}}_p$ than $\mathcal{R}_T$ in this circumstance.  When $\bar{\mathcal{R}}_p >\mathcal{R}_T> \bar{\mathcal{R}}_r$, neither swaption is in the money.  Thus, we have the following for the investor who is long the receiver swaption and short the payer swaption:
 
 
-- $\mathcal{R}(T)< \bar{\mathcal{R}}_r \Longrightarrow$ receive $\bar{\mathcal{R}}_r$ and pay floating for the maturity of the swap contract,
-- $\bar{\mathcal{R}}_r< \mathcal{R}(T)< \bar{\mathcal{R}}_p \Longrightarrow$ neither swaption exercised,
-- $\mathcal{R}(T) > \bar{\mathcal{R}}_p \Longrightarrow$ receive $\bar{\mathcal{R}}_p$ and pay floating for the maturity of the swap contract.
+- $\mathcal{R}_T< \bar{\mathcal{R}}_r \Longrightarrow$ receive $\bar{\mathcal{R}}_r$ and pay floating for the maturity of the swap contract,
+- $\bar{\mathcal{R}}_r< \mathcal{R}_T< \bar{\mathcal{R}}_p \Longrightarrow$ neither swaption exercised,
+- $\mathcal{R}_T > \bar{\mathcal{R}}_p \Longrightarrow$ receive $\bar{\mathcal{R}}_p$ and pay floating for the maturity of the swap contract.
 
 
-Note that one can always pay floating just by borrowing short term; it is receiving fixed that is important here.  In the second case above, the investor can engage in a swap at date $T$  and receive the market swap rate $\mathcal{R}(T)$.  Thus, the collar guarantees that he will receive at least $\bar{\mathcal{R}}_r$ and will receive no more than $\bar{\mathcal{R}}_p$, whatever might be the market swap rate at date $T$.
+Note that one can always pay floating just by borrowing short term; it is receiving fixed that is important here.  In the second case above, the investor can engage in a swap at date $T$  and receive the market swap rate $\mathcal{R}_T$.  Thus, the collar guarantees that he will receive at least $\bar{\mathcal{R}}_r$ and will receive no more than $\bar{\mathcal{R}}_p$, whatever might be the market swap rate at date $T$.
 
 An institution such as a pension fund can use a receiver swap to help hedge its fixed-rate liabilities.  As an alternative, it can use a collar as just described.  The difference is that a forward receiver swap would guarantee a fixed rate to be received, whereas the collar leaves some residual risk---it guarantees only that the fixed rate will be between $\bar{\mathcal{R}}_r$ and $\bar{\mathcal{R}}_p$.
 This risk may appear attractive.  In @exr-e_eicchorn, the lower rate $\bar{\mathcal{R}}_r$ is the market swap rate, and the higher rate $\bar{\mathcal{R}}_p$ is significantly higher; thus, it may appear that the worst-case scenario is the same as what one can get in the market with a swap and the best case is significantly better.  However, this is an illusion, because the appropriate comparison is with a forward swap (starting at the maturity of the swaptions) and the forward swap rate is substantially higher than the spot swap rate (due to the yield curve being steeply upward sloping).  This illusion may create a good marketing opportunity for sellers of collars.  
