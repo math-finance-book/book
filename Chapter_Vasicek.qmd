@@ -11,9 +11,9 @@ We will begin by describing the basic Vasicek model.  The extended Vasicek model
 
 ## The Short Rate and Discount Bond Prices {#sec-s_vasicek1}
 
-An assumption of the Vasicek model and related models discussed in the next chapter is that there is an instantaneously risk-free rate.  Letting $r(s)$ denote this rate at date $s$, the meaning of this assumption, as discussed in @sec-c_arbitrage, is that there is an asset with price process
+An assumption of the Vasicek model and related models discussed in the next chapter is that there is an instantaneously risk-free rate.  Letting $r_s$ denote this rate at date $s$, the meaning of this assumption, as discussed in @sec-c_arbitrage, is that there is an asset with price process
 $$
-R_t = \exp\left(\int_0^t r(s)\,\mathrm{d} s\right)\;.
+R_t = \exp\left(\int_0^t r_s\,\mathrm{d} s\right)\;.
 $$
 The instantaneous rate of return on this asset is
 $$
@@ -24,7 +24,7 @@ There is no random term (of the form $\sigma\,\mathrm{d} B$) in this rate of ret
 
 The probability measure associated with $R$ being the numeraire is called the \index{risk-neutral probability}risk-neutral probability, just as when the short rate is constant.  Under the risk-neutral probability, the price $P(t,u)$ at date $t$ of a discount bond maturing at $u$ must be
 $$
-P(t,u) = R_t \\E^R_t \left[\frac{1}{R(u)}\right] = \\E^R_t \left[ \exp\left(-\int_t^u r(s)\,\mathrm{d} s\right)\right]\;,
+P(t,u) = R_t \\E^R_t \left[\frac{1}{R(u)}\right] = \\E^R_t \left[ \exp\left(-\int_t^u r_s\,\mathrm{d} s\right)\right]\;,
 $$ {#eq-basicbondprice}
 
 the first equality being a result of our fundamental pricing @eq-formula and the fact that the discount bond pays \$1 at maturity and the second equality following from the definition of $R$.  Thus, a model for the evolution of the short rate under the risk-neutral probability implies a model for discount bond prices and hence the yield curve.
@@ -39,7 +39,7 @@ $$ {#eq-vasicek}
 for constants $\kappa\geq 0$, $\theta$, and $\sigma$, where $B$ is a Brownian motion under the risk-neutral probability.  In this model, $\theta$ is the long-run mean of the short rate process and $\kappa$ is interpreted as the rate of mean reversion.  \index{mean reversion}When $r_t >\theta$, the drift term will be negative and push $r$ down towards $\theta$.  Likewise, when $r_t <\theta$, the drift term will be positive and push $r$ up towards $\theta$.  The rate at which $r$ drifts towards $\theta$ is obviously determined by $\kappa$.  **We are going to depart from our convention and call $\sigma$ the volatility of the short rate** \index{volatility}even though $\sigma^2\,\mathrm{d} t$ is the instantaneous variance of $\mathrm{d} r$ rather than $\mathrm{d} r/r$.
 
 The short rate is normally distributed in the Vasicek model.  Given information at date $t$---i.e., knowledge of $r_t$---then, if $\kappa>0$,
- the rate $r(s)$ for $s>t$ is normally distributed with mean^[These results on the mean and variance of $r(s)$ follow from the solution @eq-vasicek_sol of the Vasicek @eq-vasicek.]
+ the rate $r_s$ for $s>t$ is normally distributed with mean^[These results on the mean and variance of $r_s$ follow from the solution @eq-vasicek_sol of the Vasicek @eq-vasicek.]
 $$
 \theta + \mathrm{e}^{-\!\kappa (s-t)}\big[r_t-\theta\big]
 $$ {#eq-vasicekmean}
@@ -49,28 +49,28 @@ $$
 \frac{\sigma^2\left(1-\mathrm{e}^{-2\kappa(s-t)}\right)}{2\kappa}\;.
 $$ {#eq-vasicekvariance}
 
-For any $r_t$, the mean converges to $\theta$ at long horizons (i.e., as $s \rightarrow \infty$), justifying the interpretation of $\theta$ as the long run mean.  In fact, the mean converges exponentially to $\theta$ at rate $\kappa$.  The variance at long horizons is $\sigma^2/2\kappa$.  On the other hand, if $\kappa=0$, then the short rate is a Brownian motion with volatility $\sigma$.  The mean of $r(s)$ is $r_t$ for $s>t$, and the variance of $r(s)$ is $(s-t)\sigma^2$.  Thus, the uncertainty at long horizons, as measured by the variance, is unbounded when $\kappa=0$.  Whether $\kappa$ is positive or not, an implication of the normal distribution is that there is a positive probability of the short rate $r(s)$ being negative at any date $s>t$, which should not be the case for (nominal) interest rates.  However, the probability of negative rates over any given horizon will be small if the variance is sufficiently small.  From @eq-vasicekvariance, we see that, when $\kappa>0$, the variance will be small if either the volatility $\sigma$ is small or the rate of mean reversion $\kappa$ is large.
+For any $r_t$, the mean converges to $\theta$ at long horizons (i.e., as $s \rightarrow \infty$), justifying the interpretation of $\theta$ as the long run mean.  In fact, the mean converges exponentially to $\theta$ at rate $\kappa$.  The variance at long horizons is $\sigma^2/2\kappa$.  On the other hand, if $\kappa=0$, then the short rate is a Brownian motion with volatility $\sigma$.  The mean of $r_s$ is $r_t$ for $s>t$, and the variance of $r_s$ is $(s-t)\sigma^2$.  Thus, the uncertainty at long horizons, as measured by the variance, is unbounded when $\kappa=0$.  Whether $\kappa$ is positive or not, an implication of the normal distribution is that there is a positive probability of the short rate $r_s$ being negative at any date $s>t$, which should not be the case for (nominal) interest rates.  However, the probability of negative rates over any given horizon will be small if the variance is sufficiently small.  From @eq-vasicekvariance, we see that, when $\kappa>0$, the variance will be small if either the volatility $\sigma$ is small or the rate of mean reversion $\kappa$ is large.
 
-These facts about the distribution of the short rate demonstrate the importance of assuming mean reversion ($\kappa>0$).  If $\kappa=0$, the short rate (because it is a Brownian motion)  has the property that for any real number $K$, with probability one there will be some date $s>t$ such that $r(s)>K$, irrespective of the starting position $r_t$.  Likewise, there will be some date $s'>t$ such that $r(s')<-K$.  Thus, the short rate wanders off in both directions in an unbounded way.  This property may be reasonable for the logarithm of a stock price, because a stock price may become arbitrarily high or arbitrarily close to zero (implying that the logarithm is unbounded both above and below).  However, it is not reasonable for an interest rate, which should exhibit more stability.  The assumption of mean reversion ($\kappa>0$) provides this stability, guaranteeing that the uncertainty at long horizons is bounded and that on average the short rate will converge back to a finite long-run mean.  Nevertheless, we will give results in this chapter for the case $\kappa=0$, because this is a particularly simple model and because it is the basic building block for what is called the continuous-time Ho-Lee model. \index{continuous-time Ho-Lee model} The actual Ho-Lee model, \index{Ho-Lee model}which is a binomial model, will be discussed in the following chapter.
+These facts about the distribution of the short rate demonstrate the importance of assuming mean reversion ($\kappa>0$).  If $\kappa=0$, the short rate (because it is a Brownian motion)  has the property that for any real number $K$, with probability one there will be some date $s>t$ such that $r_s>K$, irrespective of the starting position $r_t$.  Likewise, there will be some date $s'>t$ such that $r(s')<-K$.  Thus, the short rate wanders off in both directions in an unbounded way.  This property may be reasonable for the logarithm of a stock price, because a stock price may become arbitrarily high or arbitrarily close to zero (implying that the logarithm is unbounded both above and below).  However, it is not reasonable for an interest rate, which should exhibit more stability.  The assumption of mean reversion ($\kappa>0$) provides this stability, guaranteeing that the uncertainty at long horizons is bounded and that on average the short rate will converge back to a finite long-run mean.  Nevertheless, we will give results in this chapter for the case $\kappa=0$, because this is a particularly simple model and because it is the basic building block for what is called the continuous-time Ho-Lee model. \index{continuous-time Ho-Lee model} The actual Ho-Lee model, \index{Ho-Lee model}which is a binomial model, will be discussed in the following chapter.
 
 
 The relative simplicity of the Vasicek model stems from the fact that under assumption @eq-vasicek the accumulation factor $R$ is lognormally distributed.  \index{lognormal distribution}Specifically, at any date $t$ and given any date $u>t$, the random variable 
 $$
-\int_t^u r(s)\,\mathrm{d} s
+\int_t^u r_s\,\mathrm{d} s
 $$
 is normally distributed.  Its mean and variance depend on the parameters $\kappa$, $\theta$, and $\sigma$ and the length of the time interval $u-t$.  The mean also depends on the short rate $r_t$ at date $t$.  Therefore, the discount bond price depends on the same things.  
 
 We will now present an explicit formula for discount bond prices, based on the fundamental @eq-basicbondprice.
-By taking the Ito differential of $r(s)$ in the following, one can verify that it is the solution of the Vasicek model @eq-vasicek:^[@eq-vasicek_sol implies the distributional properties of $r(s)$ stated earlier.
-The integral $\int_t^s \mathrm{e}^{-\!\kappa (s-y)} \,\mathrm{d} B(y)$ is normally distributed with mean zero; therefore equation~@eq-vasicek_sol shows that the mean of $r(s)$ in the case $\kappa>0$ is as given in @eq-vasicekmean.  The variance is computed, following the rules in @sec-c_continuoustime, as $\int_t^s \mathrm{e}^{-2\kappa (s-y)}\,\mathrm{d} y$, which simplifies to the formula given in @eq-vasicekvariance.}
+By taking the Ito differential of $r_s$ in the following, one can verify that it is the solution of the Vasicek model @eq-vasicek:^[@eq-vasicek_sol implies the distributional properties of $r_s$ stated earlier.
+The integral $\int_t^s \mathrm{e}^{-\!\kappa (s-y)} \,\mathrm{d} B(y)$ is normally distributed with mean zero; therefore equation~@eq-vasicek_sol shows that the mean of $r_s$ in the case $\kappa>0$ is as given in @eq-vasicekmean.  The variance is computed, following the rules in @sec-c_continuoustime, as $\int_t^s \mathrm{e}^{-2\kappa (s-y)}\,\mathrm{d} y$, which simplifies to the formula given in @eq-vasicekvariance.}
 $$
-r(s) =  \theta - \mathrm{e}^{-\!\kappa (s-t)}\big[\theta-r_t\big]+ \sigma 
+r_s =  \theta - \mathrm{e}^{-\!\kappa (s-t)}\big[\theta-r_t\big]+ \sigma 
 \int_t^s \mathrm{e}^{-\!\kappa (s-y)} \,\mathrm{d} B(y).
 $$ {#eq-vasicek_sol}
 
 If $\kappa=0$, this simplifies to
 $$
-r(s) = r_t + \sigma\int_t^s\mathrm{d} B(y)= r_t + \sigma[B(s)-B_t]\;. 
+r_s = r_t + \sigma\int_t^s\mathrm{d} B(y)= r_t + \sigma[B_s-B_t]\;. 
 $$ {#eq-vasicek_sol2}
 
 These equations imply the following.
@@ -116,7 +116,7 @@ $$ {#eq-vasicekb1111}
 We will end this section with a proof of @eq-vasicekbond - @eq-vasicekb1111 in the case $\kappa=0$.  The formula for $\kappa>0$ can be established by the same reasoning, the calculations being only slightly more complicated.
 From  @eq-vasicek_sol2, we have
 \begin{align*}
-\int_t^u r(s)\,\mathrm{d} s & = \int_t^u \left[r_t+\sigma \int_t^s \mathrm{d} B(y)\right]\,\mathrm{d} s\\
+\int_t^u r_s\,\mathrm{d} s & = \int_t^u \left[r_t+\sigma \int_t^s \mathrm{d} B(y)\right]\,\mathrm{d} s\\
 &=\tau\, r_t+\sigma \int_t^u \left\{\int_t^s \mathrm{d} B(y) \right\} \,\mathrm{d} s\; .
 \end{align*}
 We can change the order of integration in the double integral above to obtain
@@ -129,7 +129,7 @@ $$
 \int_t^u (u-y)^2\,\mathrm{d} y = \frac{\tau^3}{3}\;.
 $$
 Therefore, 
-$\int_t^u r(s)\,\mathrm{d} s$
+$\int_t^u r_s\,\mathrm{d} s$
 is normally distributed with mean  $\tau\, r_t$ and variance $\sigma^2\tau^3/3$.  We now use the fact that if $x$ is normally distributed with mean $\mu$ and variance $\sigma^2$, then the mean of $\mathrm{e}^x$ is $\mathrm{e}^{\mu+\sigma/2}$.  Substituting this into  @eq-basicbondprice gives the result.
 :::
 
@@ -266,28 +266,28 @@ One can show by the following by directly differentiating.
 In the Hull-White model,
 
 $$
-r(s) = \phi(s) + \hat{r}(s)\;,
+r_s = \phi_s + \hat{r}_s\;,
 $$ {#eq-vasicekextension_sol}
 
 where 
 
 $$ 
-\phi(s) =  \int_0^s\mathrm{e}^{-\kappa(s-y)}\theta(y)\,\mathrm{d} y\;,
+\phi_s =  \int_0^s\mathrm{e}^{-\kappa(s-y)}\theta(y)\,\mathrm{d} y\;,
 $$ {#eq-phi102}
 
 and
 $$
-\hat{r}(s) = \mathrm{e}^{-\kappa s}r_0+\sigma\int_0^s\mathrm{e}^{-\kappa(s-y)}\,\mathrm{d} B(y)\;.
+\hat{r}_s = \mathrm{e}^{-\kappa s}r_0+\sigma\int_0^s\mathrm{e}^{-\kappa(s-y)}\,\mathrm{d} B(y)\;.
 $$ {#eq-rhat102}
 
 When $\kappa=0$ (the continuous-time Ho-Lee model), these formulas simplify to
 $$
-\phi(s) =  \int_0^s\theta(y)\,\mathrm{d} y\;. 
+\phi_s =  \int_0^s\theta(y)\,\mathrm{d} y\;. 
 $$ {#eq-phi103}
 
 and
 $$
-\hat{r}(s) = r_0+\sigma B(s)\;. 
+\hat{r}_s = r_0+\sigma B_s\;. 
 $$ {#eq-rhat103}
 
 
@@ -304,20 +304,20 @@ where $\kappa=0$ for @eq-rhat103.  Thus, $\hat{r}$ is a Vasicek short-rate proce
 The virtue of the expression for $r$ given in @eq-vasicekextension_sol - @eq-rhat103 is that the basic bond pricing @eq-basicbondprice now gives us
 
 $$
-P(t,u) = \\E^R_t \left[ \exp\left(-\int_t^u r(s)\,\mathrm{d} s\right)\right]
+P(t,u) = \\E^R_t \left[ \exp\left(-\int_t^u r_s\,\mathrm{d} s\right)\right]
 $$
 $$
-= \\E^R_t \left[ \exp\left(-\int_t^u \phi(s) + \hat{r}(s)\,\mathrm{d} s\right)\right]
+= \\E^R_t \left[ \exp\left(-\int_t^u \phi_s + \hat{r}_s\,\mathrm{d} s\right)\right]
 $$
 $$
-= \\E^R_t \left[ \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\exp\left(-\int_t^u  \hat{r}(s)\,\mathrm{d} s\right)\right]
+= \\E^R_t \left[ \exp\left(-\int_t^u \phi_s\,\mathrm{d} s\right)\exp\left(-\int_t^u  \hat{r}_s\,\mathrm{d} s\right)\right]
 $$
 $$
-= \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\\E^R_t \left[ \exp\left(-\int_t^u \hat{r}(s)\,\mathrm{d} s\right)\right]\;.
+= \exp\left(-\int_t^u \phi_s\,\mathrm{d} s\right)\\E^R_t \left[ \exp\left(-\int_t^u \hat{r}_s\,\mathrm{d} s\right)\right]\;.
 $$ {#eq-vasicekpullsout}
 
 
-Thus, the non-random part $\phi(s)$ of the short-rate process pulls out of the expectation in the pricing formula.  Furthermore, we have already calculated the expectation in @eq-vasicekpullsout because it is the discount bond price in the Vasicek model with a long-run mean of zero.  This yields the following.
+Thus, the non-random part $\phi_s$ of the short-rate process pulls out of the expectation in the pricing formula.  Furthermore, we have already calculated the expectation in @eq-vasicekpullsout because it is the discount bond price in the Vasicek model with a long-run mean of zero.  This yields the following.
 
 
 ::: Rule
@@ -325,7 +325,7 @@ Thus, the non-random part $\phi(s)$ of the short-rate process pulls out of the e
 Consider dates $t<u$ and define $\tau=u-t$.  The price at date $t$ of a discount bond maturing at date $u$ in the extended Vasicek model is
 
 $$
-P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s-a(\tau)-b(\tau)\hat{r}_t\right)\;,
+P(t,u) = \exp\left(-\int_t^u \phi_s\,\mathrm{d} s-a(\tau)-b(\tau)\hat{r}_t\right)\;,
 $$ {#eq-extendedvasicekbond}
 
 where, in the continuous-time Ho-Lee model,
@@ -373,11 +373,11 @@ P^{\text{mkt}}(0,u) = P(0,u)
 $$
 for all maturities $u$, where $P(0,u)$ denotes the model prices given in  @eq-extendedvasicekbond as
 $$
-P(0,u) = \exp\left(-\int_0^u \phi(s)\,\mathrm{d} s-a(u)-b(u)r_0\right)\;.
+P(0,u) = \exp\left(-\int_0^u \phi_s\,\mathrm{d} s-a(u)-b(u)r_0\right)\;.
 $$
 The functions $a$ and $b$ depend on $\kappa$ and $\sigma$, but we regard them now as having already been chosen.  Therefore, to match the model prices to market prices, we simply have to set
 $$
-\exp\left(-\int_0^u \phi(s)\right) = \exp\left(a(u)+b(u)r_0\right)P^{\text{mkt}}(0,u)\;.
+\exp\left(-\int_0^u \phi_s\right) = \exp\left(a(u)+b(u)r_0\right)P^{\text{mkt}}(0,u)\;.
 $$ {#eq-vasicekcalibration101}
 
 
@@ -634,7 +634,7 @@ Thus, based on @eq-extendedvasicekbond for the discount bond prices, we define $
 
 $$
 \begin{multline}
-\sum_{i=1}^N c\exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s-a(t_i-T)-b(t_i-T)r^*\right) \\+ \exp\left(-\int_T^{t_N} \phi(s)\,\mathrm{d} s-a(t_N-T)-b(t_N-T)r^*\right) = K\;. 
+\sum_{i=1}^N c\exp\left(-\int_T^{t_i} \phi_s\,\mathrm{d} s-a(t_i-T)-b(t_i-T)r^*\right) \\+ \exp\left(-\int_T^{t_N} \phi_s\,\mathrm{d} s-a(t_N-T)-b(t_N-T)r^*\right) = K\;. 
 \end{multline}
 $$ {#eq-swaptions102}
 
@@ -642,7 +642,7 @@ According to the model, if $\hat{r}_T$ is lower than $r^*$, then the bond prices
 
 For $i=1,\ldots,N$, define $K_i$ to be the model value of the discount bond price $P(T,t_i)$ when $\hat{r}_T=r^*$.  In other words, define $K_i$ as 
 $$
-K_i = \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s-a(t_i-T)-b(t_i-T)r^*\right)\;.
+K_i = \exp\left(-\int_T^{t_i} \phi_s\,\mathrm{d} s-a(t_i-T)-b(t_i-T)r^*\right)\;.
 $$ {#eq-swaptions103}
 
 Note that equations @eq-swaptions102 and @eq-swaptions103 imply
@@ -653,7 +653,7 @@ $$ {#eq-swaption100000}
 
 Consider for each $i$ ($i=1,\ldots,N$) a hypothetical call option maturing at $T$ with the underlying for the option being the discount bond maturing at $t_i$.  Let $K_i$ be the exercise price of option $i$.  According to the model, the value of the underlying at date $T$ for option $i$ will be 
 $$
-P(T,t_i) = \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s-a(t_i-T)-b(t_i-T)\hat{r}_T\right)\;.
+P(T,t_i) = \exp\left(-\int_T^{t_i} \phi_s\,\mathrm{d} s-a(t_i-T)-b(t_i-T)\hat{r}_T\right)\;.
 $$
 By the definition of $K_i$, therefore, option $i$ will be in the money if and only if 
 $\hat{r}_T < r^*$.
@@ -669,7 +669,7 @@ The same type of reasoning also allows us to value put options on coupon bonds.
 
 The only issue in implementing this method is that we need to compute the exercise prices $K_i$.  Of course, we define them by  @eq-swaptions103, given $r^*$.  To do this requires that we calculate the factor
 $$
-\exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s\right),
+\exp\left(-\int_T^{t_i} \phi_s\,\mathrm{d} s\right),
 $$ {#eq-vasicekfactor100}
 
 by fitting the model to market bond prices, as discussed in @sec-s_vasicek_fitting.  We will explain this more explicitly in the next paragraph.  In order to apply equation~@eq-swaptions103, we need to compute $r^*$, which is given by equation~@eq-swaptions102.  We can solve~@eq-swaptions102 for $r^*$ by bisection or some other root-finding method.  Again, we need to know the factors @eq-vasicekfactor100
@@ -678,17 +678,17 @@ by fitting the model to market bond prices, as discussed in @sec-s_vasicek_fitti
 To compute the factors @eq-vasicekfactor100,
 we use  @eq-vasicekcalibration101.  We repeat it here twice, for maturity dates $t_i$ and $T$:
 \begin{align*}
-\exp\left(-\int_0^{t_i} \phi(s)\,\mathrm{d} s\right) &= \exp\left(a_{t_i}+b_{t_i}r_0\right)P^{\text{mkt}}(0,t_i)\; ,\\
-\exp\left(-\int_0^{T} \phi(s)\,\mathrm{d} s\right) &= \exp\left(a_T+b_Tr_0\right)P^{\text{mkt}}(0,T)\;.
+\exp\left(-\int_0^{t_i} \phi_s\,\mathrm{d} s\right) &= \exp\left(a_{t_i}+b_{t_i}r_0\right)P^{\text{mkt}}(0,t_i)\; ,\\
+\exp\left(-\int_0^{T} \phi_s\,\mathrm{d} s\right) &= \exp\left(a_T+b_Tr_0\right)P^{\text{mkt}}(0,T)\;.
 \end{align*}
 If we divide the top equation by the bottom, then on the left-hand side we obtain
 \begin{align*}
-\frac{\exp\left(-\int_0^{t_i} \phi(s)\,\mathrm{d} s\right)}{\exp\left(-\int_0^{T} \phi(s)\,\mathrm{d} s\right)} &= \exp\left(-\int_0^{t_i} \phi(s)\,\mathrm{d} s + \int_0^{T} \phi(s)\,\mathrm{d} s\right) \\
-&= \exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s\right)\; ,
+\frac{\exp\left(-\int_0^{t_i} \phi_s\,\mathrm{d} s\right)}{\exp\left(-\int_0^{T} \phi_s\,\mathrm{d} s\right)} &= \exp\left(-\int_0^{t_i} \phi_s\,\mathrm{d} s + \int_0^{T} \phi_s\,\mathrm{d} s\right) \\
+&= \exp\left(-\int_T^{t_i} \phi_s\,\mathrm{d} s\right)\; ,
 \end{align*}
 which is the number we want.  Hence, we obtain by dividing the right-hand sides of the above equations:
 $$
-\exp\left(-\int_T^{t_i} \phi(s)\,\mathrm{d} s\right) = \exp\left\{a_{t_i}-a_T + [b_{t_i}-b_T]r_0\right\}\frac{P^{\text{mkt}}(0,t_i)}{P^{\text{mkt}}(0,T)}\;.
+\exp\left(-\int_T^{t_i} \phi_s\,\mathrm{d} s\right) = \exp\left\{a_{t_i}-a_T + [b_{t_i}-b_T]r_0\right\}\frac{P^{\text{mkt}}(0,t_i)}{P^{\text{mkt}}(0,T)}\;.
 $$ {#eq-swaptions104}
 
 ```{python}
@@ -844,7 +844,7 @@ y(t,\tau) = \frac{-\log P(t,u)}{\tau}\;.
 $$
 In the extended Vasicek model, the yield is given by the bond pricing @eq-vasicekbond as
 $$
-y(t,\tau) = \frac{\int_t^{t+\tau} \phi(s)\,\mathrm{d} s + a(\tau) + b(\tau)\hat{r}_t}{\tau}\;.
+y(t,\tau) = \frac{\int_t^{t+\tau} \phi_s\,\mathrm{d} s + a(\tau) + b(\tau)\hat{r}_t}{\tau}\;.
 $$
 Note that the component
 $$
@@ -856,9 +856,9 @@ $$
 $$
 This is a decreasing function of the time to maturity $\tau$ with intercept equal to $\hat{r}_t$.  At a different date $t$, this component of the yield curve would be the same, except for having a different intercept.^[Note that this part decreases to $-\infty$ at long maturities ($\tau \rightarrow \infty$), which is very strange for yields, which should be nonnegative.  To compensate for this strange behavior, one needs the part 
 $$
-\frac{1}{\tau}\int_t^{t+\tau} \phi(s)\,\mathrm{d} s\; ,
+\frac{1}{\tau}\int_t^{t+\tau} \phi_s\,\mathrm{d} s\; ,
 $$
-which is the average of $\phi(s)$ between $t$ and $t+\tau$ to be growing sufficiently with $\tau$.  This phenomenon is a consequence of the absence of mean reversion.}  This is the reason for the statement in @sec-s_vasicekhedging that only parallel shifts in the yield curve are possible in this model (and hence duration hedging works in the model).
+which is the average of $\phi_s$ between $t$ and $t+\tau$ to be growing sufficiently with $\tau$.  This phenomenon is a consequence of the absence of mean reversion.}  This is the reason for the statement in @sec-s_vasicekhedging that only parallel shifts in the yield curve are possible in this model (and hence duration hedging works in the model).
 
 The volatility at date $t$ of the yield \index{yield volatility}at a fixed maturity $\tau$ is^[By volatility here we mean the instantaneous standard deviation of $\mathrm{d} y(t,\tau)$ not the instantaneous standard deviation of $\mathrm{d} y(t,\tau)/y(t,\tau)$.} $\sigma b(\tau)/\tau$.
 In the continuous-time Ho-Lee model, this is $\sigma$ and in the  Hull-White model it is $\sigma\left(1-\mathrm{e}^{-\kappa\tau}\right)/(\kappa\tau)$.  In @sec-s_vasicek_discounts we mentioned that one might choose the parameter $\sigma$ in the Ho-Lee model and the parameters $\sigma$ and $\kappa$ in the  Hull-White model to fit cap or floor prices as well as possible.  An alternative would be to choose them to match estimated yield volatilities.  Of course the fit to either cap prices or yield volatilities will be of limited quality, given that there is only one or two parameters in these models.  On the other hand, an exact fit can be obtained with the general Hull-White model.
@@ -875,35 +875,35 @@ $$ {#eq-hw600}
 By differentiating the following, one can see that the short rate $r$ in the general Hull-White model satisfies
 
 $$
-r(s) = \phi(s) + \hat{r}(s)\;,
+r_s = \phi_s + \hat{r}_s\;,
 $$ {#eq-hw601}
 
 where
 $$
-\phi(s) =  \int_0^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\theta(y)\,\mathrm{d} y\;.
+\phi_s =  \int_0^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\theta(y)\,\mathrm{d} y\;.
 $$ {#eq-phi101}
 
 and
 $$
-\hat{r}(s) = \exp\left(-\int_0^s\kappa(x)\,\mathrm{d} x\right)r_0+\int_0^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\sigma(y)\,\mathrm{d} B(y)\;.
+\hat{r}_s = \exp\left(-\int_0^s\kappa(x)\,\mathrm{d} x\right)r_0+\int_0^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\sigma(y)\,\mathrm{d} B(y)\;.
 $$ {#eq-rhat101}
 
 
 As before, discount bond prices are
 $$
-P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\\E^R_t \left[ \exp\left(-\int_t^u \hat{r}(s)\,\mathrm{d} s\right)\right]\;.
+P(t,u) = \exp\left(-\int_t^u \phi_s\,\mathrm{d} s\right)\\E^R_t \left[ \exp\left(-\int_t^u \hat{r}_s\,\mathrm{d} s\right)\right]\;.
 $$ {#eq-hw602}
 
 Moreover,  @eq-rhat101 implies, for $s>t$, 
 
 $$
-\hat{r}(s) = \exp\left(-\int_t^s\kappa(x)\,\mathrm{d} x\right)\,\hat{r}_t+\int_t^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\sigma(y)\,\mathrm{d} B(y)\;.
+\hat{r}_s = \exp\left(-\int_t^s\kappa(x)\,\mathrm{d} x\right)\,\hat{r}_t+\int_t^s\exp\left(-\int_y^s\kappa(x)\,\mathrm{d} x\right)\sigma(y)\,\mathrm{d} B(y)\;.
 $$ {#eq-rhat1001}
 
 Using this fact, the expectation in @eq-hw602 can be calculated as before as the expectation of the exponential of a normally distributed random variable, leading to the result
 
 $$
-P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s-a(t,u)-b(t,u)\hat{r}_t\right)\;,
+P(t,u) = \exp\left(-\int_t^u \phi_s\,\mathrm{d} s-a(t,u)-b(t,u)\hat{r}_t\right)\;,
 $$ {#eq-hw603}
 
 where

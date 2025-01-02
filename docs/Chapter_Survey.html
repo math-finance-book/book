@@ -98,21 +98,21 @@ div.csl-indent {
   });
 </script>
 <style>
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
+}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
 }
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
 }
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
 }
 </style>
 
@@ -439,7 +439,7 @@ window.Quarto = {
 <h2 data-number="21.1" class="anchored" data-anchor-id="ho-lee"><span class="header-section-number">21.1</span> Ho-Lee</h2>
 <p>The Ho-Lee <span class="citation" data-cites="HL">(<a href="#ref-HL" role="doc-biblioref">Ho and Lee 1986</a>)</span> model is a binomial version of the Vasicek model without mean reversion, in which the one-period interest rate is assumed to have a deterministic drift. This was the first widely-used model that enabled one to fit the current yield curve.</p>
 <p>Consider discrete times <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N\)</span> with <span class="math inline">\(t_{i}-t_{i-1}=\Delta t\)</span> for each <span class="math inline">\(i\)</span>. We denote the one-period interest rate from date <span class="math inline">\(t_i\)</span> to <span class="math inline">\(t_{i+1}\)</span> by <span class="math inline">\(r_{t_i}\)</span>. We express the rate as an annualized continuously compounded rate, so the one-period discount factor from date <span class="math inline">\(t_i\)</span> to <span class="math inline">\(t_{i+1}\)</span> is <span class="math inline">\(\mathrm{e}^{-r_{t_i} \Delta t}\)</span>. We could put this in a continuous-time framework by assuming the short rate is constant (<span class="math inline">\(= r_{t_i}\)</span>) during each time interval <span class="math inline">\((t_i, t_{i+1})\)</span>. As always, the risk-neutral probability is the probability measure corresponding to the numeraire <span id="eq-holeeaccumulation"><span class="math display">\[
-R_t = \exp\left(\int_0^t r(s)\,\mathrm{d} s\right)\; .
+R_t = \exp\left(\int_0^t r_s\,\mathrm{d} s\right)\; .
 \qquad(21.1)\]</span></span></p>
 <p>However, we will only be doing valuation at the discrete dates <span class="math inline">\(t_0, \ldots, t_N\)</span> and at date <span class="math inline">\(t_i\)</span> the accumulation factor <a href="#eq-holeeaccumulation" class="quarto-xref">Equation&nbsp;<span>21.1</span></a> is <span class="math display">\[R_{t_i} = \exp\left(\sum_{j=0}^{i-1} r(t_{j})\,\Delta t\right)\; .\]</span> Thus, the continuous-time framework is not necessary.</p>
 <p>The model assumes that over each time period <span class="math inline">\(t_{i}-t_{i-1}\)</span> the change <span class="math inline">\(\Delta r_{t_i} = r_{t_i}-r_{t_{i-1}}\)</span> in the one-period rate is <span class="math display">\[ \Delta r_{t_i} = \theta_{t_i}\,\Delta t \pm \sigma \sqrt{\Delta t}\; ,\]</span> where the risk-neutral probability of <span class="math inline">\(+\)</span> and <span class="math inline">\(-\)</span> is <span class="math inline">\(1/2\)</span> each and <span class="math inline">\(\theta\)</span> is a non-random function.<br>
@@ -607,12 +607,12 @@ r_t = \phi_t + \hat{r}_t\; ,
 \mathrm{d} \hat{r}_t=\kappa [\theta-\hat{r}_t]\,\mathrm{d} t+\sigma \sqrt{\hat{r}_t}\,\mathrm{d} B_t\;,
 \qquad(21.19)\]</span></span></p>
 <p>with <span class="math inline">\(\hat{r}_0 = r_0\)</span>. Then, as in the Hull-White model, discount bond prices are given by <span class="math display">\[
-P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\\E^R_t\left[\exp\left(-\int_t^u\hat{r}(s)\,\mathrm{d} s\right)\right]\; .
+P(t,u) = \exp\left(-\int_t^u \phi_s\,\mathrm{d} s\right)\\E^R_t\left[\exp\left(-\int_t^u\hat{r}_s\,\mathrm{d} s\right)\right]\; .
 \]</span> Moreover, the expectation in this equation is the discount bond pricing function calculated in the previous subsection, so we have <span id="eq-cirPcal"><span class="math display">\[
-P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\exp\left(-a(\tau)-b(\tau)\hat{r}_t\right)\;.
+P(t,u) = \exp\left(-\int_t^u \phi_s\,\mathrm{d} s\right)\exp\left(-a(\tau)-b(\tau)\hat{r}_t\right)\;.
 \qquad(21.20)\]</span></span></p>
-<p>In particular, discount bond prices at date <span class="math inline">\(0\)</span> are <span class="math display">\[P(0,u) = \exp\left(-\int_0^u \phi(s)\,\mathrm{d} s\right)\exp\left(-a(u)-b(u)r_0\right)\; ,\]</span> so the model can be calibrated to market prices <span class="math inline">\(P^{\text{mkt}}(0,u)\)</span> by setting <span id="eq-circalibration"><span class="math display">\[
-\exp\left(-\int_0^u \phi(s)\,\mathrm{d} s\right) = \exp\left(a(u)+b(u)r_0\right)P^{\text{mkt}}(0,u)
+<p>In particular, discount bond prices at date <span class="math inline">\(0\)</span> are <span class="math display">\[P(0,u) = \exp\left(-\int_0^u \phi_s\,\mathrm{d} s\right)\exp\left(-a(u)-b(u)r_0\right)\; ,\]</span> so the model can be calibrated to market prices <span class="math inline">\(P^{\text{mkt}}(0,u)\)</span> by setting <span id="eq-circalibration"><span class="math display">\[
+\exp\left(-\int_0^u \phi_s\,\mathrm{d} s\right) = \exp\left(a(u)+b(u)r_0\right)P^{\text{mkt}}(0,u)
 \qquad(21.21)\]</span></span></p>
 <p>for each <span class="math inline">\(u\)</span>. Note that the calibration does not affect discount bond returns: the expected return under the risk-neutral probability must still be the short rate and the volatility is unaffected by a deterministic factor. Therefore, we have, as in <a href="#eq-cirdpp" class="quarto-xref">Equation&nbsp;<span>21.18</span></a>, <span id="eq-cirdpp2"><span class="math display">\[
 \frac{\mathrm{d} P(t,u)}{P(t,u)}  =   r_t\,\mathrm{d} t - b(\tau)\sigma\sqrt{\hat{r}_t}\,\mathrm{d} B_t\;.
@@ -626,13 +626,13 @@ P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\exp\left(-a(\tau)-b(\t
 P(0,u)\times\text{prob}^u\big(P(T,u)&gt;K\big) - P(0,T)\times\text{prob}^T\big(P(T,u)&gt;K\big)\;,
 \qquad(21.23)\]</span></span></p>
 <p>where <span class="math inline">\(\text{prob}^u\)</span> denotes the probability measure using the discount bond maturing at <span class="math inline">\(u\)</span> as numeraire and <span class="math inline">\(\text{prob}^T\)</span> denotes the probability measure using the discount bond maturing at <span class="math inline">\(T\)</span> as the numeraire. Using the calibration of the previous subsection, the price of the underlying at date <span class="math inline">\(T\)</span> will be, according to the model, <span class="math display">\[
-P(T,u)  = \exp\left(-\int_T^u \phi(s)\,\mathrm{d} s-a(u-T)-b(u-T)\hat{r}_T\right)\; .
+P(T,u)  = \exp\left(-\int_T^u \phi_s\,\mathrm{d} s-a(u-T)-b(u-T)\hat{r}_T\right)\; .
 \]</span> Therefore, the option will finish in the money if and only if <span id="eq-ciroptionprice2"><span class="math display">\[
-\frac{-\int_T^u \phi(s)\,\mathrm{d} s-a(u-T)-\log K}{b(u-T)} &gt; \hat{r}_T\;.
+\frac{-\int_T^u \phi_s\,\mathrm{d} s-a(u-T)-\log K}{b(u-T)} &gt; \hat{r}_T\;.
 \qquad(21.24)\]</span></span></p>
 <p>Thus, to price discount bond options, we need to compute the probabilities that <span class="math inline">\(\hat{r}_T\)</span> is less than a given number, using discount bonds as numeraires.</p>
 <p>Consider the discount bond maturing at <span class="math inline">\(u\)</span>. The calculation for the discount bond maturing at <span class="math inline">\(T\)</span> can be done in the same way. We use the fact that <span class="math display">\[
-\frac{\mathrm{e}^{\int_0^t r(s)\,\mathrm{d} s}}{P(t,u)}
+\frac{\mathrm{e}^{\int_0^t r_s\,\mathrm{d} s}}{P(t,u)}
 \]</span> is a martingale, when <span class="math inline">\(P(t,u)\)</span> is used as the numeraire, for <span class="math inline">\(t \leq u\)</span>. Let <span class="math inline">\(Z_t\)</span> denote this ratio and apply Ito’s formula for ratios to derive <span class="math display">\[
 \frac{\mathrm{d} Z_t}{Z_t} = r_t\,\mathrm{d} t - \frac{\mathrm{d} P(t,u)}{P(t,u)} + \left(\frac{\mathrm{d} P(t,u)}{P(t,u)}\right)^2\;.
 \]</span></p>
@@ -678,11 +678,11 @@ x_2 = \frac{V-\sigma_1^2 r}{\sigma_2^2-\sigma_1^2}\;,
 \end{multline}\]</span> {#eq-vasicekvbacap}</p>
 <p>where <span class="math inline">\(\delta=\kappa_1\)</span>, <span class="math inline">\(\xi=\kappa_2\)</span>, <span class="math inline">\(\alpha = \sigma_1^2\)</span>, <span class="math inline">\(\beta=\sigma_2^2\)</span>, <span class="math inline">\(\gamma = \kappa_1\theta_1/\sigma_1^2\)</span>, and <span class="math inline">\(\eta = \kappa_2\theta_2/\sigma_2^2\)</span>. Thus, this can be regarded as a two-factor model in which the factors are the short rate and its instantaneous variance, with the six parameters <span class="math inline">\(\delta\)</span>, <span class="math inline">\(\xi\)</span>, <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\gamma\)</span>, and <span class="math inline">\(\eta\)</span>.</p>
 <p>The simplest way to compute discount bond prices in this model is to return to the definition <span class="math inline">\(r=x_1+x_2\)</span>. Discount bond prices are <span class="math display">\[\begin{align*}
-P(t,u) &amp;= \\E_t\left[\exp\left(-\int_t^u r(s)\,\mathrm{d} s\right)\right]\\
-&amp;= \\E_t\left[\exp\left(-\int_t^u x_1(s)\,\mathrm{d} s\right)\exp\left(-\int_t^u x_2(s)\,\mathrm{d} s\right)\right]\\
-&amp;= \\E_t\left[\exp\left(-\int_t^u x_1(s)\,\mathrm{d} s\right)\right] \\E_t\left[\exp\left(-\int_t^u x_2(s)\,\mathrm{d} s\right)\right]\;,
+P(t,u) &amp;= \\E_t\left[\exp\left(-\int_t^u r_s\,\mathrm{d} s\right)\right]\\
+&amp;= \\E_t\left[\exp\left(-\int_t^u x_1_s\,\mathrm{d} s\right)\exp\left(-\int_t^u x_2_s\,\mathrm{d} s\right)\right]\\
+&amp;= \\E_t\left[\exp\left(-\int_t^u x_1_s\,\mathrm{d} s\right)\right] \\E_t\left[\exp\left(-\int_t^u x_2_s\,\mathrm{d} s\right)\right]\;,
 \end{align*}\]</span> due to the independence of <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>. Moreover, these expectations have the same form as discount bond prices in the CIR model, namely <span id="eq-lsdiscount"><span class="math display">\[
-\\E_t\left[\exp\left(-\int_t^u x_i(s)\,\mathrm{d} s\right)\right] = \exp\left(-a_i(\tau)-b_i(\tau)x_i_t\right)\;,
+\\E_t\left[\exp\left(-\int_t^u x_i_s\,\mathrm{d} s\right)\right] = \exp\left(-a_i(\tau)-b_i(\tau)x_i_t\right)\;,
 \qquad(21.29)\]</span></span></p>
 <p>where the functions <span class="math inline">\(a_i\)</span> and <span class="math inline">\(b_i\)</span> are defined in <a href="#eq-cirbeta" class="quarto-xref">Equation&nbsp;<span>21.15</span></a> - <a href="#eq-ciralpha" class="quarto-xref">Equation&nbsp;<span>21.17</span></a>, using the parameters <span class="math inline">\(\kappa_i\)</span>, <span class="math inline">\(\theta_i\)</span> and <span class="math inline">\(\sigma_i\)</span>. The expectations <a href="#eq-lsdiscount" class="quarto-xref">Equation&nbsp;<span>21.29</span></a> can be written in terms of <span class="math inline">\(r_t\)</span> and <span class="math inline">\(V_t\)</span> by substituting from <a href="#eq-x1ls" class="quarto-xref">Equation&nbsp;<span>21.27</span></a> - <a href="#eq-x2ls" class="quarto-xref">Equation&nbsp;<span>21.28</span></a>.</p>
 <p>The Vasicek, CIR and Longstaff-Schwartz models are examples of affine models. An affine model is defined by a set of factors <span class="math inline">\(x_1, \ldots, x_n\)</span>, where</p>

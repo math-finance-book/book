@@ -8,7 +8,7 @@ The Ho-Lee [@HL] model \index{Ho-Lee model}is a binomial version of the Vasicek 
 
 Consider discrete times $0=t_0 < t_1 < \cdots t_N$ with $t_{i}-t_{i-1}=\Delta t$ for each $i$.  We denote the one-period interest rate from date $t_i$ to $t_{i+1}$ by $r_{t_i}$.  We express the rate as an annualized continuously compounded rate, so the one-period discount factor from date $t_i$ to $t_{i+1}$ is $\mathrm{e}^{-r_{t_i} \Delta t}$.  We could put this in a continuous-time framework by assuming the short rate is constant ($= r_{t_i}$) during each time interval $(t_i, t_{i+1})$.  As always, the risk-neutral probability is the probability measure corresponding to the numeraire
 $$
-R_t = \exp\left(\int_0^t r(s)\,\mathrm{d} s\right)\; .
+R_t = \exp\left(\int_0^t r_s\,\mathrm{d} s\right)\; .
 $$ {#eq-holeeaccumulation}
 
 However, we will only be doing valuation at the discrete dates $t_0, \ldots, t_N$ and at date $t_i$ the accumulation factor @eq-holeeaccumulation is
@@ -395,18 +395,18 @@ $$ {#eq-cirrhat}
 with $\hat{r}_0 = r_0$.
 Then, as in the Hull-White model, discount bond prices are given by
 $$
-P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\\E^R_t\left[\exp\left(-\int_t^u\hat{r}(s)\,\mathrm{d} s\right)\right]\; .
+P(t,u) = \exp\left(-\int_t^u \phi_s\,\mathrm{d} s\right)\\E^R_t\left[\exp\left(-\int_t^u\hat{r}_s\,\mathrm{d} s\right)\right]\; .
 $$
 Moreover, the expectation in this equation is the discount bond pricing function calculated in the previous subsection, so we have
 $$
-P(t,u) = \exp\left(-\int_t^u \phi(s)\,\mathrm{d} s\right)\exp\left(-a(\tau)-b(\tau)\hat{r}_t\right)\;.
+P(t,u) = \exp\left(-\int_t^u \phi_s\,\mathrm{d} s\right)\exp\left(-a(\tau)-b(\tau)\hat{r}_t\right)\;.
 $$ {#eq-cirPcal}
 
 In particular, discount bond prices at date $0$ are
-$$P(0,u) = \exp\left(-\int_0^u \phi(s)\,\mathrm{d} s\right)\exp\left(-a(u)-b(u)r_0\right)\; ,$$
+$$P(0,u) = \exp\left(-\int_0^u \phi_s\,\mathrm{d} s\right)\exp\left(-a(u)-b(u)r_0\right)\; ,$$
 so the model can be calibrated to market prices $P^{\text{mkt}}(0,u)$ by setting
 $$
-\exp\left(-\int_0^u \phi(s)\,\mathrm{d} s\right) = \exp\left(a(u)+b(u)r_0\right)P^{\text{mkt}}(0,u)
+\exp\left(-\int_0^u \phi_s\,\mathrm{d} s\right) = \exp\left(a(u)+b(u)r_0\right)P^{\text{mkt}}(0,u)
 $$ {#eq-circalibration}
 
 for each $u$.
@@ -428,18 +428,18 @@ $$ {#eq-ciroptionprice}
 
 where $\text{prob}^u$ denotes the probability measure using the discount bond maturing at $u$  as numeraire and $\text{prob}^T$ denotes the probability measure using the discount bond maturing at $T$ as the numeraire.  Using the calibration of the previous subsection, the price of the underlying at date $T$ will be, according to the model,
 $$
-P(T,u)  = \exp\left(-\int_T^u \phi(s)\,\mathrm{d} s-a(u-T)-b(u-T)\hat{r}_T\right)\; .
+P(T,u)  = \exp\left(-\int_T^u \phi_s\,\mathrm{d} s-a(u-T)-b(u-T)\hat{r}_T\right)\; .
 $$
 Therefore, the option will finish in the money if and only if
 $$
-\frac{-\int_T^u \phi(s)\,\mathrm{d} s-a(u-T)-\log K}{b(u-T)} > \hat{r}_T\;.
+\frac{-\int_T^u \phi_s\,\mathrm{d} s-a(u-T)-\log K}{b(u-T)} > \hat{r}_T\;.
 $$ {#eq-ciroptionprice2}
 
 Thus, to price discount bond options, we need to compute the probabilities that $\hat{r}_T$ is less than a given number, using discount bonds as numeraires.  
 
 Consider the discount bond maturing at $u$.  The calculation for the discount bond maturing at $T$ can be done in the same way.  We use the fact that
 $$
-\frac{\mathrm{e}^{\int_0^t r(s)\,\mathrm{d} s}}{P(t,u)}
+\frac{\mathrm{e}^{\int_0^t r_s\,\mathrm{d} s}}{P(t,u)}
 $$
 is a martingale, when $P(t,u)$ is used as the numeraire, for $t \leq u$.  Let $Z_t$ denote this ratio and apply Ito's formula for ratios to derive
 $$
@@ -524,13 +524,13 @@ where $\delta=\kappa_1$, $\xi=\kappa_2$, $\alpha = \sigma_1^2$, $\beta=\sigma_2^
 
 The simplest way to compute discount bond prices in this model is to return to the definition $r=x_1+x_2$.  Discount bond prices are
 \begin{align*}
-P(t,u) &= \\E_t\left[\exp\left(-\int_t^u r(s)\,\mathrm{d} s\right)\right]\\
-&= \\E_t\left[\exp\left(-\int_t^u x_1(s)\,\mathrm{d} s\right)\exp\left(-\int_t^u x_2(s)\,\mathrm{d} s\right)\right]\\
-&= \\E_t\left[\exp\left(-\int_t^u x_1(s)\,\mathrm{d} s\right)\right] \\E_t\left[\exp\left(-\int_t^u x_2(s)\,\mathrm{d} s\right)\right]\;,
+P(t,u) &= \\E_t\left[\exp\left(-\int_t^u r_s\,\mathrm{d} s\right)\right]\\
+&= \\E_t\left[\exp\left(-\int_t^u x_1_s\,\mathrm{d} s\right)\exp\left(-\int_t^u x_2_s\,\mathrm{d} s\right)\right]\\
+&= \\E_t\left[\exp\left(-\int_t^u x_1_s\,\mathrm{d} s\right)\right] \\E_t\left[\exp\left(-\int_t^u x_2_s\,\mathrm{d} s\right)\right]\;,
 \end{align*}
 due to the independence of $x_1$ and $x_2$.  Moreover, these expectations have the same form as discount bond prices in the CIR model, namely
 $$
-\\E_t\left[\exp\left(-\int_t^u x_i(s)\,\mathrm{d} s\right)\right] = \exp\left(-a_i(\tau)-b_i(\tau)x_i_t\right)\;,
+\\E_t\left[\exp\left(-\int_t^u x_i_s\,\mathrm{d} s\right)\right] = \exp\left(-a_i(\tau)-b_i(\tau)x_i_t\right)\;,
 $$ {#eq-lsdiscount}
 
 where the functions $a_i$ and $b_i$ are defined in @eq-cirbeta - @eq-ciralpha, using the parameters $\kappa_i$, $\theta_i$ and $\sigma_i$.
