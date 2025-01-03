@@ -34,6 +34,49 @@ dt = t/N
 
 # generate dB for each time step
 dB = np.random.normal(scale = np.sqrt(dt), size=N)
+
+# B starts at 0 and is cumulative sum of the dB
+B = np.zeros(N+1)
+B[1:] = dB.cumsum()
+
+fig = go.Figure()
+fig.add_trace(
+  go.Scatter(
+    x=np.arange(0, t+dt, dt), 
+    y=B, 
+    mode='lines', 
+    hovertemplate='t=%{x:.2f}<br>B=%{y:.2f}<extra></extra>'  # 
+    )
+)
+
+fig.update_layout(
+    showlegend=False,
+    xaxis_title='Time',
+    yaxis_title='Approximate Brownian Motion',
+    template='plotly_white',
+    height=300,
+)
+
+fig.show()
+```
+
+## Binomial Approximation
+
+We can also generate an approximate path of a Brownian motion by taking only up or down steps of a fixed size at each date, rather than using normally distributed steps.  We call a model with up or down steps of a fixed size a binomial model.  The binomial model simpler model approximates a normal distribution due to the Central Limit Theorem, which says that an appropriately scaled sum of a large number of random variables has approximately a normal distribution.  The binomial approximation is often useful for pricing options, especially American options, as we will see.
+
+```{python}
+#| label: fig-binomial-path
+#| fig-cap: "A Binomial Path"
+import numpy as np
+import plotly.graph_objects as go
+
+N = 1000   # number of subdivisions
+t = 0.5    # last date
+dt = t/N
+sqdt = np.sqrt(dt)
+
+# generate dB for each time step
+dB = np.random.choice([-sqdt, sqdt], size=N)
 B = np.zeros(N+1)
 
 # Brownian path starts at 0 and is cumulative sum of the dB
@@ -52,7 +95,7 @@ fig.add_trace(
 fig.update_layout(
     showlegend=False,
     xaxis_title='Time',
-    yaxis_title='Brownian Motion',
+    yaxis_title='Binomial Process',
     template='plotly_white',
     height=300,
 )
@@ -60,10 +103,9 @@ fig.update_layout(
 fig.show()
 ```
 
-
 ## Nonzero Quadratic Variation {#sec-s_quadraticvariation}
 
-@fig-brownian-path illustrates a distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price. The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
+@fig-brownian-path and @fig-binomial-path illustrate a distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  This has long been thought to be a reasonable model for the behavior of a stock price. The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
 
 Consider a discrete partition 
 $$0=t_0 < t_1 < t_2 < \cdots < t_N=t$$
