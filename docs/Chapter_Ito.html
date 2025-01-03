@@ -112,6 +112,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
 </script>
 <style>
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
@@ -119,10 +123,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
 }
 .Rule {
   --color1: #a1bced;
@@ -465,7 +465,7 @@ X_t = r X_t \,\mathrm{d} t ~~~\text{or} ~~~\frac{d X_t}{\,\mathrm{d} t} = r X_t
 <p>The solution is <span class="math inline">\(X_t = X_0 e^{r T}\)</span> which is easily verified by taking the derivative <span class="math inline">\(\frac{d}{\,\mathrm{d} t}e^{r t} X_t = r X_t\)</span> or by inserting the solution into the integral equation. This is also the limiting value of the discretely compunded interest as the number of compounding periods <span class="math inline">\(n\)</span> goes to infinity:</p>
 <p><span class="math display">\[X_t=\lim_{t \rightarrow \infty} \left(1+r \frac{T}{N}\right)^{N}.\]</span></p>
 <p>This can be verified by taking the log of <span class="math inline">\(\left(1+r \frac{T}{N}\right)^{N}\)</span> and using l’Hospital’s rule. Given the initial wealth, <span class="math inline">\(X_0\)</span> and the rate of change <span class="math inline">\(r X_t\)</span> (which, if the unit of account is dollars, is in units dollars / time), we can we solve for the value of our wealth at all times.</p>
-<p>However, most investments involve risk. We might think that part of the return is more or less known while a portion of the investment is random or risky. Therefore we would like a model which can be written as <span class="math display">\[ \,\mathrm{d}X_t = \mu X_t \,\mathrm{d} t + \text{`noise'} \times X_t. \]</span></p>
+<p>However, most investments involve risk. We might think that part of the return is more or less known while a portion of the investment is random or risky. Therefore we would like a model that can be written as <span class="math display">\[ \,\mathrm{d}X_t = \mu X_t \,\mathrm{d} t + \text{`noise'} \times X_t. \]</span></p>
 <p>It makes sense that the units of the noise should be in the unit of account (dollars) and it should have zero mean but it is not obvious how to make sense of a noisy change over an instant. In the next section we examine the most popular choice for this model, namely Brownian motion. Loosely speaking, we can take expectations to get</p>
 <p><span class="math display">\[ d \\E[X_t]= \mu \\E[X_t] \,\mathrm{d} t\]</span></p>
 <p>which gives a solution</p>
@@ -483,26 +483,25 @@ X_t = r X_t \,\mathrm{d} t ~~~\text{or} ~~~\frac{d X_t}{\,\mathrm{d} t} = r X_t
 <p>An Ito process evolves continuously over time. We interpret <span class="math inline">\(\mu_t\,\mathrm{d} t\)</span> as the expected change in <span class="math inline">\(X\)</span> in an instant <span class="math inline">\(\mathrm{d} t\)</span>. The quantity <span class="math inline">\(\mu_t\)</span> is also called the drift of the process <span class="math inline">\(X\)</span> at time <span class="math inline">\(t\)</span>. The coefficient <span class="math inline">\(\sigma_t\)</span> is called the diffusion coefficient of <span class="math inline">\(X\)</span> at time <span class="math inline">\(t\)</span>. </p>
 <p>If <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> are constant, it is standard to refer to an Ito process <span class="math inline">\(X\)</span> as a <span class="math inline">\((\mu,\sigma)\)</span>–Brownian motion. In this case we have <span class="math display">\[X_t= \mu t + \sigma B_t\]</span></p>
 <p>Of course, it is not a martingale when <span class="math inline">\(\mu\neq 0\)</span>. For example, when <span class="math inline">\(\mu&gt;0\)</span>, <span class="math inline">\(X\)</span> tends to increase over time. However, it has the jiggling property of a Brownian motion, scaled by the diffusion coefficient <span class="math inline">\(\sigma\)</span>.</p>
-<p>A very important fact is that an Ito process such as <a href="#eq-itoprocess" class="quarto-xref">Equation&nbsp;<span>6.1</span></a> can be a martingale only if <span class="math inline">\(\mu=0\)</span>. This should seem sensible, because <span class="math inline">\(\mu\,\mathrm{d} t\)</span> is the expected change in <span class="math inline">\(X\)</span>, and a process is a martingale only if its expected change is zero.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> This observation plays a fundamental role in deriving asset pricing formulas, as we will begin to see in <a href="Chapter_Girsanov.html#sec-s_girsanov" class="quarto-xref"><span>Section 7.1</span></a>. Conversely, if <span class="math inline">\(\mu=0\)</span> and <span id="eq-regularity1"><span class="math display">\[
+<p>A very important fact is that an Ito process such as <span class="math inline">\(X\)</span> in <a href="#eq-itoprocess" class="quarto-xref">Equation&nbsp;<span>6.1</span></a> can be a martingale only if <span class="math inline">\(\mu=0\)</span>. This should seem sensible, because <span class="math inline">\(\mu\,\mathrm{d} t\)</span> is the expected change in <span class="math inline">\(X\)</span>, and a process is a martingale only if its expected change is zero.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> This observation plays a fundamental role in deriving asset pricing formulas, as we will begin to see in <a href="Chapter_Girsanov.html#sec-s_girsanov" class="quarto-xref"><span>Section 7.1</span></a>. Conversely, if <span class="math inline">\(\mu=0\)</span> and <span id="eq-regularity1"><span class="math display">\[
 \\E \left[\int_0^T \sigma^2_t\,\mathrm{d} t\right] &lt; \infty
 \qquad(6.2)\]</span></span></p>
-<p>for each <span class="math inline">\(T\)</span>,<br>
-then the Ito process is a continuous martingale and the variance of its date–<span class="math inline">\(T\)</span> value, calculated with the information available at date <span class="math inline">\(0\)</span>, is: <span class="math display">\[\mathrm{var}[X_t] = \\E \left[\int_0^T \sigma^2_t\,\mathrm{d} t\right]\; .\]</span></p>
-<p>Whether <span class="math inline">\(\mu\)</span> is zero or not, and independently of the assumption <a href="#eq-regularity1" class="quarto-xref">Equation&nbsp;<span>6.2</span></a>, the quadratic variation of the Ito process <span class="math inline">\(X\)</span> is <span id="eq-itoquadraticvariation"><span class="math display">\[
+<p>for each <span class="math inline">\(T\)</span>, then the Ito process is a continuous martingale, and the variance of its date–<span class="math inline">\(T\)</span> value, calculated with the information available at date <span class="math inline">\(0\)</span>, is: <span class="math display">\[\mathrm{var}[X_t] = \\E \left[\int_0^T \sigma^2_t\,\mathrm{d} t\right]\; .\]</span></p>
+<p>Whether <span class="math inline">\(\mu\)</span> is zero or not, and independently of the assumption stated as <a href="#eq-regularity1" class="quarto-xref">Equation&nbsp;<span>6.2</span></a>, the quadratic variation of the Ito process <span class="math inline">\(X\)</span> is <span id="eq-itoquadraticvariation"><span class="math display">\[
 \lim_{N \rightarrow \infty} \sum_{i=1}^N[\Delta X_{t_i}]^2 = \int_0^T \sigma^2_t\,\mathrm{d} t
 \qquad(6.3)\]</span></span></p>
 <p>with probability one. Thus we obtain (when <span class="math inline">\(\mu=0\)</span> and <a href="#eq-regularity1" class="quarto-xref">Equation&nbsp;<span>6.2</span></a> holds) a continuous martingale with a different quadratic variation than a Brownian motion via the diffusion function <span class="math inline">\(\sigma\)</span>. In fact, when <a href="#eq-regularity1" class="quarto-xref">Equation&nbsp;<span>6.2</span></a> holds, a somewhat more precise definition of the stochastic integral is the (unique) martingale with quadratic variation given by <a href="#eq-itoquadraticvariation" class="quarto-xref">Equation&nbsp;<span>6.3</span></a>.</p>
 <p>To compute the quadratic variation of an Ito process, we use the following simple and important rules (for the sake of brevity, we drop the <span class="math inline">\(_t\)</span> notation from <span class="math inline">\(B_t\)</span> here and sometimes later):</p>
 <div id="section" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.1</strong></summary><div><span class="math display">\[
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.1</strong></summary><div><span id="eq-dtsquared"><span class="math display">\[
 (\mathrm{d} t)^2 = 0\;,
-\]</span> {#eq-, tsquared}<p></p>
-<p><span class="math display">\[
+\qquad(6.4)\]</span></span><p></p>
+<p><span id="eq-dB"><span class="math display">\[
 (\mathrm{d} t)(\mathrm{d} B) =0\;,
-\]</span> {#eq-, t, B}</p>
-<p><span class="math display">\[
+\qquad(6.5)\]</span></span></p>
+<p><span id="eq-dBsquared"><span class="math display">\[
 (\mathrm{d} B)^2 =\mathrm{d} t\;.
-\]</span> {#eq-, Bsquared}</p>
+\qquad(6.6)\]</span></span></p>
 </div></details>
 </div>
 <p>We apply these rules to compute the quadratic variation of <span class="math inline">\(X\)</span> as follows:</p>
@@ -516,25 +515,25 @@ then the Ito process is a continuous martingale and the variance of its date–<
 </div>
 <p>We integrate this from 0 to <span class="math inline">\(T\)</span> to obtain the quadratic variation <a href="#eq-itoquadraticvariation" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> over that time period:<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> <span id="eq-itoquadraticvariation2"><span class="math display">\[
 \int_0^T (\mathrm{d} X_t)^2 = \int_0^T \sigma^2_t\,\mathrm{d} t\;.
-\qquad(6.4)\]</span></span></p>
+\qquad(6.7)\]</span></span></p>
 </section>
 <section id="sec-s_itosformula" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="sec-s_itosformula"><span class="header-section-number">6.3</span> Ito’s Formula</h2>
 <p>First we recall some facts of the ordinary calculus. If <span class="math inline">\(y=g(x)\)</span> and <span class="math inline">\(x = f_t\)</span> with <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> being continuously differentiable functions, then <span class="math display">\[\frac{\mathrm{d} y}{\mathrm{d} t} = \frac{\mathrm{d} y}{\mathrm{d} x}\times \frac{\mathrm{d} x}{\mathrm{d} t} = g'(x_t)f'_t\; .\]</span> Over a time period <span class="math inline">\([0,T]\)</span>, this implies that <span class="math display">\[y_t = y_0 + \int_0^T \frac{\mathrm{d} y}{\mathrm{d} t}\,\mathrm{d} t = y_0 + \int_0^T g'(x_t)f'_t\,\mathrm{d} t\; .\]</span> Substituting <span class="math inline">\(\mathrm{d} x_t = f'_t\,\mathrm{d} t\)</span>, we can also write this as <span id="eq-ordinarycalculus"><span class="math display">\[
 y_t = y_0 + \int_0^T g'(x_t)\,\mathrm{d} x_t\;.
-\qquad(6.5)\]</span></span></p>
-<p>We can contrast <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>6.5</span></a> with a special case of Ito’s formula for the calculus of Ito processes (the more general formula will be discussed in the next section). If <span class="math inline">\(B\)</span> is a Brownian motion and <span class="math inline">\(Y = g(B)\)</span> for a twice-continuously differentiable function <span class="math inline">\(g\)</span>, then <span id="eq-itonew1"><span class="math display">\[
+\qquad(6.8)\]</span></span></p>
+<p>We can contrast <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>6.8</span></a> with a special case of Ito’s formula for the calculus of Ito processes (the more general formula will be discussed in the next section). If <span class="math inline">\(B\)</span> is a Brownian motion and <span class="math inline">\(Y = g(B)\)</span> for a twice-continuously differentiable function <span class="math inline">\(g\)</span>, then <span id="eq-itonew1"><span class="math display">\[
 Y_t = Y_0 + \int_0^T g'(B_t)\,\mathrm{d} B_t + \frac{1}{2}\int_0^T g''(B_t)\,\mathrm{d} t\;.
-\qquad(6.6)\]</span></span></p>
-<p>Thus, relative to the ordinary calculus, Ito’s formula has an extra term involving the second derivative <span class="math inline">\(g''\)</span>. We can write <a href="#eq-itonew1" class="quarto-xref">Equation&nbsp;<span>6.6</span></a> in differential form as <span class="math display">\[\,\mathrm{d} Y_t = \frac{1}{2}g''(B_t)\,\mathrm{d} t + g'(B_t)\,\mathrm{d} B_t.\]</span> Thus, <span class="math inline">\(Y=g(B)\)</span> is an Ito process with drift <span class="math inline">\(g''(B_t)/2\)</span> and diffusion coefficient <span class="math inline">\(g'(B_t)\)</span>.</p>
-<p>To gain some intuition for the extra term in Ito’s formula, we return to the ordinary calculus. Given dates <span class="math inline">\(t&lt;u\)</span>, the derivative defines a linear approximation of the change in <span class="math inline">\(y\)</span> over this time period; i.e., setting <span class="math inline">\(\Delta x = x(u)-x_t\)</span> and <span class="math inline">\(\Delta y = y(u) - y_t\)</span>, we have the approximation <span class="math display">\[\Delta y \approx g'(x_t) \,\Delta x\; .\]</span> A better approximation is given by the second-order Taylor series expansion <span class="math display">\[\Delta y \approx g'(x_t)\,\Delta x + \frac{1}{2} g''(x_t)\,[\Delta x]^2\; .\]</span> An interpretation of <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>6.5</span></a> is that the linear approximation works perfectly for infinitesimal time periods <span class="math inline">\(\mathrm{d} t\)</span>, because we can compute the change in <span class="math inline">\(y\)</span> over the time period <span class="math inline">\([0,T]\)</span> by summing up the infinitesimal changes <span class="math inline">\(g'(x_t)\,\mathrm{d} x_t\)</span>. In other words, the second-order term <span class="math inline">\(\frac{1}{2} g''(x_t)\,[\Delta x]^2\)</span> vanishes when we consider very small time periods.</p>
+\qquad(6.9)\]</span></span></p>
+<p>Thus, relative to the ordinary calculus, Ito’s formula has an extra term involving the second derivative <span class="math inline">\(g''\)</span>. We can write <a href="#eq-itonew1" class="quarto-xref">Equation&nbsp;<span>6.9</span></a> in differential form as <span class="math display">\[\,\mathrm{d} Y_t = \frac{1}{2}g''(B_t)\,\mathrm{d} t + g'(B_t)\,\mathrm{d} B_t.\]</span> Thus, <span class="math inline">\(Y=g(B)\)</span> is an Ito process with drift <span class="math inline">\(g''(B_t)/2\)</span> and diffusion coefficient <span class="math inline">\(g'(B_t)\)</span>.</p>
+<p>To gain some intuition for the extra term in Ito’s formula, we return to the ordinary calculus. Given dates <span class="math inline">\(t&lt;u\)</span>, the derivative defines a linear approximation of the change in <span class="math inline">\(y\)</span> over this time period; i.e., setting <span class="math inline">\(\Delta x = x(u)-x_t\)</span> and <span class="math inline">\(\Delta y = y(u) - y_t\)</span>, we have the approximation <span class="math display">\[\Delta y \approx g'(x_t) \,\Delta x\; .\]</span> A better approximation is given by the second-order Taylor series expansion <span class="math display">\[\Delta y \approx g'(x_t)\,\Delta x + \frac{1}{2} g''(x_t)\,[\Delta x]^2\; .\]</span> An interpretation of <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>6.8</span></a> is that the linear approximation works perfectly for infinitesimal time periods <span class="math inline">\(\mathrm{d} t\)</span>, because we can compute the change in <span class="math inline">\(y\)</span> over the time period <span class="math inline">\([0,T]\)</span> by summing up the infinitesimal changes <span class="math inline">\(g'(x_t)\,\mathrm{d} x_t\)</span>. In other words, the second-order term <span class="math inline">\(\frac{1}{2} g''(x_t)\,[\Delta x]^2\)</span> vanishes when we consider very small time periods.</p>
 <p>The second-order Taylor series expansion in the case of <span class="math inline">\(Y=g(B)\)</span> is <span class="math display">\[\Delta Y \approx g'(B_t)\,\Delta B + \frac{1}{2} g''(B_t)\,[\Delta B]^2\; .\]</span> For example, given a partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots &lt; t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span>, we have, with the same notation we have used earlier,</p>
 <p><span class="math display">\[
 Y_t = Y_0 + \sum_{i=1}^N \Delta Y_{t_i}  
 \]</span> <span id="eq-itonew2"><span class="math display">\[
 \approx Y_0 + \sum_{i=1}^N g'(B_{t_{i-1}})\,\Delta B_{t_i} + \frac{1}{2} \sum_{i=1}^N g''(B_{t_{i-1}})\,[\Delta B_{t_i}]^2\;.
-\qquad(6.7)\]</span></span></p>
-<p>If we make the time intervals <span class="math inline">\(t_i-t_{i-1}\)</span> shorter, letting <span class="math inline">\(N \rightarrow \infty\)</span>, we cannot expect that the extra term here will disappear, leading to the result <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>6.5</span></a> of the ordinary calculus, because we know that <span class="math display">\[\lim_{N \rightarrow \infty} \sum_{i=1}^N [\Delta B_{t_i}]^2 = T\; ,\]</span> whereas for the continuously differentiable function <span class="math inline">\(x_t = f_t\)</span>, the same limit is zero. In fact it seems sensible to interpret the limit of <span class="math inline">\([\Delta B]^2\)</span> as <span class="math inline">\((\mathrm{d} B)^2 =\mathrm{d} t\)</span>. This is perfectly consistent with Ito’s formula: if we take the limit in <a href="#eq-itonew2" class="quarto-xref">Equation&nbsp;<span>6.7</span></a>, replacing the limit of <span class="math inline">\([\Delta B_{t_i}]^2\)</span> with <span class="math inline">\((\mathrm{d} B)^2 = \mathrm{d} t\)</span>, we obtain <a href="#eq-itonew1" class="quarto-xref">Equation&nbsp;<span>6.6</span></a>.</p>
+\qquad(6.10)\]</span></span></p>
+<p>If we make the time intervals <span class="math inline">\(t_i-t_{i-1}\)</span> shorter, letting <span class="math inline">\(N \rightarrow \infty\)</span>, then we cannot expect that the extra term here will disappear, leading to the result of the ordinary calculus shown in@eq-ordinarycalculus, because we know that <span class="math display">\[\lim_{N \rightarrow \infty} \sum_{i=1}^N [\Delta B_{t_i}]^2 = T\; ,\]</span> whereas for the continuously differentiable function <span class="math inline">\(x_t = f_t\)</span>, the same limit is zero. In fact it seems sensible to interpret the limit of <span class="math inline">\([\Delta B]^2\)</span> as <span class="math inline">\((\mathrm{d} B)^2 =\mathrm{d} t\)</span>. This is perfectly consistent with Ito’s formula: if we take the limit in <a href="#eq-itonew2" class="quarto-xref">Equation&nbsp;<span>6.10</span></a>, replacing the limit of <span class="math inline">\([\Delta B_{t_i}]^2\)</span> with <span class="math inline">\((\mathrm{d} B)^2 = \mathrm{d} t\)</span>, we obtain <a href="#eq-itonew1" class="quarto-xref">Equation&nbsp;<span>6.9</span></a>.</p>
 <p>The code below defines a function <span class="math inline">\(g(x)=e^{x}\)</span> (<span class="math inline">\(g'(x)=e^x\)</span> and <span class="math inline">\(g''(x) = e^x\)</span>) and simulates the value <span class="math inline">\(e^{B_t}\)</span> in two ways. The first way is to simulate the Ito expansion <span class="math display">\[e^{B_t}=1 + \int_0^t e^{B_s} d B_s + \frac{1}{2}\int_0^t e^{B_s} ds\]</span> using the discretization <span class="math display">\[\Delta e^{B_t}= e^{B_t} \Delta B_t + \frac{1}{2} e^{B_t} \Delta t \]</span></p>
 <div id="cell-simulated_ito" class="cell" data-execution_count="1">
 <details class="code-fold">
@@ -570,7 +569,7 @@ invalid escape sequence '\,'
 
 invalid escape sequence '\,'
 
-C:\Users\kerry\AppData\Local\Temp\ipykernel_12372\1747912569.py:1: SyntaxWarning:
+C:\Users\kerry\AppData\Local\Temp\ipykernel_22384\1747912569.py:1: SyntaxWarning:
 
 invalid escape sequence '\,'
 </code></pre>
@@ -628,82 +627,82 @@ Figure&nbsp;6.1: Accuracy of Ito’s approximation
 <p>Now consider two Ito processes</p>
 <p><span id="eq-itoprocess110"><span class="math display">\[
 \mathrm{d} X_t = \mu_x_t\,\mathrm{d} t + \sigma_x_t\,\mathrm{d} B_x_t\;,
-\qquad(6.8)\]</span></span></p>
+\qquad(6.11)\]</span></span></p>
 <p><span id="eq-itoprocess111"><span class="math display">\[
 \mathrm{d} Y_t = \mu_y_t\,\mathrm{d} t + \sigma_y_t\,\mathrm{d} B_y_t\;,
-\qquad(6.9)\]</span></span></p>
+\qquad(6.12)\]</span></span></p>
 <p>where <span class="math inline">\(B_x\)</span> and <span class="math inline">\(B_y\)</span> can be different Brownian motions. The relation between the two Brownian motions is determined by their covariance or correlation. Given dates <span class="math inline">\(t&lt;u\)</span>, we know that both changes <span class="math inline">\(B_x(u)-B_x_t\)</span> and <span class="math inline">\(B_y(u)-B_y_t\)</span> are normally distributed with mean 0 and variance equal to <span class="math inline">\(u-t\)</span>. There will exist a (possibly random) process <span class="math inline">\(\rho\)</span> such that the covariance of these two normally distributed random variables, given the information at date <span class="math inline">\(t\)</span>, is <span class="math display">\[\\E_t \left[\int_t^u \rho_s\,\mathrm{d} s\right]\; .\]</span> The process <span class="math inline">\(\rho\)</span> is called the correlation coefficient of the two Brownian motions, because when it is constant the correlation of the changes <span class="math inline">\(B_x(u)-B_x_t\)</span> and <span class="math inline">\(B_y(u)-B_y_t\)</span> is <span class="math display">\[\frac{\text{covariance}}{\text{product of standard deviations}}  = \frac{\int_t^u \rho \,\mathrm{d} s}{\sqrt{u-t} \sqrt{u-t}} = \frac{(u-t)\rho}{u-t} = \rho\; .\]</span> Moreover, given increasingly fine partitions <span class="math inline">\(0=t_0 &lt; \cdots &lt; t_N=T\)</span> of an interval <span class="math inline">\([0,T]\)</span> as before, we will have <span class="math display">\[\sum_{i=1}^N \Delta B_x_{t_i} \times \Delta B_y_{t_i} \rightarrow \int_0^T \rho_t\,\mathrm{d} t\]</span> as <span class="math inline">\(N \rightarrow \infty\)</span>, with probability one.</p>
 <p>We know that <span id="eq-itoprocess112"><span class="math display">\[\sum _{i=1}^N [\Delta X_{t_i}]^2 \rightarrow \int_0^T \sigma_x^2_t\,\mathrm{d} t \quad \text{and}\quad  \sum _{i=1}^N [\Delta Y_{t_i}]^2 \rightarrow \int_0^T\sigma_y^2_t\,\mathrm{d} t\;.
-\qquad(6.10)\]</span></span></p>
+\qquad(6.13)\]</span></span></p>
 <p>Furthermore, it can be shown that the sum of products satisfies <span id="eq-itoprocess113"><span class="math display">\[
 \sum_{i=1}^N \Delta X_{t_i} \times \Delta Y_{t_i} \rightarrow \int_0^T \sigma_x_t\sigma_y_t\rho_t\,\mathrm{d} t\;.
-\qquad(6.11)\]</span></span></p>
+\qquad(6.14)\]</span></span></p>
 <div id="section-2" class="Rule" title="">
 <p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.3</strong></summary><div>By adding the rule <span class="math display">\[
 (\mathrm{d} B_x)(\mathrm{d} B_y) = \rho\,\mathrm{d} t
-\]</span> {#eq-, B, B} to the rules <span class="citation" data-cites="eq">(<a href="#ref-eq" role="doc-biblioref"><strong>eq?</strong></a>)</span>-, tsquared–<span class="citation" data-cites="eq">(<a href="#ref-eq" role="doc-biblioref"><strong>eq?</strong></a>)</span>-, Bsquared, we can compute the limit in <a href="#eq-itoprocess113" class="quarto-xref">Equation&nbsp;<span>6.11</span></a> as<p></p>
+\]</span> {#eq-, B, B} to the rules <span class="citation" data-cites="eq">(<a href="#ref-eq" role="doc-biblioref"><strong>eq?</strong></a>)</span>-, tsquared–<span class="citation" data-cites="eq">(<a href="#ref-eq" role="doc-biblioref"><strong>eq?</strong></a>)</span>-, Bsquared, we can compute the limit in <a href="#eq-itoprocess113" class="quarto-xref">Equation&nbsp;<span>6.14</span></a> as<p></p>
 <p><span class="math display">\[
 \lim_{N \rightarrow\infty} \sum_{i=1}^N \Delta X_{t_i} \times \Delta Y_{t_i}  = \int_0^T (\mathrm{d} X)(\mathrm{d} Y)
 \]</span> <span class="math display">\[
 = \int_0^T (\mu_x\,\mathrm{d} t +\sigma_x\,\mathrm{d} B_x)(\mu_y\,\mathrm{d} t+\sigma_y\,\mathrm{d} B_y)
 \]</span> <span id="eq-itojointvariation"><span class="math display">\[
 = \int_0^T\sigma_x_t\sigma_y_t \rho_t\,\mathrm{d} t\;.
-\qquad(6.12)\]</span></span></p>
+\qquad(6.15)\]</span></span></p>
 </div></details>
 </div>
-<p>The most general case of Ito’s formula that we will need is for a function <span class="math inline">\(Z_t = g(t, X_t, Y_t)\)</span> where <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are Ito processes as in <a href="#eq-itoprocess110" class="quarto-xref">Equation&nbsp;<span>6.8</span></a> - <a href="#eq-itoprocess111" class="quarto-xref">Equation&nbsp;<span>6.9</span></a>. In this case, Ito’s formula is<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>The most general case of Ito’s formula that we will need is for a function <span class="math inline">\(Z_t = g(t, X_t, Y_t)\)</span> where <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are Ito processes as in <a href="#eq-itoprocess110" class="quarto-xref">Equation&nbsp;<span>6.11</span></a> - <a href="#eq-itoprocess111" class="quarto-xref">Equation&nbsp;<span>6.12</span></a>. In this case, Ito’s formula is<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 <p><span class="math display">\[
 Z_t = Z_0 + \int_0^T \frac{\partial g}{\partial t}\,\mathrm{d} t + \int_0^T \frac{\partial g}{\partial x}\,\mathrm{d} X_t + \int_0^T \frac{\partial g}{\partial y}\,\mathrm{d} Y_t
 \]</span> <span class="math display">\[
 + \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X_t)^2 +  \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y_t)^2
 \]</span> <span id="eq-itogeneralnew"><span class="math display">\[
 +  \int_0^T \frac{\partial^2 g}{\partial x\partial y}\,(\mathrm{d} X_t)( \mathrm{d} Y_t)\;.
-\qquad(6.13)\]</span></span></p>
-<p>In this equation, we apply the rules <span class="citation" data-cites="eq">(<a href="#ref-eq" role="doc-biblioref"><strong>eq?</strong></a>)</span>-, tsquared–<span class="citation" data-cites="eq">(<a href="#ref-eq" role="doc-biblioref"><strong>eq?</strong></a>)</span>-, B, B to compute <span class="math display">\[\begin{align*}
+\qquad(6.16)\]</span></span></p>
+<p>In this equation, we apply <a href="#eq-dtsquared" class="quarto-xref">Equation&nbsp;<span>6.4</span></a>–<a href="#eq-dB" class="quarto-xref">Equation&nbsp;<span>6.5</span></a> to compute <span class="math display">\[\begin{align*}
 (\mathrm{d} X_t)^2&amp;= \sigma_x^2_t\,\mathrm{d} t\; ,\\
 (\mathrm{d} Y_t)^2 &amp;= \sigma_y^2_t\,\mathrm{d} t\; ,\\
 (\mathrm{d} X_t)( \mathrm{d} Y_t) &amp;= \sigma_x_t\sigma_y_t\rho_t\,\mathrm{d} t\;.
-\end{align*}\]</span> Ito’s <a href="#eq-itogeneralnew" class="quarto-xref">Equation&nbsp;<span>6.13</span></a> appears a bit simpler (and easier to remember) if we write it in differential form.” We have:</p>
+\end{align*}\]</span> Ito’s formula (<a href="#eq-itogeneralnew" class="quarto-xref">Equation&nbsp;<span>6.16</span></a>) appears a bit simpler (and easier to remember) if we write it in differential form. We have:</p>
 <div id="section-3" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.4</strong></summary><div>If <span class="math inline">\(Z_t = g(t, X_t, Y_t)\)</span> where <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are Ito processes as in <a href="#eq-itoprocess110" class="quarto-xref">Equation&nbsp;<span>6.8</span></a> - <a href="#eq-itoprocess111" class="quarto-xref">Equation&nbsp;<span>6.9</span></a>, then<p></p>
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.4</strong></summary><div>If <span class="math inline">\(Z_t = g(t, X_t, Y_t)\)</span> where <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are Ito processes as in <a href="#eq-itoprocess110" class="quarto-xref">Equation&nbsp;<span>6.11</span></a> - <a href="#eq-itoprocess111" class="quarto-xref">Equation&nbsp;<span>6.12</span></a>, then<p></p>
 <p><span class="math display">\[
 \mathrm{d} Z =  \frac{\partial g}{\partial t}\,\mathrm{d} t + \frac{\partial g}{\partial x}\,\mathrm{d} X +  \frac{\partial g}{\partial y}\,\mathrm{d} Y + \frac{1}{2} \frac{\partial^2 g}{\partial x^2}\,(\mathrm{d} X)^2 +  \frac{1}{2}  \frac{\partial^2 g}{\partial y^2}\,(\mathrm{d} Y)^2
 \]</span> <span id="eq-itogeneralnew2"><span class="math display">\[
 + \frac{\partial^2 g}{\partial x\partial y}\,(\mathrm{d} X)(\mathrm{d} Y)\;.
-\qquad(6.14)\]</span></span></p>
+\qquad(6.17)\]</span></span></p>
 </div></details>
 </div>
 </section>
 <section id="sec-s_examples" class="level2" data-number="6.5">
 <h2 data-number="6.5" class="anchored" data-anchor-id="sec-s_examples"><span class="header-section-number">6.5</span> Examples of Ito’s Formula</h2>
 <p>The following are the applications of Ito’s formula that will be used most frequently in the book. They follow from the boxed formula at the end of the previous section by taking <span class="math inline">\(g(x,y)=xy\)</span> or <span class="math inline">\(g(x,y)=y/x\)</span> or <span class="math inline">\(g(x)=e^x\)</span> or <span class="math inline">\(g(x) = \log x\)</span>.</p>
-<div id="section-4" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.5</strong></summary><div><strong>Products.</strong>; If <span class="math inline">\(Z=XY\)</span>, then <span class="math inline">\(\mathrm{d} Z=X\,\mathrm{d} Y+Y\,\mathrm{d} X + (\mathrm{d} X)(\mathrm{d} Y)\)</span>. We can write this as <span id="eq-rule2"><span class="math display">\[
+<div id="Rule-6.5" class="Rule">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.5</strong></summary><div><strong>Products.</strong> If <span class="math inline">\(Z=XY\)</span>, then <span class="math inline">\(\mathrm{d} Z=X\,\mathrm{d} Y+Y\,\mathrm{d} X + (\mathrm{d} X)(\mathrm{d} Y)\)</span>. We can write this as <span id="eq-rule2"><span class="math display">\[
 \frac{\mathrm{d} Z}{Z}=\frac{\mathrm{d} X}{X} + \frac{\mathrm{d} Y}{Y} + \left(\frac{\mathrm{d} X}{X}\right)\left(\frac{\mathrm{d} Y}{Y}\right)\;.
-\qquad(6.15)\]</span></span><p></p>
-</div></details>
-</div>
-<div id="section-5" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.6</strong></summary><div><strong>Ratios.</strong>; If <span class="math inline">\(Z=Y/X\)</span>, then <span id="eq-rule4"><span class="math display">\[\frac{\mathrm{d} Z}{Z} = \frac{\mathrm{d} Y}{Y} -\frac{\mathrm{d} X}{X} - \left(\frac{\mathrm{d} Y}{Y}\right)\left(\frac{\mathrm{d} X}{X}\right) + \left(\frac{\mathrm{d} X}{X}\right)^2\;.
-\qquad(6.16)\]</span></span><p></p>
-</div></details>
-</div>
-<div id="section-6" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.7</strong></summary><div><strong>Exponentials.</strong>; If <span class="math inline">\(Z=\mathrm{e}^X\)</span>, then <span id="eq-rule5"><span class="math display">\[\frac{\mathrm{d} Z}{Z}=\mathrm{d} X + \frac{(\mathrm{d} X)^2}{2}\;.
-\qquad(6.17)\]</span></span><p></p>
-</div></details>
-</div>
-<div id="section-7" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.8</strong></summary><div><strong>Logarithms.</strong>; If <span class="math inline">\(Z=\log X\)</span>, then <span id="eq-rule6"><span class="math display">\[
-\mathrm{d} Z=\frac{\mathrm{d} X}{X} - \frac{1}{2}\left(\frac{\mathrm{d} X}{X}\right)^2\;.
 \qquad(6.18)\]</span></span><p></p>
 </div></details>
 </div>
-<div id="section-8" class="Rule" title="">
+<div id="Rule-6.6" class="Rule">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.6</strong></summary><div><strong>Ratios.</strong> If <span class="math inline">\(Z=Y/X\)</span>, then <span id="eq-rule4"><span class="math display">\[\frac{\mathrm{d} Z}{Z} = \frac{\mathrm{d} Y}{Y} -\frac{\mathrm{d} X}{X} - \left(\frac{\mathrm{d} Y}{Y}\right)\left(\frac{\mathrm{d} X}{X}\right) + \left(\frac{\mathrm{d} X}{X}\right)^2\;.
+\qquad(6.19)\]</span></span><p></p>
+</div></details>
+</div>
+<div id="Rule-6.7" class="Rule">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.7</strong></summary><div><strong>Exponentials.</strong> If <span class="math inline">\(Z=\mathrm{e}^X\)</span>, then <span id="eq-rule5"><span class="math display">\[\frac{\mathrm{d} Z}{Z}=\mathrm{d} X + \frac{(\mathrm{d} X)^2}{2}\;.
+\qquad(6.20)\]</span></span><p></p>
+</div></details>
+</div>
+<div id="Rule-6.8" class="Rule">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.8</strong></summary><div><strong>Logarithms.</strong> If <span class="math inline">\(Z=\log X\)</span>, then <span id="eq-rule6"><span class="math display">\[
+\mathrm{d} Z=\frac{\mathrm{d} X}{X} - \frac{1}{2}\left(\frac{\mathrm{d} X}{X}\right)^2\;.
+\qquad(6.21)\]</span></span><p></p>
+</div></details>
+</div>
+<div id="Rule-6.9" class="Rule">
 <p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.9</strong></summary><div><strong>Compounding/Discounting.</strong> Let<br>
 <span class="math display">\[Y_t =\exp\left(\int_0^t q_s\,\mathrm{d} s\right)\]</span> for some (possibly random) process <span class="math inline">\(q\)</span> and define <span class="math inline">\(Z=XY\)</span> for any Ito process <span class="math inline">\(X\)</span>. The usual calculus gives us <span class="math inline">\(\mathrm{d} Y_t=q_tY_t\,\mathrm{d} t\)</span>, and the product rule above implies <span id="eq-compdisc1"><span class="math display">\[
 \frac{\mathrm{d} Z}{Z}=q\,\mathrm{d} t + \frac{\mathrm{d} X}{X}\;.
-\qquad(6.19)\]</span></span><p></p>
+\qquad(6.22)\]</span></span><p></p>
 <p>This is the same as in the usual calculus.</p>
 </div></details>
 </div>
@@ -713,48 +712,48 @@ Z_t = Z_0 + \int_0^T \frac{\partial g}{\partial t}\,\mathrm{d} t + \int_0^T \fra
 <p>Frequently, we will assume that the asset underlying a derivative security pays a constant dividend yield, which we will denote by <span class="math inline">\(q\)</span>. This means, for an asset with price <span class="math inline">\(S_t\)</span>, that the dividend in an instant <span class="math inline">\(\mathrm{d} t\)</span> is <span class="math inline">\(q S_t\,\mathrm{d} t\)</span>. If the dividends are reinvested in new shares, the number of shares will grow exponentially at rate <span class="math inline">\(q\)</span>. To see this, consider the portfolio starting with a single share of the asset and reinvesting dividends until some date <span class="math inline">\(T\)</span>. Let <span class="math inline">\(X_t\)</span> denote the number of shares resulting from this strategy at any time <span class="math inline">\(t\leq T\)</span>. Then the dividend received at date <span class="math inline">\(t\)</span> is <span class="math inline">\(q S_tX_t\,\mathrm{d} t\)</span>, which can be used to purchase <span class="math inline">\(q X_t\,\mathrm{d} t\)</span> new shares. This implies that <span class="math inline">\(\mathrm{d} X_t=q X_t\,\mathrm{d} t\)</span>, or <span class="math inline">\(\mathrm{d} X_t/\mathrm{d} t = q X_t\)</span>, and it is easy to check (and very well known) that this equation is solved by <span class="math inline">\(X_t=\mathrm{e}^{q t}X_0\)</span>. In our case, with <span class="math inline">\(X_0=1\)</span>, we have <span class="math inline">\(X_t=\mathrm{e}^{q t}\)</span>.</p>
 <p>The dollar value of the trading strategy just described will be <span class="math inline">\(X_tS_t = \mathrm{e}^{q t}S_t\)</span>. Denote this by <span class="math inline">\(V_t\)</span>. This is the value of a non-dividend-paying portfolio, because all dividends are reinvested. From the Compounding/Discounting example in <a href="#sec-s_examples" class="quarto-xref"><span>Section 6.5</span></a>, we know that <span id="eq-reinvestingdividends"><span class="math display">\[
 \frac{\mathrm{d} V}{V} = q\,\mathrm{d} t + \frac{\mathrm{d} S}{S}\;.
-\qquad(6.20)\]</span></span></p>
+\qquad(6.23)\]</span></span></p>
 <p>This means that the rate of return on the portfolio is the dividend yield <span class="math inline">\(q\,\mathrm{d} t\)</span> plus the return <span class="math inline">\(\mathrm{d} S/S\)</span> due to capital gains.</p>
 </section>
 <section id="sec-s_geometricbrownianmotion" class="level2" data-number="6.7">
 <h2 data-number="6.7" class="anchored" data-anchor-id="sec-s_geometricbrownianmotion"><span class="header-section-number">6.7</span> Geometric Brownian Motion</h2>
 <p>A random variable is lognormally distributed if it can be written as <span class="math inline">\(\tilde{y}=  e^{\tilde{x}}\)</span> where <span class="math inline">\(\tilde{x}\)</span> is distributed according to a normal distribution with mean <span class="math inline">\(m\)</span> and standard deviation <span class="math inline">\(s\)</span>. The expected value of <span class="math inline">\(\tilde{y}\)</span> is given by <span class="math inline">\(\\E[\tilde{y}] = e^{m+\frac{s^2}{2}}\)</span>.</p>
-<div id="section-9" class="Rule" title="">
+<div id="section-4" class="Rule" title="">
 <p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.10</strong></summary><div><strong>Lognormal Random Variable.</strong>; If <span class="math inline">\(\tilde{x}\)</span> is normally distributed with mean <span class="math inline">\(m\)</span> and standard deviation <span class="math inline">\(s\)</span>, then <span class="math inline">\(e^{\tilde{x}}\)</span> is lognormally distributed and <span id="eq-lognormal"><span class="math display">\[\\E[e^{\tilde{x}}]=e^{m + \frac{1}{2} s^2};.
-\qquad(6.21)\]</span></span><p></p>
+\qquad(6.24)\]</span></span><p></p>
 </div></details>
 </div>
-<p>An important stochastic process is the Geometric Brownian Motion given by <span id="eq-exponential1"><span class="math display">\[
+<p>An important stochastic process is geometric Brownian motion given by <span id="eq-exponential1"><span class="math display">\[
 S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
-\qquad(6.22)\]</span></span></p>
-<p>for constants <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion. Note that for each time <span class="math inline">\(t\)</span>, geometric Brownian motion is a lognormal random variable. Using the product rule and the rule for exponentials, we obtain <span id="eq-Y"><span class="math display">\[
-\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\;.
-\qquad(6.23)\]</span></span></p>
-<p>When we see an equation of the form <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.23</span></a>, we should recognize <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>6.22</span></a> as the solution.</p>
-<p>The process <span class="math inline">\(S\)</span> is called a geometric Brownian motion. In keeping with the discussion of <a href="#sec-s_itoprocesses" class="quarto-xref"><span>Section 6.2</span></a>, we interpret <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.23</span></a> as stating that <span class="math inline">\(\mu\,\mathrm{d} t\)</span> is the expected rate of change of <span class="math inline">\(S\)</span> and <span class="math inline">\(\sigma^2\,\mathrm{d} t\)</span> is the variance of the rate of change in an instant <span class="math inline">\(\mathrm{d} t\)</span>. We call <span class="math inline">\(\mu\)</span> the drift and <span class="math inline">\(\sigma\)</span> the volatility. The geometric Brownian motion will grow at the average rate of <span class="math inline">\(\mu\)</span>, in the sense that <span class="math inline">\(\\E[S_t] = \mathrm{e}^{\mu t}S_0\)</span>; one way to verify this uses the formula for the mean of a lognormal random variable.</p>
-<p>Taking the natural logarithm of <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>6.22</span></a> gives an equivalent form of the solution: <span id="eq-exponential2"><span class="math display">\[
-\log S_t= \log S_0+\left(\mu -\frac{1}{2}\sigma^2\right)t + \sigma B_t\;.
-\qquad(6.24)\]</span></span> This shows that <span class="math inline">\(\log S_t - \log S_0\)</span> is a <span class="math inline">\((\mu-\sigma^2/2,\sigma)\)</span>–Brownian motion. Given information at time <span class="math inline">\(t\)</span>, the logarithm of <span class="math inline">\(S(u)\)</span> for <span class="math inline">\(u&gt;t\)</span> is normally distributed with mean <span class="math inline">\((u-t)(\mu-\sigma^2/2)\)</span> and variance <span class="math inline">\((u-t)\sigma^2\)</span>. Because <span class="math inline">\(S\)</span> is the exponential of its logarithm, <span class="math inline">\(S\)</span> can never be negative. For this reason, a geometric Brownian motion is a better model for stock prices than is a Brownian motion.</p>
-<p>The differential of <a href="#eq-exponential2" class="quarto-xref">Equation&nbsp;<span>6.24</span></a> is <span id="eq-exponential3"><span class="math display">\[
-\mathrm{d} \log S_t = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B_t\;.
 \qquad(6.25)\]</span></span></p>
+<p>for constants <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion. Note that for each time <span class="math inline">\(t\)</span>, the random variable <span class="math inline">\(S_t\)</span> in <span class="quarto-unresolved-ref">?eq-exponential</span> is a lognormal random variable. Using the product rule and the rule for exponentials, we obtain <span id="eq-Y"><span class="math display">\[
+\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\;.
+\qquad(6.26)\]</span></span></p>
+<p>When we see an equation of the form <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.26</span></a>, we should recognize <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>6.25</span></a> as the solution.</p>
+<p>The process <span class="math inline">\(S\)</span> is called a geometric Brownian motion. In keeping with the discussion of <a href="#sec-s_itoprocesses" class="quarto-xref"><span>Section 6.2</span></a>, we interpret <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.26</span></a> as stating that <span class="math inline">\(\mu\,\mathrm{d} t\)</span> is the expected rate of change of <span class="math inline">\(S\)</span> and <span class="math inline">\(\sigma^2\,\mathrm{d} t\)</span> is the variance of the rate of change in an instant <span class="math inline">\(\mathrm{d} t\)</span>. We call <span class="math inline">\(\mu\)</span> the drift and <span class="math inline">\(\sigma\)</span> the volatility. The geometric Brownian motion will grow at the average rate of <span class="math inline">\(\mu\)</span>, in the sense that <span class="math inline">\(\\E[S_t] = \mathrm{e}^{\mu t}S_0\)</span>; one way to verify this uses the formula for the mean of a lognormal random variable.</p>
+<p>Taking the natural logarithm of <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>6.25</span></a> gives an equivalent form of the solution: <span id="eq-exponential2"><span class="math display">\[
+\log S_t= \log S_0+\left(\mu -\frac{1}{2}\sigma^2\right)t + \sigma B_t\;.
+\qquad(6.27)\]</span></span> This shows that <span class="math inline">\(\log S_t - \log S_0\)</span> is a <span class="math inline">\((\mu-\sigma^2/2,\sigma)\)</span>–Brownian motion. Given information at time <span class="math inline">\(t\)</span>, the logarithm of <span class="math inline">\(S(u)\)</span> for <span class="math inline">\(u&gt;t\)</span> is normally distributed with mean <span class="math inline">\((u-t)(\mu-\sigma^2/2)\)</span> and variance <span class="math inline">\((u-t)\sigma^2\)</span>. Because <span class="math inline">\(S\)</span> is the exponential of its logarithm, <span class="math inline">\(S\)</span> can never be negative. For this reason, a geometric Brownian motion is a better model for stock prices than is a Brownian motion.</p>
+<p>The differential of <a href="#eq-exponential2" class="quarto-xref">Equation&nbsp;<span>6.27</span></a> is <span id="eq-exponential3"><span class="math display">\[
+\mathrm{d} \log S_t = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B_t\;.
+\qquad(6.28)\]</span></span></p>
 <p>We conclude:</p>
 <div class="calculator">
-<p>The equation <span class="math display">\[\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\]</span> is equivalent to the equation <span class="math display">\[\mathrm{d} \log S_t = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B_t\; .\]</span> The solution of both equations is <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>6.22</span></a> or the equivalent <a href="#eq-exponential2" class="quarto-xref">Equation&nbsp;<span>6.24</span></a>.</p>
+<p>The equation <span class="math display">\[\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t+\sigma\,\mathrm{d} B\]</span> is equivalent to the equation <span class="math display">\[\mathrm{d} \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\,\mathrm{d} t+ \sigma\,\mathrm{d} B\; .\]</span> The solution of both equations is <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>6.25</span></a> or the equivalent <a href="#eq-exponential2" class="quarto-xref">Equation&nbsp;<span>6.27</span></a>.</p>
 </div>
-<p>Over a discrete time interval <span class="math inline">\(\Delta t\)</span>, <a href="#eq-exponential3" class="quarto-xref">Equation&nbsp;<span>6.25</span></a> implies that the change in the logarithm of <span class="math inline">\(S\)</span> is <span id="eq-exponential11"><span class="math display">\[
+<p>Over a discrete time interval <span class="math inline">\(\Delta t\)</span>, <a href="#eq-exponential3" class="quarto-xref">Equation&nbsp;<span>6.28</span></a> implies that the change in the logarithm of <span class="math inline">\(S\)</span> is <span id="eq-exponential11"><span class="math display">\[
 \Delta \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\Delta t+ \sigma\,\Delta B\;.
-\qquad(6.26)\]</span></span></p>
+\qquad(6.29)\]</span></span></p>
 <p>If <span class="math inline">\(S\)</span> is the price of a non-dividend-paying asset, then over the time period <span class="math inline">\(t_{i-1}\)</span> to <span class="math inline">\(t_i\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t\)</span>, we have <span id="eq-exponential10"><span class="math display">\[
 \Delta \log S = r_i\,\Delta t\;,
-\qquad(6.27)\]</span></span></p>
-<p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S_{t_{i-1}}\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>6.27</span></a>. Thus, the geometric Brownian motion model <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.23</span></a> implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_Vol.html" class="quarto-xref"><span>Chapter 13</span></a>).</p>
-<p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>6.26</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
-<div id="a51076b9" class="cell" data-execution_count="4">
+\qquad(6.30)\]</span></span></p>
+<p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S_{t_{i-1}}\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>6.30</span></a>. Thus, the geometric Brownian motion model (<a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>6.26</span></a>)implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_Vol.html" class="quarto-xref"><span>Chapter 13</span></a>).</p>
+<p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>6.29</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
+<div id="530a0ae6" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate geometric Brownian motion</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">import matplotlib.pyplot as plt</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
@@ -792,11 +791,11 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>'\n# Simulate Geometric Brownian Motion\nimport numpy as np\nimport matplotlib.pyplot as plt\n# number of paths\nn = 10000\n#number of divisions\nm = 1000\n# Interest rate (We set the drift equal to the interest rate)\nr = 0.1\n# Volatility\nsig = 0.2\n# Initial Stock Price\nS0 = 42\n# Maturity\nT = 0.5\n# Delta t\ndt = T/m\n# Drift\ndrift = (r-0.5*sig**2)\n# Volatility\nvol = sig * np.sqrt(dt)\n\nt = np.array(range(0,m + 1,1)) * dt\n\n# seed for random generator\nseed= 2020\n# define a random generator\nnp.random.seed(seed)\ninc = np.zeros(shape = (m + 1, n))\ninc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))\nSt = np.zeros(shape = (m + 1, n))\nSt = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nSt1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nplt.figure(figsize=(9,6))\nplt.plot(t,St[:,1])\n'</code></pre>
+<pre><code>'\n# Simulate geometric Brownian motion\nimport numpy as np\nimport matplotlib.pyplot as plt\n# number of paths\nn = 10000\n#number of divisions\nm = 1000\n# Interest rate (We set the drift equal to the interest rate)\nr = 0.1\n# Volatility\nsig = 0.2\n# Initial Stock Price\nS0 = 42\n# Maturity\nT = 0.5\n# Delta t\ndt = T/m\n# Drift\ndrift = (r-0.5*sig**2)\n# Volatility\nvol = sig * np.sqrt(dt)\n\nt = np.array(range(0,m + 1,1)) * dt\n\n# seed for random generator\nseed= 2020\n# define a random generator\nnp.random.seed(seed)\ninc = np.zeros(shape = (m + 1, n))\ninc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))\nSt = np.zeros(shape = (m + 1, n))\nSt = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nSt1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nplt.figure(figsize=(9,6))\nplt.plot(t,St[:,1])\n'</code></pre>
 </div>
 </div>
 <p>The plot below is the distribution of the simulated stock price at <span class="math inline">\(T\)</span>.</p>
-<div id="0a01e2da" class="cell" data-execution_count="5">
+<div id="7651ae1b" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -808,64 +807,63 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <pre><code>'\nplt.figure(figsize=(9,6))\na=plt.hist(St[m,:], bins=100)\n'</code></pre>
 </div>
 </div>
-<p>While Geometric Brownian Motion is an important stochastic process to model stock prices, the process with drift equal to zero given by <span class="math display">\[X_t = \exp\left(-\frac{\kappa^2}{2} + \kappa B_t\right)\]</span></p>
-<p>satisfies <span class="math inline">\(\\E[X_t]=1\)</span> and <span class="math inline">\(\\E[X_t|X_s]=X_s\)</span> and is an important example of a strictly positive martingale. Again, these facts can be verified using the formula for the expected value of a lognormal random variable. Notice we can write <span class="math display">\[\,\mathrm{d} X_t= \kappa X_t \,\mathrm{d} B_t\]</span> which agrees with the martingale characterization of <span class="math inline">\(\int_0^t \sigma(X_t,t) \,\mathrm{d} B_t\)</span>.</p>
+<p>While geometric Brownian motion is an important stochastic process to model stock prices, the process with drift equal to zero given by <span class="math display">\[X_t = \exp\left(-\frac{\kappa^2}{2} + \kappa B_t\right)\]</span></p>
+<p>satisfies <span class="math inline">\(\\E[X_t]=1\)</span> and <span class="math inline">\(\\E[X_t|X_s]=X_s\)</span> and is an important example of a strictly positive martingale. Again, these facts can be verified using the formula for the expected value of a lognormal random variable. Notice that we can write <span class="math display">\[\,\mathrm{d} X_t= \kappa X_t \,\mathrm{d} B_t\;,\]</span> which agrees with the martingale characterization of <span class="math inline">\(\int_0^t \sigma(X_t,t) \,\mathrm{d} B_t\)</span>.</p>
 </section>
 <section id="sec-s_volatilities" class="level2" data-number="6.8">
 <h2 data-number="6.8" class="anchored" data-anchor-id="sec-s_volatilities"><span class="header-section-number">6.8</span> Volatilities</h2>
-<p>As mentioned in <a href="#sec-s_geometricbrownianmotion" class="quarto-xref"><span>Section 6.7</span></a>, when we encounter an equation of the form <span class="math display">\[\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\]</span> where <span class="math inline">\(B\)</span> is a Brownian motion, we will say ``<span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(S\)</span>. For example, in the Black-Scholes model, the most important assumption is that the volatility of the underlying asset price is constant. We will occasionally need to compute the volatilities of products or ratios of random processes. These computations follow directly from Ito’s formula.</p>
+<p>As mentioned in <a href="#sec-s_geometricbrownianmotion" class="quarto-xref"><span>Section 6.7</span></a>, when we encounter an equation of the form <span class="math display">\[\frac{\mathrm{d} S}{S} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\]</span> where <span class="math inline">\(B\)</span> is a Brownian motion, we will say <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(S\)</span>. We will occasionally need to compute the volatilities of products or ratios of random processes. These computations follow directly from Ito’s formula.</p>
 <p>Suppose <span class="math display">\[\frac{\mathrm{d} X}{X} = \mu_x\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x \qquad \text{and} \qquad
 \frac{\mathrm{d} Y}{Y} = \mu_y\,\mathrm{d} t + \sigma_y\,\mathrm{d} B_y\; ,\]</span> where <span class="math inline">\(B_x\)</span> and <span class="math inline">\(B_y\)</span> are Brownian motions with correlation <span class="math inline">\(\rho\)</span>, and <span class="math inline">\(\mu_x\)</span>, <span class="math inline">\(\mu_y\)</span>, <span class="math inline">\(\sigma_x\)</span>, <span class="math inline">\(\sigma_y\)</span>, and <span class="math inline">\(\rho\)</span> may be quite general random processes.</p>
 <section id="products" class="level3">
 <h3 class="anchored" data-anchor-id="products">Products</h3>
-<p>If <span class="math inline">\(Z=XY\)</span>, then <a href="#eq-rule2" class="quarto-xref">Equation&nbsp;<span>6.15</span></a> gives us <span id="eq-volproduct1"><span class="math display">\[
+<p>If <span class="math inline">\(Z=XY\)</span>, then <a href="#eq-rule2" class="quarto-xref">Equation&nbsp;<span>6.18</span></a> gives us <span id="eq-volproduct1"><span class="math display">\[
 \frac{\mathrm{d} Z}{Z} = (\mu_x+\mu_y+\rho\sigma_x\sigma_y)\,\mathrm{d} t + \sigma_x\,\mathrm{d} B_x + \sigma_y\,\mathrm{d} B_y\;.
-\qquad(6.28)\]</span></span></p>
+\qquad(6.31)\]</span></span></p>
 <p>The instantaneous variance of <span class="math inline">\(\mathrm{d} Z/Z\)</span> is calculated, using the rules for products of differentials, as <span class="math display">\[\begin{align*}
 \left(\frac{\mathrm{d} Z}{Z}\right)^2 &amp;= (\sigma_x\,\mathrm{d} B_x + \sigma_y\,\mathrm{d} B_y)^2\\
 &amp;= (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
 \end{align*}\]</span> As will be explained below, the volatility is the square root of the instantaneous variance (dropping the <span class="math inline">\(\mathrm{d} t\)</span>). This implies:</p>
-<div id="section-10" class="Rule" title="">
+<div id="section-5" class="Rule" title="">
 <p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.11</strong></summary><div>The volatility of <span class="math inline">\(XY\)</span> is <span id="eq-volatilityproduct"><span class="math display">\[
 \sqrt{\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y}\;.
-\qquad(6.29)\]</span></span><p></p>
+\qquad(6.32)\]</span></span><p></p>
 </div></details>
 </div>
 </section>
 <section id="ratios" class="level3">
 <h3 class="anchored" data-anchor-id="ratios">Ratios</h3>
-<p>If <span class="math inline">\(Z=Y/X\)</span>, then <a href="#eq-rule4" class="quarto-xref">Equation&nbsp;<span>6.16</span></a> gives us <span id="eq-ratioproduct1"><span class="math display">\[
+<p>If <span class="math inline">\(Z=Y/X\)</span>, then <a href="#eq-rule4" class="quarto-xref">Equation&nbsp;<span>6.19</span></a> gives us <span id="eq-ratioproduct1"><span class="math display">\[
 \frac{\mathrm{d} Z}{Z} = (\mu_y-\mu_x-\rho\sigma_x\sigma_y+\sigma_x^2)\,\mathrm{d} t + \sigma_y\,\mathrm{d} B_y - \sigma_x\,\mathrm{d} B_x\;.
-\qquad(6.30)\]</span></span></p>
+\qquad(6.33)\]</span></span></p>
 <p>The instantaneous variance of <span class="math inline">\(\mathrm{d} Z/Z\)</span> is therefore <span class="math display">\[\begin{align*}
 \left(\frac{\mathrm{d} Z}{Z}\right)^2 &amp;= (\sigma_y\,\mathrm{d} B_y - \sigma_x\,\mathrm{d} B_x)^2\\
 &amp;= (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\,\mathrm{d} t\;.
 \end{align*}\]</span> This implies:</p>
-<div id="section-11" class="Rule" title="">
+<div id="section-6" class="Rule" title="">
 <p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 6.12</strong></summary><div>The volatility of <span class="math inline">\(Y/X\)</span> is<br>
 <span id="eq-volatilityratio"><span class="math display">\[
 \sqrt{\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y}\;.
-\qquad(6.31)\]</span></span><p></p>
+\qquad(6.34)\]</span></span><p></p>
 </div></details>
 </div>
-</section>
-<section id="further-discussion" class="level3">
-<h3 class="anchored" data-anchor-id="further-discussion">Further Discussion</h3>
-<p>To understand why taking the square root of <span class="math inline">\((\mathrm{d} Z/Z)^2\)</span> (dropping the <span class="math inline">\(\mathrm{d} t\)</span>) gives the volatility, consider for example the product case <span class="math inline">\(Z=XY\)</span>. Define a random process <span class="math inline">\(B\)</span> by <span class="math inline">\(B_0=0\)</span> and <span class="math display">\[
+<div id="Extra-6.1" class="Extra">
+<p></p><details class="Extra fbx-simplebox fbx-default"><summary><strong>Theory Extra 6.1</strong></summary><div>To understand why taking the square root of <span class="math inline">\((\mathrm{d} Z/Z)^2\)</span> (dropping the <span class="math inline">\(\mathrm{d} t\)</span>) gives the volatility, consider for example the product case <span class="math inline">\(Z=XY\)</span>. Define a random process <span class="math inline">\(B\)</span> by <span class="math inline">\(B_0=0\)</span> and <span class="math display">\[
 \mathrm{d} B = \frac{\sigma_x}{\sigma}\,\mathrm{d} B_x + \frac{\sigma_y}{\sigma}\,\mathrm{d} B_y\;,
-\]</span> {#eq-foreign, B}</p>
-<p>where <span class="math inline">\(\sigma\)</span> is the volatility defined in <a href="#eq-volatilityproduct" class="quarto-xref">Equation&nbsp;<span>6.29</span></a>. Then we can write <a href="#eq-volproduct1" class="quarto-xref">Equation&nbsp;<span>6.28</span></a> as <span id="eq-volproduct2"><span class="math display">\[
-\frac{\mathrm{d} Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;. \qquad(6.32)\]</span></span></p>
+\]</span> {#eq-foreign, B}<p></p>
+<p>where <span class="math inline">\(\sigma\)</span> is the volatility defined in <a href="#eq-volatilityproduct" class="quarto-xref">Equation&nbsp;<span>6.32</span></a>. Then we can write <a href="#eq-volproduct1" class="quarto-xref">Equation&nbsp;<span>6.31</span></a> as <span id="eq-volproduct2"><span class="math display">\[
+\frac{\mathrm{d} Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d} t + \sigma\,\mathrm{d} B\;. \qquad(6.35)\]</span></span></p>
 <p>From the discussion in <a href="#sec-s_itoprocesses" class="quarto-xref"><span>Section 6.2</span></a>, we know that <span class="math inline">\(B\)</span> is a continuous martingale. We can compute its quadratic variation from <span class="math display">\[\begin{align*}
 (\mathrm{d} B)^2 &amp;= \left(\frac{\sigma_x\,\mathrm{d} B_x + \sigma_s\,\mathrm{d} B_s}{\sigma}\right)^2\\
 &amp;= \frac{(\sigma_x^2 + \sigma_s^2 + 2\rho\sigma_x\sigma_s)\,\mathrm{d} t}{\sigma^2}\; ,\\
 &amp;= \mathrm{d} t\;.
-\end{align*}\]</span> By Levy’s theorem (see <a href="Chapter_Brownian.html#sec-s_quadraticvariation" class="quarto-xref"><span>Section 5.3</span></a>), any continuous martingale with this quadratic variation is necessarily a Brownian motion. Therefore, <a href="#eq-volproduct2" class="quarto-xref">Equation&nbsp;<span>6.32</span></a> shows that <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(Z\)</span> as defined at the beginning of the section.</p>
-<p>{{&lt; fa calculator&gt;}}</p>
+\end{align*}\]</span> By Levy’s theorem (see <a href="Chapter_Brownian.html#sec-s_quadraticvariation" class="quarto-xref"><span>Section 5.3</span></a>), any continuous martingale with this quadratic variation is necessarily a Brownian motion. Therefore, <a href="#eq-volproduct2" class="quarto-xref">Equation&nbsp;<span>6.35</span></a> shows that <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(Z\)</span> as defined at the beginning of the section.</p>
+</div></details>
+</div>
 </section>
 </section>
-<section id="section-12" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="section-12"></h2>
+<section id="section-7" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="section-7"></h2>
 <div id="Exercise-6.1" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.1</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider the function <span class="math display">\[X_t=\mathrm{e}^t\; .\]</span> Write a code, which computes and plots <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span>, where <span class="math display">\[\Delta X_{t_i} = X_{t_i}-X_{t_{i-1}} = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .\]</span><p></p>
 </div></details>
@@ -887,7 +885,7 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 </div></details>
 </div>
 <div id="Exercise-6.6" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.6</strong></summary><div>Use Ito’s Lemma to derive the stochastic differential equation for <span class="math inline">\(S_t^2\)</span>. Argue that <span class="math inline">\(S_t^2\)</span> is Geometric Brownian Motion and find <span class="math inline">\(\\E[S_t^2]\)</span>.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.6</strong></summary><div>Use Ito’s Lemma to derive the stochastic differential equation for <span class="math inline">\(S_t^2\)</span>. Argue that <span class="math inline">\(S_t^2\)</span> is geometric Brownian motion and find <span class="math inline">\(\\E[S_t^2]\)</span>.<p></p>
 </div></details>
 </div>
 <div id="Exercise-6.7" class="Exercise">
@@ -895,16 +893,16 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 </div></details>
 </div>
 <div id="Exercise-6.8" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.8</strong></summary><div>Use the facts <span class="math inline">\(e^{x+y}=e^x \times e^y\)</span> and <span class="math inline">\(\frac{e^x}{e^y} = e^{x-y}\)</span> to deduce the drift and volatility of the product and ratio of two Geometric Brownian motions.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.8</strong></summary><div>Use the facts <span class="math inline">\(e^{x+y}=e^x \times e^y\)</span> and <span class="math inline">\(\frac{e^x}{e^y} = e^{x-y}\)</span> to deduce the drift and volatility of the product and ratio of two geometric Brownian motions.<p></p>
 </div></details>
 </div>
 <div id="Exercise-6.9" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 6.9</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider a geometric Brownian motion <span class="math display">\[\frac{\mathrm{d} Z}{Z} = \mu\,\mathrm{d} t + \sigma\,\mathrm{d} B\; .\]</span> An approximate path <span class="math inline">\(\tilde{Z}_t\)</span> of the geometric Brownian motion can be simulated as <span id="eq-exponential111"><span class="math display">\[
 \Delta \tilde{Z}_{t_i} = \tilde{Z}_{t_{i-1}} \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
-\qquad(6.33)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z_t\)</span> and an approximate path <span class="math inline">\(\tilde{Z}_t\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>6.33</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}_0 = Z_0\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
+\qquad(6.36)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z_t\)</span> and an approximate path <span class="math inline">\(\tilde{Z}_t\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>6.36</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}_0 = Z_0\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
 For <span class="math inline">\(N\)</span> larger than about <span class="math inline">\(100 T\)</span>, the approximation will look perfect—you won’t be able to tell that there are two plots in the figure. One reason this is true is an exact formula is <span id="eq-exponential112"><span class="math display">\[
 Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
-\qquad(6.34)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2\)</span> and <span class="math inline">\((\,\mathrm{d} B_t)^2=\Delta t\)</span>.<p></p>
+\qquad(6.37)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2\)</span> and <span class="math inline">\((\,\mathrm{d} B_t)^2=\Delta t\)</span>.<p></p>
 </div></details>
 </div>
 <div id="Exercise-6.10" class="Exercise">
@@ -927,7 +925,7 @@ Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t 
 <li id="fn2"><p>In a more formal mathematical presentation, one normally writes <span class="math inline">\(\mathrm{d}\langle X,X\rangle\)</span> for what we are writing here as <span class="math inline">\((\mathrm{d} X)^2\)</span>. This is the differential of the quadratic variation process, and the quadratic variation through date <span class="math inline">\(T\)</span> is <span class="math display">\[
 \langle X,X\rangle _t = \int_0^T \mathrm{d}\langle X,X\rangle_t = \int_0^T \sigma^2_t\,\mathrm{d} t\;.
 \]</span><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>We need to assume <span class="math inline">\(g(t,x,y)\)</span> is continuously differentiable in <span class="math inline">\(t\)</span> and twice continuously differentiable in <span class="math inline">\((x,y)\)</span> for <a href="#eq-itogeneralnew" class="quarto-xref">Equation&nbsp;<span>6.13</span></a> and <a href="#eq-itogeneralnew2" class="quarto-xref">Equation&nbsp;<span>6.14</span></a> to be valid. Note also that we are using a short-hand notation here. The partial derivatives of <span class="math inline">\(g\)</span> will generally depend on <span class="math inline">\(t\)</span>, <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> just as <span class="math inline">\(g\)</span> does.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>We need to assume <span class="math inline">\(g(t,x,y)\)</span> is continuously differentiable in <span class="math inline">\(t\)</span> and twice continuously differentiable in <span class="math inline">\((x,y)\)</span> for <a href="#eq-itogeneralnew" class="quarto-xref">Equation&nbsp;<span>6.16</span></a> and <a href="#eq-itogeneralnew2" class="quarto-xref">Equation&nbsp;<span>6.17</span></a> to be valid. Note also that we are using a short-hand notation here. The partial derivatives of <span class="math inline">\(g\)</span> will generally depend on <span class="math inline">\(t\)</span>, <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> just as <span class="math inline">\(g\)</span> does.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
