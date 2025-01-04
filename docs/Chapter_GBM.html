@@ -6,11 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Kerry Back">
-<meta name="author" content="Hong Liu">
-<meta name="author" content="Mark Loewenstein">
 
-<title>Pricing and Hedging Derivative Securities: Theory and Methods</title>
+<title>7&nbsp; Geometric Brownian Motion – Pricing and Hedging Derivative Securities: Theory and Methods</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -33,7 +64,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./Chapter_Intro.html" rel="next">
+<link href="./Chapter_Girsanov.html" rel="next">
+<link href="./Chapter_Ito.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -80,24 +112,53 @@ ul.task-list li input[type="checkbox"] {
   });
 </script>
 <style>
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
-}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
 }
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
 }
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
+}
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
 </style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -110,7 +171,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_Brownian.html">Part II: Mathematical Tools</a></li><li class="breadcrumb-item"><a href="./Chapter_GBM.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -146,7 +207,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -208,7 +269,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_GBM.html" class="sidebar-item-text sidebar-link">
+  <a href="./Chapter_GBM.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></span></a>
   </div>
 </li>
@@ -410,23 +471,15 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_Brownian.html">Part II: Mathematical Tools</a></li><li class="breadcrumb-item"><a href="./Chapter_GBM.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Pricing and Hedging Derivative Securities: Theory and Methods</h1>
+<h1 class="title"><span id="sec-s_geometricbrownianmotion" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Authors</div>
-    <div class="quarto-title-meta-contents">
-             <p>Kerry Back </p>
-             <p>Hong Liu </p>
-             <p>Mark Loewenstein </p>
-          </div>
-  </div>
     
   
     
@@ -437,9 +490,212 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p><img src="under_construction.jpg" class="img-fluid"></p>
+<p>A random variable is lognormally distributed if it can be written as <span class="math inline">\(\tilde{y}=  e^{\tilde{x}}\)</span> where <span class="math inline">\(\tilde{x}\)</span> is distributed according to a normal distribution with mean <span class="math inline">\(m\)</span> and standard deviation <span class="math inline">\(s\)</span>. The expected value of <span class="math inline">\(\tilde{y}\)</span> is given by <span class="math inline">\(\mathbb{E}[\tilde{y}] = e^{m+\frac{s^2}{2}}\)</span>.</p>
+<div id="Rule-7.1" class="Rule">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.1</strong></summary><div><strong>Lognormal Random Variable.</strong>; If <span class="math inline">\(\tilde{x}\)</span> is normally distributed with mean <span class="math inline">\(m\)</span> and standard deviation <span class="math inline">\(s\)</span>, then <span class="math inline">\(e^{\tilde{x}}\)</span> is lognormally distributed and <span id="eq-lognormal"><span class="math display">\[\mathbb{E}[e^{\tilde{x}}]=e^{m + \frac{1}{2} s^2};.
+\qquad(7.1)\]</span></span><p></p>
+</div></details>
+</div>
+<p>An important stochastic process is geometric Brownian motion given by <span id="eq-exponential1"><span class="math display">\[
+S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
+\qquad(7.2)\]</span></span></p>
+<p>for constants <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion. Note that for each time <span class="math inline">\(t\)</span>, the random variable <span class="math inline">\(S_t\)</span> in <span class="quarto-unresolved-ref">?eq-exponential</span> is a lognormal random variable. Using the product rule and the rule for exponentials, we obtain <span id="eq-Y"><span class="math display">\[
+\frac{\,\mathrm{d}S}{S} = \mu\,\,\mathrm{d}t+\sigma\,\,\mathrm{d}B\;.
+\qquad(7.3)\]</span></span></p>
+<p>When we see an equation of the form <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>7.3</span></a>, we should recognize <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>7.2</span></a> as the solution.</p>
+<p>The process <span class="math inline">\(S\)</span> is called a geometric Brownian motion. In keeping with the discussion of <a href="Chapter_Ito.html#sec-s_itoprocesses" class="quarto-xref"><span>Section 6.2</span></a>, we interpret <a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>7.3</span></a> as stating that <span class="math inline">\(\mu\,\,\mathrm{d}t\)</span> is the expected rate of change of <span class="math inline">\(S\)</span> and <span class="math inline">\(\sigma^2\,\,\mathrm{d}t\)</span> is the variance of the rate of change in an instant <span class="math inline">\(\,\mathrm{d}t\)</span>. We call <span class="math inline">\(\mu\)</span> the drift and <span class="math inline">\(\sigma\)</span> the volatility. The geometric Brownian motion will grow at the average rate of <span class="math inline">\(\mu\)</span>, in the sense that <span class="math inline">\(\mathbb{E}[S_t] = \mathrm{e}^{\mu t}S_0\)</span>; one way to verify this uses the formula for the mean of a lognormal random variable.</p>
+<p>Taking the natural logarithm of <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>7.2</span></a> gives an equivalent form of the solution: <span id="eq-exponential2"><span class="math display">\[
+\log S_t= \log S_0+\left(\mu -\frac{1}{2}\sigma^2\right)t + \sigma B_t\;.
+\qquad(7.4)\]</span></span> This shows that <span class="math inline">\(\log S_t - \log S_0\)</span> is a <span class="math inline">\((\mu-\sigma^2/2,\sigma)\)</span>–Brownian motion. Given information at time <span class="math inline">\(t\)</span>, the logarithm of <span class="math inline">\(S(u)\)</span> for <span class="math inline">\(u&gt;t\)</span> is normally distributed with mean <span class="math inline">\((u-t)(\mu-\sigma^2/2)\)</span> and variance <span class="math inline">\((u-t)\sigma^2\)</span>. Because <span class="math inline">\(S\)</span> is the exponential of its logarithm, <span class="math inline">\(S\)</span> can never be negative. For this reason, a geometric Brownian motion is a better model for stock prices than is a Brownian motion.</p>
+<p>The differential of <a href="#eq-exponential2" class="quarto-xref">Equation&nbsp;<span>7.4</span></a> is <span id="eq-exponential3"><span class="math display">\[
+\,\mathrm{d}\log S_t = \left(\mu -\frac{1}{2}\sigma^2\right)\,\,\mathrm{d}t+ \sigma\,\,\mathrm{d}B_t\;.
+\qquad(7.5)\]</span></span></p>
+<p>We conclude:</p>
+<div id="Rule-7.2" class="Rule">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.2</strong></summary><div>The equation <span class="math display">\[\frac{\,\mathrm{d}S}{S} = \mu\,\,\mathrm{d}t+\sigma\,\,\mathrm{d}B\]</span> is equivalent to the equation <span class="math display">\[\,\mathrm{d}\log S = \left(\mu -\frac{1}{2}\sigma^2\right)\,\,\mathrm{d}t+ \sigma\,\,\mathrm{d}B\; .\]</span> The solution of both equations is <a href="#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>7.2</span></a> or the equivalent <a href="#eq-exponential2" class="quarto-xref">Equation&nbsp;<span>7.4</span></a>.<p></p>
+</div></details>
+</div>
+<p>Over a discrete time interval <span class="math inline">\(\Delta t\)</span>, <a href="#eq-exponential3" class="quarto-xref">Equation&nbsp;<span>7.5</span></a> implies that the change in the logarithm of <span class="math inline">\(S\)</span> is <span id="eq-exponential11"><span class="math display">\[
+\Delta \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\Delta t+ \sigma\,\Delta B\;.
+\qquad(7.6)\]</span></span></p>
+<p>If <span class="math inline">\(S\)</span> is the price of a non-dividend-paying asset, then over the time period <span class="math inline">\(t_{i-1}\)</span> to <span class="math inline">\(t_i\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t\)</span>, we have <span id="eq-exponential10"><span class="math display">\[
+\Delta \log S = r_i\,\Delta t\;,
+\qquad(7.7)\]</span></span></p>
+<p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S_{t_{i-1}}\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>7.7</span></a>. Thus, the geometric Brownian motion model (<a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>7.3</span></a>)implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_StochasticVol.html" class="quarto-xref"><span>Chapter 17</span></a>).</p>
+<p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>7.6</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
+<div id="9854f21e" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate geometric Brownian motion</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">import matplotlib.pyplot as plt</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">n = 10000</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1000</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">r = 0.1</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">sig = 0.2</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">S0 = 42</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">T = 0.5</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">dt = T/m</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">drift = (r-0.5*sig**2)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">vol = sig * np.sqrt(dt)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">t = np.array(range(0,m + 1,1)) * dt</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">seed= 2020</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">np.random.seed(seed)</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">inc = np.zeros(shape = (m + 1, n))</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">St = np.zeros(shape = (m + 1, n))</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co">St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t,St[:,1])</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>'\n# Simulate geometric Brownian motion\nimport numpy as np\nimport matplotlib.pyplot as plt\n# number of paths\nn = 10000\n#number of divisions\nm = 1000\n# Interest rate (We set the drift equal to the interest rate)\nr = 0.1\n# Volatility\nsig = 0.2\n# Initial Stock Price\nS0 = 42\n# Maturity\nT = 0.5\n# Delta t\ndt = T/m\n# Drift\ndrift = (r-0.5*sig**2)\n# Volatility\nvol = sig * np.sqrt(dt)\n\nt = np.array(range(0,m + 1,1)) * dt\n\n# seed for random generator\nseed= 2020\n# define a random generator\nnp.random.seed(seed)\ninc = np.zeros(shape = (m + 1, n))\ninc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))\nSt = np.zeros(shape = (m + 1, n))\nSt = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nSt1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nplt.figure(figsize=(9,6))\nplt.plot(t,St[:,1])\n'</code></pre>
+</div>
+</div>
+<p>The plot below is the distribution of the simulated stock price at <span class="math inline">\(T\)</span>.</p>
+<div id="c8058600" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">a=plt.hist(St[m,:], bins=100)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>'\nplt.figure(figsize=(9,6))\na=plt.hist(St[m,:], bins=100)\n'</code></pre>
+</div>
+</div>
+<section id="sec-s_reinvestingdividends" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="sec-s_reinvestingdividends"><span class="header-section-number">7.1</span> Reinvesting Dividends</h2>
+<p>Frequently, we will assume that the asset underlying a derivative security pays a constant dividend yield, which we will denote by <span class="math inline">\(q\)</span>. This means, for an asset with price <span class="math inline">\(S_t\)</span>, that the dividend in an instant <span class="math inline">\(\,\mathrm{d}t\)</span> is <span class="math inline">\(q S_t\,\,\mathrm{d}t\)</span>. If the dividends are reinvested in new shares, the number of shares will grow exponentially at rate <span class="math inline">\(q\)</span>. To see this, consider the portfolio starting with a single share of the asset and reinvesting dividends until some date <span class="math inline">\(T\)</span>. Let <span class="math inline">\(X_t\)</span> denote the number of shares resulting from this strategy at any time <span class="math inline">\(t\leq T\)</span>. Then the dividend received at date <span class="math inline">\(t\)</span> is <span class="math inline">\(q S_tX_t\,\,\mathrm{d}t\)</span>, which can be used to purchase <span class="math inline">\(q X_t\,\,\mathrm{d}t\)</span> new shares. This implies that <span class="math inline">\(\,\mathrm{d}X_t=q X_t\,\,\mathrm{d}t\)</span>, or <span class="math inline">\(\,\mathrm{d}X_t/\,\mathrm{d}t = q X_t\)</span>, and it is easy to check (and very well known) that this equation is solved by <span class="math inline">\(X_t=\mathrm{e}^{q t}X_0\)</span>. In our case, with <span class="math inline">\(X_0=1\)</span>, we have <span class="math inline">\(X_t=\mathrm{e}^{q t}\)</span>.</p>
+<p>The dollar value of the trading strategy just described will be <span class="math inline">\(X_tS_t = \mathrm{e}^{q t}S_t\)</span>. Denote this by <span class="math inline">\(V_t\)</span>. This is the value of a non-dividend-paying portfolio, because all dividends are reinvested. From the Compounding/Discounting example in <a href="Chapter_Ito.html#sec-s_examples" class="quarto-xref"><span>Section 6.5</span></a>, we know that <span id="eq-reinvestingdividends"><span class="math display">\[
+\frac{\,\mathrm{d}V}{V} = q\,\,\mathrm{d}t + \frac{\,\mathrm{d}S}{S}\;.
+\qquad(7.8)\]</span></span></p>
+<p>This means that the rate of return on the portfolio is the dividend yield <span class="math inline">\(q\,\,\mathrm{d}t\)</span> plus the return <span class="math inline">\(\,\mathrm{d}S/S\)</span> due to capital gains.</p>
+<p>While geometric Brownian motion is an important stochastic process to model stock prices, the process with drift equal to zero given by <span class="math display">\[X_t = \exp\left(-\frac{\kappa^2}{2} + \kappa B_t\right)\]</span></p>
+<p>satisfies <span class="math inline">\(\mathbb{E}[X_t]=1\)</span> and <span class="math inline">\(\mathbb{E}[X_t|X_s]=X_s\)</span> and is an important example of a strictly positive martingale. Again, these facts can be verified using the formula for the expected value of a lognormal random variable. Notice that we can write <span class="math display">\[\,\,\mathrm{d}X_t= \kappa X_t \,\,\mathrm{d}B_t\;,\]</span> which agrees with the martingale characterization of <span class="math inline">\(\int_0^t \sigma(X_t,t) \,\,\mathrm{d}B_t\)</span>.</p>
+</section>
+<section id="sec-s_volatilities" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-s_volatilities"><span class="header-section-number">7.2</span> Volatilities</h2>
+<p>As mentioned in <a href="#sec-s_geometricbrownianmotion" class="quarto-xref"><span>Chapter 7</span></a>, when we encounter an equation of the form <span class="math display">\[\frac{\,\mathrm{d}S}{S} = \mu\,\,\mathrm{d}t + \sigma\,\,\mathrm{d}B\]</span> where <span class="math inline">\(B\)</span> is a Brownian motion, we will say <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(S\)</span>. We will occasionally need to compute the volatilities of products or ratios of random processes. These computations follow directly from Ito’s formula.</p>
+<p>Suppose <span class="math display">\[\frac{\,\mathrm{d}X}{X} = \mu_x\,\,\mathrm{d}t + \sigma_x\,\,\mathrm{d}B_x \qquad \text{and} \qquad
+\frac{\,\mathrm{d}Y}{Y} = \mu_y\,\,\mathrm{d}t + \sigma_y\,\,\mathrm{d}B_y\; ,\]</span> where <span class="math inline">\(B_x\)</span> and <span class="math inline">\(B_y\)</span> are Brownian motions with correlation <span class="math inline">\(\rho\)</span>, and <span class="math inline">\(\mu_x\)</span>, <span class="math inline">\(\mu_y\)</span>, <span class="math inline">\(\sigma_x\)</span>, <span class="math inline">\(\sigma_y\)</span>, and <span class="math inline">\(\rho\)</span> may be quite general random processes.</p>
+<section id="products" class="level3">
+<h3 class="anchored" data-anchor-id="products">Products</h3>
+<p>If <span class="math inline">\(Z=XY\)</span>, then <a href="Chapter_Ito.html#eq-rule2" class="quarto-xref">Equation&nbsp;<span>6.18</span></a> gives us <span id="eq-volproduct1"><span class="math display">\[
+\frac{\,\mathrm{d}Z}{Z} = (\mu_x+\mu_y+\rho\sigma_x\sigma_y)\,\,\mathrm{d}t + \sigma_x\,\,\mathrm{d}B_x + \sigma_y\,\,\mathrm{d}B_y\;.
+\qquad(7.9)\]</span></span></p>
+<p>The instantaneous variance of <span class="math inline">\(\,\mathrm{d}Z/Z\)</span> is calculated, using the rules for products of differentials, as <span class="math display">\[\begin{align*}
+\left(\frac{\,\mathrm{d}Z}{Z}\right)^2 &amp;= (\sigma_x\,\,\mathrm{d}B_x + \sigma_y\,\,\mathrm{d}B_y)^2\\
+&amp;= (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\,\,\mathrm{d}t\;.
+\end{align*}\]</span> As will be explained below, the volatility is the square root of the instantaneous variance (dropping the <span class="math inline">\(\,\mathrm{d}t\)</span>). This implies:</p>
+<div id="section" class="Rule" title="">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.3</strong></summary><div>The volatility of <span class="math inline">\(XY\)</span> is <span id="eq-volatilityproduct"><span class="math display">\[
+\sqrt{\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y}\;.
+\qquad(7.10)\]</span></span><p></p>
+</div></details>
+</div>
+</section>
+<section id="ratios" class="level3">
+<h3 class="anchored" data-anchor-id="ratios">Ratios</h3>
+<p>If <span class="math inline">\(Z=Y/X\)</span>, then <a href="Chapter_Ito.html#eq-rule4" class="quarto-xref">Equation&nbsp;<span>6.19</span></a> gives us <span id="eq-ratioproduct1"><span class="math display">\[
+\frac{\,\mathrm{d}Z}{Z} = (\mu_y-\mu_x-\rho\sigma_x\sigma_y+\sigma_x^2)\,\,\mathrm{d}t + \sigma_y\,\,\mathrm{d}B_y - \sigma_x\,\,\mathrm{d}B_x\;.
+\qquad(7.11)\]</span></span></p>
+<p>The instantaneous variance of <span class="math inline">\(\,\mathrm{d}Z/Z\)</span> is therefore <span class="math display">\[\begin{align*}
+\left(\frac{\,\mathrm{d}Z}{Z}\right)^2 &amp;= (\sigma_y\,\,\mathrm{d}B_y - \sigma_x\,\,\mathrm{d}B_x)^2\\
+&amp;= (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\,\,\mathrm{d}t\;.
+\end{align*}\]</span> This implies:</p>
+<div id="section-1" class="Rule" title="">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.4</strong></summary><div>The volatility of <span class="math inline">\(Y/X\)</span> is<br>
+<span id="eq-volatilityratio"><span class="math display">\[
+\sqrt{\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y}\;.
+\qquad(7.12)\]</span></span><p></p>
+</div></details>
+</div>
+<div id="Extra-7.1" class="Extra">
+<p></p><details class="Extra fbx-simplebox fbx-default"><summary><strong>Theory Extra 7.1</strong></summary><div>To understand why taking the square root of <span class="math inline">\((\,\mathrm{d}Z/Z)^2\)</span> (dropping the <span class="math inline">\(\,\mathrm{d}t\)</span>) gives the volatility, consider for example the product case <span class="math inline">\(Z=XY\)</span>. Define a random process <span class="math inline">\(B\)</span> by <span class="math inline">\(B_0=0\)</span> and <span class="math display">\[
+\,\mathrm{d}B = \frac{\sigma_x}{\sigma}\,\,\mathrm{d}B_x + \frac{\sigma_y}{\sigma}\,\,\mathrm{d}B_y\;,
+\]</span> {#eq-foreign,}<p></p>
+<p>where <span class="math inline">\(\sigma\)</span> is the volatility defined in <a href="#eq-volatilityproduct" class="quarto-xref">Equation&nbsp;<span>7.10</span></a>. Then we can write <a href="#eq-volproduct1" class="quarto-xref">Equation&nbsp;<span>7.9</span></a> as <span id="eq-volproduct2"><span class="math display">\[
+\frac{\,\mathrm{d}Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\,\mathrm{d}t + \sigma\,\,\mathrm{d}B\;. \qquad(7.13)\]</span></span></p>
+<p>From the discussion in <a href="Chapter_Ito.html#sec-s_itoprocesses" class="quarto-xref"><span>Section 6.2</span></a>, we know that <span class="math inline">\(B\)</span> is a continuous martingale. We can compute its quadratic variation from <span class="math display">\[\begin{align*}
+(\,\mathrm{d}B)^2 &amp;= \left(\frac{\sigma_x\,\,\mathrm{d}B_x + \sigma_s\,\,\mathrm{d}B_s}{\sigma}\right)^2\\
+&amp;= \frac{(\sigma_x^2 + \sigma_s^2 + 2\rho\sigma_x\sigma_s)\,\,\mathrm{d}t}{\sigma^2}\; ,\\
+&amp;= \,\mathrm{d}t\;.
+\end{align*}\]</span> By Levy’s theorem (see <a href="Chapter_Brownian.html#sec-s_quadraticvariation" class="quarto-xref"><span>Section 5.3</span></a>), any continuous martingale with this quadratic variation is necessarily a Brownian motion. Therefore, <a href="#eq-volproduct2" class="quarto-xref">Equation&nbsp;<span>7.13</span></a> shows that <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(Z\)</span> as defined at the beginning of the section.</p>
+</div></details>
+</div>
+</section>
+</section>
+<section id="section-2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="section-2"></h2>
+<div id="Exercise-7.1" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.1</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider the function <span class="math display">\[X_t=\mathrm{e}^t\; .\]</span> Write a code, which computes and plots <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span>, where <span class="math display">\[\Delta X_{t_i} = X_{t_i}-X_{t_{i-1}} = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .\]</span><p></p>
+</div></details>
+</div>
+<div id="Exercise-7.2" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.2</strong></summary><div>Repeat the previous problem for the function <span class="math inline">\(X_t = t^3\)</span>. In both this and the previous problem, what happens to <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.3" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.3</strong></summary><div>Either use the code provided or write a code to compute <span class="math inline">\(\sum_{i=1}^N [\Delta B_{t_i}]^2\)</span>, where <span class="math inline">\(B\)</span> is a simulated Brownian motion. For a given <span class="math inline">\(T\)</span>, what happens to the sum as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.4" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.4</strong></summary><div>Repeat the previous problem to compute <span class="math inline">\(\sum_{i=1}^N [\Delta B_{t_i}]^3\)</span>, where <span class="math inline">\(B\)</span> is a simulated Brownian motion. For a given <span class="math inline">\(T\)</span>, what happens to the sum as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.5" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.5</strong></summary><div>Repeat the previous problem, computing instead <span class="math inline">\(\sum_{i=1}^N |\Delta B_{t_i}|\)</span> where <span class="math inline">\(| \cdot |\)</span> denotes the absolute value. What happens to this sum as <span class="math inline">\(N \rightarrow \infty\)</span>?<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.6" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.6</strong></summary><div>Use Ito’s Lemma to derive the stochastic differential equation for <span class="math inline">\(S_t^2\)</span>. Argue that <span class="math inline">\(S_t^2\)</span> is geometric Brownian motion and find <span class="math inline">\(\mathbb{E}[S_t^2]\)</span>.<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.7" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.7</strong></summary><div>Ito’s Lemma can be used in different ways to get the same answer. For example, let <span class="math inline">\(X_t = a t + b B_t\)</span> and use Ito’s lemma on the function <span class="math inline">\(e^{X_t}\)</span>. Alternatively, let <span class="math inline">\(f(t, B_t) = e^{a t + bB_t}\)</span>. Use Ito’s lemma on <span class="math inline">\(f(,)\)</span>.<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.8" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.8</strong></summary><div>Use the facts <span class="math inline">\(e^{x+y}=e^x \times e^y\)</span> and <span class="math inline">\(\frac{e^x}{e^y} = e^{x-y}\)</span> to deduce the drift and volatility of the product and ratio of two geometric Brownian motions.<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.9" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.9</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider a geometric Brownian motion <span class="math display">\[\frac{\,\mathrm{d}Z}{Z} = \mu\,\,\mathrm{d}t + \sigma\,\,\mathrm{d}B\; .\]</span> An approximate path <span class="math inline">\(\tilde{Z}_t\)</span> of the geometric Brownian motion can be simulated as <span id="eq-exponential111"><span class="math display">\[
+\Delta \tilde{Z}_{t_i} = \tilde{Z}_{t_{i-1}} \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
+\qquad(7.14)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z_t\)</span> and an approximate path <span class="math inline">\(\tilde{Z}_t\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>7.14</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}_0 = Z_0\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
+For <span class="math inline">\(N\)</span> larger than about <span class="math inline">\(100 T\)</span>, the approximation will look perfect—you won’t be able to tell that there are two plots in the figure. One reason this is true is an exact formula is <span id="eq-exponential112"><span class="math display">\[
+Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
+\qquad(7.15)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2\)</span> and <span class="math inline">\((\,\,\mathrm{d}B_t)^2=\Delta t\)</span>.<p></p>
+</div></details>
+</div>
+<div id="Exercise-7.10" class="Exercise">
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.10</strong></summary><div>Use simulation to find <span class="math inline">\(\mathbb{E}^*[e^{-r T}{\mathbf{1}}_{\{S_t \ge K\}}]\)</span> in the risk-neutral probability where <span class="math display">\[\begin{equation*}
+\,\,\mathrm{d}S_t= r S_t \,\,\mathrm{d}t + \sigma S_t \,\,\mathrm{d}B_t^*
+\end{equation*}\]</span> Verify that <span class="math inline">\(S_t/e^{r t}\)</span> is a martingale in the <span class="math inline">\(*\)</span> measure where <span class="math inline">\(B^*\)</span> is a Brownian motion. Then use simulation to find <span class="math inline">\(S_0\mathbb{E}^S[\frac{1}{S_t} {\mathbf{1}}_{\{S_t \ge K\}}]\)</span> in the pricing measure which uses the share as numeraire where <span class="math display">\[\begin{equation*}
+\,\,\mathrm{d}S_t = (r + \sigma^2) S_t \,\,\mathrm{d}t + \sigma S_t \,\,\mathrm{d}B_t^S
+\end{equation*}\]</span> so the log satisfies <span class="math display">\[\begin{equation*}
+\log(S_t) = \log(S_0) + (r + \frac{\sigma^2}{2})t + \sigma B_t^S
+\end{equation*}\]</span> You should verify <span class="math inline">\(e^{rt}/S_t\)</span> is a martingale in the <span class="math inline">\(S\)</span> measure where <span class="math inline">\(B^S\)</span> is a Brownian motion. Both estimates should be the same up to simulation error and give the time zero value of the random payoff <span class="math inline">\({\mathbf{1}}_{\{S_t \ge K\}}\)</span> which is a random variable equal to <span class="math inline">\(1\)</span> if <span class="math inline">\(S_t\ge K\)</span> and <span class="math inline">\(0\)</span> otherwise. You should choose the values for <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(T\)</span>, and <span class="math inline">\(K\)</span>.<p></p>
+</div></details>
+</div>
 
 
 </section>
@@ -1011,10 +1267,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./Chapter_Ito.html" class="pagination-link" aria-label="Ito's Formula">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Ito’s Formula</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./Chapter_Intro.html" class="pagination-link" aria-label="Options">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Options</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Chapter_Girsanov.html" class="pagination-link" aria-label="Girsanov's Theorem">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1023,4 +1282,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-code.git/blob/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-code.git/blob/main/Chapter_GBM.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

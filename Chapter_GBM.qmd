@@ -1,0 +1,292 @@
+{{< include macros.qmd >}}
+
+
+## Geometric Brownian Motion {#sec-s_geometricbrownianmotion}
+A random variable is lognormally distributed if it can be written as $\tilde{y}=  e^{\tilde{x}}$ where $\tilde{x}$ is distributed according to a normal distribution with mean $m$ and standard deviation $s$.  The expected value of $\tilde{y}$ is given by $\E[\tilde{y}] = e^{m+\frac{s^2}{2}}$.
+
+::: Rule
+
+**Lognormal Random Variable.**\;
+If $\tilde{x}$ is normally distributed with mean $m$ and standard deviation $s$, then $e^{\tilde{x}}$ is lognormally distributed and
+$$\E[e^{\tilde{x}}]=e^{m + \frac{1}{2} s^2};.
+$$ {#eq-lognormal}
+
+
+:::
+
+An important stochastic process is geometric Brownian motion given by
+$$
+S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
+$$ {#eq-exponential1}
+
+for constants $\mu$ and $\sigma$, where $B$ is a Brownian motion.  Note that for each time $t$, the random variable $S_t$ in @eq-exponential is a lognormal random variable. Using the product rule and the rule for exponentials, we obtain
+$$
+\frac{\d  S}{S} = \mu\,\d  t+\sigma\,\d  B\;.
+$$ {#eq-Y}
+
+When we see an equation of the form @eq-Y, we should recognize @eq-exponential1 as the solution. 
+
+The process $S$ is called a geometric Brownian motion.  \index{geometric Brownian motion} In keeping with the discussion of @sec-s_itoprocesses, we interpret @eq-Y as stating that $\mu\,\d  t$ is the expected rate of change of $S$ and $\sigma^2\,\d  t$ is the variance of the rate of change in an instant $\d  t$.  We call $\mu$ the drift and $\sigma$ the volatility.  \index{volatility} The geometric Brownian motion will grow at the average rate of $\mu$, in the sense that $\E[S_t] = \mathrm{e}^{\mu t}S_0$;  one way to verify this uses the formula for the mean of a lognormal random variable.
+
+Taking the natural logarithm of @eq-exponential1 gives an equivalent form of the solution:
+$$
+\log S_t= \log S_0+\left(\mu -\frac{1}{2}\sigma^2\right)t + \sigma B_t\;.
+$$ {#eq-exponential2}
+  This shows that $\log S_t - \log S_0$ is a $(\mu-\sigma^2/2,\sigma)$--Brownian motion.  Given information at time $t$, the logarithm of $S(u)$ for $u>t$ is normally \index{lognormal distribution}distributed with mean $(u-t)(\mu-\sigma^2/2)$ and variance $(u-t)\sigma^2$.  Because $S$ is the exponential of its logarithm, $S$ can never be negative.  For this reason, a geometric Brownian motion is a better model for stock prices than is a Brownian motion.
+
+The differential of @eq-exponential2 is
+$$
+\d  \log S_t = \left(\mu -\frac{1}{2}\sigma^2\right)\,\d  t+ \sigma\,\d  B_t\;.
+$$ {#eq-exponential3}
+
+We conclude:
+
+::: Rule
+
+The  equation 
+$$\frac{\d  S}{S} = \mu\,\d  t+\sigma\,\d  B$$
+is equivalent to the equation
+$$\d  \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\,\d  t+ \sigma\,\d  B\; .$$
+The solution of both equations is @eq-exponential1 or the equivalent @eq-exponential2.
+
+:::
+
+
+
+Over a discrete time interval $\Delta t$, @eq-exponential3 implies that the change in the logarithm of $S$ is 
+$$
+\Delta \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\Delta t+ \sigma\,\Delta B\;.
+$$ {#eq-exponential11}
+
+If $S$ is the price of a non-dividend-paying asset, then over the time period $t_{i-1}$ to $t_i$, with $t_i-t_{i-1}=\Delta t$, we have
+$$
+\Delta \log S = r_i\,\Delta t\;,
+$$ {#eq-exponential10}
+
+where $r_i$ is the  continuously compounded annualized rate of return \index{continuously compounded return} during the period $\Delta t$.  This follows from the definition of the continuously compounded rate of return as the constant rate over the time period $\Delta t$ that would cause $S$ to grow (or fall) from $S_{t_{i-1}}$ to $S_{t_i}$.  To be precise, $r_i$ is defined by
+$$\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; ,$$
+which is equivalent to @eq-exponential10.
+Thus, the geometric Brownian motion model (@eq-Y)implies that the continuously compounded annualized rate of return over a period of length $\Delta t$ is given by
+$$r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .$$
+This means that $r_i$ is normally distributed with mean $\mu-\sigma^2/2$ and variance $\sigma^2/\Delta t$.  Given historical data on the rates of return, the parameters $\mu$ and $\sigma$ can be estimated by standard methods (see @sec-c_stochasticvolatility).
+
+We can simulate a path of $S$ by simulating the changes $\Delta \log S$.  The random variable $\sigma \Delta B$  in  @eq-exponential11 has a normal distribution with zero mean and variance equal to $\sigma^2\Delta t$.  We simulate it as $\sigma\sqrt{\Delta t}$ multiplied by a standard normal.  The code below simulates $n=10000$ paths with $m=1000$ time steps. There are some features of the simulation which will prove useful later.  The drift $\mu$ is labelled the interest rate $r=0.1$.  Other parameters are $\sigma = 0.2$, and $T=0.5$.  The drift of the log stock price is labelled $drift=r-\frac{\sigma^2}{2}$.  The plot output is one of the simulated sample paths.  In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, $n=1$.  Given a simulated mean zero normal random variable, $z$, changing the sign to $-z$ is also a simulated normal random variable with zero mean and the same standard deviation.  As a result, we have two simulations for the stock price labelled $St$ and $St1$, but we only plot one sample path for $St$. 
+
+```{python}
+"""
+# Simulate geometric Brownian motion
+import numpy as np
+import matplotlib.pyplot as plt
+# number of paths
+n = 10000
+#number of divisions
+m = 1000
+# Interest rate (We set the drift equal to the interest rate)
+r = 0.1
+# Volatility
+sig = 0.2
+# Initial Stock Price
+S0 = 42
+# Maturity
+T = 0.5
+# Delta t
+dt = T/m
+# Drift
+drift = (r-0.5*sig**2)
+# Volatility
+vol = sig * np.sqrt(dt)
+
+t = np.array(range(0,m + 1,1)) * dt
+
+# seed for random generator
+seed= 2020
+# define a random generator
+np.random.seed(seed)
+inc = np.zeros(shape = (m + 1, n))
+inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))
+St = np.zeros(shape = (m + 1, n))
+St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
+St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
+plt.figure(figsize=(9,6))
+plt.plot(t,St[:,1])
+"""
+
+
+
+```
+The plot below is the distribution of the simulated stock price at $T$.
+```{python}
+"""
+plt.figure(figsize=(9,6))
+a=plt.hist(St[m,:], bins=100)
+"""
+```
+
+
+
+
+## Reinvesting Dividends {#sec-s_reinvestingdividends}
+
+Frequently, we will assume that the asset underlying a derivative security pays a constant dividend yield, \index{dividend yield} which we will denote by $q$.  This means, for an asset with price $S_t$, that the dividend in an instant $\d  t$ is $q S_t\,\d  t$.  If the dividends are reinvested in new shares, the number of shares will grow exponentially at rate $q$.  To see this, consider the portfolio starting with a single share of the asset and reinvesting dividends until some date $T$.  Let $X_t$ denote the number of shares resulting from this strategy at any time $t\leq T$.  Then the dividend received at date $t$ is $q S_tX_t\,\d  t$, which can be used to purchase $q X_t\,\d  t$ new shares.  This implies that $\d  X_t=q X_t\,\d  t$, or $\d  X_t/\d  t = q X_t$, and it is easy to check (and very well known) that this equation is solved by $X_t=\mathrm{e}^{q t}X_0$.  In our case, with $X_0=1$, we have $X_t=\mathrm{e}^{q t}$.
+
+The dollar value of the trading strategy just described will be $X_tS_t = \mathrm{e}^{q t}S_t$.  Denote this by $V_t$.  This is the value of a non-dividend-paying portfolio, because all dividends are reinvested.  From the Compounding/Discounting example in @sec-s_examples, we know that
+$$ 
+\frac{\d  V}{V} = q\,\d  t + \frac{\d  S}{S}\;.
+$$ {#eq-reinvestingdividends}
+
+This means that the rate of return on the portfolio is the dividend yield $q\,\d  t$ plus the return $\d  S/S$ due to capital gains.
+
+
+
+
+While geometric Brownian motion is an important stochastic process to model stock prices, the process with drift equal to zero given by
+$$X_t = \exp\left(-\frac{\kappa^2}{2} + \kappa B_t\right)$$
+
+satisfies $\E[X_t]=1$ and $\E[X_t|X_s]=X_s$ and is an important example of a strictly positive martingale.  Again, these facts can be verified using the formula for the expected value of a lognormal random variable.  Notice that we can write
+$$\,\d  X_t= \kappa X_t \,\d  B_t\;,$$
+which agrees with the martingale characterization of $\int_0^t \sigma(X_t,t) \,\d  B_t$.
+
+
+
+## Volatilities {#sec-s_volatilities}
+
+As mentioned in @sec-s_geometricbrownianmotion, when we encounter an equation of the form 
+$$\frac{\d  S}{S} = \mu\,\d  t + \sigma\,\d  B$$
+where $B$ is a Brownian motion, we will say  $\sigma$ is the volatility of $S$.   We will occasionally need to compute the volatilities of products or ratios of random processes.  These computations follow directly from Ito's formula.
+
+Suppose 
+$$\frac{\d  X}{X} = \mu_x\,\d  t + \sigma_x\,\d  B_x \qquad \text{and} \qquad 
+\frac{\d  Y}{Y} = \mu_y\,\d  t + \sigma_y\,\d  B_y\; ,$$
+where $B_x$ and $B_y$ are Brownian motions with correlation $\rho$, and $\mu_x$, $\mu_y$, $\sigma_x$, $\sigma_y$, and $\rho$ may be quite general random processes.  
+
+### Products
+If $Z=XY$, then @eq-rule2 gives us
+$$
+\frac{\d  Z}{Z} = (\mu_x+\mu_y+\rho\sigma_x\sigma_y)\,\d  t + \sigma_x\,\d  B_x + \sigma_y\,\d  B_y\;.
+$$ {#eq-volproduct1}
+
+The instantaneous variance of $\d  Z/Z$ is calculated, using the rules for products of differentials, as
+\begin{align*}
+\left(\frac{\d  Z}{Z}\right)^2 &= (\sigma_x\,\d  B_x + \sigma_y\,\d  B_y)^2\\
+&= (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\,\d  t\;.
+\end{align*}
+As will be explained below, the volatility is the square root of the instantaneous variance (dropping the $\d  t$).  This implies:
+
+::: Rule
+## 
+The volatility of $XY$ is
+$$
+\sqrt{\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y}\;.
+$$ {#eq-volatilityproduct}
+
+:::
+
+
+
+### Ratios
+If $Z=Y/X$, then @eq-rule4 gives us
+$$
+\frac{\d  Z}{Z} = (\mu_y-\mu_x-\rho\sigma_x\sigma_y+\sigma_x^2)\,\d  t + \sigma_y\,\d  B_y - \sigma_x\,\d  B_x\;.
+$$ {#eq-ratioproduct1}
+
+The instantaneous variance of $\d  Z/Z$ is therefore
+\begin{align*}
+\left(\frac{\d  Z}{Z}\right)^2 &= (\sigma_y\,\d  B_y - \sigma_x\,\d  B_x)^2\\
+&= (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\,\d  t\;.
+\end{align*}
+This implies:
+
+::: Rule
+## 
+The volatility of $Y/X$ is  
+$$
+\sqrt{\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y}\;.
+$$ {#eq-volatilityratio}
+
+:::
+
+
+
+::: Extra
+To understand why taking the square root of $(\d  Z/Z)^2$ (dropping the $\d  t$) gives the volatility, consider for example the product case $Z=XY$.  Define a random process $B$ by $B_0=0$ and 
+$$
+\d  B = \frac{\sigma_x}{\sigma}\,\d  B_x + \frac{\sigma_y}{\sigma}\,\d  B_y\;,
+$$ {#eq-foreign\,\d  B}
+
+where $\sigma$ is the volatility defined in @eq-volatilityproduct.
+Then we can write  @eq-volproduct1 as
+$$
+\frac{\d  Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\d  t + \sigma\,\d  B\;.$$ {#eq-volproduct2}
+
+From the discussion in @sec-s_itoprocesses, we know that $B$ is a continuous martingale.  We can compute its quadratic variation from
+\begin{align*}
+(\d  B)^2 &= \left(\frac{\sigma_x\,\d  B_x + \sigma_s\,\d  B_s}{\sigma}\right)^2\\
+&= \frac{(\sigma_x^2 + \sigma_s^2 + 2\rho\sigma_x\sigma_s)\,\d  t}{\sigma^2}\; ,\\
+&= \d  t\;.
+\end{align*}
+By Levy's theorem (see @sec-s_quadraticvariation), any continuous martingale with this quadratic variation is necessarily a Brownian motion.  Therefore,  @eq-volproduct2 shows that $\sigma$ is the volatility of $Z$ as defined at the beginning of the section.
+:::
+
+## {.unnumbered}
+
+
+::: Exercise
+ Consider a discrete partition $0=t_0 < t_1 < \cdots t_N=T$ of the time interval $[0,T]$ with $t_i - t_{i-1} = \Delta t = T/N$ for each $i$.  Consider the function 
+$$X_t=\mathrm{e}^t\; .$$
+Write a code, which computes and plots $\sum_{i=1}^N [\Delta X_{t_i}]^2$, where 
+$$\Delta X_{t_i} = X_{t_i}-X_{t_{i-1}} = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .$$
+:::
+::: Exercise
+ Repeat the previous problem for the function $X_t = t^3$.  In both this and the previous problem, what happens to $\sum_{i=1}^N [\Delta X_{t_i}]^2$ as $N \rightarrow \infty$?
+:::
+::: Exercise
+ Either use the code provided or write a code to compute $\sum_{i=1}^N [\Delta B_{t_i}]^2$, where $B$ is a simulated Brownian motion.  For a given $T$, what happens to the sum as $N \rightarrow \infty$?  
+:::
+::: Exercise
+ Repeat the previous problem to compute $\sum_{i=1}^N [\Delta B_{t_i}]^3$, where $B$ is a simulated Brownian motion.  For a given $T$, what happens to the sum as $N \rightarrow \infty$?  
+:::
+::: Exercise
+ Repeat the previous problem, computing instead $\sum_{i=1}^N |\Delta B_{t_i}|$ where $| \cdot |$ denotes the absolute value.  What happens to this sum as $N \rightarrow \infty$?
+:::
+::: Exercise
+Use Ito's Lemma to derive the stochastic differential equation for $S_t^2$.  Argue that $S_t^2$ is geometric Brownian motion and find $\E[S_t^2]$.
+::: 
+::: Exercise
+Ito's Lemma can be used in different ways to get the same answer.  For example, let $X_t = a t + b B_t$ and use Ito's lemma on the function $e^{X_t}$.  Alternatively, let $f(t, B_t) = e^{a t + bB_t}$.  Use Ito's lemma on $f(,)$.
+::: 
+::: Exercise 
+Use the facts $e^{x+y}=e^x \times e^y$ and $\frac{e^x}{e^y} = e^{x-y}$ to deduce the drift and volatility of the product and ratio of two geometric Brownian motions.
+::: 
+::: Exercise
+ Consider a discrete partition $0=t_0 < t_1 < \cdots t_N=T$ of the time interval $[0,T]$ with $t_i - t_{i-1} = \Delta t = T/N$ for each $i$.  Consider a geometric Brownian motion
+$$\frac{\d  Z}{Z} = \mu\,\d  t + \sigma\,\d  B\; .$$
+An approximate path $\tilde{Z}_t$ of the geometric Brownian motion can be simulated as
+$$
+\Delta \tilde{Z}_{t_i} = \tilde{Z}_{t_{i-1}} \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
+$$ {#eq-exponential111}
+Modify the code to generate both a path $Z_t$ and an approximate path $\tilde{Z}_t$ according to @eq-exponential111, using the same $\Delta B$  for both paths and taking $\tilde{Z}_0 = Z_0$.  Plot both paths in the same figure.  How well does the approximation work for large $N$?   Warning:  
+For $N$ larger than about $100 T$, the approximation will look perfect---you won't be able to tell that there are two plots in the figure.  One reason this is true is an exact formula is 
+$$
+ Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
+$$ {#eq-exponential112}
+and using Taylor's Theorem for small $\Delta t$, $e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t$ and $e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2$ and $(\,\d  B_t)^2=\Delta t$.
+:::
+::: Exercise
+Use simulation to find  $\E^*[e^{-r T}{\mathbf{1}}_{\{S_t \ge K\}}]$ in the risk-neutral probability where
+\begin{equation*}
+\,\d  S_t= r S_t \,\d  t + \sigma S_t \,\d  B_t^*
+\end{equation*}
+Verify that $S_t/e^{r t}$ is a martingale in the $*$ measure where $B^*$ is a Brownian motion.
+Then use simulation to find $S_0\E^S[\frac{1}{S_t} {\mathbf{1}}_{\{S_t \ge K\}}]$ in the pricing measure which uses the share as numeraire where 
+\begin{equation*}
+\,\d  S_t = (r + \sigma^2) S_t \,\d  t + \sigma S_t \,\d  B_t^S
+\end{equation*}
+so the log satisfies
+\begin{equation*}
+\log(S_t) = \log(S_0) + (r + \frac{\sigma^2}{2})t + \sigma B_t^S
+\end{equation*}
+You should verify $e^{rt}/S_t$ is a martingale in the $S$ measure where $B^S$ is a Brownian motion.
+Both estimates should be the same up to simulation error and give the time zero value of the random payoff ${\mathbf{1}}_{\{S_t \ge K\}}$ which is a random variable equal to $1$ if $S_t\ge K$ and $0$ otherwise.  You should choose the values for $r$, $\sigma$, $T$, and $K$.
+::: 
+
+
