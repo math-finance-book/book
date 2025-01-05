@@ -116,6 +116,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   --color1: #ede29d;
   --color2: #8c813a;
 }
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
+}
+.ToDo {
+  --color1: #86f7bd;
+  --color2: #3c825e;
+}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
@@ -123,10 +131,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
-}
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
 }
 </style>
 
@@ -496,6 +500,9 @@ window.Quarto = {
 </header>
 
 
+<p>We consider Asian options, barrier options (knock-outs and knock-ins), and basket and spread options</p>
+<section id="asian-options" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="asian-options"><span class="header-section-number">15.1</span> Asian Options</h2>
 <p>An Asian option is an option the value of which depends on the average underlying asset price during the lifetime of the option. Average-price calls and puts are defined like standard calls and puts but with the final asset price replaced by the average price. Average-strike calls and puts are defined like standard calls and puts but with the exercise price replaced by the average asset price. A firm that must purchase an input at frequent intervals or will sell a product in a foreign currency at frequent intervals can use an average price option as an alternative to buying multiple options with different maturity dates. The average-price option will generally be both less expensive and a better hedge than purchasing multiple options.</p>
 <p>In practice, the average price is computed by averaging over the prices sampled at a finite number of discrete dates. First, we consider the case of continuous sampling. With continuous sampling, the average price at date <span class="math inline">\(T\)</span> for an option written at date <span class="math inline">\(0\)</span> will be denoted by <span class="math inline">\(A_T\)</span> and is defined as <span class="math display">\[
 A_T = \frac{1}{T}\int_0^T S_t\,\,\mathrm{d}t\; .
@@ -513,7 +520,7 @@ A_T &amp;= \exp\left(\log \frac{1}{T}\int_0^T S_t\right)\\
 \end{align*}\]</span> Consequently, approximating the value of an average-price or average-strike option by substituting <span class="math inline">\(A_\text{g}_T\)</span> for <span class="math inline">\(A_T\)</span> will produce a biased estimate of the value. Nevertheless, the geometric average<span class="math inline">\(A_\text{g}_T\)</span> and the arithmetic average <span class="math inline">\(A_T\)</span> will be highly correlated, so <span class="math inline">\(A_\text{g}_T\)</span> forms a very useful for Monte-Carlo valuation of average-price and average-strike options, as will be discussed later. To implement the idea, we need a valuation formula for options written on <span class="math inline">\(A_\text{g}_T\)</span>. We will derive this for an average-price call, in which <span class="math inline">\(A_\text{g}_T\)</span> substitutes for <span class="math inline">\(A_T\)</span>.</p>
 <p>Specifically, consider a contract that pays <span class="math display">\[
 \max(0,A_\text{g}_T-K)
-\]</span> at its maturity <span class="math inline">\(T\)</span>. This is a geometric-average-price call,, and we will analyze it in the same way that we analyzed quanto options in <a href="Chapter_FX.html" class="quarto-xref"><span>Chapter 13</span></a>. Let <span class="math inline">\(V_t\)</span> denote the value at date <span class="math inline">\(t\)</span> of receiving <span class="math inline">\(A_\text{g}_T\)</span> at date <span class="math inline">\(T\)</span>. This can be calculated, and the result will be given below. <span class="math inline">\(V_t\)</span> is the value of a non-dividend-paying portfolio, and, by definition, <span class="math inline">\(V_T=A_\text{g}_T\)</span>, so the geometric-average-price call is equivalent to a standard call with <span class="math inline">\(V\)</span> being the price of the underlying. We will show that <span class="math inline">\(V\)</span> has a time-varying but non-random volatility. Therefore, we can apply the Black-Scholes formula, inputting the average volatility as described in <a href="Chapter_BlackScholes.html#sec-s_timevaryingvolatility" class="quarto-xref"><span>Section 10.7</span></a>, to value the geometric-average-price call. We could attempt the same route to price average-price options, but we would find that the volatility of the corresponding value <span class="math inline">\(V\)</span> would vary randomly, just as we found the basket portfolio to have a random volatility in the previous section.</p>
+\]</span> at its maturity <span class="math inline">\(T\)</span>. This is a geometric-average-price call,, and we will analyze it in the same way that we analyzed quanto options in <a href="#sec-c_foreignexchange" class="quarto-xref"><span class="quarto-unresolved-ref">sec-c_foreignexchange</span></a>. Let <span class="math inline">\(V_t\)</span> denote the value at date <span class="math inline">\(t\)</span> of receiving <span class="math inline">\(A_\text{g}_T\)</span> at date <span class="math inline">\(T\)</span>. This can be calculated, and the result will be given below. <span class="math inline">\(V_t\)</span> is the value of a non-dividend-paying portfolio, and, by definition, <span class="math inline">\(V_T=A_\text{g}_T\)</span>, so the geometric-average-price call is equivalent to a standard call with <span class="math inline">\(V\)</span> being the price of the underlying. We will show that <span class="math inline">\(V\)</span> has a time-varying but non-random volatility. Therefore, we can apply the Black-Scholes formula, inputting the average volatility as described in <a href="#sec-s_timevaryingvolatility" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_timevaryingvolatility</span></a>, to value the geometric-average-price call. We could attempt the same route to price average-price options, but we would find that the volatility of the corresponding value <span class="math inline">\(V\)</span> would vary randomly, just as we found the basket portfolio to have a random volatility in the previous section.</p>
 <p>The value <span class="math inline">\(V_t\)</span> can be calculated as <span class="math display">\[
 V_t= \mathrm{e}^{-r(T-t)}\\E^R_t\big[A_\text{g}_T\big]\; .
 \]</span> Define <span class="math display">\[
@@ -532,7 +539,7 @@ V_0 = \mathrm{e}^{-rT}S_0\exp\left(\frac{(r-q-\sigma^2/2)T}{2} + \frac{\sigma^2T
 S_t^{\frac{T-t}{T}}\;,
 \]</span> and, by Ito’s formula, <span class="math display">\[
 \frac{ \,\mathrm{d}S^{\frac{T-t}{T}}}{S^{\frac{T-t}{T}}} = \text{something}\,\,\,\mathrm{d}t + \left(\frac{T-t}{T}\right)\sigma\,\,\mathrm{d}B\;.
-\]</span> This implies that the average volatility, in the sense of <a href="Chapter_BlackScholes.html#sec-s_timevaryingvolatility" class="quarto-xref"><span>Section 10.7</span></a>, is <span class="math display">\[
+\]</span> This implies that the average volatility, in the sense of <a href="#sec-s_timevaryingvolatility" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_timevaryingvolatility</span></a>, is <span class="math display">\[
 \sigma_{\text{avg}} = \sqrt{\frac{1}{T}\int_0^T \left(\frac{T-t}{T}\right)^2\sigma^2\,\,\mathrm{d}t}
 =\frac{\sigma}{\sqrt{3}}\;.
 \]</span> Applying the Black-Scholes formula yields:</p>
@@ -541,7 +548,7 @@ S_t^{\frac{T-t}{T}}\;,
 V_0\mathrm{N}(d_1)-\mathrm{e}^{-rT}K\mathrm{N}(d_2)\; ,
 \]</span> where <span class="math display">\[
 d_1 = \frac{\log\left(\frac{V_0}{K}\right)+\left(r+\frac{1}{2}\sigma_{\text{avg}}^2\right)T}{\sigma_{\text{avg}}\sqrt{T}}, \qquad d_2 = d_1 - \sigma_{\text{avg}}\sqrt{T}\; ,
-\]</span> <span class="math inline">\(V_0\)</span> is defined in <a href="#eq-asianV0" class="quarto-xref">Equation&nbsp;<span>15.2</span></a>, and <span class="math inline">\(\sigma_{\text{avg}}=\sigma/\sqrt{3}\)</span>.<p></p>
+\]</span> <span class="math inline">\(V_0\)</span> is defined in <a href="#eq-asianV0" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-asianV0</span></a>, and <span class="math inline">\(\sigma_{\text{avg}}=\sigma/\sqrt{3}\)</span>.<p></p>
 </div></details>
 </div>
 <p>We can also value a discretely-sampled geometric-average-price call by the same arguments. Consider dates <span class="math inline">\(0&lt;t_0&lt; t_1 &lt; \cdots t_N=T\)</span>, where <span class="math inline">\(t_i-t_{i-1}=\Delta t\)</span> for each <span class="math inline">\(i\)</span> and suppose the price is to be sampled at the dates <span class="math inline">\(t_1,\ldots,t_N\)</span>. Now let <span class="math inline">\(V_t\)</span> denote the value at date <span class="math inline">\(t\)</span> of the contract that pays <span id="eq-geometricaveragev0"><span class="math display">\[
@@ -560,7 +567,7 @@ V_0 = \mathrm{e}^{-rT}S_0\exp\left( \frac{(N+1)\nu\Delta t}{2} + \frac{(N+1)(2N+
 \qquad(15.5)\]</span></span></p>
 <p>Second, the volatility of <span class="math inline">\(V_t\)</span> comes from the factor <span class="math inline">\(S_t^{(k+1)/N}\)</span>, and <span class="math display">\[
 \frac{ \,\mathrm{d}S^{\frac{k+1}{N}}}{S^{\frac{k+1}{N}}} = \text{something}\,\,\,\mathrm{d}t + \left(\frac{k+1}{N}\right)\sigma\,\,\mathrm{d}B\;.
-\]</span> This implies that the average volatility, in the sense of <a href="Chapter_BlackScholes.html#sec-s_timevaryingvolatility" class="quarto-xref"><span>Section 10.7</span></a>, is</p>
+\]</span> This implies that the average volatility, in the sense of <a href="#sec-s_timevaryingvolatility" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_timevaryingvolatility</span></a>, is</p>
 <p><span class="math display">\[
 \sigma_{\text{avg}} = \sqrt{\frac{1}{N}\sum_{k=0}^{N-1} \left(\frac{k+1}{N}\right)^2\sigma^2\,\,\mathrm{d}t}
 \]</span> <span id="eq-asiansigmaavg"><span class="math display">\[
@@ -573,21 +580,21 @@ V_0\mathrm{N}(d_1)-\mathrm{e}^{-rT}K\mathrm{N}(d_2)\;,
 \qquad(15.7)\]</span></span><p></p>
 <p>where <span class="math display">\[
 d_1 = \frac{\log\left(\frac{V_0}{K}\right)+\left(r+\frac{1}{2}\sigma_{\text{avg}}^2\right)T}{\sigma_{\text{avg}}\sqrt{T}}, \qquad d_2 = d_1 - \sigma_{\text{avg}}\sqrt{T}\; ,
-\]</span> <span class="math inline">\(V_0\)</span> is defined in <a href="#eq-asianV02" class="quarto-xref">Equation&nbsp;<span>15.5</span></a>, and <span class="math inline">\(\sigma_{\text{avg}}\)</span> is defined in <a href="#eq-asiansigmaavg" class="quarto-xref">Equation&nbsp;<span>15.6</span></a>.</p>
+\]</span> <span class="math inline">\(V_0\)</span> is defined in <a href="#eq-asianV02" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-asianV02</span></a>, and <span class="math inline">\(\sigma_{\text{avg}}\)</span> is defined in <a href="#eq-asiansigmaavg" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-asiansigmaavg</span></a>.</p>
 </div></details>
 </div>
-<p>This formula will be used in <a href="Chapter_MonteCarlo.html#sec-s_controlvariates" class="quarto-xref"><span>Section 21.2</span></a> as a control variate for pricing discretely-sampled average-price calls (even average-price calls that were written before the date of valuation).</p>
+<p>This formula will be used in <a href="#sec-s_controlvariates" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_controlvariates</span></a> as a control variate for pricing discretely-sampled average-price calls (even average-price calls that were written before the date of valuation).</p>
 <div id="Extra-15.1" class="Extra">
 <p></p><details class="Extra fbx-simplebox fbx-default"><summary><strong>Theory Extra 15.1</strong></summary><div>##<p></p>
-<p>We will now derive <a href="#eq-geometricaveragev1" class="quarto-xref">Equation&nbsp;<span>15.1</span></a> and <a href="#eq-geometricaveragev2" class="quarto-xref">Equation&nbsp;<span>15.4</span></a>. We will begin with <a href="#eq-geometricaveragev1" class="quarto-xref">Equation&nbsp;<span>15.1</span></a>. The random variable <span class="math inline">\(A_g_T\)</span> is normally distributed under the risk-neutral probability given information at time <span class="math inline">\(t\)</span>. To establish this, and to calculate the mean and variance of <span class="math inline">\(A_g_T\)</span>, the key is to change the order of integration in the integral in the second line below to obtain the third line: <span class="math display">\[\begin{align*}
+<p>We will now derive <a href="#eq-geometricaveragev1" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev1</span></a> and <a href="#eq-geometricaveragev2" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev2</span></a>. We will begin with <a href="#eq-geometricaveragev1" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev1</span></a>. The random variable <span class="math inline">\(A_g_T\)</span> is normally distributed under the risk-neutral probability given information at time <span class="math inline">\(t\)</span>. To establish this, and to calculate the mean and variance of <span class="math inline">\(A_g_T\)</span>, the key is to change the order of integration in the integral in the second line below to obtain the third line: <span class="math display">\[\begin{align*}
 \int_t^T \log S(u)\,du &amp;= \int_t^T \left\{\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)(u-t) + \sigma [B(u)-B_t]\right\}\,du\\
 &amp;= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_t^u \,\mathrm{d}B_s\,du\\
 &amp;= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_s^T du\,\,\mathrm{d}B_s\\
 &amp;= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T (T-s)\,\,\mathrm{d}B_s
 \end{align*}\]</span> and then to note that <span class="math inline">\(\int_t^T (T-s)\,\,\mathrm{d}B_s\)</span> is normally distributed with mean zero and variance equal to <span class="math display">\[
 \int_t^T (T-s)^2\,ds =\frac{(T-t)^3}{3}\;.
-\]</span> Therefore <span class="math inline">\(\\E^R_t\left[A_g_T\right]\)</span> is the expectation of the exponential of a normally distributed random variable. Equation~<a href="#eq-geometricaveragev1" class="quarto-xref">Equation&nbsp;<span>15.1</span></a> now follows from the fact that if <span class="math inline">\(x\)</span> is normally distributed with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span> then <span class="math inline">\(\\E\left[\mathrm{e}^x\right] = \mathrm{e}^{\mu+\sigma^2/2}\)</span>.</p>
-<p>To establish <a href="#eq-geometricaveragev2" class="quarto-xref">Equation&nbsp;<span>15.4</span></a>, note that the discounted risk-neutral expectation of <a href="#eq-geometricaveragev0" class="quarto-xref">Equation&nbsp;<span>15.3</span></a>, conditional on having observed <span class="math inline">\(S(t_1), \ldots, S(t_{N-k-1})\)</span>, is</p>
+\]</span> Therefore <span class="math inline">\(\\E^R_t\left[A_g_T\right]\)</span> is the expectation of the exponential of a normally distributed random variable. Equation~<a href="#eq-geometricaveragev1" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev1</span></a> now follows from the fact that if <span class="math inline">\(x\)</span> is normally distributed with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span> then <span class="math inline">\(\\E\left[\mathrm{e}^x\right] = \mathrm{e}^{\mu+\sigma^2/2}\)</span>.</p>
+<p>To establish <a href="#eq-geometricaveragev2" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev2</span></a>, note that the discounted risk-neutral expectation of <a href="#eq-geometricaveragev0" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev0</span></a>, conditional on having observed <span class="math inline">\(S(t_1), \ldots, S(t_{N-k-1})\)</span>, is</p>
 <p><span class="math display">\[
 V_t = \mathrm{e}^{-r(T-t)}\\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log S_{t_i}\right)\right]
 \]</span> <span class="math display">\[
@@ -603,8 +610,8 @@ V_t = \mathrm{e}^{-r(T-t)}\\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log 
 (k+1)\log S_t + (k+1)\varepsilon\nu\Delta t + \frac{k(k+1)}{2}\nu\Delta t
 \]</span> and variance <span class="math display">\[
 (k+1)^2\sigma^2\varepsilon\Delta t + \sigma^2\sum_{i=1}^{k} (k+1-i)^2\Delta t = (k+1)^2\sigma^2\varepsilon\Delta t +\frac{k(k+1)(2k+1)\sigma^2}{6}\; ,
-\]</span> using the fact that <span class="math inline">\(\sum_{i=1}^k i^2 = k(k+1)(2k+1)/6\)</span>. The expectation of the exponential of a normally distributed random variable equals the exponential of its mean plus one-half of its variance, and the exponential of <span class="math inline">\((k+1)\log S_t/N\)</span> is <span class="math inline">\(S_t^{(k+1)/N}\)</span>. Therefore the conditional expectation in <a href="#eq-geometricaveragev3" class="quarto-xref">Equation&nbsp;<span>15.8</span></a> is <span class="math display">\[S_t^{\frac{k+1}{N}}\exp\left(\left[ \frac{(k+1)\varepsilon\nu}{N}+ \frac{k(k+1)\nu}{2N} + \frac{(k+1)^2\sigma^2\varepsilon}{2N^2}+\frac{k(k+1)(2k+1)\sigma^2}{12N^2} \right]\Delta t\right)\; ,
-\]</span> which implies <a href="#eq-geometricaveragev2" class="quarto-xref">Equation&nbsp;<span>15.4</span></a>.</p>
+\]</span> using the fact that <span class="math inline">\(\sum_{i=1}^k i^2 = k(k+1)(2k+1)/6\)</span>. The expectation of the exponential of a normally distributed random variable equals the exponential of its mean plus one-half of its variance, and the exponential of <span class="math inline">\((k+1)\log S_t/N\)</span> is <span class="math inline">\(S_t^{(k+1)/N}\)</span>. Therefore the conditional expectation in <a href="#eq-geometricaveragev3" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev3</span></a> is <span class="math display">\[S_t^{\frac{k+1}{N}}\exp\left(\left[ \frac{(k+1)\varepsilon\nu}{N}+ \frac{k(k+1)\nu}{2N} + \frac{(k+1)^2\sigma^2\varepsilon}{2N^2}+\frac{k(k+1)(2k+1)\sigma^2}{12N^2} \right]\Delta t\right)\; ,
+\]</span> which implies <a href="#eq-geometricaveragev2" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-geometricaveragev2</span></a>.</p>
 </div></details>
 </div>
 <p>The following code computes the price of a geometric-average-price call.</p>
@@ -627,11 +634,12 @@ V_t = \mathrm{e}^{-r(T-t)}\\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log 
 <pre><code>'\ndef discrete_geom_average_price_call(S, K, r, sigma, q, T, N):\n    dt = T / N\n    nu = r - q - 0.5 * sigma ** 2\n    a = N * (N + 1) * (2 * N + 1) / 6\n    V = np.exp(-r * T) * S * np.exp(((N + 1) * nu / 2 + sigma ** 2 * a / (2 * N ** 2)) * dt)\n    sigavg = sigma * np.sqrt(a) / (N ** 1.5)\n    return black_scholes_call(V, K, r, sigavg, q, T)\n\nprint("Discrete Geometric Average Price Call:", discrete_geom_average_price_call(S, K, r, sigma, q, T, N))\n'</code></pre>
 </div>
 </div>
-<section id="sec-s_barriers" class="level2" data-number="15.1">
-<h2 data-number="15.1" class="anchored" data-anchor-id="sec-s_barriers"><span class="header-section-number">15.1</span> Barrier Options</h2>
+</section>
+<section id="sec-s_barriers" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="sec-s_barriers"><span class="header-section-number">15.2</span> Barrier Options</h2>
 <p> A down-and-out call pays the usual call value at maturity if and only if the stock price does not hit a specified lower bound during the lifetime of the option. If it does breach the lower barrier, then it is out. Conversely, a down-and-in call pays off only if the stock price does hit the lower bound. Up-and-out and up-and-in calls are defined similarly, and there are also put options of this sort. The out versions are called knock-outs and the in versions are called knock-ins.</p>
 <p>Knock-ins can be priced from knock-outs and vice-versa. For example, the combination of a down-and-out call and a down-and-in call creates a standard European call, so the value of a down-and-in can be obtained by subtracting the value of a down-and-out from the value of a standard European call. Likewise, up-and-in calls can be valued by subtracting the value of an up-and-out from the value of a standard European call. Both knock-outs and knock-ins are of course less expensive than comparable standard options.</p>
-<p>We will describe the pricing of a down-and-out call. The pricing of up-and-out calls and knock-out puts is similar. Often there are rebates associated with the knocking-out of a barrier option, but we will not include that feature here (see <a href="Chapter_PDEs.html#sec-s_finitedifferencebarriers" class="quarto-xref"><span>Section 23.7</span></a> however).</p>
+<p>We will describe the pricing of a down-and-out call. The pricing of up-and-out calls and knock-out puts is similar. Often there are rebates associated with the knocking-out of a barrier option, but we will not include that feature here (see <a href="#sec-s_finitedifferencebarriers" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_finitedifferencebarriers</span></a> however).</p>
 <p>A down-and-out call provides a hedge against an increase in an asset price, just as does a standard call, for someone who is short the asset. The difference is that the down-and-out is knocked out when the asset price falls sufficiently. Presumably this is acceptable to the buyer because the need to hedge against high prices diminishes when the price falls. In fact, in this circumstance the buyer may want to establish a new hedge at a lower strike. However, absent re-hedging at a lower strike, the buyer of a knock-out call obviously faces the risk that the price may reverse course after falling to the knock-out boundary, leading to regret that the option was knocked out. The rationale for accepting this risk is that the knock-out is cheaper than a standard call. Thus, compared to a standard call, a down-and-out call provides cheaper but incomplete insurance.</p>
 <p>The combination of a knock-out call and a knock-in call (or knock-out puts) with the same barrier and different strikes creates an option with a strike that is reset when the barrier is hit. This is a hedge that adjusts automatically to the market. An example is given in Probs.~<span class="math inline">\(\ref{e_standardknockout3}\)</span> and~<span class="math inline">\(\ref{e_standardknockout4}\)</span>.</p>
 <section id="down-and-out-call-payoff" class="level3">
@@ -693,13 +701,13 @@ d_1' = \frac{\log\left(\frac{L^2}{KS_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\rig
 <p><span id="eq-caseb3"><span class="math display">\[
 d_1= \frac{\log\left(\frac{S_0}{L}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,\qquad  d_2 = d_1-\sigma\sqrt{T}\;.
 \qquad(15.15)\]</span></span></p>
-<p>Moreover, <span class="math inline">\(\text{prob}^{V}(y=1)\)</span> and <span class="math inline">\(\text{prob}^{R}(y=1)\)</span> are given by <a href="#eq-casea4" class="quarto-xref">Equation&nbsp;<span>15.12</span></a> - <a href="#eq-casea41" class="quarto-xref">Equation&nbsp;<span>15.13</span></a> but with <span class="math inline">\(K\)</span> replaced by <span class="math inline">\(L\)</span>, which means that <span id="eq-caseb5"><span class="math display">\[
+<p>Moreover, <span class="math inline">\(\text{prob}^{V}(y=1)\)</span> and <span class="math inline">\(\text{prob}^{R}(y=1)\)</span> are given by <a href="#eq-casea4" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-casea4</span></a> - <a href="#eq-casea41" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-casea41</span></a> but with <span class="math inline">\(K\)</span> replaced by <span class="math inline">\(L\)</span>, which means that <span id="eq-caseb5"><span class="math display">\[
 d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'= d_1' - \sigma\sqrt{T}\;.
 \qquad(15.16)\]</span></span></p>
 </section>
 <section id="down-and-out-call-pricing-formula" class="level3">
 <h3 class="anchored" data-anchor-id="down-and-out-call-pricing-formula">Down-and-Out Call Pricing Formula</h3>
-<div id="section-2" class="Rule" title="">
+<div id="Rule-15.3" class="Rule">
 <details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 15.3</strong></summary><div>
 <p>The value of a continuously-sampled down-and-out call option with barrier <span class="math inline">\(L\)</span> is</p>
 <p><span id="eq-downout100"><span class="math display">\[
@@ -709,8 +717,8 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 \qquad(15.17)\]</span></span></p>
 <p>where</p>
 <ol type="1">
-<li>if <span class="math inline">\(K&gt;L\)</span>, <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span> , <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-casea3" class="quarto-xref">Equation&nbsp;<span>15.10</span></a> - <a href="#eq-casea5" class="quarto-xref">Equation&nbsp;<span>15.11</span></a>,</li>
-<li>if <span class="math inline">\(K\leq L\)</span>, <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span>, <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-caseb3" class="quarto-xref">Equation&nbsp;<span>15.15</span></a> - <a href="#eq-caseb5" class="quarto-xref">Equation&nbsp;<span>15.16</span></a>.</li>
+<li>if <span class="math inline">\(K&gt;L\)</span>, <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span> , <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-casea3" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-casea3</span></a> - <a href="#eq-casea5" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-casea5</span></a>,</li>
+<li>if <span class="math inline">\(K\leq L\)</span>, <span class="math inline">\(d_1\)</span>, <span class="math inline">\(d_2\)</span>, <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-caseb3" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-caseb3</span></a> - <a href="#eq-caseb5" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-caseb5</span></a>.</li>
 </ol>
 </div></details>
 </div>
@@ -751,8 +759,8 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 </div>
 </section>
 </section>
-<section id="sec-s_baskets" class="level2" data-number="15.2">
-<h2 data-number="15.2" class="anchored" data-anchor-id="sec-s_baskets"><span class="header-section-number">15.2</span> Basket and Spread Options</h2>
+<section id="sec-s_baskets" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="sec-s_baskets"><span class="header-section-number">15.3</span> Basket and Spread Options</h2>
 <p>A spread option is a call or a put written on the difference of two asset prices. For example, a spread call will pay at maturity <span class="math inline">\(T\)</span> the larger of zero and <span class="math inline">\(S_1_T-S_2_T-K\)</span>, where the <span class="math inline">\(S_i\)</span> are the asset prices and <span class="math inline">\(K\)</span> is the strike price of the call. Spread options can be used by producers to hedge the difference between an input price and an output price. They are also useful for hedging basis risk. For example, someone may want to hedge an asset by selling a futures contract on a closely related but not identical asset. This exposes the hedger to basis risk: the difference in value between the asset and the underlying asset on the futures contract. A spread call can hedge the basis risk: take <span class="math inline">\(S_1\)</span> to be the value of the asset underlying the futures contract and <span class="math inline">\(S_2\)</span> the value of the asset being hedged.</p>
 <p>A spread option is actually an exchange option. Assuming constant dividend yields <span class="math inline">\(q_1\)</span> and <span class="math inline">\(q_2\)</span>, we can take the assets underlying the exchange option to be as follows</p>
 <ol type="1">
@@ -769,8 +777,8 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 \]</span></p>
 <p>Hence, the volatility will vary randomly over time as the <span class="math inline">\(x_i\)</span> change. As in the case of spread options, there is no simple closed-form solution for the value of a basket option.</p>
 </section>
-<section id="section-3" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="section-3"></h2>
+<section id="section-2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="section-2"></h2>
 <div id="Exercise-15.1" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.1</strong></summary><div>Intuitively, the value of a forward-start call option should be lower the closer is the date <span class="math inline">\(T\)</span> at which the strike is set to the date <span class="math inline">\(T'\)</span> at which the option matures, because then the option has less time to maturity after being created at <span class="math inline">\(T\)</span>. Create a Python program to confirm this. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(q\)</span>, and <span class="math inline">\(T'\)</span>. Compute and plot the value of the option for <span class="math inline">\(T=0.1T'\)</span>, <span class="math inline">\(T=0.2T'\)</span>, , <span class="math inline">\(T=0.9T'\)</span>.<p></p>
 </div></details>
@@ -780,11 +788,11 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 </div></details>
 </div>
 <div id="Exercise-15.3" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.3</strong></summary><div>Create a Python program to illustrate the early exercise premium for an American call on a stock paying a discrete dividend. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, and <span class="math inline">\(T'\)</span>. Take the date of the dividend payment to be <span class="math inline">\(T=0.5T'\)</span> and take the strike price to be <span class="math inline">\(K=S\)</span>. As discussed in <a href="Chapter_Americans.html#sec-s_discrete" class="quarto-xref"><span>Section 11.1</span></a>, the value of a European call is given by the Black-Scholes formula with <span class="math inline">\(S-\mathrm{e}^{-rT}D\)</span> being the initial asset price and <span class="math inline">\(q=0\)</span> being the constant dividend yield. Use the function <code>American_Call_Dividend</code> to compute the value of an American call for dividends <span class="math inline">\(D=.1S\)</span>, <span class="math inline">\(D=.9S\)</span>. Subtract the value of the European call with the same dividend to obtain the early exercise premium. Plot the early exercise premium against the dividend <span class="math inline">\(D\)</span>.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.3</strong></summary><div>Create a Python program to illustrate the early exercise premium for an American call on a stock paying a discrete dividend. Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span>, and <span class="math inline">\(T'\)</span>. Take the date of the dividend payment to be <span class="math inline">\(T=0.5T'\)</span> and take the strike price to be <span class="math inline">\(K=S\)</span>. As discussed in <a href="#sec-s_discrete" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_discrete</span></a>, the value of a European call is given by the Black-Scholes formula with <span class="math inline">\(S-\mathrm{e}^{-rT}D\)</span> being the initial asset price and <span class="math inline">\(q=0\)</span> being the constant dividend yield. Use the function <code>American_Call_Dividend</code> to compute the value of an American call for dividends <span class="math inline">\(D=.1S\)</span>, <span class="math inline">\(D=.9S\)</span>. Subtract the value of the European call with the same dividend to obtain the early exercise premium. Plot the early exercise premium against the dividend <span class="math inline">\(D\)</span>.<p></p>
 </div></details>
 </div>
 <div id="Exercise-15.4" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.4</strong></summary><div>Create a Python function to value a simple chooser (a chooser option in which <span class="math inline">\(K_c=K_p\)</span> and <span class="math inline">\(T_c=T_p\)</span>) using put-call parity to compute <span class="math inline">\(S^*\)</span> as mentioned in <a href="Chapter_Exotics.html#sec-s_choosers" class="quarto-xref"><span>Section 16.3</span></a>. Verify that the function gives the same result as the function <code>Chooser</code>.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.4</strong></summary><div>Create a Python function to value a simple chooser (a chooser option in which <span class="math inline">\(K_c=K_p\)</span> and <span class="math inline">\(T_c=T_p\)</span>) using put-call parity to compute <span class="math inline">\(S^*\)</span> as mentioned in <a href="#sec-s_choosers" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_choosers</span></a>. Verify that the function gives the same result as the function <code>Chooser</code>.<p></p>
 </div></details>
 </div>
 <div id="Exercise-15.5" class="Exercise">
@@ -792,7 +800,7 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 </div></details>
 </div>
 <div id="Exercise-15.6" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.6</strong></summary><div>A stock has fallen in price and you are attempting to persuade a client that it is now a good buy. The client believes it may fall further before bouncing back and hence is inclined to postpone a decision. To convince the client to buy now, you offer to deliver the stock to him at the end of two months at which time he will pay you the lowest price it trades during the two months plus a fee for your costs. The stock is not expected to pay a dividend during the next two months. Assuming the stock actually satisfies the Black-Scholes assumptions, find a formula for the minimum fee that you would require. (Hint: It is almost in <a href="Chapter_Exotics.html#sec-s_lookbacks" class="quarto-xref"><span>Section 16.5</span></a>.) Create a Python program allowing the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, and <span class="math inline">\(\sigma\)</span> and computing the minimum fee.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.6</strong></summary><div>A stock has fallen in price and you are attempting to persuade a client that it is now a good buy. The client believes it may fall further before bouncing back and hence is inclined to postpone a decision. To convince the client to buy now, you offer to deliver the stock to him at the end of two months at which time he will pay you the lowest price it trades during the two months plus a fee for your costs. The stock is not expected to pay a dividend during the next two months. Assuming the stock actually satisfies the Black-Scholes assumptions, find a formula for the minimum fee that you would require. (Hint: It is almost in <a href="#sec-s_lookbacks" class="quarto-xref"><span class="quarto-unresolved-ref">sec-s_lookbacks</span></a>.) Create a Python program allowing the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, and <span class="math inline">\(\sigma\)</span> and computing the minimum fee.<p></p>
 </div></details>
 </div>
 <div id="exr-e_standardknockout" class="theorem exercise">
@@ -807,10 +815,10 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 <p><span class="theorem-title"><strong>Exercise 15.2</strong></span> Compute the prices of the options in the previous exercise. Modify the simulations to compare the end-of-year costs including the costs of the options, adding interest on the option prices to put everything on an end-of-year basis.</p>
 </div>
 <div id="exr-e_standardknockout3" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 15.3</strong></span> Modify <a href="Chapter_Exotics.html#exr-e_standardknockout" class="quarto-xref">Exercise&nbsp;<span>16.1</span></a> by including a third hedge: a combination of a down-and-out call as in part (b) of <a href="Chapter_Exotics.html#exr-e_standardknockout" class="quarto-xref">Exercise&nbsp;<span>16.1</span></a> and a down-and-in call with knockout barrier and strike 10% below the current price of the asset. Note that this combination forms a call option with strike that is reset when the underlying asset price hits a barrier.</p>
+<p><span class="theorem-title"><strong>Exercise 15.3</strong></span> Modify <a href="#exr-e_standardknockout" class="quarto-xref">Exercise&nbsp;<span class="quarto-unresolved-ref">exr-e_standardknockout</span></a> by including a third hedge: a combination of a down-and-out call as in part (b) of <a href="#exr-e_standardknockout" class="quarto-xref">Exercise&nbsp;<span class="quarto-unresolved-ref">exr-e_standardknockout</span></a> and a down-and-in call with knockout barrier and strike 10% below the current price of the asset. Note that this combination forms a call option with strike that is reset when the underlying asset price hits a barrier.</p>
 </div>
 <div id="exr-e_standardknockout4" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 15.4</strong></span> Modify <a href="Chapter_Exotics.html#exr-e_standardknockout2" class="quarto-xref">Exercise&nbsp;<span>16.2</span></a> by including the hedge in <a href="Chapter_Exotics.html#exr-e_standardknockout3" class="quarto-xref">Exercise&nbsp;<span>16.3</span></a>. Value the down-and-in call using the function <code>Down_And_Out_Call</code> and the fact that a down-and-out and down-and-in with the same strikes and barriers form a standard option.</p>
+<p><span class="theorem-title"><strong>Exercise 15.4</strong></span> Modify <a href="#exr-e_standardknockout2" class="quarto-xref">Exercise&nbsp;<span class="quarto-unresolved-ref">exr-e_standardknockout2</span></a> by including the hedge in <a href="#exr-e_standardknockout3" class="quarto-xref">Exercise&nbsp;<span class="quarto-unresolved-ref">exr-e_standardknockout3</span></a>. Value the down-and-in call using the function <code>Down_And_Out_Call</code> and the fact that a down-and-out and down-and-in with the same strikes and barriers form a standard option.</p>
 </div>
 <div id="exr-e_averagehedge" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 15.5</strong></span> Each week you purchase 100 units of an asset, and you want to hedge your total quarterly (13-week) cost. Create a Python program simulating the asset price and comparing the quality of the following hedges:</p>
@@ -821,7 +829,7 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 </li>
 <li>a discretely sampled geometric-average-price call with maturity <span class="math inline">\(T=0.25\)</span> written on 1300 units of the asset, where the sampling is at the end of each week.</li>
 </ol>
-<p>Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(q\)</span>. Assume all of the options are at the money at the beginning of the quarter (<span class="math inline">\(K=S\)</span>). Compare the hedges as in <a href="Chapter_Exotics.html#exr-e_standardknockout" class="quarto-xref">Exercise&nbsp;<span>16.1</span></a>.</p>
+<p>Allow the user to input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(q\)</span>. Assume all of the options are at the money at the beginning of the quarter (<span class="math inline">\(K=S\)</span>). Compare the hedges as in <a href="#exr-e_standardknockout" class="quarto-xref">Exercise&nbsp;<span class="quarto-unresolved-ref">exr-e_standardknockout</span></a>.</p>
 </div>
 <div id="exr-e_averagehedge2" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 15.6</strong></span> In the setting of the previous problem, compute the prices of the options in parts (a), (b) and (d). Modify the simulations in the previous problem to compare the end-of-quarter costs including the costs of the options (adding interest on the option prices to put everything on an end-of-quarter basis).</p>
@@ -831,11 +839,11 @@ d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)
 </div></details>
 </div>
 <div id="Exercise-15.8" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.8</strong></summary><div>Derive <a href="Chapter_Exotics.html#eq-callonaput" class="quarto-xref">Equation&nbsp;<span>16.11</span></a> for the value of a call on a put.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.8</strong></summary><div>Derive <a href="#eq-callonaput" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-callonaput</span></a> for the value of a call on a put.<p></p>
 </div></details>
 </div>
 <div id="Exercise-15.9" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.9</strong></summary><div>Complete the derivation of <a href="Chapter_Exotics.html#eq-chooser2" class="quarto-xref">Equation&nbsp;<span>16.13</span></a> for the value of a chooser option.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 15.9</strong></summary><div>Complete the derivation of <a href="#eq-chooser2" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-chooser2</span></a> for the value of a chooser option.<p></p>
 </div></details>
 </div>
 <div id="Exercise-15.10" class="Exercise">

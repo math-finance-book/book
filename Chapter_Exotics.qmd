@@ -2,211 +2,13 @@
 
 # Other Exotics {#sec-c_exotics}
 
-We will only discuss a few exotic options.  The reason for studying the derivation of an option pricing formula is that it may better equip one to analyze new products.  Hopefully, this chapter will be of some assistance in that regard.  Of course, one cannot expect to derive a closed-form solution for the value of every product, and often numerical methods  will be necessary.  For a much more comprehensive presentation of exotic option pricing formulas, the book by Haug [@Haug] and the Excel software that accompanies it are highly recommended.  Zhang [@Zhang] is also a comprehensive reference for exotics. 
+We consider five classes of exotic options:
 
-The valuation of an American call option on an asset paying a discrete cash dividend (rather than a continuous dividend) is considered in @sec-s_discrete.  Under a particular assumption on the volatility, valuing this option is very similar to valuing a compound option.  Except for the assumption of a discrete dividend in @sec-s_discrete, we will make the Black-Scholes assumptions throughout this chapter: there is a constant risk-free rate $r$ and the underlying asset has a  constant volatility $\sigma$ and a constant dividend yield $q$. 
-
-The order in which exotics are presented in this chapter is based on the simplicity of the analysis---the chapter begins with the easiest to analyze and works towards the more difficult.  This order is roughly the inverse of importance, the most important exotics in practice being barriers, baskets, spreads and Asians.  In the cases of Asian and basket options, we will explain why there are no simple closed-form formulas (sums of lognormally distributed random variables are not lognormal).  We will use these cases and discretely-sampled barriers and lookbacks as examples in the next chapter.  
-
-
-## Forward-Start Options
-A forward-start option \index{forward-start option} is an option for which the strike price is set equal to the stock price at some later date.  In essence, it is issued at the later date, with the strike price set at the money.  For example, an executive may know that he is to be given an option grant at some later date with the strike price set equal to the stock price at that date.
-
-### Forward-Start Call Payoff
-
-A forward-start call is defined by its maturity date $T'$ and the date $T<T'$ at which the strike price is set.  The value of a forward-start call at maturity is
-$$\max(0,S_{T'}-S_T)\; .$$
-Let
-$$x= \begin{cases} 1 &\text{if $S_{T'}>S_T$\;,}\\
-                               0 & \text{otherwise\;.}
-        \end{cases}
-$$
-Then, the value of the call at maturity can be written as 
-$$xS_{T'}-xS_T\; .$$
-### Numeraires
-
-
-1. Use $V_t=\mathrm{e}^{qt}S_t$ as numeraire to price the payoff $xS_{T'}$.  From the fundamental pricing @eq-formula, the value at date $0$ is
-$$\mathrm{e}^{-qT'}S_0\\E^V[x] = \mathrm{e}^{-qT'}S_0\times \text{prob}^V\!(S_{T'}>S_T)\; .$$
-2. To price the payoff $xS_T$, use the following portfolio as numeraire:^[We are going to use equation~@eq-probSnumeraire at date $T'$ to define the probabilities, because it will not be known until date $T'$ whether the event $S_{T'}>S_T$ is true.  Thus, we need the price of a numeraire asset at date $T'$.  We would like this price to be a constant times $S_T$, which is what we will obtain.  An equivalent numeraire is to make a smaller investment in the same portfolio: start with $\mathrm{e}^{-r(T'-T)-qT}$ shares.  This results in a final value of $S_T$ at date $T'$.  As will be seen, this is useful for deriving the put-call parity relation for forward-start options.]purchase $\mathrm{e}^{-qT}$ shares of the stock at date $0$ and reinvest dividends until date $T$.  This will result in the ownership of one share at date $T$, worth $S_T$ dollars.  At date $T$, sell the share and invest the proceeds in the risk-free asset and hold this position until date $T'$.  At date $T'$, the portfolio will be worth $\mathrm{e}^{r(T'-T)}S_T$.  Let $Z_t$ denote the value of this portfolio for each $0\leq t\leq T'$.  The fundamental pricing @eq-formula implies that the value of receiving $xS_T$ at date $T'$ is
-\begin{align*}
-Z_0\\E^Z\left[ \frac{xS_T}{Z_{T'}}\right] &=
-\mathrm{e}^{-qT}S_0\\E^Z\left[ \frac{xS_T}{\mathrm{e}^{r(T'-T)}S_T}\right]\\&= \mathrm{e}^{-qT-r(T'-T)}S_0\\E^Z[x] \\&= \mathrm{e}^{-qT-r(T'-T)}S_0 \times\text{prob}^Z(S_{T'}>S_T)\;.
-\end{align*}
-
-
-
-
-### Calculating Probabilities
-
-
-
-1. As in the case of a share digital, we know that
-$$ 
-\log S_t = \log S_0 + \left(r-q +\frac{1}{2}\sigma^2\right)t + \sigma B^*_t
-$$
-for all $t>0$, where $B^*$ is a Brownian motion when $V$ is used as the numeraire.  Taking $t=T'$ and $t=T$ and subtracting yields
-$$\log S_{T'}-\log S_T = \left(r-q +\frac{1}{2}\sigma^2\right)(T'-T) + \sigma \left[B^*_{T'}-B^*_T\right]\; .$$
-Hence, $S_{T'}>S_T$ if and only if
-$$-\frac{B^*_{T'}-B^*_T}{\sqrt{T'-T}} < \frac{\left(r-q +\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}}\; .$$
-The random variable on the left hand side is a standard normal, so
-$$ 
-\text{prob}^V\!(S_{T'}>S_T) = \mathrm{N}(d_1)\; ,
-$$
-where
-
-$$
-d_1 = \frac{\left(r-q +\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}} =\frac{\left(r-q +\frac{1}{2}\sigma^2\right)\sqrt{T'-T}}{\sigma}\;.
-$$ {#eq-forwardstart_d1}
-
-
-2. To calculate the probability $\text{prob}^Z(S_{T'}>S_T)$, note that between $T$ and $T'$, the portfolio with price $Z$ earns the risk-free rate $r$.  The same argument presented in @sec-s_girsanov shows that between $T$ and $T'$ we have
-$$
-\frac{\d  S}{S} = (r-q)\,\d  t + \sigma\,\d  B^*\; ,
-$$
-where now $B^*$ denotes a Brownian motion when $Z$ is used as the numeraire.   This implies as usual that
-$$
- \d \log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\d  t + \sigma\,\d  B^*\; ,
- $$
-which means that
-$$
-\log S_{T'} - \log S_T = \left(r-q-\frac{1}{2}\sigma^2\right)(T'-T) + \sigma(B^*_{T'}-B^*_T)\; .
-$$
-Hence, $S_{T'}>S_T$ if and only if
-$$
--\frac{B^*_{T'}-B^*_T}{\sqrt{T'-T}} < \frac{\left(r-q -\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}}\; .
-$$
-As before, the random variable on the left hand side is a standard normal, so
-$$
-\text{prob}^Z(S_{T'}>S_T) = \mathrm{N}(d_2)\; ,
-$$
-where
-$$
-d_2 = \frac{\left(r-q -\frac{1}{2}\sigma^2\right)\sqrt{T'-T}}{\sigma}=d_1-\sigma\sqrt{T'-T}\;.
-$$ {#eq-forwardstart_d2}
-
-
-
-
-### Forward-Start Call Pricing Formula
-Combining these results, we have:
-
-::: Rule
-## 
-The value of a forward-start call at date $0$ is
-$$
-\mathrm{e}^{-qT'}S_0\mathrm{N}(d_1) - \mathrm{e}^{-qT-r(T'-T)}S_0\mathrm{N}(d_2)\;,
-$$ {#eq-fstrikecall}
-
-where $d_1$ and $d_2$ are defined in @eq-forwardstart_d1 - @eq-forwardstart_d2.
-:::
-
-
-### Put-Call Parity\index{put-call parity}
-
-\next Forward-strike calls and puts satisfy a somewhat unusual form of put-call parity.  The usual put-call parity is of the form:
-$$
-\text{Call} \;+\; \text{Cash} \quad = \quad \text{Put} \;+ \;\text{Underlying}\; .
-$$
-
-The amount of cash is the amount that will accumulate to the exercise price at maturity; i.e., it is $\mathrm{e}^{-rT'}K$.  For forward-start calls and puts, the effective exercise price is $S_T$, which is not known at date $0$.  However, the portfolio used as numeraire to value the second part of the payoff will be worth $\mathrm{e}^{r(T'-T)}S_T$ at date $T'$, and by following the same strategy but starting with $\mathrm{e}^{-r(T'-T)-qT}$ instead of $\mathrm{e}^{-qT}$ shares, we will have $S_T$ dollars at date $T'$.  The date--0 value of this portfolio should replace Cash in the above.  Thus:
-
-::: Rule
-## 
-Put-call parity for forward-start calls and puts is
-$$
-\text{Call Price} \;+\; \mathrm{e}^{-r(T'-T)-qT}S_0 = \text{Put Price} \;+\; \mathrm{e}^{-qT'}S_0\;.
-$$ {#eq-fstrikeparity}
-
-The new features in the option pricing formulas in this chapter are the use of the bivariate normal distribution function and sometimes the need to compute a critical (at-the-money) value of the underlying asset price.  We will compute the critical values by bisection, in the same way that we computed implied volatilities for the Black-Scholes formula in @sec-c_blackscholes.
-
-The following is a fast approximation of the bivariate \index{bivariate normal distribution function} cumulative normal distribution function, accurate to six decimal places, due to Drezner [@Drezner]).  For given numbers $a$ and $b$, this function gives the probability that $\xi_1<a$ and $\xi_2<b$ where $\xi_1$ and $\xi_2$ are standard normal random variables with a given correlation $\rho$, which we must input.  
-
-```{python}
-
-#| code-fold: true
-#| label: Binormal_Prob
-
-import numpy as np
-from scipy.stats import norm
-
-def binormal_prob(a, b, rho):
-    x = np.array([0.24840615, 0.39233107, 0.21141819, 0.03324666, 0.00082485334])
-    y = np.array([0.10024215, 0.48281397, 1.0609498, 1.7797294, 2.6697604])
-    a1 = a / np.sqrt(2 * (1 - rho ** 2))
-    b1 = b / np.sqrt(2 * (1 - rho ** 2))
-    if a <= 0 and b <= 0 and rho <= 0:
-        total_sum = 0
-        for i in range(5):
-            for j in range(5):
-                z1 = a1 * (2 * y[i] - a1)
-                Z2 = b1 * (2 * y[j] - b1)
-                z3 = 2 * rho * (y[i] - a1) * (y[j] - b1)
-                total_sum += x[i] * x[j] * np.exp(z1 + Z2 + z3)
-        return total_sum * np.sqrt(1 - rho ** 2) / np.pi
-    elif a <= 0 and b >= 0 and rho >= 0:
-        return norm.cdf(a) - binormal_prob(a, -b, -rho)
-    elif a >= 0 and b <= 0 and rho >= 0:
-        return norm.cdf(b) - binormal_prob(-a, b, -rho)
-    elif a >= 0 and b >= 0 and rho <= 0:
-        total_sum = norm.cdf(a) + norm.cdf(b)
-        return total_sum - 1 + binormal_prob(-a, -b, rho)
-    elif a * b * rho > 0:
-        rho1 = (rho * a - b) * np.sign(a) / np.sqrt(a ** 2 - 2 * rho * a * b + b ** 2)
-        rho2 = (rho * b - a) * np.sign(b) / np.sqrt(a ** 2 - 2 * rho * a * b + b ** 2)
-        Delta = (1 - np.sign(a) * np.sign(b)) / 4
-        return binormal_prob(a, 0, rho1) + binormal_prob(b, 0, rho2) - Delta
-print("BiNormalProb:", binormal_prob(0.1, 0.2, 0.3))
-```
-
-\noindent Notice that this function calls itself.  This is an example of recursion.
-
-
-The forward-start call pricing formula is of the same form as the Black-Scholes, Margrabe, Black, and Merton formulas.  We can compute it with our `Generic_Option` pricing function.
-
-```{python}
-
-#| code-fold: true
-#| label: forward_start_call
-
-def generic_option(P1, P2, sigma, T):
-    """
-    Inputs:
-    P1 = present value of asset to be received
-    P2 = present value of asset to be delivered
-    sigma = volatility
-    T = time to maturity
-    """
-    x = (np.log(P1 / P2) + 0.5 * sigma ** 2 * T) / (sigma * np.sqrt(T))
-    y = x - sigma * np.sqrt(T)
-    N1 = norm.cdf(x)
-    N2 = norm.cdf(y)
-    return P1 * N1 - P2 * N2
-
-def forward_start_call(S, r, sigma, q, Tset, TCall):
-    P1 = np.exp(-q * TCall) * S
-    P2 = np.exp(-q * Tset - r * (TCall - Tset)) * S
-    return generic_option(P1, P2, sigma, TCall - Tset)
-
-# Example usage
-S = 100
-K = 100
-r = 0.05
-sigma = 0.2
-q = 0.02
-T = 1
-Div = 5
-TDiv = 0.5
-TCall = 1
-N = 10
-
-print("Forward Start Call:", forward_start_call(S, r, sigma, q, 0.5, TCall))
-```
-
-
-
-:::
-
+- Compound options
+- Lookback options
+- Options of the max or min of two asset prices
+- Forward start options
+- Choosers
 
 
 ## Compound Options
@@ -520,133 +322,89 @@ print("Call on Put:", call_on_put(S, Kc, Ku, r, sigma, q, Tc, Tu))
 ```
 
 
-## Choosers {#sec-s_choosers}
-A chooser option \index{chooser} allows the holder to choose whether the option will be a put or call at some fixed date before the option maturity.  Let $T$ denote the date at which the choice is made, $T_c$ the date at which the call expires, $T_p$ the date at which the put expires, $K_c$ the exercise price of the call, and $K_p$ the exercise price of the put, where $0<T<T_c$ and $0<T<T_p$.  A simple chooser has $T_c=T_p$ and $K_c=K_p$.  A chooser is similar in spirit to a straddle: it is a bet on volatility without making a bet on direction.  A simple chooser must be cheaper than a straddle with the same exercise price and maturity $T'=T_c=T_p$, because a straddle is always in the money at maturity, whereas a simple chooser has the same value as the straddle if it is in the money but is only in the money at $T'$ when the choice made at $T$ turns out to have been the best one.  
+## Lookbacks {#sec-s_lookbacks}
 
-### Chooser Payoff
-The value of the chooser at date $T$ will be the larger of the call and put prices.  Let $S^*$ denote the stock price at which the call and put have the same value.  We can find $S^*$ by solving
+\index{lookback option} \index{floating-strike lookback option} \index{fixed-strike lookback option} A floating-strike lookback call pays the difference between the asset price at maturity and the minimum price realized during the life of the contract.  A floating-strike lookback put pays the difference between the maximum price over the life of the contract and the price at maturity.  Thus, the floating-strike lookback call allows one to buy the asset at its minimum price, and the floating-strike lookback put allows one to sell the asset at its maximum price.   Of course, one pays upfront for this opportunity to time the market.  These options were first discussed by Goldman, Sosin and Gatto [@GSG].
 
-```Black_Scholes_Call(S*,Kc,r,sigma,q,Tc-T) = Black_Scholes_Put(S*,Kp,r,sigma,q,Tp-T).```                           
+A fixed-strike lookback put pays the difference between a fixed strike price and the minimum price during the lifetime of the contract.   Thus, a fixed-strike lookback put and a floating-strike lookback call are similar in one respect:  both enable one to buy the asset at its minimum price.  However, the put allows one to sell the asset at a fixed price whereas the call allows one to sell it at the terminal asset price.  A fixed-strike lookback call pays the difference between the maximum price and a fixed strike price and is similar to a floating-strike lookback put in the sense that both enable one to sell the asset at its maximum price.  Fixed-strike lookback options were first discussed by Conze and Viswanathan [@CV].
+We will discuss the valuation of floating-strike lookback calls. As in the discussion of barrier options, we will assume that the price is continuously sampled for the purpose of computing the minimum.
+
+### Floating-Strike Lookback Call Payoff
+
+As in the previous section, let $z$ denote the minimum stock price realized over the remaining lifetime of the contract.  This is not necessarily the minimum stock price realized during the entire lifetime of the contract.  Let $S_{\min}$ denote the minimum stock price realized during the lifetime of the contract up to and including date $0$, which is the date at which we are valuing the contract.  The minimum stock price during the entire lifetime of the contract will be the smaller of $z$ and $S_{\text{min}}$.  The payoff of the floating strike lookback call is $S_T - \min\left(z, S_{\text{min}}\right)$.
 
 
-\noindent For a simple chooser with $K_c=K_p=K$ and $T_c=T_p=T'$, we can find $S^*$ from the put-call parity relation at $T$, leading to $S^*=\mathrm{e}^{(q-r)(T'-T)}K.$
 
-The call will be chosen when $S_T>S^*$ and it finishes in the money if $S(T_c)>K_c$ at date $T_c$, so the payoff of the chooser is $S(T_c)-K_c$ when 
-$$S_T>S^* \quad \text{and}\quad S(T_c)>K_c\;.
+
+### Calculations
+The value at date $0$ of the piece $S_T$ is simply $\mathrm{e}^{-qT}S_0$.  Using the result in Appendix~\ref{a_minimum} on the distribution of $z$, it can be shown (see, e.g., Musiela and Rutkowski [@MR] for the details) that the value at date $0$ of receiving 
 $$
-The payoff is $K_p-S(T_p)$ at date $T_p$ when 
+\min(z, S_{\text{min}})
 $$
-S_T<S^* \quad \text{and}\quad S(T_p)<K_p\;.
-$$
-Let 
-\begin{align*}
-x&= \begin{cases} 1 &\text{if $S_T>S^* $ and $S(T_c)>K_c$\;,}\\
-                               0 & \text{otherwise\;.}
-        \end{cases}\\
-y&= \begin{cases} 1 &\text{if $S_T<S^*$ and $S(T_p)<K_p$\;,}\\
-                               0 & \text{otherwise\;.}
-        \end{cases} 
-\end{align*}
-Then the payoff of the chooser is $xS(T_c)-xK_c$ at date $T_c$ and $yK_p-yS(T_p)$ at date $T_p$.
+at date $T$ is
+\begin{multline*}
+\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) -\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
++\left(1+ \frac{\sigma^2}{2(r-q)}\right)\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;.
+\end{multline*}
+where
 
-### Numeraires
-As in the analysis of compound options, the value of the chooser at date $0$ must be 
 
 $$
-\begin{multline}
-\mathrm{e}^{-q T_c}S_0\times\text{prob}^V\!(x=1) \;- \;\mathrm{e}^{-rT_c}K_c\times\text{prob}^R(x=1)
-\\+\; \mathrm{e}^{-rT_p}K_p\times\text{prob}^R(y=1) \;- \;\mathrm{e}^{-q T_p}S_0\times\text{prob}^V\!(y=1)\;,
-\end{multline}
-$$ {#eq-chooser1}
+d_1 = \frac{\log\left(\frac{S_0}{S_{\text{min}}}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; , \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
+$$ {#eq-fslc100a}
 
-where we use $V_t=\mathrm{e}^{qt}S_t$ and $R_t=\mathrm{e}^{rt}$ as numeraires. 
+$$
+d_1' = \frac{\log\left(\frac{S_{\text{min}}}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'=d_1' - \sigma\sqrt{T} \;.
+$$ {#eq-fslc100c}
 
-### Chooser Pricing Formula
-@eq-chooser1 and calculations similar to those of the previous two sections lead us to:
 
+Using the fact that $[1-\mathrm{N}(-d_1)]\mathrm{e}^{-qT}S_0=\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)$, this implies:
+
+### Floating-Strike Lookback Call Pricing Formula
 
 ::: Rule
 ## 
-The value of a chooser option is 
+The value at date $0$ of a continuously-sampled floating-strike lookback call, given that the minimum price during the lifetime of the contract through date $0$ is $S_{\text{min}}$ and the remaining time to maturity is $T$, is
 
 $$
 \begin{multline}
-\mathrm{e}^{-q T_c}S_0\mathrm{M}\!\left(d_1,d_{1c},\sqrt{T/T_c}\right) - \mathrm{e}^{-rT_c}K_c\mathrm{M}\!\left(d_2,d_{2c},\sqrt{T/T_c}\right)\\ +\mathrm{e}^{-rT_p}K_p\mathrm{M}\!\left(-d_2,-d_{2p} , \sqrt{T/T_p}\right) \\- \mathrm{e}^{-q T_p}S_0\mathrm{M}\!\left(-d_1 ,-d_{1p} ,\sqrt{T/T_p}\right)\;,
+\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) \\+\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
+-\frac{\sigma^2}{2(r-q)}\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;,
 \end{multline}
-$$ {#eq-chooser2}
+$$ {#eq-fslc100}
 
-where
-\begin{equation*}
-\begin{array}{ll}
-d_1 = \frac{\log\left(\frac{S_0}{S^*}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;,
-& \qquad d_2=d_1-\sigma\sqrt{T}\;,\\
-&\\
-d_{1c} = \frac{\log\left(\frac{S_0}{K_c}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T_c}{\sigma\sqrt{T_c}}\;,
-& \qquad d_{2c}=d_{1c}-\sigma\sqrt{T_c}\;,\\
-&\\d_{1p} = \frac{\log\left(\frac{S_0}{K_p}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T_p}{\sigma\sqrt{T_p}}\;,
-& \qquad d_{2p}=d_{1p}-\sigma\sqrt{T_p}\;.
-\end{array}
-\end{equation*}
+where $d_1$, $d_2$, and $d_2'$ are defined in @eq-fslc100a - @eq-fslc100c.
 :::
 
-To implement the bisection to compute $S^*$, we can take zero as a lower bound and $K_c+K_p$ as an upper bound.^[We take the call value to be zero and the put value to be $\mathrm{e}^{-r(T_p-T)}K_p$ at date $T$ when the stock price is zero.  To see why the upper bound works, note that when the stock price is $S$ at date $T$,  the call is worth at least $S^*-K_c$ and the put is worth no more than $K_p$; i.e, $C \geq S-K_c$ and $P \leq K_p$.  Therefore, $C-P \geq S-K_c-K_p$.  Hence when $S=K_c+K_p$, we have $C-P\geq 0$. }
+The following program calculates the price of a floating strike lookback option. 
 
 ```{python}
 
 #| code-fold: true
-#| label: Choosers_Option
+#| label: Floating_Strike_Lookback
 
-def chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp):
-    tol = 1e-6
-    lower = 0
-    upper = np.exp(q * Tc) * (Kc + Kp)
-    guess = 0.5 * Kc + 0.5 * Kp
-    flower = -np.exp(-r * (Tp - T)) * Kp
-    fupper = black_scholes_call(upper, Kc, r, sigma, q, Tc - T) - black_scholes_put(upper, Kp, r, sigma, q, Tp - T)
-    fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
-    while upper - lower > tol:
-        if fupper * fguess < 0:
-            lower = guess
-            flower = fguess
-            guess = 0.5 * lower + 0.5 * upper
-            fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
-        else:
-            upper = guess
-            fupper = fguess
-            guess = 0.5 * lower + 0.5 * upper
-            fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
-    Sstar = guess
-
-    d1 = (np.log(S / Sstar) + (r - q + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
+def floating_strike_call(S, r, sigma, q, T, SMin):
+    d1 = (np.log(S / SMin) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
     d2 = d1 - sigma * np.sqrt(T)
-    d1c = (np.log(S / Kc) + (r - q + sigma ** 2 / 2) * Tc) / (sigma * np.sqrt(Tc))
-    d2c = d1c - sigma * np.sqrt(Tc)
-    d1p = (np.log(S / Kp) + (r - q + sigma ** 2 / 2) * Tp) / (sigma * np.sqrt(Tp))
-    d2p = d1p - sigma * np.sqrt(Tp)
-    rhoc = np.sqrt(T / Tc)
-    rhop = np.sqrt(T / Tp)
-    M1c = binormal_prob(d1, d1c, rhoc)
-    M2c = binormal_prob(d2, d2c, rhoc)
-    M1p = binormal_prob(-d1, -d1p, rhop)
-    M2p = binormal_prob(-d2, -d2p, rhop)
-
-    return np.exp(-q * Tc) * S * M1c - np.exp(-r * Tc) * Kc * M2c + np.exp(-r * Tp) * Kp * M2p - np.exp(-q * Tp) * S * M1p
+    d2prime = (np.log(SMin / S) + (r - q - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    N1 = norm.cdf(d1)
+    N2 = norm.cdf(d2)
+    N2prime = norm.cdf(d2prime)
+    x = 2 * (r - q) / (sigma ** 2)
+    return np.exp(-q * T) * S * N1 - np.exp(-r * T) * SMin * N2 + (1 / x) * (SMin / S) ** x * np.exp(-r * T) * SMin * N2prime - (1 / x) * np.exp(-q * T) * S * (1 - N1)
 
 # Example usage
+
 S = 100
-Kc = 80
-Kp = 80
 r = 0.05
 sigma = 0.2
 q = 0.02
-Tc = 1.5
-Tp = 1.5
 T=1
 
-print("Chooser Option:", chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp))
+
+print("Floating Strike Call:", floating_strike_call(S, r, sigma, q, T, 90))
 
 ```
-
 
 
 ## Options on the Max or Min
@@ -833,89 +591,336 @@ rho= 0.1
 print("Call on Max:", call_on_max(S1, S2, K, r, sigma1, sigma2, rho, q1, q2, T))
 ```
 
-## Lookbacks {#sec-s_lookbacks}
 
-\index{lookback option} \index{floating-strike lookback option} \index{fixed-strike lookback option} A floating-strike lookback call pays the difference between the asset price at maturity and the minimum price realized during the life of the contract.  A floating-strike lookback put pays the difference between the maximum price over the life of the contract and the price at maturity.  Thus, the floating-strike lookback call allows one to buy the asset at its minimum price, and the floating-strike lookback put allows one to sell the asset at its maximum price.   Of course, one pays upfront for this opportunity to time the market.  These options were first discussed by Goldman, Sosin and Gatto [@GSG].
+## Forward-Start Options
+A forward-start option \index{forward-start option} is an option for which the strike price is set equal to the stock price at some later date.  In essence, it is issued at the later date, with the strike price set at the money.  For example, an executive may know that he is to be given an option grant at some later date with the strike price set equal to the stock price at that date.
 
-A fixed-strike lookback put pays the difference between a fixed strike price and the minimum price during the lifetime of the contract.   Thus, a fixed-strike lookback put and a floating-strike lookback call are similar in one respect:  both enable one to buy the asset at its minimum price.  However, the put allows one to sell the asset at a fixed price whereas the call allows one to sell it at the terminal asset price.  A fixed-strike lookback call pays the difference between the maximum price and a fixed strike price and is similar to a floating-strike lookback put in the sense that both enable one to sell the asset at its maximum price.  Fixed-strike lookback options were first discussed by Conze and Viswanathan [@CV].
-We will discuss the valuation of floating-strike lookback calls. As in the discussion of barrier options, we will assume that the price is continuously sampled for the purpose of computing the minimum.
+### Forward-Start Call Payoff
 
-### Floating-Strike Lookback Call Payoff
-
-As in the previous section, let $z$ denote the minimum stock price realized over the remaining lifetime of the contract.  This is not necessarily the minimum stock price realized during the entire lifetime of the contract.  Let $S_{\min}$ denote the minimum stock price realized during the lifetime of the contract up to and including date $0$, which is the date at which we are valuing the contract.  The minimum stock price during the entire lifetime of the contract will be the smaller of $z$ and $S_{\text{min}}$.  The payoff of the floating strike lookback call is $S_T - \min\left(z, S_{\text{min}}\right)$.
-
-
-
-
-### Calculations
-The value at date $0$ of the piece $S_T$ is simply $\mathrm{e}^{-qT}S_0$.  Using the result in Appendix~\ref{a_minimum} on the distribution of $z$, it can be shown (see, e.g., Musiela and Rutkowski [@MR] for the details) that the value at date $0$ of receiving 
+A forward-start call is defined by its maturity date $T'$ and the date $T<T'$ at which the strike price is set.  The value of a forward-start call at maturity is
+$$\max(0,S_{T'}-S_T)\; .$$
+Let
+$$x= \begin{cases} 1 &\text{if $S_{T'}>S_T$\;,}\\
+                               0 & \text{otherwise\;.}
+        \end{cases}
 $$
-\min(z, S_{\text{min}})
+Then, the value of the call at maturity can be written as 
+$$xS_{T'}-xS_T\; .$$
+### Numeraires
+
+
+1. Use $V_t=\mathrm{e}^{qt}S_t$ as numeraire to price the payoff $xS_{T'}$.  From the fundamental pricing @eq-formula, the value at date $0$ is
+$$\mathrm{e}^{-qT'}S_0\\E^V[x] = \mathrm{e}^{-qT'}S_0\times \text{prob}^V\!(S_{T'}>S_T)\; .$$
+2. To price the payoff $xS_T$, use the following portfolio as numeraire:^[We are going to use equation~@eq-probSnumeraire at date $T'$ to define the probabilities, because it will not be known until date $T'$ whether the event $S_{T'}>S_T$ is true.  Thus, we need the price of a numeraire asset at date $T'$.  We would like this price to be a constant times $S_T$, which is what we will obtain.  An equivalent numeraire is to make a smaller investment in the same portfolio: start with $\mathrm{e}^{-r(T'-T)-qT}$ shares.  This results in a final value of $S_T$ at date $T'$.  As will be seen, this is useful for deriving the put-call parity relation for forward-start options.]purchase $\mathrm{e}^{-qT}$ shares of the stock at date $0$ and reinvest dividends until date $T$.  This will result in the ownership of one share at date $T$, worth $S_T$ dollars.  At date $T$, sell the share and invest the proceeds in the risk-free asset and hold this position until date $T'$.  At date $T'$, the portfolio will be worth $\mathrm{e}^{r(T'-T)}S_T$.  Let $Z_t$ denote the value of this portfolio for each $0\leq t\leq T'$.  The fundamental pricing @eq-formula implies that the value of receiving $xS_T$ at date $T'$ is
+\begin{align*}
+Z_0\\E^Z\left[ \frac{xS_T}{Z_{T'}}\right] &=
+\mathrm{e}^{-qT}S_0\\E^Z\left[ \frac{xS_T}{\mathrm{e}^{r(T'-T)}S_T}\right]\\&= \mathrm{e}^{-qT-r(T'-T)}S_0\\E^Z[x] \\&= \mathrm{e}^{-qT-r(T'-T)}S_0 \times\text{prob}^Z(S_{T'}>S_T)\;.
+\end{align*}
+
+
+
+
+### Calculating Probabilities
+
+
+
+1. As in the case of a share digital, we know that
+$$ 
+\log S_t = \log S_0 + \left(r-q +\frac{1}{2}\sigma^2\right)t + \sigma B^*_t
 $$
-at date $T$ is
-\begin{multline*}
-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) -\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
-+\left(1+ \frac{\sigma^2}{2(r-q)}\right)\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;.
-\end{multline*}
+for all $t>0$, where $B^*$ is a Brownian motion when $V$ is used as the numeraire.  Taking $t=T'$ and $t=T$ and subtracting yields
+$$\log S_{T'}-\log S_T = \left(r-q +\frac{1}{2}\sigma^2\right)(T'-T) + \sigma \left[B^*_{T'}-B^*_T\right]\; .$$
+Hence, $S_{T'}>S_T$ if and only if
+$$-\frac{B^*_{T'}-B^*_T}{\sqrt{T'-T}} < \frac{\left(r-q +\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}}\; .$$
+The random variable on the left hand side is a standard normal, so
+$$ 
+\text{prob}^V\!(S_{T'}>S_T) = \mathrm{N}(d_1)\; ,
+$$
 where
 
-
 $$
-d_1 = \frac{\log\left(\frac{S_0}{S_{\text{min}}}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; , \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
-$$ {#eq-fslc100a}
+d_1 = \frac{\left(r-q +\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}} =\frac{\left(r-q +\frac{1}{2}\sigma^2\right)\sqrt{T'-T}}{\sigma}\;.
+$$ {#eq-forwardstart_d1}
 
+
+2. To calculate the probability $\text{prob}^Z(S_{T'}>S_T)$, note that between $T$ and $T'$, the portfolio with price $Z$ earns the risk-free rate $r$.  The same argument presented in @sec-s_girsanov shows that between $T$ and $T'$ we have
 $$
-d_1' = \frac{\log\left(\frac{S_{\text{min}}}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'=d_1' - \sigma\sqrt{T} \;.
-$$ {#eq-fslc100c}
+\frac{\d  S}{S} = (r-q)\,\d  t + \sigma\,\d  B^*\; ,
+$$
+where now $B^*$ denotes a Brownian motion when $Z$ is used as the numeraire.   This implies as usual that
+$$
+ \d \log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\d  t + \sigma\,\d  B^*\; ,
+ $$
+which means that
+$$
+\log S_{T'} - \log S_T = \left(r-q-\frac{1}{2}\sigma^2\right)(T'-T) + \sigma(B^*_{T'}-B^*_T)\; .
+$$
+Hence, $S_{T'}>S_T$ if and only if
+$$
+-\frac{B^*_{T'}-B^*_T}{\sqrt{T'-T}} < \frac{\left(r-q -\frac{1}{2}\sigma^2\right)(T'-T)}{\sigma\sqrt{T'-T}}\; .
+$$
+As before, the random variable on the left hand side is a standard normal, so
+$$
+\text{prob}^Z(S_{T'}>S_T) = \mathrm{N}(d_2)\; ,
+$$
+where
+$$
+d_2 = \frac{\left(r-q -\frac{1}{2}\sigma^2\right)\sqrt{T'-T}}{\sigma}=d_1-\sigma\sqrt{T'-T}\;.
+$$ {#eq-forwardstart_d2}
 
 
-Using the fact that $[1-\mathrm{N}(-d_1)]\mathrm{e}^{-qT}S_0=\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)$, this implies:
 
-### Floating-Strike Lookback Call Pricing Formula
+
+### Forward-Start Call Pricing Formula
+Combining these results, we have:
 
 ::: Rule
 ## 
-The value at date $0$ of a continuously-sampled floating-strike lookback call, given that the minimum price during the lifetime of the contract through date $0$ is $S_{\text{min}}$ and the remaining time to maturity is $T$, is
-
+The value of a forward-start call at date $0$ is
 $$
-\begin{multline}
-\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) \\+\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
--\frac{\sigma^2}{2(r-q)}\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;,
-\end{multline}
-$$ {#eq-fslc100}
+\mathrm{e}^{-qT'}S_0\mathrm{N}(d_1) - \mathrm{e}^{-qT-r(T'-T)}S_0\mathrm{N}(d_2)\;,
+$$ {#eq-fstrikecall}
 
-where $d_1$, $d_2$, and $d_2'$ are defined in @eq-fslc100a - @eq-fslc100c.
+where $d_1$ and $d_2$ are defined in @eq-forwardstart_d1 - @eq-forwardstart_d2.
 :::
 
-The following program calculates the price of a floating strike lookback option. 
+
+### Put-Call Parity\index{put-call parity}
+
+\next Forward-strike calls and puts satisfy a somewhat unusual form of put-call parity.  The usual put-call parity is of the form:
+$$
+\text{Call} \;+\; \text{Cash} \quad = \quad \text{Put} \;+ \;\text{Underlying}\; .
+$$
+
+The amount of cash is the amount that will accumulate to the exercise price at maturity; i.e., it is $\mathrm{e}^{-rT'}K$.  For forward-start calls and puts, the effective exercise price is $S_T$, which is not known at date $0$.  However, the portfolio used as numeraire to value the second part of the payoff will be worth $\mathrm{e}^{r(T'-T)}S_T$ at date $T'$, and by following the same strategy but starting with $\mathrm{e}^{-r(T'-T)-qT}$ instead of $\mathrm{e}^{-qT}$ shares, we will have $S_T$ dollars at date $T'$.  The date--0 value of this portfolio should replace Cash in the above.  Thus:
+
+::: Rule
+## 
+Put-call parity for forward-start calls and puts is
+$$
+\text{Call Price} \;+\; \mathrm{e}^{-r(T'-T)-qT}S_0 = \text{Put Price} \;+\; \mathrm{e}^{-qT'}S_0\;.
+$$ {#eq-fstrikeparity}
+
+The new features in the option pricing formulas in this chapter are the use of the bivariate normal distribution function and sometimes the need to compute a critical (at-the-money) value of the underlying asset price.  We will compute the critical values by bisection, in the same way that we computed implied volatilities for the Black-Scholes formula in @sec-c_blackscholes.
+
+The following is a fast approximation of the bivariate \index{bivariate normal distribution function} cumulative normal distribution function, accurate to six decimal places, due to Drezner [@Drezner]).  For given numbers $a$ and $b$, this function gives the probability that $\xi_1<a$ and $\xi_2<b$ where $\xi_1$ and $\xi_2$ are standard normal random variables with a given correlation $\rho$, which we must input.  
 
 ```{python}
 
 #| code-fold: true
-#| label: Floating_Strike_Lookback
+#| label: Binormal_Prob
 
-def floating_strike_call(S, r, sigma, q, T, SMin):
-    d1 = (np.log(S / SMin) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
-    d2 = d1 - sigma * np.sqrt(T)
-    d2prime = (np.log(SMin / S) + (r - q - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
-    N1 = norm.cdf(d1)
-    N2 = norm.cdf(d2)
-    N2prime = norm.cdf(d2prime)
-    x = 2 * (r - q) / (sigma ** 2)
-    return np.exp(-q * T) * S * N1 - np.exp(-r * T) * SMin * N2 + (1 / x) * (SMin / S) ** x * np.exp(-r * T) * SMin * N2prime - (1 / x) * np.exp(-q * T) * S * (1 - N1)
+import numpy as np
+from scipy.stats import norm
+
+def binormal_prob(a, b, rho):
+    x = np.array([0.24840615, 0.39233107, 0.21141819, 0.03324666, 0.00082485334])
+    y = np.array([0.10024215, 0.48281397, 1.0609498, 1.7797294, 2.6697604])
+    a1 = a / np.sqrt(2 * (1 - rho ** 2))
+    b1 = b / np.sqrt(2 * (1 - rho ** 2))
+    if a <= 0 and b <= 0 and rho <= 0:
+        total_sum = 0
+        for i in range(5):
+            for j in range(5):
+                z1 = a1 * (2 * y[i] - a1)
+                Z2 = b1 * (2 * y[j] - b1)
+                z3 = 2 * rho * (y[i] - a1) * (y[j] - b1)
+                total_sum += x[i] * x[j] * np.exp(z1 + Z2 + z3)
+        return total_sum * np.sqrt(1 - rho ** 2) / np.pi
+    elif a <= 0 and b >= 0 and rho >= 0:
+        return norm.cdf(a) - binormal_prob(a, -b, -rho)
+    elif a >= 0 and b <= 0 and rho >= 0:
+        return norm.cdf(b) - binormal_prob(-a, b, -rho)
+    elif a >= 0 and b >= 0 and rho <= 0:
+        total_sum = norm.cdf(a) + norm.cdf(b)
+        return total_sum - 1 + binormal_prob(-a, -b, rho)
+    elif a * b * rho > 0:
+        rho1 = (rho * a - b) * np.sign(a) / np.sqrt(a ** 2 - 2 * rho * a * b + b ** 2)
+        rho2 = (rho * b - a) * np.sign(b) / np.sqrt(a ** 2 - 2 * rho * a * b + b ** 2)
+        Delta = (1 - np.sign(a) * np.sign(b)) / 4
+        return binormal_prob(a, 0, rho1) + binormal_prob(b, 0, rho2) - Delta
+print("BiNormalProb:", binormal_prob(0.1, 0.2, 0.3))
+```
+
+\noindent Notice that this function calls itself.  This is an example of recursion.
+
+
+The forward-start call pricing formula is of the same form as the Black-Scholes, Margrabe, Black, and Merton formulas.  We can compute it with our `Generic_Option` pricing function.
+
+```{python}
+
+#| code-fold: true
+#| label: forward_start_call
+
+def generic_option(P1, P2, sigma, T):
+    """
+    Inputs:
+    P1 = present value of asset to be received
+    P2 = present value of asset to be delivered
+    sigma = volatility
+    T = time to maturity
+    """
+    x = (np.log(P1 / P2) + 0.5 * sigma ** 2 * T) / (sigma * np.sqrt(T))
+    y = x - sigma * np.sqrt(T)
+    N1 = norm.cdf(x)
+    N2 = norm.cdf(y)
+    return P1 * N1 - P2 * N2
+
+def forward_start_call(S, r, sigma, q, Tset, TCall):
+    P1 = np.exp(-q * TCall) * S
+    P2 = np.exp(-q * Tset - r * (TCall - Tset)) * S
+    return generic_option(P1, P2, sigma, TCall - Tset)
 
 # Example usage
-
 S = 100
+K = 100
 r = 0.05
 sigma = 0.2
 q = 0.02
+T = 1
+Div = 5
+TDiv = 0.5
+TCall = 1
+N = 10
+
+print("Forward Start Call:", forward_start_call(S, r, sigma, q, 0.5, TCall))
+```
+
+
+
+:::
+
+
+
+
+## Choosers {#sec-s_choosers}
+A chooser option \index{chooser} allows the holder to choose whether the option will be a put or call at some fixed date before the option maturity.  Let $T$ denote the date at which the choice is made, $T_c$ the date at which the call expires, $T_p$ the date at which the put expires, $K_c$ the exercise price of the call, and $K_p$ the exercise price of the put, where $0<T<T_c$ and $0<T<T_p$.  A simple chooser has $T_c=T_p$ and $K_c=K_p$.  A chooser is similar in spirit to a straddle: it is a bet on volatility without making a bet on direction.  A simple chooser must be cheaper than a straddle with the same exercise price and maturity $T'=T_c=T_p$, because a straddle is always in the money at maturity, whereas a simple chooser has the same value as the straddle if it is in the money but is only in the money at $T'$ when the choice made at $T$ turns out to have been the best one.  
+
+### Chooser Payoff
+The value of the chooser at date $T$ will be the larger of the call and put prices.  Let $S^*$ denote the stock price at which the call and put have the same value.  We can find $S^*$ by solving
+
+```Black_Scholes_Call(S*,Kc,r,sigma,q,Tc-T) = Black_Scholes_Put(S*,Kp,r,sigma,q,Tp-T).```                           
+
+
+\noindent For a simple chooser with $K_c=K_p=K$ and $T_c=T_p=T'$, we can find $S^*$ from the put-call parity relation at $T$, leading to $S^*=\mathrm{e}^{(q-r)(T'-T)}K.$
+
+The call will be chosen when $S_T>S^*$ and it finishes in the money if $S(T_c)>K_c$ at date $T_c$, so the payoff of the chooser is $S(T_c)-K_c$ when 
+$$S_T>S^* \quad \text{and}\quad S(T_c)>K_c\;.
+$$
+The payoff is $K_p-S(T_p)$ at date $T_p$ when 
+$$
+S_T<S^* \quad \text{and}\quad S(T_p)<K_p\;.
+$$
+Let 
+\begin{align*}
+x&= \begin{cases} 1 &\text{if $S_T>S^* $ and $S(T_c)>K_c$\;,}\\
+                               0 & \text{otherwise\;.}
+        \end{cases}\\
+y&= \begin{cases} 1 &\text{if $S_T<S^*$ and $S(T_p)<K_p$\;,}\\
+                               0 & \text{otherwise\;.}
+        \end{cases} 
+\end{align*}
+Then the payoff of the chooser is $xS(T_c)-xK_c$ at date $T_c$ and $yK_p-yS(T_p)$ at date $T_p$.
+
+### Numeraires
+As in the analysis of compound options, the value of the chooser at date $0$ must be 
+
+$$
+\begin{multline}
+\mathrm{e}^{-q T_c}S_0\times\text{prob}^V\!(x=1) \;- \;\mathrm{e}^{-rT_c}K_c\times\text{prob}^R(x=1)
+\\+\; \mathrm{e}^{-rT_p}K_p\times\text{prob}^R(y=1) \;- \;\mathrm{e}^{-q T_p}S_0\times\text{prob}^V\!(y=1)\;,
+\end{multline}
+$$ {#eq-chooser1}
+
+where we use $V_t=\mathrm{e}^{qt}S_t$ and $R_t=\mathrm{e}^{rt}$ as numeraires. 
+
+### Chooser Pricing Formula
+@eq-chooser1 and calculations similar to those of the previous two sections lead us to:
+
+
+::: Rule
+## 
+The value of a chooser option is 
+
+$$
+\begin{multline}
+\mathrm{e}^{-q T_c}S_0\mathrm{M}\!\left(d_1,d_{1c},\sqrt{T/T_c}\right) - \mathrm{e}^{-rT_c}K_c\mathrm{M}\!\left(d_2,d_{2c},\sqrt{T/T_c}\right)\\ +\mathrm{e}^{-rT_p}K_p\mathrm{M}\!\left(-d_2,-d_{2p} , \sqrt{T/T_p}\right) \\- \mathrm{e}^{-q T_p}S_0\mathrm{M}\!\left(-d_1 ,-d_{1p} ,\sqrt{T/T_p}\right)\;,
+\end{multline}
+$$ {#eq-chooser2}
+
+where
+\begin{equation*}
+\begin{array}{ll}
+d_1 = \frac{\log\left(\frac{S_0}{S^*}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;,
+& \qquad d_2=d_1-\sigma\sqrt{T}\;,\\
+&\\
+d_{1c} = \frac{\log\left(\frac{S_0}{K_c}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T_c}{\sigma\sqrt{T_c}}\;,
+& \qquad d_{2c}=d_{1c}-\sigma\sqrt{T_c}\;,\\
+&\\d_{1p} = \frac{\log\left(\frac{S_0}{K_p}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T_p}{\sigma\sqrt{T_p}}\;,
+& \qquad d_{2p}=d_{1p}-\sigma\sqrt{T_p}\;.
+\end{array}
+\end{equation*}
+:::
+
+To implement the bisection to compute $S^*$, we can take zero as a lower bound and $K_c+K_p$ as an upper bound.^[We take the call value to be zero and the put value to be $\mathrm{e}^{-r(T_p-T)}K_p$ at date $T$ when the stock price is zero.  To see why the upper bound works, note that when the stock price is $S$ at date $T$,  the call is worth at least $S^*-K_c$ and the put is worth no more than $K_p$; i.e, $C \geq S-K_c$ and $P \leq K_p$.  Therefore, $C-P \geq S-K_c-K_p$.  Hence when $S=K_c+K_p$, we have $C-P\geq 0$. }
+
+```{python}
+
+#| code-fold: true
+#| label: Choosers_Option
+
+def chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp):
+    tol = 1e-6
+    lower = 0
+    upper = np.exp(q * Tc) * (Kc + Kp)
+    guess = 0.5 * Kc + 0.5 * Kp
+    flower = -np.exp(-r * (Tp - T)) * Kp
+    fupper = black_scholes_call(upper, Kc, r, sigma, q, Tc - T) - black_scholes_put(upper, Kp, r, sigma, q, Tp - T)
+    fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
+    while upper - lower > tol:
+        if fupper * fguess < 0:
+            lower = guess
+            flower = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
+        else:
+            upper = guess
+            fupper = fguess
+            guess = 0.5 * lower + 0.5 * upper
+            fguess = black_scholes_call(guess, Kc, r, sigma, q, Tc - T) - black_scholes_put(guess, Kp, r, sigma, q, Tp - T)
+    Sstar = guess
+
+    d1 = (np.log(S / Sstar) + (r - q + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    d1c = (np.log(S / Kc) + (r - q + sigma ** 2 / 2) * Tc) / (sigma * np.sqrt(Tc))
+    d2c = d1c - sigma * np.sqrt(Tc)
+    d1p = (np.log(S / Kp) + (r - q + sigma ** 2 / 2) * Tp) / (sigma * np.sqrt(Tp))
+    d2p = d1p - sigma * np.sqrt(Tp)
+    rhoc = np.sqrt(T / Tc)
+    rhop = np.sqrt(T / Tp)
+    M1c = binormal_prob(d1, d1c, rhoc)
+    M2c = binormal_prob(d2, d2c, rhoc)
+    M1p = binormal_prob(-d1, -d1p, rhop)
+    M2p = binormal_prob(-d2, -d2p, rhop)
+
+    return np.exp(-q * Tc) * S * M1c - np.exp(-r * Tc) * Kc * M2c + np.exp(-r * Tp) * Kp * M2p - np.exp(-q * Tp) * S * M1p
+
+# Example usage
+S = 100
+Kc = 80
+Kp = 80
+r = 0.05
+sigma = 0.2
+q = 0.02
+Tc = 1.5
+Tp = 1.5
 T=1
 
-
-print("Floating Strike Call:", floating_strike_call(S, r, sigma, q, T, 90))
+print("Chooser Option:", chooser(S, Kc, Kp, r, sigma, q, T, Tc, Tp))
 
 ```
+
+
 
 
 ## {.unnumbered}
