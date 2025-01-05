@@ -32,13 +32,19 @@ The function presented in @eq-ito_discrete_3 is also shown in @fig-discrete-inte
 import numpy as np 
 import plotly.graph_objects as go 
 fig = go.Figure()
+fig.update_layout(
+    xaxis_title='Time',
+    yaxis_title='Binomial Process',
+    template='plotly_white',
+    height=300,
+)
 fig.show()
 ```
 
 Now, let's include randomness.  Let's make the noise proportional to the value of $X$,  So, let $B$ be a standard Brownian motion and consider the equation
 $$X_{t_i} - X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t + \sigma X_{t_{i-1}} \Delta B_{t_i}$$ {#eq-ito_discrete_4}
-where $\sigma$ is another constant, and $\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}$.  Now, the process $X$ has random paths, due to the random noise $\Delta B_{t_i}$.  An example of a path is shown in @fig-discrete-random.
-Ito showed how we can take the limit of this equation as $\Delta t$ decreases and make sense of the equation
+where $\sigma$ is another constant, and $\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}$.  A solution $X$ of this equation will have random paths, due to the random noise $\Delta B_{t_i}$.  An example of a path is shown in @fig-discrete-random.
+Ito showed how we can take the limit of this equation as we make $\Delta t$ smaller and make sense of the equation
 $$
 \d X_t = \mu X_t\,\d t + \sigma X_t \,\d B_t\,.
 $$ {#eq-ito_discrete_5}
@@ -48,10 +54,17 @@ An approximate path of this process $X$ is also shown in @fig-discrete-random.  
 
 ```{python}
 #| label: fig-discrete-random
-#| fig-cap: 
+#| fig-cap: Paths of the processes satisfying @eq-ito_discrete_4 and @eq-ito_discrete_6 for X0 = 1, mu = 1, Delta t = 0.1, and sigma = 1.
+
 import numpy as np 
 import plotly.graph_objects as go 
 fig = go.Figure()
+fig.update_layout(
+    xaxis_title='Time',
+    yaxis_title='Binomial Process',
+    template='plotly_white',
+    height=300,
+)
 fig.show()
 ```
 
@@ -73,7 +86,7 @@ is relatively complicated.  It is enough for our purposes to know that it can be
 $$\sum_{i=1}^n \theta_{t_{i-1}}(B_{t_i} - B_{t_{i-1}}\,,$$
 given a partition
 $$ 0 = t_0 < \cdots < t_n = t\,,$$
-when $n$ is large and the time between successive dates is small.  The Ito integral exists provided $\theta$ does not anticipate the future -- so $\theta_{t_{i-1}}$ is independent of the increment $B_{t_i}- B_{t_{i-1}}$ -- and provided $\theta$ does not explode to $\pm \infty$ in finite time, so 
+when $n$ is large and the time between successive dates is small.  The Ito integral exists provided $\theta$ does not anticipate the future (so $\theta_{t_{i-1}}$ is independent of the increment $B_{t_i}- B_{t_{i-1}}$) and provided $\theta$ does not explode to $\pm \infty$ in finite time, so 
 $$\int_0^t \theta_s^2 \d s < \infty$$
 for all $t > 0$, with probability one.
 
