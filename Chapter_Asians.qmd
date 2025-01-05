@@ -1,9 +1,9 @@
 {{< include macros.qmd >}}
 
 
-## Asians, Barriers, and Spreads {#sec-s_asians}
+## Asians, Baskets, and Spreads {#sec-s_asians}
 
-We consider Asian options, barrier options (knock-outs and knock-ins), and basket and spread options
+This chapter addresses some "non-vanilla" options that are very important for hedging: Asian options, basket options, and spread options.  More exotic options are studied in the following chapter.
 
 ## Asian Options
 
@@ -229,191 +229,9 @@ print("Discrete Geometric Average Price Call:", discrete_geom_average_price_call
 
 
 
-## Barrier Options {#sec-s_barriers}
-
-\index{barrier option} \index{down-and-out option} \index{down-and-in option} \index{knock-out option} \index{knock-in option} A down-and-out call pays the usual call value at maturity if and only if the stock price does not hit a specified lower bound during the lifetime of the option.  If it does breach the lower barrier, then it is out.  Conversely, a down-and-in call pays off only if the stock price does hit the lower bound.  Up-and-out and up-and-in calls are defined similarly, and there are also put options of this sort.  The out versions are called knock-outs and the in versions are called knock-ins.  
-
-Knock-ins can be priced from knock-outs and vice-versa.  For example, the combination of a down-and-out call and a down-and-in call creates a standard European call, so the value of a down-and-in can be obtained by subtracting the value of a down-and-out from the value of a standard European call.  Likewise, up-and-in calls can be valued by subtracting the value of an up-and-out from the value of a standard European call.  Both knock-outs and knock-ins are of course less expensive than comparable standard options.
 
 
-We will describe the pricing of a down-and-out call.  The pricing of up-and-out calls and knock-out puts is similar.  Often there are rebates associated with the knocking-out of a barrier option, but we will not include that feature here (see @sec-s_finitedifferencebarriers however).  
-
-A down-and-out call provides a hedge against an increase in an asset price, just as does a standard call, for someone who is short the asset.  The difference is that the down-and-out is knocked out when the asset price falls sufficiently.  Presumably this is acceptable to the buyer because the need to hedge against high prices diminishes when the price falls.  In fact, in this circumstance the buyer may want  to establish a new hedge at a lower strike.  However, absent re-hedging at a lower strike, the buyer of a knock-out call obviously faces the risk that the price may reverse course after falling to the knock-out boundary, leading to regret that the option was knocked out.  The rationale for accepting this risk is  that the knock-out is cheaper than a standard call.  Thus, compared to a standard call, a down-and-out call provides cheaper but incomplete insurance.
-
-The combination of a knock-out call and a knock-in call (or knock-out puts) with the same barrier and different strikes creates an option with a strike that is reset when the barrier is hit.  This is a hedge that adjusts automatically to the market.  An example is given in Probs.~\ref{e_standardknockout3} and~\ref{e_standardknockout4}.
-
-### Down-and-Out Call Payoff
-Let $L$ denote the lower barrier for the down-and-out call and assume it has not yet been breached at the valuation date, which we are calling date $0$.  Denote the minimum stock price realized during the remaining life of the contract by $z = \min_{0\leq t\leq T} S_t$.  In practice, this minimum is calculated at discrete dates (for example, based on daily closing prices), but we will assume here that the stock price is monitored continuously for the purpose of calculating the minimum. 
-
-The down-and-out call will pay $\max(0,S_T-K)$ if $z > L$ and 0 otherwise, 
-at its maturity T.  
-Let
-$$
-x = \begin{cases} 1 & \text{if $S_T>K$ and $z > L$\;,}\\
-0 & \text{otherwise\;.} \end{cases}
-$$
-Then the value of the down-and-out call at maturity is
-$$
-xS_T - xK\; .
-$$
-### Numeraires
-As in other cases, the value at date $0$ can be written as
-$$
-\mathrm{e}^{-qT}S_0\times\text{prob}^{V}(x=1) - \mathrm{e}^{-rT}K\times\text{prob}^{R}(x=1)\; ,
-$$
-
-where $V_t = \mathrm{e}^{qt}S_t$ and $R_t=\mathrm{e}^{rt}$.
-
-### Calculating Probabilities
-To calculate $\text{prob}^{V}(x=1)$ and $\text{prob}^{R}(x=1)$, we consider two cases.  
-
-
-1. Suppose $K>L$.  Define
-$$
-y = \begin{cases} 1 & \text{if $S_T>K$ and $z \leq L$}\\
-0 & \text{otherwise\;.} \end{cases}
-$$ 
-
-The event $S_T>K$ is equal to the union of the disjoint events $x=1$ and $y=1$.  Therefore,
-\begin{align*}
-\text{prob}^{V}(x=1) &= \text{prob}^{V}(S_T\!>\!K) - \text{prob}^{V}(y=1)\; ,\\
-\text{prob}^{R}(x=1) &= \text{prob}^{R}(S_T\!>\!K) - \text{prob}^{R}(y=1)\;.
-\end{align*}
-
-As in the derivation of the Black-Scholes formula, we have
-$$
-\text{prob}^{V}(S_T\!>\!K) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^{R}(S_T\!>\!K) = \mathrm{N}(d_2)\;,
-$$ {#eq-casea2}
-
-where
-
-$$
-d_1= \frac{\log\left(\frac{S_0}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,\qquad  d_2 = d_1-\sigma\sqrt{T}\;.
-$$ {#eq-casea3}
-
-Furthermore , defining 
-$$
-d_1' = \frac{\log\left(\frac{L^2}{KS_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2' = d_1'-\sigma\sqrt{T}\;,
-$$ {#eq-casea5}
-
-it can be shown (see Appendix~\ref{a_minimum}) that
-
-
-$$
-\text{prob}^{V}(y=1) = \left(\frac{L}{S_0}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\;,
-$$ {#eq-casea4}
-
-$$
-\text{prob}^{R}(y=1) = \left(\frac{L}{S_0}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\;.
-$$ {#eq-casea41}
-
-
-
-
-
-2. Suppose $K \leq L$.  Then the condition $S_T>K$ in the definition of the event $x=1$ is redundant: if $z > L \geq K$, then it is necessarily true that $S_T>K$.  Therefore, the probability (under either numeraire) of the event $x=1$ is the probability that $z > L$.  Define
-$$y = \begin{cases} 1 & \text{if $S_T>L$ and $z \leq L$\;,}\\
-0 & \text{otherwise\;.} \end{cases}
-$$
-
-The event $S_T>L$ is the union of the disjoint events $x=1$ and $y=1$.  Therefore, as in the previous case (but now with $K$ replaced by $L$),
-\begin{align*}
-\text{prob}^{V}(x=1) &= \text{prob}^{V}(S_T\!>\!L) - \text{prob}^{V}(y=1)\; ,\\
-\text{prob}^{R}(x=1) &= \text{prob}^{R}(S_T\!>\!L) - \text{prob}^{R}(y=1)\;.
-\end{align*}
-Also as before, we know that
-$$
-\text{prob}^{V}(S_T\!>\!L) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^{R}(S_T\!>\!L) = \mathrm{N}(d_2)\;,
-$$ {#eq-caseb2}
-
-where now
-
-$$
-d_1= \frac{\log\left(\frac{S_0}{L}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,\qquad  d_2 = d_1-\sigma\sqrt{T}\;.
-$$ {#eq-caseb3}
-
-Moreover, $\text{prob}^{V}(y=1)$ and $\text{prob}^{R}(y=1)$ are given by @eq-casea4 - @eq-casea41 but with $K$ replaced by $L$, which means that
-$$
-d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'= d_1' - \sigma\sqrt{T}\;.
-$$ {#eq-caseb5}
-
-
-
-
-
-### Down-and-Out Call Pricing Formula
-
-
-::: Rule
-
-The value of a continuously-sampled down-and-out call option with barrier $L$ is 
-
-$$
-\begin{multline}
-\mathrm{e}^{-qT}S_0\left[\mathrm{N}(d_1)-\left(\frac{L}{S_0}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\right]\\ - \mathrm{e}^{-rT}K\left[\mathrm{N}(d_2) - \left(\frac{L}{S_0}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\right]\;,
-\end{multline} 
-$$ {#eq-downout100}
-
-where 
-
-
-\renewcommand{\labelenumi}{(\arabic{enumi})}
-1. if $K>L$, $d_1$, $d_2$ , $d_1'$ and $d_2'$ are defined in @eq-casea3 - @eq-casea5,
-2. if $K\leq L$, $d_1$, $d_2$, $d_1'$ and $d_2'$ are defined in @eq-caseb3 - @eq-caseb5.
-
-
-
-:::
-
-The following code computes the price of a down and out call option.
-
-```{python}
-
-#| code-fold: true
-#| label: Down-And_Out_Call
-
-"""
-
-def down_and_out_call(S, K, r, sigma, q, T, Barrier):
-    if K > Barrier:
-        a = S / K
-        b = Barrier * Barrier / (K * S)
-    else:
-        a = S / Barrier
-        b = Barrier / S
-
-    d1 = (np.log(a) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
-    d2 = d1 - sigma * np.sqrt(T)
-    d1prime = (np.log(b) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
-    d2prime = d1prime - sigma * np.sqrt(T)
-    N1 = norm.cdf(d1)
-    N2 = norm.cdf(d2)
-    N1prime = norm.cdf(d1prime)
-    N2prime = norm.cdf(d2prime)
-    x = 1 + 2 * (r - q) / (sigma ** 2)
-    y = x - 2
-    q1 = N1 - (Barrier / S) ** x * N1prime
-    q2 = N2 - (Barrier / S) ** y * N2prime
-
-    return np.exp(-q * T) * S * q1 - np.exp(-r * T) * K * q2
-print("Down and Out Call:", down_and_out_call(S, K, r, sigma, q, T, 80))
-"""
-```
-
-
-
-## Basket and Spread Options {#sec-s_baskets}
-
-A spread option \index{spread option} \index{basket option} is a call or a put written on the difference of two asset prices.  For example, a spread call will pay at maturity $T$ the larger of zero and $S_1_T-S_2_T-K$, where the $S_i$ are the asset prices and $K$ is the strike price of the call.  Spread options can be used by producers to hedge the difference between an input price and an output price.  They are also useful for hedging basis risk.  For example, someone may want to hedge an asset by selling a futures contract on a closely related but not identical asset.  This exposes the hedger to basis risk: the difference in value between the asset and the underlying asset on the futures contract.  A spread call can hedge the basis risk: take $S_1$ to be the value of the asset underlying the futures contract and $S_2$ the value of the asset being hedged.
-
-A spread option is actually an exchange option.  Assuming constant dividend yields $q_1$ and $q_2$,  we can take the assets underlying the exchange option to be as follows
-
- 
-1. At date $0$, purchase $\mathrm{e}^{-q_1T}$ units of the asset with price $S_1$ and reinvest dividends, leading to a value of $S_1_T$ at date $T$, 
-2. At date $0$, purchase $\mathrm{e}^{-q_2T}$ units of the asset with price $S_2$ and invest $\mathrm{e}^{-rT}K$ in the risk-free asset.  Reinvesting dividends and accumulating interest means that we will have $S_2_T+K$ dollars at date $T$.
-
-
-However, we cannot apply Margrabe's formula to price spread options, because the second portfolio described above will have a stochastic volatility.  To see this, note that if the price $S_2_t$ falls to a low level, then the portfolio will consist primarily of the risk-free asset, so the portfolio volatility will be near the volatility of the risk-free asset, which is zero.  On the other hand, if $S_2_t$ becomes very high, then the portfolio will be weighted very heavily on the stock investment, and its volatility will approach the volatility of $S_2$.
+## Basket Options
 
 A basket option is an option written on a portfolio of assets.  For example, someone may want to hedge the change in the value of the dollar relative to a basket of currencies.  A basket option is an alternative to purchasing separate options on each currency.  Generally, the basket option would have a lower premium than the separate options, because an option on a portfolio is cheaper (and pays less at maturity) than a portfolio of options.  
 
@@ -429,7 +247,23 @@ $$
 \sqrt{x_1^2_t\sigma_1^2 + 2x_1_tx_2_t\rho\sigma_1\sigma_2 + x_2^2_t\sigma_2^2}\; .
 $$
 
-Hence, the volatility will vary randomly over time as the $x_i$ change.  As in the case of spread options, there is no simple closed-form solution for the value of a basket option.
+Hence, the volatility will vary randomly over time as the $x_i$ change.  There is no simple closed-form solution for the value of a basket option.
+
+
+## Spread Options
+
+A spread option \index{spread option} \index{basket option} is a call or a put written on the difference of two asset prices.  For example, a spread call will pay at maturity $T$ the larger of zero and $S_1_T-S_2_T-K$, where the $S_i$ are the asset prices and $K$ is the strike price of the call.  Spread options can be used by producers to hedge the difference between an input price and an output price.  They are also useful for hedging basis risk.  For example, someone may want to hedge an asset by selling a futures contract on a closely related but not identical asset.  This exposes the hedger to basis risk: the difference in value between the asset and the underlying asset on the futures contract.  A spread call can hedge the basis risk: take $S_1$ to be the value of the asset underlying the futures contract and $S_2$ the value of the asset being hedged.
+
+A spread option is actually an exchange option.  Assuming constant dividend yields $q_1$ and $q_2$,  we can take the assets underlying the exchange option to be as follows
+
+ 
+1. At date $0$, purchase $\mathrm{e}^{-q_1T}$ units of the asset with price $S_1$ and reinvest dividends, leading to a value of $S_1_T$ at date $T$, 
+2. At date $0$, purchase $\mathrm{e}^{-q_2T}$ units of the asset with price $S_2$ and invest $\mathrm{e}^{-rT}K$ in the risk-free asset.  Reinvesting dividends and accumulating interest means that we will have $S_2_T+K$ dollars at date $T$.
+
+
+However, we cannot apply Margrabe's formula to price spread options, because the second portfolio described above will have a stochastic volatility.  To see this, note that if the price $S_2_t$ falls to a low level, then the portfolio will consist primarily of the risk-free asset, so the portfolio volatility will be near the volatility of the risk-free asset, which is zero.  On the other hand, if $S_2_t$ becomes very high, then the portfolio will be weighted very heavily on the stock investment, and its volatility will approach the volatility of $S_2$.
+
+
 
 
 

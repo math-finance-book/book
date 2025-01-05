@@ -2,14 +2,272 @@
 
 # Other Exotics {#sec-c_exotics}
 
-We consider five classes of exotic options:
+We study six classes of exotic options:
 
-- Compound options
+- Barrier options (knock-outs and knock-ins)
 - Lookback options
+- Compound options
 - Options of the max or min of two asset prices
 - Forward start options
 - Choosers
 
+
+## Barrier Options {#sec-s_barriers}
+
+\index{barrier option} \index{down-and-out option} \index{down-and-in option} \index{knock-out option} \index{knock-in option} A down-and-out call pays the usual call value at maturity if and only if the stock price does not hit a specified lower bound during the lifetime of the option.  If it does breach the lower barrier, then it is out.  Conversely, a down-and-in call pays off only if the stock price does hit the lower bound.  Up-and-out and up-and-in calls are defined similarly, and there are also put options of this sort.  The out versions are called knock-outs and the in versions are called knock-ins.  
+
+Knock-ins can be priced from knock-outs and vice-versa.  For example, the combination of a down-and-out call and a down-and-in call creates a standard European call, so the value of a down-and-in can be obtained by subtracting the value of a down-and-out from the value of a standard European call.  Likewise, up-and-in calls can be valued by subtracting the value of an up-and-out from the value of a standard European call.  Both knock-outs and knock-ins are of course less expensive than comparable standard options.
+
+
+We will describe the pricing of a down-and-out call.  The pricing of up-and-out calls and knock-out puts is similar.  Often there are rebates associated with the knocking-out of a barrier option, but we will not include that feature here (see @sec-s_finitedifferencebarriers however).  
+
+A down-and-out call provides a hedge against an increase in an asset price, just as does a standard call, for someone who is short the asset.  The difference is that the down-and-out is knocked out when the asset price falls sufficiently.  Presumably this is acceptable to the buyer because the need to hedge against high prices diminishes when the price falls.  In fact, in this circumstance the buyer may want  to establish a new hedge at a lower strike.  However, absent re-hedging at a lower strike, the buyer of a knock-out call obviously faces the risk that the price may reverse course after falling to the knock-out boundary, leading to regret that the option was knocked out.  The rationale for accepting this risk is  that the knock-out is cheaper than a standard call.  Thus, compared to a standard call, a down-and-out call provides cheaper but incomplete insurance.
+
+The combination of a knock-out call and a knock-in call (or knock-out puts) with the same barrier and different strikes creates an option with a strike that is reset when the barrier is hit.  This is a hedge that adjusts automatically to the market.  An example is given in Probs.~\ref{e_standardknockout3} and~\ref{e_standardknockout4}.
+
+### Down-and-Out Call Payoff
+Let $L$ denote the lower barrier for the down-and-out call and assume it has not yet been breached at the valuation date, which we are calling date $0$.  Denote the minimum stock price realized during the remaining life of the contract by $z = \min_{0\leq t\leq T} S_t$.  In practice, this minimum is calculated at discrete dates (for example, based on daily closing prices), but we will assume here that the stock price is monitored continuously for the purpose of calculating the minimum. 
+
+The down-and-out call will pay $\max(0,S_T-K)$ if $z > L$ and 0 otherwise, 
+at its maturity T.  
+Let
+$$
+x = \begin{cases} 1 & \text{if $S_T>K$ and $z > L$\;,}\\
+0 & \text{otherwise\;.} \end{cases}
+$$
+Then the value of the down-and-out call at maturity is
+$$
+xS_T - xK\; .
+$$
+### Numeraires
+As in other cases, the value at date $0$ can be written as
+$$
+\mathrm{e}^{-qT}S_0\times\text{prob}^{V}(x=1) - \mathrm{e}^{-rT}K\times\text{prob}^{R}(x=1)\; ,
+$$
+
+where $V_t = \mathrm{e}^{qt}S_t$ and $R_t=\mathrm{e}^{rt}$.
+
+### Calculating Probabilities
+To calculate $\text{prob}^{V}(x=1)$ and $\text{prob}^{R}(x=1)$, we consider two cases.  
+
+
+1. Suppose $K>L$.  Define
+$$
+y = \begin{cases} 1 & \text{if $S_T>K$ and $z \leq L$}\\
+0 & \text{otherwise\;.} \end{cases}
+$$ 
+
+The event $S_T>K$ is equal to the union of the disjoint events $x=1$ and $y=1$.  Therefore,
+\begin{align*}
+\text{prob}^{V}(x=1) &= \text{prob}^{V}(S_T\!>\!K) - \text{prob}^{V}(y=1)\; ,\\
+\text{prob}^{R}(x=1) &= \text{prob}^{R}(S_T\!>\!K) - \text{prob}^{R}(y=1)\;.
+\end{align*}
+
+As in the derivation of the Black-Scholes formula, we have
+$$
+\text{prob}^{V}(S_T\!>\!K) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^{R}(S_T\!>\!K) = \mathrm{N}(d_2)\;,
+$$ {#eq-casea2}
+
+where
+
+$$
+d_1= \frac{\log\left(\frac{S_0}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,\qquad  d_2 = d_1-\sigma\sqrt{T}\;.
+$$ {#eq-casea3}
+
+Furthermore , defining 
+$$
+d_1' = \frac{\log\left(\frac{L^2}{KS_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2' = d_1'-\sigma\sqrt{T}\;,
+$$ {#eq-casea5}
+
+it can be shown (see Appendix~\ref{a_minimum}) that
+
+
+$$
+\text{prob}^{V}(y=1) = \left(\frac{L}{S_0}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\;,
+$$ {#eq-casea4}
+
+$$
+\text{prob}^{R}(y=1) = \left(\frac{L}{S_0}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\;.
+$$ {#eq-casea41}
+
+
+
+
+
+2. Suppose $K \leq L$.  Then the condition $S_T>K$ in the definition of the event $x=1$ is redundant: if $z > L \geq K$, then it is necessarily true that $S_T>K$.  Therefore, the probability (under either numeraire) of the event $x=1$ is the probability that $z > L$.  Define
+$$y = \begin{cases} 1 & \text{if $S_T>L$ and $z \leq L$\;,}\\
+0 & \text{otherwise\;.} \end{cases}
+$$
+
+The event $S_T>L$ is the union of the disjoint events $x=1$ and $y=1$.  Therefore, as in the previous case (but now with $K$ replaced by $L$),
+\begin{align*}
+\text{prob}^{V}(x=1) &= \text{prob}^{V}(S_T\!>\!L) - \text{prob}^{V}(y=1)\; ,\\
+\text{prob}^{R}(x=1) &= \text{prob}^{R}(S_T\!>\!L) - \text{prob}^{R}(y=1)\;.
+\end{align*}
+Also as before, we know that
+$$
+\text{prob}^{V}(S_T\!>\!L) = \mathrm{N}(d_1) \quad \text{and} \quad \text{prob}^{R}(S_T\!>\!L) = \mathrm{N}(d_2)\;,
+$$ {#eq-caseb2}
+
+where now
+
+$$
+d_1= \frac{\log\left(\frac{S_0}{L}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,\qquad  d_2 = d_1-\sigma\sqrt{T}\;.
+$$ {#eq-caseb3}
+
+Moreover, $\text{prob}^{V}(y=1)$ and $\text{prob}^{R}(y=1)$ are given by @eq-casea4 - @eq-casea41 but with $K$ replaced by $L$, which means that
+$$
+d_1' = \frac{\log\left(\frac{L}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'= d_1' - \sigma\sqrt{T}\;.
+$$ {#eq-caseb5}
+
+
+
+
+
+### Down-and-Out Call Pricing Formula
+
+
+::: Rule
+
+The value of a continuously-sampled down-and-out call option with barrier $L$ is 
+
+$$
+\begin{multline}
+\mathrm{e}^{-qT}S_0\left[\mathrm{N}(d_1)-\left(\frac{L}{S_0}\right)^{2\left(r-q+\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_1')\right]\\ - \mathrm{e}^{-rT}K\left[\mathrm{N}(d_2) - \left(\frac{L}{S_0}\right)^{2\left(r-q-\frac{1}{2}\sigma^2\right)/\sigma^2}\mathrm{N}(d_2')\right]\;,
+\end{multline} 
+$$ {#eq-downout100}
+
+where 
+
+
+\renewcommand{\labelenumi}{(\arabic{enumi})}
+1. if $K>L$, $d_1$, $d_2$ , $d_1'$ and $d_2'$ are defined in @eq-casea3 - @eq-casea5,
+2. if $K\leq L$, $d_1$, $d_2$, $d_1'$ and $d_2'$ are defined in @eq-caseb3 - @eq-caseb5.
+
+
+
+:::
+
+The following code computes the price of a down and out call option.
+
+```{python}
+
+#| code-fold: true
+#| label: Down-And_Out_Call
+
+"""
+
+def down_and_out_call(S, K, r, sigma, q, T, Barrier):
+    if K > Barrier:
+        a = S / K
+        b = Barrier * Barrier / (K * S)
+    else:
+        a = S / Barrier
+        b = Barrier / S
+
+    d1 = (np.log(a) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    d1prime = (np.log(b) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    d2prime = d1prime - sigma * np.sqrt(T)
+    N1 = norm.cdf(d1)
+    N2 = norm.cdf(d2)
+    N1prime = norm.cdf(d1prime)
+    N2prime = norm.cdf(d2prime)
+    x = 1 + 2 * (r - q) / (sigma ** 2)
+    y = x - 2
+    q1 = N1 - (Barrier / S) ** x * N1prime
+    q2 = N2 - (Barrier / S) ** y * N2prime
+
+    return np.exp(-q * T) * S * q1 - np.exp(-r * T) * K * q2
+print("Down and Out Call:", down_and_out_call(S, K, r, sigma, q, T, 80))
+"""
+```
+
+
+
+## Lookbacks {#sec-s_lookbacks}
+
+\index{lookback option} \index{floating-strike lookback option} \index{fixed-strike lookback option} A floating-strike lookback call pays the difference between the asset price at maturity and the minimum price realized during the life of the contract.  A floating-strike lookback put pays the difference between the maximum price over the life of the contract and the price at maturity.  Thus, the floating-strike lookback call allows one to buy the asset at its minimum price, and the floating-strike lookback put allows one to sell the asset at its maximum price.   Of course, one pays upfront for this opportunity to time the market.  These options were first discussed by Goldman, Sosin and Gatto [@GSG].
+
+A fixed-strike lookback put pays the difference between a fixed strike price and the minimum price during the lifetime of the contract.   Thus, a fixed-strike lookback put and a floating-strike lookback call are similar in one respect:  both enable one to buy the asset at its minimum price.  However, the put allows one to sell the asset at a fixed price whereas the call allows one to sell it at the terminal asset price.  A fixed-strike lookback call pays the difference between the maximum price and a fixed strike price and is similar to a floating-strike lookback put in the sense that both enable one to sell the asset at its maximum price.  Fixed-strike lookback options were first discussed by Conze and Viswanathan [@CV].
+We will discuss the valuation of floating-strike lookback calls. As in the discussion of barrier options, we will assume that the price is continuously sampled for the purpose of computing the minimum.
+
+### Floating-Strike Lookback Call Payoff
+
+As in the previous section, let $z$ denote the minimum stock price realized over the remaining lifetime of the contract.  This is not necessarily the minimum stock price realized during the entire lifetime of the contract.  Let $S_{\min}$ denote the minimum stock price realized during the lifetime of the contract up to and including date $0$, which is the date at which we are valuing the contract.  The minimum stock price during the entire lifetime of the contract will be the smaller of $z$ and $S_{\text{min}}$.  The payoff of the floating strike lookback call is $S_T - \min\left(z, S_{\text{min}}\right)$.
+
+
+
+
+### Calculations
+The value at date $0$ of the piece $S_T$ is simply $\mathrm{e}^{-qT}S_0$.  Using the result in Appendix~\ref{a_minimum} on the distribution of $z$, it can be shown (see, e.g., Musiela and Rutkowski [@MR] for the details) that the value at date $0$ of receiving 
+$$
+\min(z, S_{\text{min}})
+$$
+at date $T$ is
+\begin{multline*}
+\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) -\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
++\left(1+ \frac{\sigma^2}{2(r-q)}\right)\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;.
+\end{multline*}
+where
+
+
+$$
+d_1 = \frac{\log\left(\frac{S_0}{S_{\text{min}}}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; , \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
+$$ {#eq-fslc100a}
+
+$$
+d_1' = \frac{\log\left(\frac{S_{\text{min}}}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'=d_1' - \sigma\sqrt{T} \;.
+$$ {#eq-fslc100c}
+
+
+Using the fact that $[1-\mathrm{N}(-d_1)]\mathrm{e}^{-qT}S_0=\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)$, this implies:
+
+### Floating-Strike Lookback Call Pricing Formula
+
+::: Rule
+## 
+The value at date $0$ of a continuously-sampled floating-strike lookback call, given that the minimum price during the lifetime of the contract through date $0$ is $S_{\text{min}}$ and the remaining time to maturity is $T$, is
+
+$$
+\begin{multline}
+\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) \\+\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
+-\frac{\sigma^2}{2(r-q)}\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;,
+\end{multline}
+$$ {#eq-fslc100}
+
+where $d_1$, $d_2$, and $d_2'$ are defined in @eq-fslc100a - @eq-fslc100c.
+:::
+
+The following program calculates the price of a floating strike lookback option. 
+
+```{python}
+
+#| code-fold: true
+#| label: Floating_Strike_Lookback
+
+def floating_strike_call(S, r, sigma, q, T, SMin):
+    d1 = (np.log(S / SMin) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    d2prime = (np.log(SMin / S) + (r - q - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    N1 = norm.cdf(d1)
+    N2 = norm.cdf(d2)
+    N2prime = norm.cdf(d2prime)
+    x = 2 * (r - q) / (sigma ** 2)
+    return np.exp(-q * T) * S * N1 - np.exp(-r * T) * SMin * N2 + (1 / x) * (SMin / S) ** x * np.exp(-r * T) * SMin * N2prime - (1 / x) * np.exp(-q * T) * S * (1 - N1)
+
+# Example usage
+
+S = 100
+r = 0.05
+sigma = 0.2
+q = 0.02
+T=1
+
+
+# print("Floating Strike Call:", floating_strike_call(S, r, sigma, q, T, 90))
+
+```
 
 ## Compound Options
 
@@ -320,91 +578,6 @@ Tc = 0.5
 Tu = 1
 
 # print("Call on Put:", call_on_put(S, Kc, Ku, r, sigma, q, Tc, Tu))
-
-```
-
-
-## Lookbacks {#sec-s_lookbacks}
-
-\index{lookback option} \index{floating-strike lookback option} \index{fixed-strike lookback option} A floating-strike lookback call pays the difference between the asset price at maturity and the minimum price realized during the life of the contract.  A floating-strike lookback put pays the difference between the maximum price over the life of the contract and the price at maturity.  Thus, the floating-strike lookback call allows one to buy the asset at its minimum price, and the floating-strike lookback put allows one to sell the asset at its maximum price.   Of course, one pays upfront for this opportunity to time the market.  These options were first discussed by Goldman, Sosin and Gatto [@GSG].
-
-A fixed-strike lookback put pays the difference between a fixed strike price and the minimum price during the lifetime of the contract.   Thus, a fixed-strike lookback put and a floating-strike lookback call are similar in one respect:  both enable one to buy the asset at its minimum price.  However, the put allows one to sell the asset at a fixed price whereas the call allows one to sell it at the terminal asset price.  A fixed-strike lookback call pays the difference between the maximum price and a fixed strike price and is similar to a floating-strike lookback put in the sense that both enable one to sell the asset at its maximum price.  Fixed-strike lookback options were first discussed by Conze and Viswanathan [@CV].
-We will discuss the valuation of floating-strike lookback calls. As in the discussion of barrier options, we will assume that the price is continuously sampled for the purpose of computing the minimum.
-
-### Floating-Strike Lookback Call Payoff
-
-As in the previous section, let $z$ denote the minimum stock price realized over the remaining lifetime of the contract.  This is not necessarily the minimum stock price realized during the entire lifetime of the contract.  Let $S_{\min}$ denote the minimum stock price realized during the lifetime of the contract up to and including date $0$, which is the date at which we are valuing the contract.  The minimum stock price during the entire lifetime of the contract will be the smaller of $z$ and $S_{\text{min}}$.  The payoff of the floating strike lookback call is $S_T - \min\left(z, S_{\text{min}}\right)$.
-
-
-
-
-### Calculations
-The value at date $0$ of the piece $S_T$ is simply $\mathrm{e}^{-qT}S_0$.  Using the result in Appendix~\ref{a_minimum} on the distribution of $z$, it can be shown (see, e.g., Musiela and Rutkowski [@MR] for the details) that the value at date $0$ of receiving 
-$$
-\min(z, S_{\text{min}})
-$$
-at date $T$ is
-\begin{multline*}
-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) -\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
-+\left(1+ \frac{\sigma^2}{2(r-q)}\right)\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;.
-\end{multline*}
-where
-
-
-$$
-d_1 = \frac{\log\left(\frac{S_0}{S_{\text{min}}}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; , \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
-$$ {#eq-fslc100a}
-
-$$
-d_1' = \frac{\log\left(\frac{S_{\text{min}}}{S_0}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2'=d_1' - \sigma\sqrt{T} \;.
-$$ {#eq-fslc100c}
-
-
-Using the fact that $[1-\mathrm{N}(-d_1)]\mathrm{e}^{-qT}S_0=\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)$, this implies:
-
-### Floating-Strike Lookback Call Pricing Formula
-
-::: Rule
-## 
-The value at date $0$ of a continuously-sampled floating-strike lookback call, given that the minimum price during the lifetime of the contract through date $0$ is $S_{\text{min}}$ and the remaining time to maturity is $T$, is
-
-$$
-\begin{multline}
-\mathrm{e}^{-qT}S_0\mathrm{N}(d_1)-\mathrm{e}^{-rT}S_{\text{min}}\mathrm{N}(d_2) \\+\frac{\sigma^2}{2(r-q)}\left(\frac{S_{\text{min}}}{S_0}\right)^{2(r-q)/\sigma^2}\mathrm{e}^{-rT}S_0\mathrm{N}(d_2') \\
--\frac{\sigma^2}{2(r-q)}\mathrm{e}^{-qT}S_0\mathrm{N}(-d_1)\;,
-\end{multline}
-$$ {#eq-fslc100}
-
-where $d_1$, $d_2$, and $d_2'$ are defined in @eq-fslc100a - @eq-fslc100c.
-:::
-
-The following program calculates the price of a floating strike lookback option. 
-
-```{python}
-
-#| code-fold: true
-#| label: Floating_Strike_Lookback
-
-def floating_strike_call(S, r, sigma, q, T, SMin):
-    d1 = (np.log(S / SMin) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
-    d2 = d1 - sigma * np.sqrt(T)
-    d2prime = (np.log(SMin / S) + (r - q - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
-    N1 = norm.cdf(d1)
-    N2 = norm.cdf(d2)
-    N2prime = norm.cdf(d2prime)
-    x = 2 * (r - q) / (sigma ** 2)
-    return np.exp(-q * T) * S * N1 - np.exp(-r * T) * SMin * N2 + (1 / x) * (SMin / S) ** x * np.exp(-r * T) * SMin * N2prime - (1 / x) * np.exp(-q * T) * S * (1 - N1)
-
-# Example usage
-
-S = 100
-r = 0.05
-sigma = 0.2
-q = 0.02
-T=1
-
-
-# print("Floating Strike Call:", floating_strike_call(S, r, sigma, q, T, 90))
 
 ```
 
