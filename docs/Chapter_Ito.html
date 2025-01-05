@@ -112,17 +112,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
 </script>
 <style>
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
 }
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
 }
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
 }
 .Rule {
   --color1: #a1bced;
@@ -496,12 +496,12 @@ window.Quarto = {
 </header>
 
 
-<p>We use the changes of a Brownian motion to model randomness. We build other stochastic process using those changes. The general idea is <span class="math display">\[\text{change} = \text{mean} + \text{std dev} \times \text{change in Brownian motion}\,.\]</span> The mathematical foundations for this construction, using changes in infinitesimal time periods so that we can model all frequencies, were created by K. Ito. The key concepts are called the Ito integral and Ito’s formula (also called Ito’s lemma). Using these techniques, we can build quite general processes, including processes with non-normal distributions.</p>
+<p>We use the changes of a Brownian motion to model randomness. We build other stochastic processes using those changes. The general idea is <span class="math display">\[\text{change} = \text{mean} + \text{std dev} \times \text{change in Brownian motion}\,.\]</span> The mathematical foundations for our construction were created by K. Ito. The key concepts are the Ito integral, Ito processes, and Ito’s formula (also called Ito’s lemma). Using these foundations, we can build quite general processes from changes in Brownian motions, including processes with non-normal distributions.</p>
 <section id="sec_f_discrete" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="sec_f_discrete"><span class="header-section-number">6.1</span> Examples</h2>
 <p>We begin with some simple examples. Consider a discrete partition of a time interval as before <span class="math display">\[0=t_0 &lt; t_1&lt; \cdots &lt; t_{n-1} &lt; t_n=t\]</span> with equally spaced times. Let <span class="math inline">\(\Delta t\)</span> denote the difference between successive times.</p>
-<p>First, we drop the randomness entirely. Consider the equation <span id="eq-ito_discrete_1"><span class="math display">\[X_{t_i} -  X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t \qquad(6.1)\]</span></span> for a constant <span class="math inline">\(\mu\)</span>. Thus, we have ``change <span class="math inline">\(\,=\,\)</span> mean,’’ where the mean is proportional to the previous value with proportionality factor <span class="math inline">\(\mu \Delta t\)</span>. <span class="quarto-unresolved-ref">?fig-discrete-interest</span> presents a plot of <span class="math inline">\(X\)</span>, for particular values of <span class="math inline">\(\mu\)</span>, <span class="math inline">\(X_0\)</span>, <span class="math inline">\(\Delta t\)</span>.</p>
-<p>If we increase <span class="math inline">\(n\)</span>, making <span class="math inline">\(\Delta t\)</span> smaller, then <span class="math inline">\(X\)</span> will converge to the solution of the ordinary differential equation <span id="eq-ito_discrete_2"><span class="math display">\[\,\mathrm{d}X_t = \mu X_t\,\,\mathrm{d}t\,. \qquad(6.2)\]</span></span> The solution of this equation is also shown in <span class="quarto-unresolved-ref">?fig-discrete-interest</span>. The differential equation has a known solution, which is <span id="eq-ito_discrete_3"><span class="math display">\[X_t = X_0 \mathrm{e}^{\mu t}\,. \qquad(6.3)\]</span></span> To verify this, we only need to differentiate: <span class="math display">\[\frac{\,\mathrm{d}X_t}{\,\mathrm{d}t} = \mu X_0 \mathrm{e}^{\mu t} = \mu X_t\,.\]</span></p>
+<p>First, let’s drop the randomness entirely. Consider the equation <span id="eq-ito_discrete_1"><span class="math display">\[X_{t_i} -  X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t \qquad(6.1)\]</span></span> for a constant <span class="math inline">\(\mu\)</span>. Thus, we have “change <span class="math inline">\(\,=\,\)</span> mean,” where the mean is proportional to the previous value with proportionality factor <span class="math inline">\(\mu \Delta t\)</span>. <span class="quarto-unresolved-ref">?fig-discrete-interest</span> presents a plot of <span class="math inline">\(X\)</span>, for particular values of <span class="math inline">\(X_0\)</span>, <span class="math inline">\(\mu\)</span>, and <span class="math inline">\(\Delta t\)</span>.</p>
+<p>If we increase <span class="math inline">\(n\)</span>, making <span class="math inline">\(\Delta t\)</span> smaller, then <span class="math inline">\(X\)</span> will converge to the solution of the ordinary differential equation <span id="eq-ito_discrete_2"><span class="math display">\[\,\mathrm{d}X_t = \mu X_t\,\,\mathrm{d}t\,. \qquad(6.2)\]</span></span> This differential equation has a known solution, which is <span id="eq-ito_discrete_3"><span class="math display">\[X_t = X_0 \mathrm{e}^{\mu t}\,. \qquad(6.3)\]</span></span> To verify this, we only need to differentiate: <span class="math display">\[\frac{\,\mathrm{d}X_t}{\,\mathrm{d}t} = \mu X_0 \mathrm{e}^{\mu t} = \mu X_t\,.\]</span> The function presented in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> is also shown in <span class="quarto-unresolved-ref">?fig-discrete-interest</span>.</p>
 <p>Now, let’s include randomness. Let’s make the noise proportional to the value of <span class="math inline">\(X\)</span>, So, let <span class="math inline">\(B\)</span> be a standard Brownian motion and consider the equation <span id="eq-ito_discrete_4"><span class="math display">\[X_{t_i} - X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t + \sigma X_{t_{i-1}} \Delta B_{t_i} \qquad(6.4)\]</span></span> where <span class="math inline">\(\sigma\)</span> is another constant, and <span class="math inline">\(\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}\)</span>. Now, the process <span class="math inline">\(X\)</span> has random paths, due to the random noise <span class="math inline">\(\Delta B_{t_i}\)</span>. An example of a path is shown in <span class="quarto-unresolved-ref">?fig-discrete-random</span>. Ito showed how we can take the limit of this equation as <span class="math inline">\(\Delta t\)</span> decreases and make sense of the equation <span id="eq-ito_discrete_5"><span class="math display">\[
 \,\mathrm{d}X_t = \mu X_t\,\,\mathrm{d}t + \sigma X_t \,\,\mathrm{d}B_t\,.
 \qquad(6.5)\]</span></span> The solution <span class="math inline">\(X\)</span> of this equation is <span id="eq-ito_discrete_6"><span class="math display">\[X_t = \mathrm{e}^{\mu t - \sigma^2/2 + \sigma B_t}\,. \qquad(6.6)\]</span></span> An approximate path of this process <span class="math inline">\(X\)</span> is also shown in <span class="quarto-unresolved-ref">?fig-discrete-random</span>. It is generated by taking <span class="math inline">\(\Delta t\)</span> very small, just as we generated approximate paths of Brownian motions in <a href="Chapter_Brownian.html" class="quarto-xref"><span>Chapter 5</span></a>. We can show that <span class="math inline">\(X\)</span> defined in <span class="quarto-unresolved-ref">?eq-ito_discrete6</span> satisfies <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>6.5</span></a> by differentiating, as we showed that <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> satisfies <a href="#eq-ito_discrete_2" class="quarto-xref">Equation&nbsp;<span>6.2</span></a>. However, we first need to explain Ito’s formula, which is a formula for differentiating functions of Brownian motions and, more generally, functions of Ito processes.</p>
@@ -600,7 +600,7 @@ invalid escape sequence '\,'
 
 invalid escape sequence '\,'
 
-C:\Users\kerry\AppData\Local\Temp\ipykernel_24436\3168237844.py:1: SyntaxWarning:
+C:\Users\kerry\AppData\Local\Temp\ipykernel_7244\3168237844.py:1: SyntaxWarning:
 
 invalid escape sequence '\,'
 </code></pre>
