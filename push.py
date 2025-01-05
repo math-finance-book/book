@@ -1,6 +1,9 @@
 import os
 os.system("quarto render")
-os.system("python cname.py")
+os.system("copy under_construction.jpg docs")
+with open("docs/CNAME", "w") as f:
+    f.write("https://book.derivative-securities.org")
+os.system("git pull origin main")
 os.system("git add .")
 os.system("git commit -m 'update'")
-os.system("git push")
+os.system("git push origin main")
