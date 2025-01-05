@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -111,15 +111,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
-}
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
-}
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
@@ -127,6 +138,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
+}
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
+}
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
 }
 </style>
 
@@ -499,12 +518,98 @@ window.Quarto = {
 <p>We use the changes of a Brownian motion to model randomness. We build other stochastic processes using those changes. The general idea is <span class="math display">\[\text{change} = \text{mean} + \text{std dev} \times \text{change in Brownian motion}\,.\]</span> The mathematical foundations for our construction were created by K. Ito. The key concepts are the Ito integral, Ito processes, and Ito’s formula (also called Ito’s lemma). Using these foundations, we can build quite general processes from changes in Brownian motions, including processes with non-normal distributions.</p>
 <section id="sec_f_discrete" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="sec_f_discrete"><span class="header-section-number">6.1</span> Examples</h2>
-<p>We begin with some simple examples. Consider a discrete partition of a time interval as before <span class="math display">\[0=t_0 &lt; t_1&lt; \cdots &lt; t_{n-1} &lt; t_n=t\]</span> with equally spaced times. Let <span class="math inline">\(\Delta t\)</span> denote the difference between successive times.</p>
-<p>First, let’s drop the randomness entirely. Consider the equation <span id="eq-ito_discrete_1"><span class="math display">\[X_{t_i} -  X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t \qquad(6.1)\]</span></span> for a constant <span class="math inline">\(\mu\)</span>. Thus, we have “change <span class="math inline">\(\,=\,\)</span> mean,” where the mean is proportional to the previous value with proportionality factor <span class="math inline">\(\mu \Delta t\)</span>. <span class="quarto-unresolved-ref">?fig-discrete-interest</span> presents a plot of <span class="math inline">\(X\)</span>, for particular values of <span class="math inline">\(X_0\)</span>, <span class="math inline">\(\mu\)</span>, and <span class="math inline">\(\Delta t\)</span>.</p>
-<p>If we increase <span class="math inline">\(n\)</span>, making <span class="math inline">\(\Delta t\)</span> smaller, then <span class="math inline">\(X\)</span> will converge to the solution of the ordinary differential equation <span id="eq-ito_discrete_2"><span class="math display">\[\,\mathrm{d}X_t = \mu X_t\,\,\mathrm{d}t\,. \qquad(6.2)\]</span></span> This differential equation has a known solution, which is <span id="eq-ito_discrete_3"><span class="math display">\[X_t = X_0 \mathrm{e}^{\mu t}\,. \qquad(6.3)\]</span></span> To verify this, we only need to differentiate: <span class="math display">\[\frac{\,\mathrm{d}X_t}{\,\mathrm{d}t} = \mu X_0 \mathrm{e}^{\mu t} = \mu X_t\,.\]</span> The function presented in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> is also shown in <span class="quarto-unresolved-ref">?fig-discrete-interest</span>.</p>
-<p>Now, let’s include randomness. Let’s make the noise proportional to the value of <span class="math inline">\(X\)</span>, So, let <span class="math inline">\(B\)</span> be a standard Brownian motion and consider the equation <span id="eq-ito_discrete_4"><span class="math display">\[X_{t_i} - X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t + \sigma X_{t_{i-1}} \Delta B_{t_i} \qquad(6.4)\]</span></span> where <span class="math inline">\(\sigma\)</span> is another constant, and <span class="math inline">\(\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}\)</span>. Now, the process <span class="math inline">\(X\)</span> has random paths, due to the random noise <span class="math inline">\(\Delta B_{t_i}\)</span>. An example of a path is shown in <span class="quarto-unresolved-ref">?fig-discrete-random</span>. Ito showed how we can take the limit of this equation as <span class="math inline">\(\Delta t\)</span> decreases and make sense of the equation <span id="eq-ito_discrete_5"><span class="math display">\[
+<p>We begin with some simple examples. Consider a discrete partition of a time interval: <span class="math display">\[0=t_0 &lt; t_1&lt; \cdots &lt; t_{n-1} &lt; t_n=t\]</span> with equally spaced times. Let <span class="math inline">\(\Delta t\)</span> denote the difference between successive times.</p>
+<p>First, let’s drop the randomness entirely. Consider the equation <span id="eq-ito_discrete_1"><span class="math display">\[X_{t_i} -  X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t \qquad(6.1)\]</span></span> for a constant <span class="math inline">\(\mu\)</span>. Thus, we have “change <span class="math inline">\(\,=\,\)</span> mean,” where the mean is proportional to the previous value with proportionality factor <span class="math inline">\(\mu \Delta t\)</span>. <a href="#fig-discrete-interest" class="quarto-xref">Figure&nbsp;<span>6.1</span></a> presents a plot of <span class="math inline">\(X\)</span>, for particular values of <span class="math inline">\(X_0\)</span>, <span class="math inline">\(\mu\)</span>, and <span class="math inline">\(\Delta t\)</span>.</p>
+<p>If we increase <span class="math inline">\(n\)</span>, making <span class="math inline">\(\Delta t\)</span> smaller, then <span class="math inline">\(X\)</span> will converge to the solution of the ordinary differential equation <span id="eq-ito_discrete_2"><span class="math display">\[\,\mathrm{d}X_t = \mu X_t\,\,\mathrm{d}t\,. \qquad(6.2)\]</span></span> This differential equation has a known solution, which is <span id="eq-ito_discrete_3"><span class="math display">\[X_t = X_0 \mathrm{e}^{\mu t}\,. \qquad(6.3)\]</span></span> To verify this, we only need to differentiate: <span class="math display">\[\frac{\,\mathrm{d}X_t}{\,\mathrm{d}t} = \mu X_0 \mathrm{e}^{\mu t} = \mu X_t\,.\]</span> The function presented in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> is also shown in <a href="#fig-discrete-interest" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>.</p>
+<div id="cell-fig-discrete-interest" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-discrete-interest" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-discrete-interest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.1: The functions <span class="math inline">\(X\)</span> satisfying <a href="#eq-ito_discrete_1" class="quarto-xref">Equation&nbsp;<span>6.1</span></a> and <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> for X0 = 1, mu = 1, and Delta t = 0.1.
+</figcaption>
+<div aria-describedby="fig-discrete-interest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>                            <div id="47f666a7-f364-4cf7-a1c1-fc6e9bdd0069" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("47f666a7-f364-4cf7-a1c1-fc6e9bdd0069")) {                    Plotly.newPlot(                        "47f666a7-f364-4cf7-a1c1-fc6e9bdd0069",                        [],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30}}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('47f666a7-f364-4cf7-a1c1-fc6e9bdd0069');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</figure>
+</div>
+</div>
+<p>Now, let’s include randomness. Let’s make the noise proportional to the value of <span class="math inline">\(X\)</span>, So, let <span class="math inline">\(B\)</span> be a standard Brownian motion and consider the equation <span id="eq-ito_discrete_4"><span class="math display">\[X_{t_i} - X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t + \sigma X_{t_{i-1}} \Delta B_{t_i} \qquad(6.4)\]</span></span> where <span class="math inline">\(\sigma\)</span> is another constant, and <span class="math inline">\(\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}\)</span>. Now, the process <span class="math inline">\(X\)</span> has random paths, due to the random noise <span class="math inline">\(\Delta B_{t_i}\)</span>. An example of a path is shown in <a href="#fig-discrete-random" class="quarto-xref">Figure&nbsp;<span>6.2</span></a>. Ito showed how we can take the limit of this equation as <span class="math inline">\(\Delta t\)</span> decreases and make sense of the equation <span id="eq-ito_discrete_5"><span class="math display">\[
 \,\mathrm{d}X_t = \mu X_t\,\,\mathrm{d}t + \sigma X_t \,\,\mathrm{d}B_t\,.
-\qquad(6.5)\]</span></span> The solution <span class="math inline">\(X\)</span> of this equation is <span id="eq-ito_discrete_6"><span class="math display">\[X_t = \mathrm{e}^{\mu t - \sigma^2/2 + \sigma B_t}\,. \qquad(6.6)\]</span></span> An approximate path of this process <span class="math inline">\(X\)</span> is also shown in <span class="quarto-unresolved-ref">?fig-discrete-random</span>. It is generated by taking <span class="math inline">\(\Delta t\)</span> very small, just as we generated approximate paths of Brownian motions in <a href="Chapter_Brownian.html" class="quarto-xref"><span>Chapter 5</span></a>. We can show that <span class="math inline">\(X\)</span> defined in <span class="quarto-unresolved-ref">?eq-ito_discrete6</span> satisfies <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>6.5</span></a> by differentiating, as we showed that <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> satisfies <a href="#eq-ito_discrete_2" class="quarto-xref">Equation&nbsp;<span>6.2</span></a>. However, we first need to explain Ito’s formula, which is a formula for differentiating functions of Brownian motions and, more generally, functions of Ito processes.</p>
+\qquad(6.5)\]</span></span> The solution <span class="math inline">\(X\)</span> of this equation is <span id="eq-ito_discrete_6"><span class="math display">\[X_t = \mathrm{e}^{\mu t - \sigma^2/2 + \sigma B_t}\,. \qquad(6.6)\]</span></span> An approximate path of this process <span class="math inline">\(X\)</span> is also shown in <a href="#fig-discrete-random" class="quarto-xref">Figure&nbsp;<span>6.2</span></a>. It is generated by taking <span class="math inline">\(\Delta t\)</span> very small, just as we generated approximate paths of Brownian motions in <a href="Chapter_Brownian.html" class="quarto-xref"><span>Chapter 5</span></a>. We can show that <span class="math inline">\(X\)</span> defined in <span class="quarto-unresolved-ref">?eq-ito_discrete6</span> satisfies <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>6.5</span></a> by differentiating, as we showed that <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> satisfies <a href="#eq-ito_discrete_2" class="quarto-xref">Equation&nbsp;<span>6.2</span></a>. However, we first need to explain Ito’s formula, which is a formula for differentiating functions of Brownian motions and, more generally, functions of Ito processes.</p>
+<div id="cell-fig-discrete-random" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-discrete-random" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-discrete-random-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.2
+</figcaption>
+<div aria-describedby="fig-discrete-random-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>                            <div id="6bc1eb42-f76b-4925-8519-67631349d411" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("6bc1eb42-f76b-4925-8519-67631349d411")) {                    Plotly.newPlot(                        "6bc1eb42-f76b-4925-8519-67631349d411",                        [],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30}}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('6bc1eb42-f76b-4925-8519-67631349d411');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</figure>
+</div>
+</div>
 <p>The functions and processes <span class="math inline">\(X\)</span> defined in this section have important interpretations. <a href="#eq-ito_discrete_1" class="quarto-xref">Equation&nbsp;<span>6.1</span></a> can be rewritten to say that the percent change in <span class="math inline">\(X\)</span> is <span class="math inline">\(\mu \Delta t\)</span>. This could represent the value of a savings account that earns interest of <span class="math inline">\(\mu \Delta t\)</span> in each period of length <span class="math inline">\(\Delta t\)</span>. This is the common way of calculating, for example, monthly interest, where <span class="math inline">\(\mu\)</span> is called the annual rate of interest and <span class="math inline">\(\Delta t\)</span> would be <span class="math inline">\(1/12\)</span>. The limiting <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> is called continuous compounding of interest.</p>
 <p>Similarly, <a href="#eq-ito_discrete_4" class="quarto-xref">Equation&nbsp;<span>6.4</span></a> can be rewritten to say that the percent change in <span class="math inline">\(X\)</span> is t + B$. This represents a random rate of return – for example, the return on a stock. The expected rate of return in this case is <span class="math inline">\(\mu \Delta t\)</span>, and the variance of the rate of return is <span class="math inline">\(\sigma^2 \Delta t\)</span>. The limiting <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>6.3</span></a> is called continuous compounding of returns.</p>
 </section>
@@ -569,27 +674,27 @@ Y_t = Y_0 + \sum_{i=1}^N \Delta Y_{t_i}
 <div id="cell-simulated_ito" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">n = 1000</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function and its first and second derivative</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">G = lambda x: np.exp(x)</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">DG = lambda x: np.exp(x)</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">DDG = lambda x: np.exp(x)</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Build G'(x)\,\d  B</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">GdB = np.zeros(shape = (n, m))</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[0] = np.repeat(DG_0, m) * inc[0]</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[1:] = DG(Bt[0:n - 1]) * inc[1:]</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">SI = np.zeros(shape = (n, m))</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Stochastic Integral is cumulative sum of G'(B)dB plus initial</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">SI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G_0</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare Ito's Lemma </span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], SI[:,0])</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">n = 1000</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function and its first and second derivative</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">G = lambda x: np.exp(x)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">DG = lambda x: np.exp(x)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">DDG = lambda x: np.exp(x)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Build G'(x)\,\d  B</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">GdB = np.zeros(shape = (n, m))</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[0] = np.repeat(DG_0, m) * inc[0]</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">GdB[1:] = DG(Bt[0:n - 1]) * inc[1:]</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">SI = np.zeros(shape = (n, m))</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Stochastic Integral is cumulative sum of G'(B)dB plus initial</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">SI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G_0</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare Ito's Lemma </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], SI[:,0])</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>&lt;&gt;:1: SyntaxWarning:
@@ -600,12 +705,12 @@ invalid escape sequence '\,'
 
 invalid escape sequence '\,'
 
-C:\Users\kerry\AppData\Local\Temp\ipykernel_7244\3168237844.py:1: SyntaxWarning:
+C:\Users\kerry\AppData\Local\Temp\ipykernel_19656\3168237844.py:1: SyntaxWarning:
 
 invalid escape sequence '\,'
 </code></pre>
 </div>
-<div id="simulated_ito" class="cell-output cell-output-display" data-execution_count="1">
+<div id="simulated_ito" class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>"\nimport numpy as np\n\nn = 1000\nm = 1\n\n# Define a function and its first and second derivative\nG = lambda x: np.exp(x)\nDG = lambda x: np.exp(x)\nDDG = lambda x: np.exp(x)\n# Build G'(x)\\,\\d  B\nGdB = np.zeros(shape = (n, m))\nGdB[0] = np.repeat(DG_0, m) * inc[0]\nGdB[1:] = DG(Bt[0:n - 1]) * inc[1:]\nSI = np.zeros(shape = (n, m))\n# Stochastic Integral is cumulative sum of G'(B)dB plus initial\nSI = GdB.cumsum(axis = 0) + 0.5 * (DDG(Bt[0:n])*Q).cumsum(axis =0) + G_0\n# Compare Ito's Lemma \nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], SI[:,0])\n"</code></pre>
 <p>Simulated Ito Formula</p>
 </div>
@@ -614,13 +719,13 @@ invalid escape sequence '\,'
 <div id="cell-simulated_exact" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#exact solution</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], G(Bt[1:n + 1, 0]))</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#exact solution</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], G(Bt[1:n + 1, 0]))</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="simulated_exact" class="cell-output cell-output-display" data-execution_count="2">
+<div id="simulated_exact" class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>'\nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], G(Bt[1:n + 1, 0]))\n'</code></pre>
 <p>Simulated Exact Solution</p>
 </div>
@@ -629,14 +734,14 @@ invalid escape sequence '\,'
 <div id="cell-correction" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = np.zeros(shape = (n, m))</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], QVV[:,0])</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = np.zeros(shape = (n, m))</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">QVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t[0:n], QVV[:,0])</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="correction" class="cell-output cell-output-display" data-execution_count="3">
+<div id="correction" class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>'\nQVV = np.zeros(shape = (n, m))\nQVV = 0.5*(DDG(Bt[0:n]) * Q).cumsum(axis = 0)\nplt.figure(figsize=(9,6))\nplt.plot(t[0:n], QVV[:,0])\n'</code></pre>
 <p>Second Derivative Term in Ito’s Formula</p>
 </div>
@@ -645,7 +750,7 @@ invalid escape sequence '\,'
 <div id="fig-interactive_ito" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-interactive_ito-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6.1: Accuracy of Ito’s approximation
+Figure&nbsp;6.3: Accuracy of Ito’s approximation
 </figcaption>
 <div aria-describedby="fig-interactive_ito-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/ito_approx_plot">
