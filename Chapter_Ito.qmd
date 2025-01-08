@@ -175,14 +175,18 @@ This implies that, for each $t>0$,
 $$y_t = f(x_t) = y_0 + \int_0^t \frac{\d  y}{\d  s}\,\d  s = y_0 + \int_0^t f'(x_s)g'(s)\,\d  s\; .$$
 Substituting $\d x_s = g'(s)\,\d  s$, we can also write this as
 $$
-y_t = f(x_t) = y_0 + \int_0^t f'(x_s)\,\d  x_s\;.
+y_t = f(x_t) = y_0 + \int_0^t f'(x_s)\,\d  x_s\,,
 $$ {#eq-ordinarycalculus}
+or, in differential form,
+$$
+dy_t = f'(x_t)\d x_t \,.
+$$ {#eq-ordinarycalculus2}
 What people frequently remember about integrals from their calculus courses is that there are a lot of tricky substitutions that can be made to simplify the calculation of various integrals.  We won't need those in this book.  All we will use are equations of the form of @eq-ordinarycalculus, which is a special case of what is called the Fundamental Theorem of Calculus.  Intuitively, we can think of @eq-ordinarycalculus as saying that the change in $y$ over a discrete interval (from $0$ to $t$) is the continuous sum (integral) of its infinitesimal changes.  This is the principle that will be applied throughout the book.
 
 Let's contrast  @eq-ordinarycalculus  with a special case of Ito's formula for the calculus of Ito processes.  If $B$ is a Brownian motion and $Y = f(B)$ for a twice-continuously differentiable function $f$, then 
 $$\,\d  Y_t = f'(B_t)\,\d  B_t + \frac{1}{2}f''(B_t)\,\d  t + \,. 
 $$ {#eq-ito0}
-Thus, relative to the ordinary calculus, Ito's formula has an extra term involving the second derivative $f''$.   @eq-itonew1 implies that $Y=f(B)$ is an Ito process with drift $f''(B_t)/2$ and diffusion coefficient $f'(B_t)$.  The real meaning of @eq-ito0 is the integrated form:
+Comparing @eq-ito0 to @eq-ordinarycalculus2, we see that Ito's formula has an extra term involving the second derivative $f''$.   @eq-itonew1 implies that $Y=f(B)$ is an Ito process with drift $f''(B_t)/2$ and diffusion coefficient $f'(B_t)$.  The real meaning of @eq-ito0 is the integrated form:
 $$
 Y_t = f(B_t) = Y_0 + \int_0^t f'(B_s)\,\d  B_s + \frac{1}{2}\int_0^t f''(B_s)\,\d  s\;.
 $$ {#eq-itonew1}
@@ -237,14 +241,30 @@ $$\d Y_t = \frac{\partial f(t, B_t)}{\partial t}\d t + \frac{\partial f(t, B_t)}
 $$ {#eq-ito-firstformula}
 :::
 
-We can apply this rule to finish the discussion in @sec_f_discrete regarding the process defined in @eq-ito_discrete6.  We want to show that it satisfies @eq-discrete5.  We do that by differentiating and applying the above rule.  For $f(t, B) = \e^{(\mu - \sigma^2/2)t + \sigma B}$, we have
+We can apply this rule to finish the discussion in @sec-f_discrete regarding the process defined in @eq-ito_discrete_6.  We want to show that it satisfies @eq-discrete_5.  We do that by differentiating and applying the above rule.  For $f(t, B) = \e^{(\mu - \sigma^2/2)t + \sigma B}$, we have
 $$\frac{\partial f}{\partial t} = \left(\mu-\frac{1}{2}\sigma^2\right)f(t, B)\,,\quad \frac{\partial f}{\partial B} = \sigma f(t, B)\,, \quad \frac{\partial^2 f}{\partial B^2} = \sigma^2f(t, B)\,.$$
 Therefore,
-$$\D Y_t = \left(\mu-\frac{1}{2}\sigma^2\right)Y_t\d t + \sigma Y_t \d B_t + \frac{1}{2}\sigma^2 Y_t\,(\d B_t)^2 = \mu Y_t\d t + \sigma Y_t \d B_t$$
+$$\d Y_t = \left(\mu-\frac{1}{2}\sigma^2\right)Y_t\d t + \sigma Y_t \d B_t + \frac{1}{2}\sigma^2 Y_t\,(\d B_t)^2 = \mu Y_t\d t + \sigma Y_t \d B_t$$
 This verifies @eq-ito_discrete_5.
 
+## Extension to Functions of Ito Processes
 
-## General Ito's Formula
+Now consider the more general case $Y_t = f(t, X_t)$ where $X$ is an Ito process.  As explained before, this means that
+$$\d X_t = \alpha_t\d t + \theta_t \d B_t
+$$ {#eq-itoagain}
+for some stochastic processes $\alpha$ and $\theta$, where $B$ is a standard Brownian motion.  Then, from our previous rules, $(\d X)^2 = \theta^2\d t$.  Thankfully, Ito's formula in this more general case can be written in a form that is almost identical to that we saw in the previous section.
+
+::: Rule
+
+If $f(t, X)$ is continuously differentiable in $t$ and twice continuously differentiable in $X$ and $Y_t= f(t, X_t)$ where $X$ is an Ito process, then
+$$\d Y_t = \frac{\partial f(t, X_t)}{\partial t}\d t + \frac{\partial f(t, X_t)}{\partial X}\d X_t + \frac{1}{2} \cdot \frac{\partial^2 f(t, X_t)}{\partial X^2}(\d X_t)^2\,.
+$$ {#eq-ito-secondformula}
+:::
+We can write @eq-ito-secondformula in terms of $\d t$ and $\d B$ terms by substituting from @eq-itoagain and using $(\d X)^2 = \theta^2\d t$.  This produces
+$$\d Y_t = \left(\frac{\partial f(t, X_t)}{\partial t} + \alpha_t\frac{\partial f(t, X_t)}{\partial X} + \frac{1}{2}\theta_t \frac{\partial^2 f(t, X_t)}{\partial X^2}\right)\d t + \theta_t\frac{\partial f(t, X_t)}{\partial X}\d B_t\,.$$
+
+
+## Extension to Functions of Multiple Ito Processes
 
 Consider two Ito processes
 
