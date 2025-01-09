@@ -1,12 +1,12 @@
 {{< include macros.qmd >}}
 
-# GARCH Models {#sec-c_garch}
+# GARCH Models {#sec-c:garch}
 
 Thus far, we have assumed that the volatility of the underlying asset is constant or varying in a non-random way during the lifetime of the derivative.  In this chapter we will look at models that relax this assumption and allow the volatility to change randomly.  This is very important, because there is plenty of evidence that volatilities do change over time in a random way.  
 
 In the first three sections, we will consider the problem of estimating the volatility.  The discussion of estimation methods leads naturally into the discussion of modeling a changing volatility.  
 
-## Statistics Review {#sec-s_statistics}
+## Statistics Review {#sec-s:statistics}
 
 We begin with a brief review of basic statistics.
 Given a random sample $\{x_1,\ldots,x_N\}$ of size $N$ from a population with mean $\mu$ and variance $\sigma^2$, the best estimate of $\mu$ is of course the sample mean 
@@ -31,12 +31,12 @@ It is important to know how much variation there would be in $\bar{x}$ if one ha
 $$\sqrt{\frac{1}{N(N-1)}\left(\sum_{i=1}^{N} x_i^2-N\bar{x}^2\right)}\; .$$
 If the population from which $x$ is sampled has a normal distribution, then a 95\% confidence interval for $\mu$ will be $\bar{x}$ plus or minus 1.96 standard errors.  Even if $x$ does not have a normal distribution, by the Central Limit Theorem, $\bar{x}/\sqrt{N}$ will be approximately normally distributed if the sample size $N$ is large enough, and plus or minus 1.96 standard errors will still be approximately a 95\% confidence interval for $\mu$. \index{confidence interval}
 
-## Estimating a Constant Volatility and Mean {#sec-s_estimatingvolatility}
+## Estimating a Constant Volatility and Mean {#sec-s:estimatingvolatility}
 
 Consider an asset price that is a geometric Brownian motion under the actual probability measure:
-$$\frac{\d  S}{S} = \mu\,\d  t + \sigma\,\d  B\; ,$$
+$$\frac{\d  S}{S} = \mu\d   t + \sigma\d   B\; ,$$
 where $\mu$ and $\sigma$ are unknown constants and $B$ is a Brownian motion.  We can as usual write this in log form as
-$$\d \log S = \left(\mu-\frac{1}{2}\sigma^2\right)\,\d  t + \sigma\,\d  B\; .$$
+$$\d \log S = \left(\mu-\frac{1}{2}\sigma^2\right)\d   t + \sigma\d   B\; .$$
 Over a discrete time period of length $\Delta t$, this implies
 $$
 \Delta \log S = \left(\mu-\frac{1}{2}\sigma^2\right)\Delta t + \sigma \Delta B\;.
@@ -100,13 +100,13 @@ $$ {#eq-estimator_sig2_3}
 
 If we observe $S$ more and more frequently, letting $\Delta t \rightarrow 0$ and $N \rightarrow \infty$, the sum 
 $$\sum_{i=1}^N [\log S_{t_i}-\log S_{t_{i-1}}]^2$$
-will converge with probability one to $\sigma^2T$, as explained in @sec-s_quadraticvariation.  This implies that $\hat{\sigma}^2$ will converge to $\sigma^2$.  Thus, in theory, we can estimate $\sigma^2$ with any desired degree of precision by simply observing $S$ sufficiently frequently.  This is true no matter how short the overall time period $[0,T]$ may be.  
+will converge with probability one to $\sigma^2T$, as explained in @sec-s:quadraticvariation.  This implies that $\hat{\sigma}^2$ will converge to $\sigma^2$.  Thus, in theory, we can estimate $\sigma^2$ with any desired degree of precision by simply observing $S$ sufficiently frequently.  This is true no matter how short the overall time period $[0,T]$ may be.  
 
 In practice, this doesn't work out quite so well.  If we observe minute-by-minute data, or we observe each transaction, much of the variation in the price $S$ will be due to bouncing back and forth between the bid price and the ask price.  This is not really what we want to estimate, and this source of variation will be much less important if we look at weekly or even daily data.  So, there are practical limits to how frequently we should observe $S$.  Nevertheless, it is still true that, if $\sigma^2$ were truly constant, we could estimate it with a very high degree of precision.
 In fact, we can estimate the volatility of a stock with enough precision to determine that it really isn't constant!  The real problem that we face is to estimate and model a changing volatility.  
 
 ## Estimating a Changing Volatility
-Without attempting yet to model how the volatility may change, we can say a few things about how we might estimate a changing volatility.  In this and following sections, we will take the observation interval $\Delta t$ to be fixed.  We assume it is small (say, a day or a week) and focus on the estimate @eq-estimator_sig2_3.  Recall from @sec-s_statistics that the reason we are dividing by $N-1$ rather than $N$ is that the sample standard deviation usually underestimates the actual standard deviation, because it uses the sample mean, which will be closer to the points $x_i$ than will be the true mean.  However, @eq-estimator_sig2_3 does not employ the sample mean (it replaces it with zero), so there is no reason to make this correction.  So, we take as our point of departure the estimate
+Without attempting yet to model how the volatility may change, we can say a few things about how we might estimate a changing volatility.  In this and following sections, we will take the observation interval $\Delta t$ to be fixed.  We assume it is small (say, a day or a week) and focus on the estimate @eq-estimator_sig2_3.  Recall from @sec-s:statistics that the reason we are dividing by $N-1$ rather than $N$ is that the sample standard deviation usually underestimates the actual standard deviation, because it uses the sample mean, which will be closer to the points $x_i$ than will be the true mean.  However, @eq-estimator_sig2_3 does not employ the sample mean (it replaces it with zero), so there is no reason to make this correction.  So, we take as our point of departure the estimate
 $$\frac{1}{T} \sum_{i=1}^N [\log S_{t_i}-\log S_{t_{i-1}}]^2 = \frac{1}{N}\sum_{i=1}^N y_i^2 \; .$$
 An obvious response to the volatility changing over time is simply to avoid using data from the distant past.  Such data is not likely to be informative about the current value of the volatility.  What distant should mean in this context is not entirely clear, but, for example, we might want to use only the last 60 observations.  If we are using daily data, this would mean that at the end of each day we would add that day's observation and drop the observation from 61 days past.  This leads to a somewhat abruptly varying estimate.  For example, a very large movement in the price on a particular day increases the volatility estimate for the next 60 days.  On the 61st day, this observation would drop from the sample, leading to an abrupt drop in the estimate (presuming that there is not an equally large change in $S$ on the 61st day).  This seems unreasonable.  An estimate in which the impact of each observation decays smoothly over time is more attractive.  
 
@@ -128,7 +128,7 @@ If $\lambda$ is small, the decay in the importance of each squared deviation wil
 
 This method can also be used to estimate covariances, simply by replacing the squared deviations $y_i^2$ by the product of deviations for two different assets.  And, of course, given covariance and variance estimates, we can construct estimates of correlations.  To ensure that an estimated correlation is between $-1$ and $+1$, we will need to use the same $\lambda$ to estimate each of the variances and the covariance.  This is the method used by RiskMetrics.^[See Mina and Xiao [@MX], available online at www.riskmetrics.com]. \index{RiskMetrics}
 
-## GARCH Models {#sec-s_garch}
+## GARCH Models {#sec-s:garch}
 
 We are going to adopt a subtle but important change of perspective now.  Instead of considering @eq-sig_estimator4 as simply an estimation procedure, we are going to assume that the actual volatility evolves according to @eq-sig_estimator4, or a generalization thereof.  We are also going to reintroduce the expected change in $\log S$, which we dropped in going from @eq-estimator_sig2 to @eq-estimator_sig2_3.  Specifically, we return to @eq-dlogs, but we operate under the risk-neutral probability, so 
 $\mu=r-q$, and we have
@@ -242,11 +242,11 @@ print(df_garch)
 
 To price European options, we need to compute the usual probabilities 
 $\text{prob}^S(S_T>K)$ and $\text{prob}^R(S_T >K)$.
-Heston and Nandi [@HN] provide a fast method for computing these probabilities in a GARCH (1,1) model.^[Actually, a slightly more general model is considered in [@HN], in which large negative returns lead to a greater increase in volatility than do large positive returns.  This accommodates the empirically observed negative correlation between stock returns and volatility.]  Rather than developing this approach, we will show in @sec-c_introcomputation how to apply Monte-Carlo methods.
+Heston and Nandi [@HN] provide a fast method for computing these probabilities in a GARCH (1,1) model.^[Actually, a slightly more general model is considered in [@HN], in which large negative returns lead to a greater increase in volatility than do large positive returns.  This accommodates the empirically observed negative correlation between stock returns and volatility.]  Rather than developing this approach, we will show in @sec-c:introcomputation how to apply Monte-Carlo methods.
 
 ## Hedging and Market Completeness
 
-The GARCH model is inherently a discrete-time model.  If returns have a GARCH structure at one frequency (e.g., monthly), they will not have a GARCH structure at a different frequency (e.g., weekly).  Hence, the return period (monthly, weekly, \ldots) is part of the specification of the model.  One interpretation of the model is that the dates $t_i$ at which the variance changes are the only dates at which investors can trade.  Under this interpretation, it is impossible to perfectly hedge an option: the gross return $S_{t_i}/S_{t_{i-1}}$ over the interval $(t_{i-1},t_i)$ is lognormally distributed, so no portfolio of the stock and riskless asset formed at $t_{i-1}$ and held over the interval $(t_{i-1},t_i)$ can perfectly replicate the return of an option over the interval.  As discussed in @sec-s_incomplete, we call a market in which some derivatives cannot be perfectly hedged an incomplete market. \index{incomplete market}  Thus, the GARCH model is an example of an incomplete market, if investors can only trade at the frequency at which returns have a GARCH structure.  However, it is unreasonable to assume that investors can only trade weekly or monthly or even daily.
+The GARCH model is inherently a discrete-time model.  If returns have a GARCH structure at one frequency (e.g., monthly), they will not have a GARCH structure at a different frequency (e.g., weekly).  Hence, the return period (monthly, weekly, \ldots) is part of the specification of the model.  One interpretation of the model is that the dates $t_i$ at which the variance changes are the only dates at which investors can trade.  Under this interpretation, it is impossible to perfectly hedge an option: the gross return $S_{t_i}/S_{t_{i-1}}$ over the interval $(t_{i-1},t_i)$ is lognormally distributed, so no portfolio of the stock and riskless asset formed at $t_{i-1}$ and held over the interval $(t_{i-1},t_i)$ can perfectly replicate the return of an option over the interval.  As discussed in @sec-s:incomplete, we call a market in which some derivatives cannot be perfectly hedged an incomplete market. \index{incomplete market}  Thus, the GARCH model is an example of an incomplete market, if investors can only trade at the frequency at which returns have a GARCH structure.  However, it is unreasonable to assume that investors can only trade weekly or monthly or even daily.
 
 Another interpretation of the GARCH model is that investors can trade continuously and the asset has a constant volatility within each period $(t_{i-1},t_i)$.  Under this interpretation, the market is complete and options can be delta-hedged.  The completeness is a result of the fact that the change $\sigma_{i+1}-\sigma_i$ in the volatility  at date $t_i$ (recall that $\sigma_i$ is the volatility over the period $(t_{i-1},t_i)$ and $\sigma_{i+1}$ is the volatility over the period $(t_{i},t_{i+1})$) depends only on $\log S_{t_i}$.  Thus, the only random factor in the model that needs to be hedged is, as usual, the underlying asset price.  However, this interpretation of the model is also a bit strange.  Suppose for example that monthly returns are assumed to have a GARCH structure.  Then the model states that the volatility in February will be higher if there is an unusually large return (in absolute value) in January.  Suppose there is an unusually large return in the first half of January.  Then, intuitively, one would expect the change in the volatility to occur in the second half of January rather than being delayed until February.  However, the model specifies that the volatility is constant during each month, hence constant during January in this example.
 

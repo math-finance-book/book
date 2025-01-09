@@ -1,6 +1,6 @@
 {{< include macros.qmd >}}
 
-# PDE Methods {#sec-c_pde}
+# PDE Methods {#sec-c:pde}
 
 In this chapter we will see how to estimate derivative values by numerically solving the partial differential equation (pde) that the derivative value satisfies, using finite difference methods.  More advanced discussions of this topic can be found in Wilmott, DeWynne and Howison [@WDH], Wilmott [@Wilmott], and Tavella [@Tavella],  among other places.   We will only consider derivatives written on a single underlying asset, but the ideas generalize to derivatives written on multiple underlying assets (e.g., basket and spread options) in much the same way that binomial models can be applied to derivatives on multiple underlying assets.  The curse of dimensionality is the same for finite difference methods as for binomial models---the computation time increases exponentially with the number of underlying assets.
 
@@ -8,28 +8,28 @@ In this chapter we will see how to estimate derivative values by numerically sol
 
 \index{fundamental pde}Consider an asset with price $S$ and constant dividend yield $q$.  
 Set $X=\log S$.  Then we have
-$$\d  X = \nu\,\d  t+\sigma\,\d  B\; ,$$
+$$\d  X = \nu\d   t+\sigma\d   B\; ,$$
 where $\nu =r-q-\sigma^2/2$ and $B$ is a Brownian motion under the risk-neutral probability.
 
 Let $T$ denote the maturity date of a derivative security.  At time $t$ (when the remaining time to maturity is $T-t$), assume the price of the derivative can be represented as $C(t,X_t)$.^[If the price of the derivative is a function of the asset price $S$ and time, then we can always write it in this form as a function of the natural logarithm of $S$ and time.]  
 Since $C$ is a function of $t$ and $X$, Ito's formula implies
 
 $$
-\d  C  = \frac{\partial C}{\partial t}\,\d  t + \frac{\partial C}{\partial X}\,\d  X +\frac{1}{2}\frac{\partial^2 C}{\partial X^2}(\d  X)^2
+\d  C  = \frac{\partial C}{\partial t}\d   t + \frac{\partial C}{\partial X}\d   X +\frac{1}{2}\frac{\partial^2 C}{\partial X^2}(\d  X)^2
 $$ {#eq-2}
 
 $$
-=\frac{\partial C}{\partial t}\,\d  t+ \frac{\partial C}{\partial X}\big(\nu\,\d  t+\sigma\,\d  B\big) + \frac{1}{2}\frac{\partial^2 C}{\partial X^2}\sigma^2\,\d  t\;.
+=\frac{\partial C}{\partial t}\d   t+ \frac{\partial C}{\partial X}\big(\nu\d   t+\sigma\d   B\big) + \frac{1}{2}\frac{\partial^2 C}{\partial X^2}\sigma^2\d   t\;.
 $$
 
 On the other hand, under the risk-neutral probability, the instantaneous expected rate of return on the derivative is the risk-free rate, so
-$$\frac{\d  C}{C} =r\,\d  t + \text{something}\,\,\d  B\; .$$
+$$\frac{\d  C}{C} =r\d   t + \text{something}\d    B\; .$$
 where the something is the volatility of the derivative value.  We can of course rearrange this as
 $$
-\d  C = rC\,\d  t+\text{something}\,\,C\,\d  B\;.
+\d  C = rC\d   t+\text{something}\,\,C\d   B\;.
 $$ {#eq-1}
 
-In order for both @eq-2 and @eq-1 to hold, the drifts on both right-hand sides must be equal.^[Suppose a process $X$ satisfies $\d  X=\alpha_1\,\d  t+\sigma_1\,\d  B = \alpha_2\,\d  t+\sigma_2\,\d  B$ for coefficients $\alpha_i$ and $\sigma_i$.  This implies $(\alpha_1-\alpha_2)\,\d  t=(\sigma_2-\sigma_2)\,\d  B$.  The right-hand side defines a (local) martingale and the left-hand side defines a continuous finite-variation process.  As discussed in @sec-s_quadraticvariation, the only continuous finite-variation martingales are constants, so the changes must be zero; i.e., $\alpha_1=\alpha_2$ and $\sigma_1=\sigma_2$.] This implies
+In order for both @eq-2 and @eq-1 to hold, the drifts on both right-hand sides must be equal.^[Suppose a process $X$ satisfies $\d  X=\alpha_1\d   t+\sigma_1\d   B = \alpha_2\d   t+\sigma_2\d   B$ for coefficients $\alpha_i$ and $\sigma_i$.  This implies $(\alpha_1-\alpha_2)\d   t=(\sigma_2-\sigma_2)\d   B$.  The right-hand side defines a (local) martingale and the left-hand side defines a continuous finite-variation process.  As discussed in @sec-s:quadraticvariation, the only continuous finite-variation martingales are constants, so the changes must be zero; i.e., $\alpha_1=\alpha_2$ and $\sigma_1=\sigma_2$.] This implies
 $$
 rC = \frac{\partial C}{\partial t}+ \nu\frac{\partial C}{\partial X}+ \frac{1}{2}\sigma^2\frac{\partial^2 C}{\partial X^2}\;.
 $$ {#eq-3}
@@ -411,10 +411,10 @@ $$
 
 In the Crank-Nicolson method, one can in similar fashion compute the value of the derivative at each space node at any date by solving the system of equations @eq-crank3 and then replace the computed values by the intrinsic value when that is higher.  However, because the values at the different space nodes are linked (i.e., the method is an implicit-type method), this one-at-a-time replacement of values by intrinsic values is not the most efficient method.  See Wilmott [@Wilmott] for more details (and for VBA code implementing the projected successive over-relaxation method).
 
-## Barrier Options {#sec-s_finitedifferencebarriers}
+## Barrier Options {#sec-s:finitedifferencebarriers}
 
 
-\index{barrier option}\index{down-and-out option}\index{down-and-in option}\index{knock-out option}\index{knock-in option}Finite-difference methods work well for valuing discretely-sampled barrier options.  For a down-and-out option, one should place the bottom of the grid at the knock-out boundary.  For an up-and-out option, one should place the top of the grid at the knock-out boundary.  As discussed in @sec-c_exotics, knock-in options can be valued as standard options minus knock-out options.  
+\index{barrier option}\index{down-and-out option}\index{down-and-in option}\index{knock-out option}\index{knock-in option}Finite-difference methods work well for valuing discretely-sampled barrier options.  For a down-and-out option, one should place the bottom of the grid at the knock-out boundary.  For an up-and-out option, one should place the top of the grid at the knock-out boundary.  As discussed in @sec-c:exotics, knock-in options can be valued as standard options minus knock-out options.  
 
 For barrier options, the boundary information @eq-cn_boundary can be replaced by assigning a value of zero at the knock-out boundary.  For example, for a down-and-out option, the condition @eq-crank4a can be replaced by $C=0$.  If the contract specifies that a rebate is to be paid to the buyer when the option is knocked out, then condition @eq-crank4a should be replaced by $C=$ Rebate.  
 

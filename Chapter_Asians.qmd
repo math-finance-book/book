@@ -1,7 +1,7 @@
 {{< include macros.qmd >}}
 
 
-## Asians, Baskets, and Spreads {#sec-s_asians}
+## Asians, Baskets, and Spreads {#sec-s:asians}
 
 This chapter addresses some "non-vanilla" options that are very important for hedging: Asian options, basket options, and spread options.  More exotic options are studied in the following chapter.
 
@@ -11,26 +11,26 @@ An Asian option \index{Asian option} \index{average-price option} \index{average
 
 In practice, the average price is computed by averaging over the prices sampled at a finite number of discrete dates.  First, we consider the case of continuous sampling.  With continuous sampling, the average price at date $T$ for an option written at date $0$ will be denoted by $A_T$ and is defined as
 $$
-A_T = \frac{1}{T}\int_0^T S_t\,\d  t\; .
+A_T = \frac{1}{T}\int_0^T S_t\d   t\; .
 $$
 To obtain a closed-form solution for the value of an option on the average price, we face essentially the same problem as for basket and spread options:  a sum of lognormally distributed variables is not itself lognormally distributed.  In this case, the integral, which is essentially a continuous sum of the prices at different dates, is not lognormally distributed.  
 
 An alternative contract would replace the average price with the geometric average.  \index{geometric average} \index{geometric-average option} This is defined as the exponential of the average logarithm.  We will denote this by $A_\text{g}_T$.  The average logarithm is
 $$
-\frac{1}{T}\int_0^T \log S_t\,\d  t\; ,
+\frac{1}{T}\int_0^T \log S_t\d   t\; ,
 $$
 and the geometric average is
 $$
-A_\text{g}_T = \exp\left(\frac{1}{T}\int_0^T \log S_t\,\d  t\right)\; .
+A_\text{g}_T = \exp\left(\frac{1}{T}\int_0^T \log S_t\d   t\right)\; .
 $$
 The concavity of the logarithm function guarantees that
 $$
-\log \frac{1}{T}\int_0^T S_t > \frac{1}{T}\int_0^T \log S_t\,\d  t \; .
+\log \frac{1}{T}\int_0^T S_t > \frac{1}{T}\int_0^T \log S_t\d   t \; .
 $$
 Therefore,
 \begin{align*}
 A_T &= \exp\left(\log \frac{1}{T}\int_0^T S_t\right)\\
-&> \exp\left(\frac{1}{T}\int_0^T \log S_t\,\d  t\right) \\
+&> \exp\left(\frac{1}{T}\int_0^T \log S_t\d   t\right) \\
 &= A_\text{g}_T\; .
 \end{align*}
 Consequently, approximating the value of an average-price or average-strike option by substituting $A_\text{g}_T$ for $A_T$ will produce a biased estimate of the value.  Nevertheless, the geometric average$A_\text{g}_T$ and the arithmetic average $A_T$ will be highly correlated, so $A_\text{g}_T$ forms a very useful \text{control variate} for Monte-Carlo valuation of average-price and average-strike options, as will be discussed later.  To implement the idea, we need a valuation formula for options written on $A_\text{g}_T$.  We will derive this for an average-price call, in which $A_\text{g}_T$ substitutes for $A_T$.
@@ -40,7 +40,7 @@ $$
 \max(0,A_\text{g}_T-K)
 $$
 at its maturity $T$.
-This is a geometric-average-price call,, and we will analyze it in the same way that we analyzed quanto options in @sec-c_foreignexchange.  Let $V_t$ denote the value at date $t$ of receiving $A_\text{g}_T$ at date $T$.  This can be calculated, and the result will be given below.  $V_t$ is the value of a non-dividend-paying portfolio, and, by definition, $V_T=A_\text{g}_T$, so the geometric-average-price call is equivalent to a standard call with $V$ being the price of the underlying.  We will show that $V$ has a time-varying but non-random volatility.  Therefore, we can apply the Black-Scholes formula, inputting the average volatility as described in @sec-s_timevaryingvolatility, to value the geometric-average-price call.  We could attempt the same route to price average-price options, but we would find that the volatility of the corresponding value $V$ would vary randomly, just as we found the basket portfolio to have a random volatility in the previous section.
+This is a geometric-average-price call,, and we will analyze it in the same way that we analyzed quanto options in @sec-c:foreignexchange.  Let $V_t$ denote the value at date $t$ of receiving $A_\text{g}_T$ at date $T$.  This can be calculated, and the result will be given below.  $V_t$ is the value of a non-dividend-paying portfolio, and, by definition, $V_T=A_\text{g}_T$, so the geometric-average-price call is equivalent to a standard call with $V$ being the price of the underlying.  We will show that $V$ has a time-varying but non-random volatility.  Therefore, we can apply the Black-Scholes formula, inputting the average volatility as described in @sec-s:timevaryingvolatility, to value the geometric-average-price call.  We could attempt the same route to price average-price options, but we would find that the volatility of the corresponding value $V$ would vary randomly, just as we found the basket portfolio to have a random volatility in the previous section.
 
 The value $V_t$ can be calculated as
 $$
@@ -72,11 +72,11 @@ S_t^{\frac{T-t}{T}}\;,
 $$
 and, by Ito's formula,
 $$
-\frac{ \d  S^{\frac{T-t}{T}}}{S^{\frac{T-t}{T}}} = \text{something}\,\,\d  t + \left(\frac{T-t}{T}\right)\sigma\,\d  B\;.
+\frac{ \d  S^{\frac{T-t}{T}}}{S^{\frac{T-t}{T}}} = \text{something}\d    t + \left(\frac{T-t}{T}\right)\sigma\d   B\;.
 $$
-This implies that the average volatility, in the sense of @sec-s_timevaryingvolatility, is
+This implies that the average volatility, in the sense of @sec-s:timevaryingvolatility, is
 $$
-\sigma_{\text{avg}} = \sqrt{\frac{1}{T}\int_0^T \left(\frac{T-t}{T}\right)^2\sigma^2\,\d  t}
+\sigma_{\text{avg}} = \sqrt{\frac{1}{T}\int_0^T \left(\frac{T-t}{T}\right)^2\sigma^2\d   t}
 =\frac{\sigma}{\sqrt{3}}\;.
 $$
 Applying the Black-Scholes formula yields:
@@ -120,12 +120,12 @@ $$ {#eq-asianV02}
 
 Second, the volatility of $V_t$ comes from the factor $S_t^{(k+1)/N}$, and
 $$
-\frac{ \d  S^{\frac{k+1}{N}}}{S^{\frac{k+1}{N}}} = \text{something}\,\,\d  t + \left(\frac{k+1}{N}\right)\sigma\,\d  B\;.
+\frac{ \d  S^{\frac{k+1}{N}}}{S^{\frac{k+1}{N}}} = \text{something}\d    t + \left(\frac{k+1}{N}\right)\sigma\d   B\;.
 $$
-This implies that the average volatility, in the sense of @sec-s_timevaryingvolatility, is
+This implies that the average volatility, in the sense of @sec-s:timevaryingvolatility, is
 
 $$
-\sigma_{\text{avg}} = \sqrt{\frac{1}{N}\sum_{k=0}^{N-1} \left(\frac{k+1}{N}\right)^2\sigma^2\,\d  t}
+\sigma_{\text{avg}} = \sqrt{\frac{1}{N}\sum_{k=0}^{N-1} \left(\frac{k+1}{N}\right)^2\sigma^2\d   t}
 $$
 $$
 =\frac{\sigma}{N^{3/2}}\sqrt{\frac{N(N+1)(2N+1)}{6}}\;,
@@ -152,7 +152,7 @@ and $\sigma_{\text{avg}}$ is defined in @eq-asiansigmaavg.
 
 :::
 
-This formula will be used in @sec-s_controlvariates as a control variate for pricing discretely-sampled average-price calls (even average-price calls that were written before the date of valuation).
+This formula will be used in @sec-s:controlvariates as a control variate for pricing discretely-sampled average-price calls (even average-price calls that were written before the date of valuation).
 
 ::: Extra
  ## 
@@ -162,10 +162,10 @@ The random variable $A_g_T$  is normally distributed under the risk-neutral prob
 \begin{align*}
 \int_t^T \log S(u)\,du &= \int_t^T \left\{\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)(u-t) + \sigma [B(u)-B_t]\right\}\,du\\
 &= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_t^u \d  B_s\,du\\
-&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_s^T du\,\d  B_s\\
-&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T (T-s)\,\d  B_s
+&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_s^T du\d   B_s\\
+&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T (T-s)\d   B_s
 \end{align*}
-and then to note that $\int_t^T (T-s)\,\d  B_s$ is normally distributed with mean zero and variance equal to 
+and then to note that $\int_t^T (T-s)\d   B_s$ is normally distributed with mean zero and variance equal to 
 $$
 \int_t^T (T-s)^2\,ds =\frac{(T-t)^3}{3}\;.
 $$
@@ -239,7 +239,7 @@ Letting $S_1$, \ldots, $S_n$ denote the asset prices and $w_1$, \ldots, $w_n$ th
 $$\max\left(0,\;\sum_{i=1}^n w_iS_i_T - K\right)$$
 at maturity $T$.  A spread option is actually a special case of a basket option, with $n=2$, $w_1=1$, and $w_2=-1$.  The difficulty in valuing basket options is the same as that encountered in valuing spread options.  The volatility of the basket price $\sum_{i=1}^nw_iS_i_t$ will vary over time, depending on the relative volatilities of the assets and the price changes in the assets.  For example, consider the case $n=2$ and write $S_t$ for the basket price $w_1S_1_t+w_2S_2_t$.  Then
 \begin{align*}
-\frac{\d  S}{S} &= \frac{w_1\,\d  S_1}{S} + \frac{w_2\,\d  S_2}{S}\\
+\frac{\d  S}{S} &= \frac{w_1\d   S_1}{S} + \frac{w_2\d   S_2}{S}\\
 &=\frac{w_1S_1}{S}\times \frac{\d  S_1}{S_1} + \frac{w_2S_2}{S}\times \frac{\d  S_2}{S_2}\;.
 \end{align*}
 Let $x_i_t=w_iS_i_t/S_t$.  This is the fraction of the portfolio value that the $i$--th asset contributes.  It will vary randomly over time as the prices change.  Letting $\sigma_i$ denote the volatilities of the individual assets and $\rho$ their correlation, the formula just given for $\d  S/S$ shows that the instantaneous volatility of the basket price at any date $t$ is
@@ -276,16 +276,16 @@ However, we cannot apply Margrabe's formula to price spread options, because the
  Create a Python program to demonstrate the additional leverage of a call-on-a-call relative to a standard call.  Allow the user to input $S$, $r$, $\sigma$, $q$, and $T'$.  Use the `Black-Scholes_Call` function to compute and output the value $C$ of a European call with strike $K'=S$ (i.e., the call is at the money) and maturity $T'$.  Use the `Call_on_Call` function to compute and output the value of a call option on the call with strike $K=C$ (i.e., the call-on-a-call is at the money) and maturity $T=0.5T'$.  Compute the percentage returns the standard European call and the call-on-a-call would experience if the stock price $S$ instantaneously increased by 10\%.
 :::
 ::: Exercise
- Create a Python program to illustrate the early exercise premium for an American call on a stock paying a discrete dividend.  Allow the user to input $S$, $r$, $\sigma$, and $T'$.  Take the date of the dividend payment to be $T=0.5T'$ and take the strike price to be $K=S$.  As discussed in @sec-s_discrete, the value of a European call is given by the Black-Scholes formula with $S-\mathrm{e}^{-rT}D$ being the initial asset price and $q=0$ being the constant dividend yield.  Use the function `American_Call_Dividend` to compute the value of an American call for dividends $D=.1S$, \ldots $D=.9S$.  Subtract the value of the European call with the same dividend to obtain the early exercise premium.  Plot the early exercise premium against the dividend $D$.
+ Create a Python program to illustrate the early exercise premium for an American call on a stock paying a discrete dividend.  Allow the user to input $S$, $r$, $\sigma$, and $T'$.  Take the date of the dividend payment to be $T=0.5T'$ and take the strike price to be $K=S$.  As discussed in @sec-s:discrete, the value of a European call is given by the Black-Scholes formula with $S-\mathrm{e}^{-rT}D$ being the initial asset price and $q=0$ being the constant dividend yield.  Use the function `American_Call_Dividend` to compute the value of an American call for dividends $D=.1S$, \ldots $D=.9S$.  Subtract the value of the European call with the same dividend to obtain the early exercise premium.  Plot the early exercise premium against the dividend $D$.
 :::
 ::: Exercise
- Create a Python function to value a simple chooser (a chooser option in which $K_c=K_p$ and $T_c=T_p$) using put-call parity to compute $S^*$ as mentioned in @sec-s_choosers.  Verify that the function gives the same result as the function `Chooser`.
+ Create a Python function to value a simple chooser (a chooser option in which $K_c=K_p$ and $T_c=T_p$) using put-call parity to compute $S^*$ as mentioned in @sec-s:choosers.  Verify that the function gives the same result as the function `Chooser`.
 :::
 ::: Exercise
  Create a Python code to compare the cost of a simple chooser to that of a straddle (straddle = call + put with same strike and maturity).  Allow the user to input $S$, $r$, $\sigma$, $q$, and $T'$.  Take the time to maturity of the underlying call and put to be $T'$ for both the chooser and the straddle.  Take the strike prices to be $K=S$.  Take the time the choice must be made for the chooser to be $T=0.5T'$.  Compute the cost of the chooser and the cost of the straddle.
 :::
 ::: Exercise
- A stock has fallen in price and you are attempting to persuade a client that it is now a good buy.  The client believes it may fall further before bouncing back and hence is inclined to postpone a decision.  To convince the client to buy now, you offer to deliver the stock to him at the end of two months at which time he will pay you the lowest price it trades during the two months plus a fee for your costs.  The stock is not expected to pay a dividend during the next two months.  Assuming the stock actually satisfies the Black-Scholes assumptions, find a formula for the minimum fee that you would require.  (Hint:  It is almost in @sec-s_lookbacks.)  Create a Python program allowing the user to input $S$, $r$, and $\sigma$  and computing the minimum fee.
+ A stock has fallen in price and you are attempting to persuade a client that it is now a good buy.  The client believes it may fall further before bouncing back and hence is inclined to postpone a decision.  To convince the client to buy now, you offer to deliver the stock to him at the end of two months at which time he will pay you the lowest price it trades during the two months plus a fee for your costs.  The stock is not expected to pay a dividend during the next two months.  Assuming the stock actually satisfies the Black-Scholes assumptions, find a formula for the minimum fee that you would require.  (Hint:  It is almost in @sec-s:lookbacks.)  Create a Python program allowing the user to input $S$, $r$, and $\sigma$  and computing the minimum fee.
 :::
 ::: {#exr-e_standardknockout}
   Suppose you must purchase 100 units of an asset at the end of a year.  Create a Python program simulating the asset price and comparing the quality of the following hedges (assuming 100 contracts of each):

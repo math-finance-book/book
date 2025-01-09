@@ -1,21 +1,21 @@
 {{< include macros.qmd >}}
 
-# Fixed-Income Derivatives {#sec-c_fixedincomederivatives}
+# Fixed-Income Derivatives {#sec-c:fixedincomederivatives}
 
 In this chapter, we will introduce some fundamental fixed-income derivatives (caps, floors and swaptions) and explain the market model approach to valuation.  We will also explain the relation between caps, floors and swaptions on the one hand and discount and coupon bond options on the other.  This leads to other approaches for valuing caps, floors and swaptions, which will be developed in the following chapters.  
 
 ## Caps and Floors
 
-Caps \index{cap} and floors \index{floor} have a structure very similar to that of swaps, as described in @sec-s_swaps.  At each reset date $t_i$, the simple interest rate $\mathcal{R}_i$ for period $\Delta t$ is observed.  This rate determines a payment at the following date $t_{i+1}$.  As discussed in the preceding chapter, the cash flow to the payer in a swap is $(\mathcal{R}_i - \bar{\mathcal{R}})\,\Delta t$ and the cash flow to the receiver is $(\bar{\mathcal{R}}-\mathcal{R}_i)\,\Delta t$, for each \$1 of notional principal.  A swap is really a series of forward contracts, in which both parties have obligations.  On the other hand, caps and floors are series of options.  A premium is paid up-front by the buyer of a cap or floor to the seller and all future cash flows are paid by the seller to the buyer.  The owner of a cap with cap rate $\bar{\mathcal{R}}$ receives $\max(0,\mathcal{R}_i-\bar{\mathcal{R}})\Delta t$ at date $t_{i+1}$ for each \$1 of notional principal, and the owner of a floor receives $\max(0,\bar{\mathcal{R}}-\mathcal{R}_i)\Delta t$ at date $t_{i+1}$ for each \$1 of notional principal.  
+Caps \index{cap} and floors \index{floor} have a structure very similar to that of swaps, as described in @sec-s:swaps.  At each reset date $t_i$, the simple interest rate $\mathcal{R}_i$ for period $\Delta t$ is observed.  This rate determines a payment at the following date $t_{i+1}$.  As discussed in the preceding chapter, the cash flow to the payer in a swap is $(\mathcal{R}_i - \bar{\mathcal{R}})\,\Delta t$ and the cash flow to the receiver is $(\bar{\mathcal{R}}-\mathcal{R}_i)\,\Delta t$, for each \$1 of notional principal.  A swap is really a series of forward contracts, in which both parties have obligations.  On the other hand, caps and floors are series of options.  A premium is paid up-front by the buyer of a cap or floor to the seller and all future cash flows are paid by the seller to the buyer.  The owner of a cap with cap rate $\bar{\mathcal{R}}$ receives $\max(0,\mathcal{R}_i-\bar{\mathcal{R}})\Delta t$ at date $t_{i+1}$ for each \$1 of notional principal, and the owner of a floor receives $\max(0,\bar{\mathcal{R}}-\mathcal{R}_i)\Delta t$ at date $t_{i+1}$ for each \$1 of notional principal.  
 
 
 Caps and floors are used in conjunction with hedging floating rate obligations or for speculative purposes.  Portfolios of caps and floors have properties analogous to option portfolios.  For example, the combination of a long cap and a short floor at the same rate $\bar{\mathcal{R}}$ creates the payer side of a swap, in the same way that a long call and short put create a synthetic long forward (and a short cap and a long floor at the same rate $\bar{\mathcal{R}}$ creates the receiver side of a swap just as a short call and long put create a synthetic short forward contract).  A long cap at rate $\bar{\mathcal{R}}_c$ and a short floor at rate $\bar{\mathcal{R}}_f < \bar{\mathcal{R}}_c$ creates a collar \index{collar} (for an underlying floating rate obligation), etc.
 
 The individual payments on a cap are called caplets, \index{caplet} and a cap is simply a portfolio of caplets.    Similarly, the individual payments on a floor are called floorlets, \index{floorlet} and the values of caplets and floorlets are linked by put-call parity, as we will see below.  
 
-A caplet can be viewed as a call option on the spot rate with strike equal to the fixed rate.  Thus, it is a bet on higher interest rates.  Because interest rates and bond prices are inversely related, it can also be viewed as a bet on lower bond prices.  In this regard, it is similar to a put option on bond prices.  In fact, we will see in  @sec-s_caps2 that a caplet is exactly equivalent to a put option on a discount bond.  Likewise, a floorlet can be viewed either as a put option on the spot rate or a call option on a discount bond.
+A caplet can be viewed as a call option on the spot rate with strike equal to the fixed rate.  Thus, it is a bet on higher interest rates.  Because interest rates and bond prices are inversely related, it can also be viewed as a bet on lower bond prices.  In this regard, it is similar to a put option on bond prices.  In fact, we will see in  @sec-s:caps2 that a caplet is exactly equivalent to a put option on a discount bond.  Likewise, a floorlet can be viewed either as a put option on the spot rate or a call option on a discount bond.
 
-## Forward Rates {#sec-s_forwardrates}
+## Forward Rates {#sec-s:forwardrates}
 
 Suppose we wish to borrow money at date $u$ for a period of $\Delta t$ years, and we want to lock in the rate on the loan at date $t<u$.  To do this, we can buy the discount bond maturing at $u$ and finance the purchase by shorting $P(t,u)/P(t,u+\Delta t)$ units of the bond maturing at $u+\Delta t$.  This generates a cash flow of \$1 at date $u$ and $-P(t,u)/P(t,u+\Delta t)$ dollars at date $u+\Delta t$.  This implies a simple interest rate of $\mathcal{R}$ defined as 
 $$
@@ -31,7 +31,7 @@ $$ {#eq-forward2}
 
 Note that when $t=t_i$, $P(t,t_i)=1$, so $\mathcal{R}_i_{t_i}=\mathcal{R}_i$ defined in @eq-spot2---i.e., the forward rate equals the spot rate at $t_i$.
 
-## Portfolios that Pay Spot Rates {#sec-s_portfoliosspotrates}
+## Portfolios that Pay Spot Rates {#sec-s:portfoliosspotrates}
 
 One way to value caps and floors is to view them as portfolios of options on rates, as we will see later.  In order to apply the option pricing formulas derived earlier, we need to know that each rate is the value of some asset, so the option can be viewed as an option on an asset.  This is very straightforward.
 
@@ -45,7 +45,7 @@ S_i_t = \begin{cases} P(t,t_i)-P(t,t_{i+1}) & \text{if } t < t_{i}\; ,\\
 $$ {#eq-S_i}
 
  
-Actually, we will view a caplet as an option on a forward contract and apply Black's formula.  To do this, we need to know the forward price of the asset with price $S_i_t$ for a contract maturing at $t_{i+1}$.  We denote this forward price by $F_i_t$.  The synthetic forward argument presented in @sec-s_merton shows that for any non-dividend paying asset with price $S$, the forward price for a contract maturing at $T$ is $S_t/P(t,T)$.  So, $F_i$ is given by
+Actually, we will view a caplet as an option on a forward contract and apply Black's formula.  To do this, we need to know the forward price of the asset with price $S_i_t$ for a contract maturing at $t_{i+1}$.  We denote this forward price by $F_i_t$.  The synthetic forward argument presented in @sec-s:merton shows that for any non-dividend paying asset with price $S$, the forward price for a contract maturing at $T$ is $S_t/P(t,T)$.  So, $F_i$ is given by
 
 $$
 F_i_t = \begin{cases} \frac{P(t,t_i)}{P(t,t_{i+1})}-1 & \text{if } t < t_{i}\; ,\\
@@ -61,7 +61,7 @@ where $\mathcal{R}_i_t$ is the forward rate defined in @eq-forward2.  Thus, the 
 
 
 
-## The Market Model for Caps and Floors {#sec-s_valuingcaps}
+## The Market Model for Caps and Floors {#sec-s:valuingcaps}
 
 The valuation we will describe here is standard market practice for valuing caps and floors or at least for quoting the prices of caps and floors.  Specifically, it is standard to quote prices in terms of implied volatilities, where the volatility is to be input into Black's formula for options on forwards.  This model is sometimes called the market model. \index{market model}
 
@@ -165,13 +165,13 @@ print("Market Model Cap:", market_model_cap(P0, P, rbar, sigma, N, t0, dt))
 
 ```
 
-## The Market Model for European Swaptions {#sec-s_swaptions}
+## The Market Model for European Swaptions {#sec-s:swaptions}
 
 The owner of a European swaption \index{swaption} has an option to enter into a swap at the maturity date of the swaption.  A payer swaption \index{payer swaption} gives the owner of the option the right to enter into a swap as a fixed-rate payer, for a given swap rate (not necessarily a rate that makes the swap have zero value at any date).  The owner of a receiver swaption \index{receiver swaption} has the right to enter into the swap as a fixed-rate receiver.  The values of payer swaptions and receiver swaptions are linked by put-call parity.  
 
 A payer swaption has similarities to a cap.  The owner of a cap has the right to receive the floating rate and pay the fixed rate and will do so in each period in which the floating rate is higher.  Similarly, the owner of a payer swaption has the right to receive floating and pay fixed.  However, the owner of a cap chooses each period whether to exercise his option, whereas the owner of a swaption makes a once-and-for-all decision whether to exercise, at the maturity of the swaption.  A cap is therefore a portfolio of options, whereas a swaption is an option on a portfolio.  In general of course, other things being equal, a portfolio of options is worth more than an option on a portfolio. 
 
-Consider a payer swaption with maturity date $T$ and swap rate $\bar{\mathcal{R}}$, where the underlying swap has payment dates $t_1,\ldots,t_N$ with the first reset date of the swap being $t_0 = t_1-\Delta t \geq T$.  We assume the notional principal of the swap is \$1.  Expression @eq-swapvalue100 in @sec-s_swaps gives the value at date $T$ to the payer in the swap as
+Consider a payer swaption with maturity date $T$ and swap rate $\bar{\mathcal{R}}$, where the underlying swap has payment dates $t_1,\ldots,t_N$ with the first reset date of the swap being $t_0 = t_1-\Delta t \geq T$.  We assume the notional principal of the swap is \$1.  Expression @eq-swapvalue100 in @sec-s:swaps gives the value at date $T$ to the payer in the swap as
 $$S_T-Z_T\; ,$$
 where we define
 
@@ -183,10 +183,10 @@ Z_t =  \bar{\mathcal{R}}\,\Delta t \sum_{i=1}^N P(t,t_i)\;.
 $$ {#eq-fixedrateside}
 
 
-As explained in @sec-s_swaps, $S_t$ is the value of the floating-rate payments in the swap and $Z_t$ is the value of the fixed-rate payments.  The value of a payer swaption at its maturity $T$ is therefore
+As explained in @sec-s:swaps, $S_t$ is the value of the floating-rate payments in the swap and $Z_t$ is the value of the fixed-rate payments.  The value of a payer swaption at its maturity $T$ is therefore
 $$\max(0,S_T-Z_T)\; .$$
 We can value the swaption using Margrabe's formula \index{Margrabe's formula}for exchange options \index{exchange option} provided the ratio of prices $S/Z$ has a constant (or non-randomly varying) volatility.  The volatility of the ratio is the same as the volatility of the forward swap rate.  To see this, recall that 
-in @sec-s_swaps the forward swap rate $\mathcal{R}_t$ was defined to be the rate such that 
+in @sec-s:swaps the forward swap rate $\mathcal{R}_t$ was defined to be the rate such that 
 $$P(t,t_0)- P(t,t_N) = \mathcal{R}_t\,\Delta t \sum_{i=1}^N P(t,t_i)\; ,$$
 which means that the swap would have zero value if initiated at date $t$ at the rate $\mathcal{R}_t$---cf.\ equation~@eq-swaprate1.  Thus,
 \begin{equation*}
@@ -272,7 +272,7 @@ T = 2
 print("Market Model Payer Swaption:", market_model_payer_swaption(P0, P, rbar, sigma, N, T, dt))
 ```
 
-## A Comment on Consistency {#sec-s_consistency}
+## A Comment on Consistency {#sec-s:consistency}
 It is well known that it is inconsistent to assume both that the forward rates $\mathcal{R}_i_t$ and 
 the forward swap rate $\mathcal{R}_t$ have constant volatilities.  We can obtain some intuition for this as follows.  Recall that
 $$\mathcal{R}_i_t\,\Delta t = \frac{P(t,t_i)-P(t,t_{i+1})}{P(t,t_{i+1})}\; ,$$
@@ -287,7 +287,7 @@ $$w_i_t = \frac{P(t,t_{i+1})}{\sum_{i=0}^{N-1}P(t,t_{i+1})}\; .$$
 Therefore, the forward swap rate is a weighted average of the forward rates.  A sum (or average) of lognormal variables is not lognormal, so if the forward rate has a constant volatility, then the forward swap rate will not (and vice versa), absent very peculiar assumptions about the weights $w_i_t$.
 This means that one should not really simultaneously use Black's formula for valuing caps (or floors) and Margrabe's formula for valuing swaptions (though there is evidence that the error introduced by doing so may be small).  In the following chapters, we will consider other models that do not suffer from this type of inconsistency.
 
-## Caplets as Puts on Discount Bonds {#sec-s_caps2}
+## Caplets as Puts on Discount Bonds {#sec-s:caps2}
 Previously, we considered a caplet \index{caplet} as a call option on the forward rate and thus a bet on higher interest rates.  This is equivalent to a bet on lower bond prices, and we will now show that a caplet with payment date $t_{i+1}$ is equivalent to $1+\bar{\mathcal{R}}\,\Delta t$ put options on the $t_{i+1}$--maturity discount bond.  The put options mature at the reset date $t_i$ of the caplet and have strike equal to $1/(1+ \bar{\mathcal{R}}\,\Delta t)$.  To see this equivalence, note that the value of $1+\bar{\mathcal{R}}\,\Delta t$ such options at their maturity date $t_i$~is
 \begin{multline*}
 \big[1+\bar{\mathcal{R}}\,\Delta t\big] \max\left(0,\frac{1}{1+ \bar{\mathcal{R}}\,\Delta t}-P(t_i,t_{i+1})\right) \\ \begin{array}{l}
@@ -301,11 +301,11 @@ This is the value  at date $t_i$ of the caplet with payment date $t_{i+1}$ shown
 Similarly, a floorlet \index{floorlet} with payment date $t_{i+1}$ is equivalent to $1+\bar{\mathcal{R}}\,\Delta t$ call options on the $t_{i+1}$--maturity discount bond, with the call options maturing at date $t_i$ and having strike equal to $1/(1+ \bar{\mathcal{R}}\,\Delta t)$.  
 In the following chapters, we will describe models for valuing bond options.  These models will also be applied to price caps, as portfolios of put options on discount bonds, and to price floors, as portfolios of calls.  \index{discount bond option}
 
-## Swaptions as Options on Coupon Bonds {#sec-s_swaptionscouponbondoptions}
+## Swaptions as Options on Coupon Bonds {#sec-s:swaptionscouponbondoptions}
 
 As noted previously, the value at date $T$ of the payer swaption, if exercised, is
 $$P(T,t_0)-P(T,t_N) - \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)\; .$$
-In @sec-s_swaptions, we considered this as the difference of two pieces, the first piece being $S_T = P(T,t_0)-P(T,t_N)$, which is the value of the floating-rate leg, and the second being 
+In @sec-s:swaptions, we considered this as the difference of two pieces, the first piece being $S_T = P(T,t_0)-P(T,t_N)$, which is the value of the floating-rate leg, and the second being 
 $Z_T = \bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, the value of the fixed-rate leg.  We can also separate it differently---the first part being $P(T,t_0)$, which is the value at the swaption maturity of the discount bond maturing at $t_0$, and the second part being    $P(T,t_N)+\bar{\mathcal{R}}\,\Delta t\sum_{i=1}^N P(T,t_i)$, which is the value of a fixed-rate bond including the face value at maturity.  Thus, a payer swaption is equivalent to an option to exchange a fixed-rate coupon bond for a discount bond.  A receiver  swaption is an option to engage in the reverse exchange. \index{coupon bond option}
 
 Typically, $t_0=T$ (the swap starts at the swaption maturity), in which case $P(T,t_0)=1$ and the payer (receiver) swaption is a standard put (call) option on the coupon bond, with exercise price equal to 1.  The models developed in later chapters for valuing options on coupon bonds can therefore also be applied to value swaptions. 
@@ -316,7 +316,7 @@ Typically, $t_0=T$ (the swap starts at the swaption maturity), in which case $P(
 
 
 ::: {#exr-exercise121}
-  Modify the function `MarketModel_Cap` so that rather than taking `P0` and the vector `P` of discount bond prices as inputs, it looks up discount bond prices from a function `DiscountBondPrice` that returns a discount bond price for any maturity.  For example, `DiscountBondPrice` might be based on a cubic spline fit to the yield curve as discussed in @sec-s_yieldcurve.  To test the new function `MarketModel_Cap`, you will need to create a test function `DiscountBondPrice`.  For example, you could use the following, which corresponds to a rather steeply increasing yield curve, especially at the short end.
+  Modify the function `MarketModel_Cap` so that rather than taking `P0` and the vector `P` of discount bond prices as inputs, it looks up discount bond prices from a function `DiscountBondPrice` that returns a discount bond price for any maturity.  For example, `DiscountBondPrice` might be based on a cubic spline fit to the yield curve as discussed in @sec-s:yieldcurve.  To test the new function `MarketModel_Cap`, you will need to create a test function `DiscountBondPrice`.  For example, you could use the following, which corresponds to a rather steeply increasing yield curve, especially at the short end.
 \addcontentsline{lof}{figure}{DiscountBondPrice}
 \begin{verbatim}
 Function DiscountBondPrice_t
@@ -353,7 +353,7 @@ Calculate the forward swap rate for a 10-year swap with semiannual cash flows be
 **Commentary**
 
 \next 
-A collar is an alternative to a forward contract.  With standard options, as mentioned in @sec-s_fundamentalconcepts, a collar consists of a long call and short put (or the reverse).  If the strike of each equals the forward price, then the collar is equivalent to a  forward and will have zero cost---by put-call parity, \index{put-call parity} both options have the same price, so the purchase of the call can be financed by selling the put.  One can also construct a zero-cost collar\index{collar}\index{zero-cost collar} with the call and put having different strikes.
+A collar is an alternative to a forward contract.  With standard options, as mentioned in @sec-s:fundamentalconcepts, a collar consists of a long call and short put (or the reverse).  If the strike of each equals the forward price, then the collar is equivalent to a  forward and will have zero cost---by put-call parity, \index{put-call parity} both options have the same price, so the purchase of the call can be financed by selling the put.  One can also construct a zero-cost collar\index{collar}\index{zero-cost collar} with the call and put having different strikes.
 
 A swaption collar \index{collar swaption} is an alternative to a forward swap contract.  \index{forward swap} For example, consider a long receiver swaption with the underlying swap rate being $\bar{\mathcal{R}}_r$ and a short payer swaption with the underlying swap rate being $\bar{\mathcal{R}}_p > \bar{\mathcal{R}}_r$, with the swaptions having the same time to maturity $T$.  If the market swap rate $\mathcal{R}_T$ at date $T$ is  below $\bar{\mathcal{R}}_r$ then the receiver swaption will be in the money and will be exercised---one would rather receive  $\bar{\mathcal{R}}_r$ than $\mathcal{R}_T$ in this circumstance.  Likewise, if $\mathcal{R}_T > \bar{\mathcal{R}}_p$ then the payer swaption will be exercised---one would rather pay $\bar{\mathcal{R}}_p$ than $\mathcal{R}_T$ in this circumstance.  When $\bar{\mathcal{R}}_p >\mathcal{R}_T> \bar{\mathcal{R}}_r$, neither swaption is in the money.  Thus, we have the following for the investor who is long the receiver swaption and short the payer swaption:
 

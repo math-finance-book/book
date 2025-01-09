@@ -132,13 +132,9 @@ div.csl-indent {
   });
 </script>
 <style>
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
-.ToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.Done {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .Rule {
   --color1: #a1bced;
@@ -148,17 +144,21 @@ div.csl-indent {
   --color1: #d5deed;
   --color2: #6d778a;
 }
-.Done {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
 }
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
 }
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
+.ToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
 }
 </style>
 
@@ -511,7 +511,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_GARCH.html">Part IV: Alternative Models</a></li><li class="breadcrumb-item"><a href="./Chapter_StochasticVol.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Stochastic Volatility</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-c_stochasticvolatility" class="quarto-section-identifier"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Stochastic Volatility</span></span></h1>
+<h1 class="title"><span id="sec-c:stochasticvolatility" class="quarto-section-identifier"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Stochastic Volatility</span></span></h1>
 </div>
 
 
@@ -530,11 +530,11 @@ window.Quarto = {
 
 <p>The volatility is stochastic (random) in a GARCH model, but it is determined by the changes in the stock price. In this section, in contrast, we will consider models in which the volatility depends on a second Brownian motion. The most popular model of this type is the model of Heston <span class="citation" data-cites="Heston">(<a href="#ref-Heston" role="doc-biblioref">Heston 1993</a>)</span>. In this model, we have, as usual,</p>
 <p><span id="eq-heston1"><span class="math display">\[
-\,\mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\,\mathrm{d}t + \sigma\,\,\mathrm{d}B_s\;,
+\,\mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d}t + \sigma\,\mathrm{d}B_s\;,
 \qquad(18.1)\]</span></span></p>
 <p>where <span class="math inline">\(B_s\)</span> is a Brownian motion under the risk-neutral probability but now <span class="math inline">\(\sigma\)</span> is not a constant but instead evolves as <span class="math inline">\(\sigma_t = \sqrt{v_t}\)</span> where</p>
 <p><span id="eq-heston2"><span class="math display">\[
-dv_t = \kappa \big[\theta-v_t\big]\,\,\mathrm{d}t + \gamma \sqrt{v_t}\,\,\mathrm{d}B_v\;,
+dv_t = \kappa \big[\theta-v_t\big]\,\mathrm{d}t + \gamma \sqrt{v_t}\,\mathrm{d}B_v\;,
 \qquad(18.2)\]</span></span></p>
 <p>where <span class="math inline">\(B_v\)</span> is a Brownian motion under the risk-neutral probability having a constant correlation <span class="math inline">\(\rho\)</span> with the Brownian motion <span class="math inline">\(B_s\)</span>. In this equation, <span class="math inline">\(\kappa\)</span>, <span class="math inline">\(\theta\)</span> and <span class="math inline">\(\gamma\)</span> are positive constants. Given the empirical fact that negative return shocks have a bigger impact on future volatility than do positive shocks, one would expect the correlation <span class="math inline">\(\rho\)</span> to be negative.</p>
 <p>The term <span class="math inline">\(\kappa (\theta-v)\)</span> will be positive when <span class="math inline">\(v&lt;\theta\)</span> and negative when <span class="math inline">\(v&gt;\theta\)</span> and hence <span class="math inline">\(\sigma^2=v\)</span> will tend to drift towards <span class="math inline">\(\theta\)</span>, which, as in the GARCH model, is the long-run or unconditional mean of <span class="math inline">\(\sigma^2\)</span>. Thus, the volatility is said to mean revert. The rate at which it drifts towards <span class="math inline">\(\theta\)</span> is obviously determined by the magnitude of <span class="math inline">\(\kappa\)</span>, also as in the GARCH model.</p>
@@ -551,7 +551,7 @@ v(t_{i+1}) = \max\left\{0,v_{t_i} + \kappa \big[\theta-v_{t_i}\big]\,\Delta t + 
 \qquad(18.5)\]</span></span></p>
 <p>A simple way to simulate the changes <span class="math inline">\(\Delta B_s\)</span> and <span class="math inline">\(\Delta B_v\)</span> in the two correlated Brownian motions is to generate two independent standard normals <span class="math inline">\(z_1\)</span> and <span class="math inline">\(z_2\)</span> and take <span class="math display">\[\Delta B_s = \sqrt{\Delta t}\,z \qquad \text{and} \qquad \Delta B_v = \sqrt{\Delta t}\,z^*\; ,\]</span> where we define <span class="math display">\[z = z_1 \qquad \text{and} \qquad z^* = \rho z_1 + \sqrt{1-\rho^2}\,z_2\; .\]</span> The random variable <span class="math inline">\(z^*\)</span> is also a standard normal, and the correlation between <span class="math inline">\(z\)</span> and <span class="math inline">\(z^*\)</span> is <span class="math inline">\(\rho\)</span>.</p>
 <p>As in the GARCH model, we can simulate a path of an asset price that follows a GARCH process and the path of its volatility as follows. The following python code produces three columns of data (with headings), the first column being time, the second the asset price, and the third the volatility in the Heston model.</p>
-<div id="9ea97549" class="cell" data-execution_count="1">
+<div id="6310a502" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -616,22 +616,22 @@ v(t_{i+1}) = \max\left\{0,v_{t_i} + \kappa \big[\theta-v_{t_i}\big]\,\Delta t + 
 <div class="cell-output cell-output-stdout">
 <pre><code>         Time  Stock Price  Volatility
 0    0.000000   100.000000    0.040000
-1    0.003968    99.959730    0.046052
-2    0.007937   100.108137    0.048184
-3    0.011905   100.279829    0.038562
-4    0.015873   100.107806    0.044761
+1    0.003968    99.964130    0.049562
+2    0.007937    99.967791    0.054547
+3    0.011905    99.942334    0.073161
+4    0.015873    99.489216    0.082217
 ..        ...          ...         ...
-248  0.984127   112.112787    0.162276
-249  0.988095   112.144538    0.176092
-250  0.992063   113.304288    0.171269
-251  0.996032   111.426751    0.190914
-252  1.000000   110.962535    0.193432
+248  0.984127   106.514806    0.197057
+249  0.988095   104.742869    0.201638
+250  0.992063   104.272435    0.191862
+251  0.996032   103.341451    0.196117
+252  1.000000   104.053260    0.181407
 
 [253 rows x 3 columns]</code></pre>
 </div>
 </div>
 <p>The following code plots the simulated stock price and the variance paths.</p>
-<div id="7b776894" class="cell" data-execution_count="2">
+<div id="435cfead" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -702,7 +702,7 @@ v(t_{i+1}) = \max\left\{0,v_{t_i} + \kappa \big[\theta-v_{t_i}\big]\,\Delta t + 
 </div>
 </div>
 <p>The following code shows that the stock returns under the stochastic volatility model display fat-tails with positive kurtosis.</p>
-<div id="3eb33a29" class="cell" data-execution_count="3">
+<div id="966b1052" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -791,18 +791,18 @@ v(t_{i+1}) = \max\left\{0,v_{t_i} + \kappa \big[\theta-v_{t_i}\big]\,\Delta t + 
 </div>
 </div>
 <p>To price European options, we again need to compute <span class="math display">\[\text{prob}^S(S_T&gt;K) \qquad \text{and} \qquad \text{prob}^R(S_T&gt;K)\; .\]</span> The virtue of modelling volatility as in <a href="#eq-heston2" class="quarto-xref">Equation&nbsp;<span>18.2</span></a> is that these probabilities can be computed quite efficiently, as shown by Heston <span class="citation" data-cites="Heston">(<a href="#ref-Heston" role="doc-biblioref">Heston 1993</a>)</span>.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> There are many other ways in which one could model volatility, but the computations may be more difficult. For example, one could replace <a href="#eq-heston2" class="quarto-xref">Equation&nbsp;<span>18.2</span></a> by <span id="eq-heston5"><span class="math display">\[
-\sigma_t = \mathrm{e}^{v_t} \quad \text{and} \quad dv_t = \kappa (\theta-v_t)\,\,\mathrm{d}t + \lambda \,\,\mathrm{d}B^*\;.
+\sigma_t = \mathrm{e}^{v_t} \quad \text{and} \quad dv_t = \kappa (\theta-v_t)\,\mathrm{d}t + \lambda \,\mathrm{d}B^*\;.
 \qquad(18.6)\]</span></span></p>
 <p>This implies a lognormal volatility and is simpler to simulate than <a href="#eq-heston2" class="quarto-xref">Equation&nbsp;<span>18.2</span></a>—because <span class="math inline">\(\mathrm{e}^{v}\)</span> is well defined even when <span class="math inline">\(v\)</span> is negative—but it is easier to calculate the probabilities <span class="math inline">\(\text{prob}^S(S_T&gt;K)\)</span> and <span class="math inline">\(\text{prob}^R(S_T&gt;K)\)</span> if we assume <a href="#eq-heston2" class="quarto-xref">Equation&nbsp;<span>18.2</span></a>.</p>
 <p>One way to implement the GARCH or stochastic volatility model is to imply both the initial volatility <span class="math inline">\(\sigma_0\)</span> and the constants <span class="math inline">\(\kappa\)</span>, <span class="math inline">\(\theta\)</span> and <span class="math inline">\(\lambda\)</span> or <span class="math inline">\(\kappa\)</span>, <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\rho\)</span> from observed option prices. These four (or five) constants can be computed by forcing the model prices of four (or five) options to equal the observed market prices. Or, a larger set of prices can be used and the constants can be chosen to minimize the average squared error or some other measure of goodness-of-fit between the model and market prices.</p>
 <section id="hedging-and-market-completeness" class="level2" data-number="18.1">
 <h2 data-number="18.1" class="anchored" data-anchor-id="hedging-and-market-completeness"><span class="header-section-number">18.1</span> Hedging and Market Completeness</h2>
-<p>The GARCH model is inherently a discrete-time model. If returns have a GARCH structure at one frequency (e.g., monthly), they will not have a GARCH structure at a different frequency (e.g., weekly). Hence, the return period (monthly, weekly, ) is part of the specification of the model. One interpretation of the model is that the dates <span class="math inline">\(t_i\)</span> at which the variance changes are the only dates at which investors can trade. Under this interpretation, it is impossible to perfectly hedge an option: the gross return <span class="math inline">\(S_{t_i}/S_{t_{i-1}}\)</span> over the interval <span class="math inline">\((t_{i-1},t_i)\)</span> is lognormally distributed, so no portfolio of the stock and riskless asset formed at <span class="math inline">\(t_{i-1}\)</span> and held over the interval <span class="math inline">\((t_{i-1},t_i)\)</span> can perfectly replicate the return of an option over the interval. As discussed in <a href="Chapter_OptionPricing.html#sec-s_incomplete" class="quarto-xref"><span>Section 4.1</span></a>, we call a market in which some derivatives cannot be perfectly hedged an incomplete market. Thus, the GARCH model is an example of an incomplete market, if investors can only trade at the frequency at which returns have a GARCH structure. However, it is unreasonable to assume that investors can only trade weekly or monthly or even daily.</p>
+<p>The GARCH model is inherently a discrete-time model. If returns have a GARCH structure at one frequency (e.g., monthly), they will not have a GARCH structure at a different frequency (e.g., weekly). Hence, the return period (monthly, weekly, ) is part of the specification of the model. One interpretation of the model is that the dates <span class="math inline">\(t_i\)</span> at which the variance changes are the only dates at which investors can trade. Under this interpretation, it is impossible to perfectly hedge an option: the gross return <span class="math inline">\(S_{t_i}/S_{t_{i-1}}\)</span> over the interval <span class="math inline">\((t_{i-1},t_i)\)</span> is lognormally distributed, so no portfolio of the stock and riskless asset formed at <span class="math inline">\(t_{i-1}\)</span> and held over the interval <span class="math inline">\((t_{i-1},t_i)\)</span> can perfectly replicate the return of an option over the interval. As discussed in <a href="Chapter_OptionPricing.html#sec-s:incomplete" class="quarto-xref"><span>Section 4.1</span></a>, we call a market in which some derivatives cannot be perfectly hedged an incomplete market. Thus, the GARCH model is an example of an incomplete market, if investors can only trade at the frequency at which returns have a GARCH structure. However, it is unreasonable to assume that investors can only trade weekly or monthly or even daily.</p>
 <p>Another interpretation of the GARCH model is that investors can trade continuously and the asset has a constant volatility within each period <span class="math inline">\((t_{i-1},t_i)\)</span>. Under this interpretation, the market is complete and options can be delta-hedged. The completeness is a result of the fact that the change <span class="math inline">\(\sigma_{i+1}-\sigma_i\)</span> in the volatility at date <span class="math inline">\(t_i\)</span> (recall that <span class="math inline">\(\sigma_i\)</span> is the volatility over the period <span class="math inline">\((t_{i-1},t_i)\)</span> and <span class="math inline">\(\sigma_{i+1}\)</span> is the volatility over the period <span class="math inline">\((t_{i},t_{i+1})\)</span>) depends only on <span class="math inline">\(\log S_{t_i}\)</span>. Thus, the only random factor in the model that needs to be hedged is, as usual, the underlying asset price. However, this interpretation of the model is also a bit strange. Suppose for example that monthly returns are assumed to have a GARCH structure. Then the model states that the volatility in February will be higher if there is an unusually large return (in absolute value) in January. Suppose there is an unusually large return in the first half of January. Then, intuitively, one would expect the change in the volatility to occur in the second half of January rather than being delayed until February. However, the model specifies that the volatility is constant during each month, hence constant during January in this example.</p>
 <p>The stochastic volatility model is more straightforward. The market is definitely incomplete. The value of a call option at date <span class="math inline">\(t&lt;T\)</span>, where <span class="math inline">\(T\)</span> is the maturity of the option, will depend on the underlying asset price <span class="math inline">\(S_t\)</span> and the volatility <span class="math inline">\(\sigma_t\)</span>. Denoting the value by <span class="math inline">\(C(t,S_t,\sigma_t)\)</span>, we have from Ito’s formula that <span class="math display">\[
-\,\mathrm{d}C_t = \text{something}\;\,\mathrm{d}t + \frac{\partial C}{\partial S}\,\,\mathrm{d}S_t + \frac{\partial C}{\partial \sigma}\,\,\mathrm{d}\sigma_t\; .\]</span> A replicating portfolio must have the same dollar change at each date <span class="math inline">\(t\)</span>. If we hold <span class="math inline">\(\partial C/\partial S\)</span> shares of the underlying asset, then the change in the value of the shares will be <span class="math inline">\((\partial C/\partial S)\,\,\mathrm{d}S\)</span>. However, there is no way to match the<br>
-<span class="math inline">\((\partial C/\partial \sigma)\,\,\mathrm{d}\sigma\)</span> term using the underlying asset and the riskless asset.</p>
-<p>The significance of the market being incomplete is that the value of a derivative asset that cannot be replicated using traded assets (e.g., the underlying and riskless assets) is not uniquely determined by arbitrage considerations. As discussed in <a href="Chapter_OptionPricing.html#sec-s_incomplete" class="quarto-xref"><span>Section 4.1</span></a>, one must use equilibrium pricing in this circumstance. That is what we have implicitly done in this chapter. By assuming particular dynamics for the volatility under the risk-neutral probability, we have implicitly selected a particular risk-neutral probability from the set of risk-neutral probabilitys that are consistent with the absence of arbitrage.</p>
+\,\mathrm{d}C_t = \text{something}\;\,\mathrm{d}t + \frac{\partial C}{\partial S}\,\mathrm{d}S_t + \frac{\partial C}{\partial \sigma}\,\mathrm{d}\sigma_t\; .\]</span> A replicating portfolio must have the same dollar change at each date <span class="math inline">\(t\)</span>. If we hold <span class="math inline">\(\partial C/\partial S\)</span> shares of the underlying asset, then the change in the value of the shares will be <span class="math inline">\((\partial C/\partial S)\,\mathrm{d}S\)</span>. However, there is no way to match the<br>
+<span class="math inline">\((\partial C/\partial \sigma)\,\mathrm{d}\sigma\)</span> term using the underlying asset and the riskless asset.</p>
+<p>The significance of the market being incomplete is that the value of a derivative asset that cannot be replicated using traded assets (e.g., the underlying and riskless assets) is not uniquely determined by arbitrage considerations. As discussed in <a href="Chapter_OptionPricing.html#sec-s:incomplete" class="quarto-xref"><span>Section 4.1</span></a>, one must use equilibrium pricing in this circumstance. That is what we have implicitly done in this chapter. By assuming particular dynamics for the volatility under the risk-neutral probability, we have implicitly selected a particular risk-neutral probability from the set of risk-neutral probabilitys that are consistent with the absence of arbitrage.</p>
 </section>
 <section id="variance-swaps" class="level2" data-number="18.2">
 <h2 data-number="18.2" class="anchored" data-anchor-id="variance-swaps"><span class="header-section-number">18.2</span> Variance Swaps</h2>
@@ -917,7 +917,7 @@ v(t_{i+1}) = \max\left\{0,v_{t_i} + \kappa \big[\theta-v_{t_i}\big]\,\Delta t + 
 <span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Variance Swap Strike: </span><span class="sc">{</span>variance_swap_strike<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Variance Swap Strike: 0.7428</code></pre>
+<pre><code>Variance Swap Strike: 0.7320</code></pre>
 </div>
 </div>
 </section>

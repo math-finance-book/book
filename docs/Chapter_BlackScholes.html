@@ -112,17 +112,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
 </script>
 <style>
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
 }
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
 }
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
+}
+.ToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 .InProgress {
   --color1: #eaacf2;
@@ -131,14 +139,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
-}
-.ToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
 }
 </style>
 
@@ -491,7 +491,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_BlackScholes.html">Part III: Black-Scholes and Extensions</a></li><li class="breadcrumb-item"><a href="./Chapter_BlackScholes.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Black-Scholes</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-c_blackscholes" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></h1>
+<h1 class="title"><span id="sec-c:blackscholes" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></h1>
 </div>
 
 
@@ -509,12 +509,12 @@ window.Quarto = {
 
 
 <p>In this chapter, we will study the value of European digital and share digital options and standard European puts and calls under the Black-Scholes assumptions. We will also explain how to calculate implied volatilities and the option Greeks. The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield <span class="math inline">\(q\)</span> and has price <span class="math inline">\(S\)</span> satisfying <span id="eq-bs1"><span class="math display">\[
-\frac{\,\mathrm{d}S}{S} = \mu\,\,\mathrm{d}t + \sigma\,\,\mathrm{d}B
+\frac{\,\mathrm{d}S}{S} = \mu\,\mathrm{d}t + \sigma\,\mathrm{d}B
 \qquad(10.1)\]</span></span></p>
 <p>for a Brownian motion B. Here <span class="math inline">\(\sigma\)</span> is assumed to be constant (though we will allow it to vary in a non-random way at the end of the chapter) and <span class="math inline">\(\mu\)</span> can be a quite general random process. It is also assumed that there is a constant continuously-compounded risk-free rate <span class="math inline">\(r\)</span>.</p>
-<p>Under these assumptions, we will complete the discussion of <span class="quarto-unresolved-ref">?sec-s_introoptions</span> to derive option pricing formulas. Recall that, to price a European call option, all that remains to be done is to calculate the probabilities of the option finishing in the money when we use the risk-free asset and the underlying asset as numeraires. We will do this using the results of <a href="Chapter_Girsanov.html#sec-s_girsanov" class="quarto-xref"><span>Section 8.1</span></a>. As in <span class="quarto-unresolved-ref">?sec-s_introoptions</span>, we will approach the pricing of call and put options by first considering their basic building blocks: digitals and share digitals.</p>
-<section id="sec-s_digitals" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="sec-s_digitals"><span class="header-section-number">10.1</span> Digital Options</h2>
+<p>Under these assumptions, we will complete the discussion of <span class="quarto-unresolved-ref">?sec-s:introoptions</span> to derive option pricing formulas. Recall that, to price a European call option, all that remains to be done is to calculate the probabilities of the option finishing in the money when we use the risk-free asset and the underlying asset as numeraires. We will do this using the results of <a href="Chapter_Girsanov.html#sec-s:girsanov" class="quarto-xref"><span>Section 8.1</span></a>. As in <span class="quarto-unresolved-ref">?sec-s:introoptions</span>, we will approach the pricing of call and put options by first considering their basic building blocks: digitals and share digitals.</p>
+<section id="sec-s:digitals" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="sec-s:digitals"><span class="header-section-number">10.1</span> Digital Options</h2>
 <p>A digital (or binary) option pays a fixed amount in a certain event and zero otherwise. Consider a digital that pays $1 at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S_T&gt;K\)</span>, where <span class="math inline">\(K\)</span> is a number that is fixed by the contract. This means that the digital pays <span class="math inline">\(x\)</span> dollars at date <span class="math inline">\(T\)</span> where <span class="math inline">\(x\)</span> is defined as <span class="math display">\[\begin{equation*}
 x =  \begin{cases} 1 &amp; \text{if $S_T&gt;K$}\; ,\\
 0 &amp; \text{otherwise}\;.
@@ -524,7 +524,7 @@ x =  \begin{cases} 1 &amp; \text{if $S_T&gt;K$}\; ,\\
 \;&amp;=\; \text{prob}^R(x=1)\\
 \;&amp;=\; \text{prob}^R\big(S_T &gt; K\big)\;.
 \end{align*}\]</span> So we need to calculate this probability of the digital finishing in the money.</p>
-<p>In <a href="Chapter_Girsanov.html#sec-s_girsanov" class="quarto-xref"><span>Section 8.1</span></a>—see <a href="Chapter_Girsanov.html#eq-riskneutral11" class="quarto-xref">Equation&nbsp;<span>8.1</span></a>—we learned that under the Black-Scholes assumption <a href="#eq-bs1" class="quarto-xref">Equation&nbsp;<span>10.1</span></a> we have <span class="math display">\[\frac{\,\mathrm{d}S}{S} =( r-q)\,\,\mathrm{d}t+\sigma\,\,\mathrm{d}B^*\; ,\]</span> where <span class="math inline">\(B^*\)</span> is a Brownian motion under the risk-neutral probability.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> on the volatility coefficients and on <span class="math inline">\(B\)</span> and <span class="math inline">\(B^*\)</span> to distinguish the Brownian motion driving <span class="math inline">\(S\)</span> from the Brownian motion driving <span class="math inline">\(Y\)</span> and to distinguish their volatilities are not needed here. In <a href="Chapter_GBM.html" class="quarto-xref"><span>Chapter 7</span></a>, we observed that this is equivalent to <span class="math display">\[\,\mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\,\mathrm{d}t + \sigma\,\,\mathrm{d}B^*\; .\]</span> Now using the formulas <a href="Chapter_Girsanov.html#eq-tailprob01" class="quarto-xref">Equation&nbsp;<span>8.8</span></a>–<a href="Chapter_Girsanov.html#eq-tailprob3" class="quarto-xref">Equation&nbsp;<span>8.9</span></a>, with <span class="math inline">\(\alpha = r-q-\sigma^2/2\)</span>, we have <span class="math inline">\(\text{prob}^R\big(S_T &gt; K\big) = \mathrm{N}(d_2)\)</span> where <span id="eq-digital_d2"><span class="math display">\[
+<p>In <a href="Chapter_Girsanov.html#sec-s:girsanov" class="quarto-xref"><span>Section 8.1</span></a>—see <a href="Chapter_Girsanov.html#eq-riskneutral11" class="quarto-xref">Equation&nbsp;<span>8.1</span></a>—we learned that under the Black-Scholes assumption <a href="#eq-bs1" class="quarto-xref">Equation&nbsp;<span>10.1</span></a> we have <span class="math display">\[\frac{\,\mathrm{d}S}{S} =( r-q)\,\mathrm{d}t+\sigma\,\mathrm{d}B^*\; ,\]</span> where <span class="math inline">\(B^*\)</span> is a Brownian motion under the risk-neutral probability.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> on the volatility coefficients and on <span class="math inline">\(B\)</span> and <span class="math inline">\(B^*\)</span> to distinguish the Brownian motion driving <span class="math inline">\(S\)</span> from the Brownian motion driving <span class="math inline">\(Y\)</span> and to distinguish their volatilities are not needed here. In <a href="Chapter_GBM.html" class="quarto-xref"><span>Chapter 7</span></a>, we observed that this is equivalent to <span class="math display">\[\,\mathrm{d}\log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d}t + \sigma\,\mathrm{d}B^*\; .\]</span> Now using the formulas <a href="Chapter_Girsanov.html#eq-tailprob01" class="quarto-xref">Equation&nbsp;<span>8.8</span></a>–<a href="Chapter_Girsanov.html#eq-tailprob3" class="quarto-xref">Equation&nbsp;<span>8.9</span></a>, with <span class="math inline">\(\alpha = r-q-\sigma^2/2\)</span>, we have <span class="math inline">\(\text{prob}^R\big(S_T &gt; K\big) = \mathrm{N}(d_2)\)</span> where <span id="eq-digital_d2"><span class="math display">\[
 d_2 = \frac{\log\left(\frac{S_0}{K}\right)+\left(r-q-\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;.
 \qquad(10.2)\]</span></span></p>
 <p>The notation <span class="math inline">\(d_2\)</span> is standard notation from the Black-Scholes formula, and we use it—rather than a simple <span class="math inline">\(d\)</span>—to distinguish the number <a href="#eq-digital_d2" class="quarto-xref">Equation&nbsp;<span>10.2</span></a> from a similar number—to be called <span class="math inline">\(d_1\)</span> of course—that we will see in the next section.<br>
@@ -543,21 +543,21 @@ y =  \begin{cases} 1 &amp; \text{if $S_T&lt;K$}\; ,\\
 </div></details>
 </div>
 </section>
-<section id="sec-s_sharedigitals" class="level2" data-number="10.2">
-<h2 data-number="10.2" class="anchored" data-anchor-id="sec-s_sharedigitals"><span class="header-section-number">10.2</span> Share Digitals</h2>
+<section id="sec-s:sharedigitals" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="sec-s:sharedigitals"><span class="header-section-number">10.2</span> Share Digitals</h2>
 <p>Consider a derivative security that pays one share of the underlying asset at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S_T&gt;K\)</span> and pays zero otherwise. This is called a share digital. As before, let <span class="math display">\[\begin{equation*}
 x =  \begin{cases} 1 &amp; \text{if $S_T&gt;K$}\; ,\\
 0 &amp; \text{otherwise}\;.
 \end{cases}
 \end{equation*}\]</span> Then the payoff of the share digital at date <span class="math inline">\(T\)</span> is <span class="math inline">\(xS_T\)</span>. Let <span class="math inline">\(Y_t\)</span> denote the value of this claim for <span class="math inline">\(0\leq t\leq T\)</span>. We have <span class="math inline">\(Y_T=xS_T\)</span> and we want to find <span class="math inline">\(Y_0\)</span>.</p>
-<p>From <a href="Chapter_GBM.html#sec-s_reinvestingdividends" class="quarto-xref"><span>Section 7.1</span></a>, we know that <span class="math inline">\(V_t=\mathrm{e}^{qt}S_t\)</span> is the price of a non-dividend-paying portfolio. From our fundamental pricing <a href="Chapter_Arbitrage.html#eq-formula" class="quarto-xref">Equation&nbsp;<span>3.28</span></a>, using <span class="math inline">\(V\)</span> as the numeraire, we have <span class="math display">\[\begin{align*}
+<p>From <a href="Chapter_GBM.html#sec-s:reinvestingdividends" class="quarto-xref"><span>Section 7.1</span></a>, we know that <span class="math inline">\(V_t=\mathrm{e}^{qt}S_t\)</span> is the price of a non-dividend-paying portfolio. From our fundamental pricing <a href="Chapter_Arbitrage.html#eq-formula" class="quarto-xref">Equation&nbsp;<span>3.28</span></a>, using <span class="math inline">\(V\)</span> as the numeraire, we have <span class="math display">\[\begin{align*}
 Y_0 &amp;= S_0 \\E^V \left[\frac{Y_T}{\mathrm{e}^{q T}S_T}\right]\\
 &amp;=\mathrm{e}^{-q T}S_0\\E^V [x]\;.
 \end{align*}\]</span> As in the previous section, <span class="math inline">\(\\E^V[x] = \text{prob}^V\!(x=1)\)</span>, so we need to compute this probability of the option finishing in the money.</p>
 <p>We follow the same steps as in the previous section. From <a href="Chapter_Girsanov.html#eq-own11" class="quarto-xref">Equation&nbsp;<span>8.2</span></a> we have <span class="math display">\[
-\frac{\,\mathrm{d}S}{S} = (r-q+ \sigma^2)\,\,\mathrm{d}t+\sigma\,\,\mathrm{d}B^*,
+\frac{\,\mathrm{d}S}{S} = (r-q+ \sigma^2)\,\mathrm{d}t+\sigma\,\mathrm{d}B^*,
 \]</span> where now <span class="math inline">\(B^*\)</span> denotes a Brownian motion when <span class="math inline">\(V\)</span> is the numeraire. This is equivalent to <span id="eq-new5"><span class="math display">\[
-\,\mathrm{d}\log S = \left(r-q+\frac{1}{2}\sigma^2\right)\,\,\mathrm{d}t + \sigma \,\,\mathrm{d}B^*\;.
+\,\mathrm{d}\log S = \left(r-q+\frac{1}{2}\sigma^2\right)\,\mathrm{d}t + \sigma \,\mathrm{d}B^*\;.
 \qquad(10.3)\]</span></span></p>
 <p>Thus, from the formulas <a href="Chapter_Girsanov.html#eq-tailprob01" class="quarto-xref">Equation&nbsp;<span>8.8</span></a>–<a href="Chapter_Girsanov.html#eq-tailprob3" class="quarto-xref">Equation&nbsp;<span>8.9</span></a>, with <span class="math inline">\(\alpha = r-q+\sigma^2/2\)</span>, we have <span class="math display">\[\text{prob}^V\!\big(S_T&gt;K\big) = \mathrm{N}(d_1)\; ,\]</span> where <span id="eq-sharedigital_d1"><span class="math display">\[
 d_1 = \frac{\log\left(\frac{S_0}{K}\right)+\left(r-q+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;.
@@ -580,8 +580,8 @@ y =  \begin{cases} 1 &amp; \text{if $S_T&lt;K$}\; ,\\
 </div></details>
 </div>
 </section>
-<section id="sec-s_blackscholes" class="level2" data-number="10.3">
-<h2 data-number="10.3" class="anchored" data-anchor-id="sec-s_blackscholes"><span class="header-section-number">10.3</span> Puts and Calls</h2>
+<section id="sec-s:blackscholes" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="sec-s:blackscholes"><span class="header-section-number">10.3</span> Puts and Calls</h2>
 <p>A European call option pays <span class="math inline">\(S_T-K\)</span> at date <span class="math inline">\(T\)</span> if <span class="math inline">\(S_T&gt;K\)</span> and 0 otherwise. Again letting <span class="math display">\[\begin{equation*}
 x =  \begin{cases} 1 &amp; \text{if $S_T&gt;K$}\; ,\\
 0 &amp; \text{otherwise}\;,
@@ -617,34 +617,34 @@ y =  \begin{cases} 1 &amp; \text{if $S_T&lt;K$}\; ,\\
 <section id="binomial-approximation-of-black-scholes" class="level2" data-number="10.5">
 <h2 data-number="10.5" class="anchored" data-anchor-id="binomial-approximation-of-black-scholes"><span class="header-section-number">10.5</span> Binomial Approximation of Black-Scholes</h2>
 </section>
-<section id="sec-s_impliedvolatility" class="level2" data-number="10.6">
-<h2 data-number="10.6" class="anchored" data-anchor-id="sec-s_impliedvolatility"><span class="header-section-number">10.6</span> Implied Volatilities</h2>
+<section id="sec-s:impliedvolatility" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="sec-s:impliedvolatility"><span class="header-section-number">10.6</span> Implied Volatilities</h2>
 <p>All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient <span class="math inline">\(\sigma\)</span>. We can estimate <span class="math inline">\(\sigma\)</span> from historical data (see <a href="Chapter_StochasticVol.html" class="quarto-xref"><span>Chapter 18</span></a>), or estimate it from the prices of other options. The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the <span class="math inline">\(\sigma\)</span> that is input, so one can take the price as given and infer <span class="math inline">\(\sigma\)</span> from the formula. The <span class="math inline">\(\sigma\)</span> computed in this way is called the implied volatility. The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.</p>
 <p>Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small. Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity. To some extent, the implied volatility normalizes the price relative to the exercise price and maturity. Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!</p>
 </section>
-<section id="sec-s_timevaryingvolatility" class="level2" data-number="10.7">
-<h2 data-number="10.7" class="anchored" data-anchor-id="sec-s_timevaryingvolatility"><span class="header-section-number">10.7</span> Term Structure of Volatility</h2>
-<p>The option pricing formulas in this chapter are derived from the fact that the natural logarithm of the stock price at maturity is normally distributed with a certain mean (depending on the numeraire) and variance equal to <span class="math inline">\(\sigma^2T\)</span>. It is not actually necessary that the volatility be constant. The formulas are still valid if <span class="math display">\[\frac{\,\mathrm{d}S_t}{S_t}= \mu_t\,\,\mathrm{d}t + \sigma_t\,\,\mathrm{d}B_t\]</span> where <span class="math inline">\(\sigma_t\)</span> is some non-random function of time (and again <span class="math inline">\(\mu\)</span> can be a quite general random process). In this case, the variance of <span class="math inline">\(\log S_T\)</span> will be <span id="eq-totalvariance"><span class="math display">\[
-\int_0^T \sigma^2_t\,\,\mathrm{d}t\;,
+<section id="sec-s:timevaryingvolatility" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="sec-s:timevaryingvolatility"><span class="header-section-number">10.7</span> Term Structure of Volatility</h2>
+<p>The option pricing formulas in this chapter are derived from the fact that the natural logarithm of the stock price at maturity is normally distributed with a certain mean (depending on the numeraire) and variance equal to <span class="math inline">\(\sigma^2T\)</span>. It is not actually necessary that the volatility be constant. The formulas are still valid if <span class="math display">\[\frac{\,\mathrm{d}S_t}{S_t}= \mu_t\,\mathrm{d}t + \sigma_t\,\mathrm{d}B_t\]</span> where <span class="math inline">\(\sigma_t\)</span> is some non-random function of time (and again <span class="math inline">\(\mu\)</span> can be a quite general random process). In this case, the variance of <span class="math inline">\(\log S_T\)</span> will be <span id="eq-totalvariance"><span class="math display">\[
+\int_0^T \sigma^2_t\,\mathrm{d}t\;,
 \qquad(10.8)\]</span></span></p>
-<p>which is essentially the sum of the instantaneous variances <span class="math inline">\(\sigma^2_t\,\,\mathrm{d}t\)</span>. In the <span class="math inline">\(d_1\)</span>’s and <span class="math inline">\(d_2\)</span>’s in the option pricing formulas, <span class="math inline">\(\sigma^2T\)</span> should be replaced by <a href="#eq-totalvariance" class="quarto-xref">Equation&nbsp;<span>10.8</span></a>. A convenient way of expressing this is as follows. Let <span class="math inline">\(\sigma_{\text{avg}}\)</span> be the positive number such that <span id="eq-sigmaavg100"><span class="math display">\[
-\sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2_t\,\,\mathrm{d}t\;.
+<p>which is essentially the sum of the instantaneous variances <span class="math inline">\(\sigma^2_t\,\mathrm{d}t\)</span>. In the <span class="math inline">\(d_1\)</span>’s and <span class="math inline">\(d_2\)</span>’s in the option pricing formulas, <span class="math inline">\(\sigma^2T\)</span> should be replaced by <a href="#eq-totalvariance" class="quarto-xref">Equation&nbsp;<span>10.8</span></a>. A convenient way of expressing this is as follows. Let <span class="math inline">\(\sigma_{\text{avg}}\)</span> be the positive number such that <span id="eq-sigmaavg100"><span class="math display">\[
+\sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2_t\,\mathrm{d}t\;.
 \qquad(10.9)\]</span></span></p>
 <p>Then we simply need to input <span class="math inline">\(\sigma_{\text{avg}}\)</span> as in our option pricing functions. We will call <span class="math inline">\(\sigma_{\text{avg}}\)</span> the average volatility, though note that it is not really the average of <span class="math inline">\(\sigma_t\)</span> but instead is the square root of the average of <span class="math inline">\(\sigma^2_t\)</span>.</p>
 <p>It is important to recognize that, throughout this chapter, date <span class="math inline">\(0\)</span> means the date at which the option is being valued. It is not necessarily the date at which the option was first bought or sold. So <span class="math inline">\(\sigma_{\text{avg}}\)</span> is the average (in a sense) volatility during the remaining lifetime of the option, which need not be the same as the average during the option’s entire lifetime. It is this remaining volatility that is important for pricing and hedging. Moreover, it is a mistake at date <span class="math inline">\(0\)</span> to use <span class="math inline">\(\sigma_0\)</span> as the volatility to compute prices and hedges. Instead, prices and hedges should be based on <span class="math inline">\(\sigma_{\text{avg}}\)</span>.</p>
-<p>These considerations provide a way to address the following situation. If we compute implied volatilities for options with different maturities, we will normally get different numbers. For example, consider two at-the-money options with maturities <span class="math inline">\(T_1\)</span> and <span class="math inline">\(T_2\)</span> where <span class="math inline">\(T_2&gt;T_1\)</span>. Denote the implied volatilities by <span class="math inline">\(\hat{\sigma}_1\)</span> and <span class="math inline">\(\hat{\sigma}_2\)</span>. We want to interpret these as average volatilities for the time periods <span class="math inline">\([0,T_1]\)</span> and <span class="math inline">\([0,T_2]\)</span> respectively. This requires the existence of a function <span class="math inline">\(\sigma_t\)</span> such that <span class="math display">\[\hat{\sigma}_1^2 = \frac{1}{T_1}\int_0^{T_1} \sigma^2_t\,\,\mathrm{d}t \quad \text{and} \quad \hat{\sigma}_2^2 = \frac{1}{T_2}\int_0^{T_2} \sigma^2_t\,\,\mathrm{d}t\; .\]</span> This would imply <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 = \int_{T_1}^{T_2} \sigma^2_t\,\,\mathrm{d}t\; ,\]</span> which requires <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 \geq 0\; .\]</span> Equivalently, <span class="math display">\[\hat{\sigma}_2 \geq \sqrt{\frac{T_1}{T_2}} \hat{\sigma}_1\; .\]</span> Provided this last inequality is satisfied, we can easily construct the function <span class="math inline">\(\sigma_t\)</span> as <span class="math display">\[\sigma_t = \begin{cases} \hat{\sigma}_1 &amp; \quad\text{for $t\leq T_1$} \\
+<p>These considerations provide a way to address the following situation. If we compute implied volatilities for options with different maturities, we will normally get different numbers. For example, consider two at-the-money options with maturities <span class="math inline">\(T_1\)</span> and <span class="math inline">\(T_2\)</span> where <span class="math inline">\(T_2&gt;T_1\)</span>. Denote the implied volatilities by <span class="math inline">\(\hat{\sigma}_1\)</span> and <span class="math inline">\(\hat{\sigma}_2\)</span>. We want to interpret these as average volatilities for the time periods <span class="math inline">\([0,T_1]\)</span> and <span class="math inline">\([0,T_2]\)</span> respectively. This requires the existence of a function <span class="math inline">\(\sigma_t\)</span> such that <span class="math display">\[\hat{\sigma}_1^2 = \frac{1}{T_1}\int_0^{T_1} \sigma^2_t\,\mathrm{d}t \quad \text{and} \quad \hat{\sigma}_2^2 = \frac{1}{T_2}\int_0^{T_2} \sigma^2_t\,\mathrm{d}t\; .\]</span> This would imply <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 = \int_{T_1}^{T_2} \sigma^2_t\,\mathrm{d}t\; ,\]</span> which requires <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 \geq 0\; .\]</span> Equivalently, <span class="math display">\[\hat{\sigma}_2 \geq \sqrt{\frac{T_1}{T_2}} \hat{\sigma}_1\; .\]</span> Provided this last inequality is satisfied, we can easily construct the function <span class="math inline">\(\sigma_t\)</span> as <span class="math display">\[\sigma_t = \begin{cases} \hat{\sigma}_1 &amp; \quad\text{for $t\leq T_1$} \\
 \sqrt{\frac{\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1}{T_2-T_1}} &amp;\quad\text{for $T_1 &lt; t\leq T_2$}.
 \end{cases}
 \]</span> More generally, given a sequence of at-the-money options with maturities <span class="math inline">\(T_1&lt;T_2&lt;\cdots T_N\)</span> and implied volatilities <span class="math inline">\(\hat{\sigma}_1,\dots,\hat{\sigma}_N\)</span>, we define <span class="math display">\[\sigma_t = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}\]</span> for <span class="math inline">\(T_i&lt;t\leq T_{i+1}\)</span>, provided the expression inside the square root symbol is positive. This <span class="math inline">\(\sigma_t\)</span> is often called the term structure of (implied) volatilities. Generally, we may expect <span class="math inline">\(\sigma_t\)</span> to be a decreasing function of time <span class="math inline">\(t\)</span> when the current market is especially volatile and to be an increasing function when the current market is especially quiet.</p>
 </section>
-<section id="sec-s_smiles" class="level2" data-number="10.8">
-<h2 data-number="10.8" class="anchored" data-anchor-id="sec-s_smiles"><span class="header-section-number">10.8</span> Smiles and Smirks</h2>
-<p>If we compute implied volatilities for options with the same maturity but different strikes, we will again obtain different implied volatilities for different options. If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money). The implied volatility will then generally flatten out or increase slightly at higher strikes. The graph looks like a twisted smile (smirk). This pattern has been very pronounced in equity index option prices since the crash of 1987. In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model. It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed). We will return to this subject in <a href="Chapter_Jumps.html#sec-s_smilesagain" class="quarto-xref"><span>Section 19.1</span></a>.</p>
+<section id="sec-s:smiles" class="level2" data-number="10.8">
+<h2 data-number="10.8" class="anchored" data-anchor-id="sec-s:smiles"><span class="header-section-number">10.8</span> Smiles and Smirks</h2>
+<p>If we compute implied volatilities for options with the same maturity but different strikes, we will again obtain different implied volatilities for different options. If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money). The implied volatility will then generally flatten out or increase slightly at higher strikes. The graph looks like a twisted smile (smirk). This pattern has been very pronounced in equity index option prices since the crash of 1987. In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model. It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed). We will return to this subject in <a href="Chapter_Jumps.html#sec-s:smilesagain" class="quarto-xref"><span>Section 19.1</span></a>.</p>
 </section>
 <section id="sec_blackscholes_python" class="level2" data-number="10.9">
 <h2 data-number="10.9" class="anchored" data-anchor-id="sec_blackscholes_python"><span class="header-section-number">10.9</span> Calculations in Python</h2>
 <p>The following calculates the Black Scholes call, put, call delta, call gamma, and implied volatility.</p>
-<div id="4f1c1b37" class="cell" data-execution_count="1">
+<div id="b81c1a18" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -775,7 +775,7 @@ Implied Volatility: 0.2203836441040039</code></pre>
 </div>
 </div>
 <p>The following plot the Black Scholes call price against the stock price, the strike price, volatility, dividend yield, interest rate, and time to maturity.</p>
-<div id="18cc079b" class="cell" data-execution_count="2">
+<div id="6f5d3f41" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -879,7 +879,7 @@ Figure&nbsp;10.1: Sensitivity of the Greeks
 <p>Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by <span class="math inline">\(\max(K,S_T)\)</span>. The reason for the name protective put is apparent since the position can pay off no less than <span class="math inline">\(K\)</span>. The cost of this insurance is the price of the put. However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously. The basic recipe is to start with inital wealth equal to that for a protective put position: <span class="math inline">\(W_0 = P(0,S_0)+S_0\)</span>. The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is <span class="math inline">\(N(d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is calculated at each point in time. However, in practice we cannot trade continuously. A simple discrete strategy would rebalance at intervals <span class="math inline">\(\Delta t\)</span>. The strategy calculates <span class="math inline">\(N(d_1)\)</span> at time 0 and holds <span class="math inline">\(P(0,S_0)+S_0 - N(d_1)S_0\)</span> dollars in the risk free asset and <span class="math inline">\(N(d_1)\)</span> shares of the asset. Thereafter these holdings are adjusted. The change in portfolio value over the interval <span class="math inline">\(\Delta t\)</span> is <span class="math display">\[\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} \]</span> <span class="math display">\[
 = (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t})
 \]</span> where <span class="math inline">\(N(d1-)\)</span> is the delta chosen at time <span class="math inline">\((i-1)\Delta t\)</span>. The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be? This is simulated in the following code:</p>
-<div id="f7c900d5" class="cell" data-execution_count="3">
+<div id="954b4cd4" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1023,7 +1023,7 @@ Figure&nbsp;10.1: Sensitivity of the Greeks
 <h3 class="anchored" data-anchor-id="discretely-rebalanced-delta-hedges">Discretely-Rebalanced Delta Hedges</h3>
 <p>To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return <span class="math inline">\(\mu\)</span>. We consider adjusting the hedge at dates <span class="math inline">\(0=t_0&lt;t_1&lt;\cdots&lt;t_N=T\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. The changes in the natural logarithm of the stock price between successive dates <span class="math inline">\(t_{i-1}\)</span> and <span class="math inline">\(t_i\)</span> are simulated as <span class="math display">\[\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\Delta B\; ,\]</span> where <span class="math inline">\(\Delta B\)</span> is normally distributed with mean zero and variance <span class="math inline">\(\Delta t\)</span>. The random variables <span class="math inline">\(\Delta B\)</span> are simulated as standard normals multiplied by <span class="math inline">\(\sqrt{\Delta t}\)</span>. We begin with the portfolio that is short a call, long <span class="math inline">\(\delta\)</span> shares of the underlying, and short <span class="math inline">\(\delta S-C\)</span> in cash. After the stock price changes, say from <span class="math inline">\(S\)</span> to <span class="math inline">\(S'\)</span>, we compute the new delta <span class="math inline">\(\delta'\)</span>. The cash flow from adjusting the hedge is <span class="math inline">\((\delta-\delta')S'\)</span>. Accumulation (or payment) of interest on the cash position is captured by the factor <span class="math inline">\(e^{r\Delta t}\)</span>. Continuous payment of dividends is modelled similarly: the dividends earned during the period <span class="math inline">\(\Delta t\)</span> is taken to be <span class="math inline">\(\delta S\left(e^{q\Delta t}-1\right)\)</span>. The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge. At date <span class="math inline">\(T\)</span>, the value of the portfolio is the cash position less the intrinsic value of the option.</p>
 <p>To describe the distribution of gains and losses, we compute percentiles of the distribution. You should see that the hedge becomes more nearly perfect as the number of periods <span class="math inline">\(N\)</span> is increased. Note that this is true regardless of the <span class="math inline">\(\mu\)</span> that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. The percentile is calculated with the Python program.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
-<div id="93086ae2" class="cell" data-execution_count="4">
+<div id="731ed805" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1096,7 +1096,7 @@ Figure&nbsp;10.1: Sensitivity of the Greeks
 <span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Delta Hedge Profit (95th percentile): </span><span class="sc">{</span>delta_hedge_profit<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Delta Hedge Profit (95th percentile): 0.6827485341209741</code></pre>
+<pre><code>Delta Hedge Profit (95th percentile): 0.6515743505178356</code></pre>
 </div>
 </div>
 </section>
@@ -1123,7 +1123,7 @@ Figure&nbsp;10.1: Sensitivity of the Greeks
 </div></details>
 </div>
 <div id="Exercise-10.5" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 10.5</strong></summary><div>Consider delta and gamma hedging a short call option, using the underlying and a put with the same strike and maturity as the call. Calculate the position in the underlying and the put that you should take, using the analysis in <a href="Chapter_Greeks.html#sec-s_gammahedging" class="quarto-xref"><span>Section 12.2</span></a>. Will you ever need to adjust this hedge? Relate your result to put-call parity.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 10.5</strong></summary><div>Consider delta and gamma hedging a short call option, using the underlying and a put with the same strike and maturity as the call. Calculate the position in the underlying and the put that you should take, using the analysis in <a href="Chapter_Greeks.html#sec-s:gammahedging" class="quarto-xref"><span>Section 12.2</span></a>. Will you ever need to adjust this hedge? Relate your result to put-call parity.<p></p>
 </div></details>
 </div>
 <div id="Exercise-10.6" class="Exercise">
@@ -1178,7 +1178,7 @@ We can rearrange the expression <a href="#eq-bsp1" class="quarto-xref">Equation&
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>There is no other risky asset price <span class="math inline">\(Y\)</span> in this model, so the subscripts we used in <a href="Chapter_Girsanov.html#sec-s_girsanov" class="quarto-xref"><span>Section 8.1</span></a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>There is no other risky asset price <span class="math inline">\(Y\)</span> in this model, so the subscripts we used in <a href="Chapter_Girsanov.html#sec-s:girsanov" class="quarto-xref"><span>Section 8.1</span></a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>If numsims = 11 and pct =0.1, the percentile function returns the second lowest element in the series. The logic is that 10% of the numbers, excluding the number returned, are below the number returned—i.e., 1 out of the other 10 are below—and 90% of the others are above. In particular, if pct = 0.5, the percentile function returns the median. When necessary, the function interpolates; for example, if numsims = 10 and pct=0.1, then the number returned is an interpolation between the lowest and second lowest numbers.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

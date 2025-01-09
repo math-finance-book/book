@@ -132,13 +132,17 @@ div.csl-indent {
   });
 </script>
 <style>
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
+}
 .InProgress {
   --color1: #eaacf2;
   --color2: #75387d;
 }
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
 }
 .ToDo {
   --color1: #a7f2d8;
@@ -147,10 +151,6 @@ div.csl-indent {
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
-}
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
 }
 .Exercise {
   --color1: #ede29d;
@@ -511,7 +511,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_MonteCarlo.html">Part V: Numerical Methods</a></li><li class="breadcrumb-item"><a href="./Chapter_MonteCarlo.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Monte Carlo Methods</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-c_montecarlo" class="quarto-section-identifier"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Monte Carlo Methods</span></span></h1>
+<h1 class="title"><span id="sec-c:montecarlo" class="quarto-section-identifier"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Monte Carlo Methods</span></span></h1>
 </div>
 
 
@@ -529,22 +529,22 @@ window.Quarto = {
 
 
 <p>In this chapter, we will introduce two principal numerical methods for valuing derivative securities: Monte Carlo and binomial models. We will consider two applications: valuing European options in the presence of stochastic volatility with Monte Carlo and valuing American options via binomial models. Throughout the chapter, we will assume there is a constant risk-free rate. The last section, while quite important, could be skimmed on first reading—the rest of the book does not build upon it.</p>
-<section id="sec-s_mc_europeans" class="level2" data-number="21.1">
-<h2 data-number="21.1" class="anchored" data-anchor-id="sec-s_mc_europeans"><span class="header-section-number">21.1</span> Introduction to Monte Carlo</h2>
+<section id="sec-s:mc_europeans" class="level2" data-number="21.1">
+<h2 data-number="21.1" class="anchored" data-anchor-id="sec-s:mc_europeans"><span class="header-section-number">21.1</span> Introduction to Monte Carlo</h2>
 <p>According to our risk-neutral pricing <a href="Chapter_Arbitrage.html#eq-riskneutralformula" class="quarto-xref">Equation&nbsp;<span>3.29</span></a>, the value of a security paying an amount <span class="math inline">\(x\)</span> at date <span class="math inline">\(T\)</span> is <span id="eq-montecarlo1"><span class="math display">\[
 \mathrm{e}^{-rT}\\E^R[x]\;.
 \qquad(21.1)\]</span></span></p>
 <p>To estimate this by Monte-Carlo means to simulate a sample of values for the random variable <span class="math inline">\(x\)</span> and to estimate the expectation by averaging the sample values.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Of course, for this to work, the sample must be generated from a population having a distribution consistent with the risk-neutral probabilities.</p>
 <p>The simplest example is valuing a European option under the Black-Scholes assumptions. Of course, for calls and puts, this is redundant, because we already have the Black-Scholes formulas. Nevertheless, we will describe how to do this for the sake of introducing the Monte Carlo method. In the case of a call option, the random variable <span class="math inline">\(x\)</span> in <a href="#eq-montecarlo1" class="quarto-xref">Equation&nbsp;<span>21.1</span></a> is <span class="math inline">\(\max(0,S_T-K)\)</span>. To simulate a sample of values for this random variable, we need to simulate the terminal stock price <span class="math inline">\(S_T\)</span>. This is easy to do, because, under the Black-Scholes assumptions, the logarithm of <span class="math inline">\(S_T\)</span> is normally distributed under the risk-neutral probability with mean <span class="math inline">\(\log S_0+\mathrm{n}u T\)</span> and variance <span class="math inline">\(\sigma^2T\)</span>, where <span class="math inline">\(\mathrm{n}u=r-q-\sigma^2/2\)</span>. Thus, we can simulate values for <span class="math inline">\(\log S_T\)</span> as <span class="math inline">\(\log S_0+\mathrm{n}u T + \sigma\sqrt{T}z\)</span>, where <span class="math inline">\(z\)</span> is a standard normal. We can average the simulated values of <span class="math inline">\(\max(0,S_T-K)\)</span>, or whatever the payoff of the derivative is, and then discount at the risk-free rate to compute the date–0 value of the derivative. This means that we generate some number <span class="math inline">\(M\)</span> of standard normals <span class="math inline">\(z_i\)</span> and estimate the option value as <span class="math inline">\(\mathrm{e}^{-rT}\bar{x}\)</span>, where <span class="math inline">\(\bar{x}\)</span> is the mean of <span class="math display">\[x_i = \max\left(0,\mathrm{e}^{\log S_0+\mathrm{n}u T + \sigma\sqrt{T}z_i}-K\right)\; .\]</span> To value options that are path-dependent we need to simulate the path of the underlying asset price. Path-dependent options are discussed in Chaps.~<span class="math inline">\(\ref{c_exotics}\)</span> and~<span class="math inline">\(\ref{c_montecarlo}\)</span>.</p>
 <p>There are two main drawbacks to Monte-Carlo methods. First, it is difficult (though not impossible) to value early-exercise features.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> To value early exercise, we need to know the value at each date if not exercised, to compare to the intrinsic value. One could consider performing a simulation at each date to calculate the value if not exercised, but this value depends on the option to exercise early at later dates, which cannot be calculated without knowing the value of being able to exercise early at even later dates, etc. In contrast, the binomial model (and finite difference models discussed in <a href="Chapter_PDEs.html" class="quarto-xref"><span>Chapter 23</span></a>) can easily handle early exercise but cannot easily handle path dependencies.</p>
-<p>The second drawback of Monte Carlo methods is that they can be quite inefficient in terms of computation time (though, as will be explained later, they may be faster than alternative methods for derivatives written on multiple assets). As in statistics, the standard error of the estimate depends on the sample size. Specifically, we observed in <a href="Chapter_GARCH.html#sec-s_statistics" class="quarto-xref"><span>Section 17.1</span></a> that, given a random sample <span class="math inline">\(\{x_1,\ldots,x_M\}\)</span> of size <span class="math inline">\(M\)</span> from a population with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, the best estimate of <span class="math inline">\(\mu\)</span> is the sample mean <span class="math inline">\(\bar{x}\)</span>, and the standard error of <span class="math inline">\(\bar{x}\)</span> (which means the standard deviation of <span class="math inline">\(\bar{x}\)</span> in repeated samples) is best estimated by <span id="eq-standarderror"><span class="math display">\[
+<p>The second drawback of Monte Carlo methods is that they can be quite inefficient in terms of computation time (though, as will be explained later, they may be faster than alternative methods for derivatives written on multiple assets). As in statistics, the standard error of the estimate depends on the sample size. Specifically, we observed in <a href="Chapter_GARCH.html#sec-s:statistics" class="quarto-xref"><span>Section 17.1</span></a> that, given a random sample <span class="math inline">\(\{x_1,\ldots,x_M\}\)</span> of size <span class="math inline">\(M\)</span> from a population with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, the best estimate of <span class="math inline">\(\mu\)</span> is the sample mean <span class="math inline">\(\bar{x}\)</span>, and the standard error of <span class="math inline">\(\bar{x}\)</span> (which means the standard deviation of <span class="math inline">\(\bar{x}\)</span> in repeated samples) is best estimated by <span id="eq-standarderror"><span class="math display">\[
 \sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^{M} x_i^2-M\bar{x}^2\right)}\;.
 \qquad(21.2)\]</span></span> Recall that <span class="math inline">\(\bar{x}\)</span> plus or minus 1.96 standard errors is a 95% confidence interval for <span class="math inline">\(\mu\)</span> when the <span class="math inline">\(x_i\)</span> are normally distributed. In the context of European option valuation, the expression <a href="#eq-standarderror" class="quarto-xref">Equation&nbsp;<span>21.2</span></a> gives the standard error of the estimated option value at maturity, and multiplication of <a href="#eq-standarderror" class="quarto-xref">Equation&nbsp;<span>21.2</span></a> by <span class="math inline">\(\mathrm{e}^{-rT}\)</span> gives the standard error of the estimated date–0 option value.</p>
 <p>To obtain an estimate with an acceptably small standard error may require a large sample size and hence a relatively large amount of computation time. The complexities of Monte Carlo methods arise from trying to reduce the required sample size. Later, we will describe two such methods (antithetic variates and control variates). For those who want to engage in a more detailed study of Monte Carlo methods, the book of Glasserman <span class="citation" data-cites="Glasserman">(<a href="#ref-Glasserman" role="doc-biblioref">Glasserman 2004</a>)</span> is highly recommended. J"ackel <span class="citation" data-cites="Jackel">(<a href="#ref-Jackel" role="doc-biblioref">Jäckel 2002</a>)</span> is useful for more advanced readers, and Clewlow and Strickland <span class="citation" data-cites="CS">(<a href="#ref-CS" role="doc-biblioref">Clewlow and Strickland 1998</a>)</span> and Brandimarte <span class="citation" data-cites="Brandimarte">(<a href="#ref-Brandimarte" role="doc-biblioref">Brandimarte 2002</a>)</span> are useful references that include computer code.</p>
 <section id="monte-carlo-valuation-of-a-european-call" class="level3">
 <h3 class="anchored" data-anchor-id="monte-carlo-valuation-of-a-european-call">Monte Carlo Valuation of a European Call</h3>
-<p>We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions. We will also estimate the delta by each of the methods described in <a href="#sec-s_montecarlogreeks1" class="quarto-xref"><span>Section 21.3</span></a> and~<span class="math inline">\(\ref{s_montecarlogreeks2}\)</span>. Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates. We use the code in Chapter <span class="quarto-unresolved-ref">?sec-c_continuoustime</span>. In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process. Therefore we set <span class="math inline">\(m=1\)</span>. However, we use a large number of paths, <span class="math inline">\(n=10000\)</span> to get a large sample of terminal stock prices.</p>
-<div id="5a7bbb7c" class="cell" data-execution_count="1">
+<p>We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions. We will also estimate the delta by each of the methods described in <a href="#sec-s:montecarlogreeks1" class="quarto-xref"><span>Section 21.3</span></a> and~<span class="math inline">\(\ref{s_montecarlogreeks2}\)</span>. Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates. We use the code in Chapter <span class="quarto-unresolved-ref">?sec-c:continuoustime</span>. In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process. Therefore we set <span class="math inline">\(m=1\)</span>. However, we use a large number of paths, <span class="math inline">\(n=10000\)</span> to get a large sample of terminal stock prices.</p>
+<div id="48014d60" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
@@ -587,7 +587,7 @@ window.Quarto = {
 </details>
 </div>
 <p>As before, this code generates two samples <span class="math inline">\(St\)</span>, which adds the simulated standard (zero mean) normal random variable, and <span class="math inline">\(St1\)</span> which subtracts the simulated (zero mean) standard normal random variable. Each sample produces and estimate for the Black-Scholes European call option.</p>
-<div id="3ac6c158" class="cell" data-execution_count="2">
+<div id="b77758d7" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cc<span class="op">=</span>np.maximum(St[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
@@ -607,7 +607,7 @@ The average of the two estimates= 4.739635467026771</code></pre>
 </div>
 </div>
 <p>The true call price is given by</p>
-<div id="cd79f742" class="cell" data-execution_count="3">
+<div id="a40a6d56" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
@@ -654,11 +654,11 @@ The average of the two estimates= 4.739635467026771</code></pre>
 \end{align*}\]</span> Given the first terminal price, the value of the derivative will be some number <span class="math inline">\(x_i\)</span> and given the second it will be some number <span class="math inline">\(y_i\)</span>. The date–0 value of the derivative is estimated as <span class="math display">\[\mathrm{e}^{-rT}\frac{1}{M}\sum_{i=1}^M\frac{x_i+y_i}{2}\; .\]</span></p>
 </section>
 </section>
-<section id="sec-s_controlvariates" class="level2" data-number="21.2">
-<h2 data-number="21.2" class="anchored" data-anchor-id="sec-s_controlvariates"><span class="header-section-number">21.2</span> Control Variates in Monte Carlo</h2>
+<section id="sec-s:controlvariates" class="level2" data-number="21.2">
+<h2 data-number="21.2" class="anchored" data-anchor-id="sec-s:controlvariates"><span class="header-section-number">21.2</span> Control Variates in Monte Carlo</h2>
 <p> Another approach to increasing the efficiency of the Monte Carlo method is to adjust the estimated mean (option value) based on the known mean of another related variable. We can explain this in terms of linear regression in statistics. Suppose we have a random sample <span class="math inline">\(\{x_1,\ldots,x_M\}\)</span> of a variable <span class="math inline">\(x\)</span> with unknown mean <span class="math inline">\(\mu\)</span>, and suppose we have a corresponding sample <span class="math inline">\(\{y_1,\ldots,y_M\}\)</span> of another variable <span class="math inline">\(y\)</span> with known mean <span class="math inline">\(\phi\)</span>. Then an efficient estimate of <span class="math inline">\(\mu\)</span> is <span class="math inline">\(\hat{\mu} = \bar{x} + \hat{\beta} (\phi-\bar{y})\)</span>, where <span class="math inline">\(\bar{x}\)</span> and <span class="math inline">\(\bar{y}\)</span> denote the sample means of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, and where <span class="math inline">\(\hat{\beta}\)</span> is the coefficient of <span class="math inline">\(y\)</span> in the linear regression of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span> (i.e., the estimate of <span class="math inline">\(\beta\)</span> in the linear model <span class="math inline">\(x = \alpha +\beta y + \varepsilon\)</span>). The standard Monte Carlo method, which we have described thus far, simply estimates the mean of <span class="math inline">\(x\)</span> as <span class="math inline">\(\bar{x}\)</span>. The control variate method adjusts the estimate by adding <span class="math inline">\(\hat{\beta} (\phi-\bar{y})\)</span>. To understand this correction, assume for example that the true <span class="math inline">\(\beta\)</span> is positive. If the random sample is such that <span class="math inline">\(\bar{y}&lt;\phi\)</span>, then it must be that small values of <span class="math inline">\(y\)</span> were over-represented in the sample. Since <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> tend to move up and down together (this is the meaning of a positive <span class="math inline">\(\beta\)</span>) it is likely that small values of <span class="math inline">\(x\)</span> were also over-represented in the sample. Therefore, one should adjust the sample mean of <span class="math inline">\(x\)</span> upwards in order to estimate <span class="math inline">\(\mu\)</span>. The best adjustment will take into account the extent to which small values of <span class="math inline">\(y\)</span> were over-represented (i.e., the difference between <span class="math inline">\(\bar{y}\)</span> and <span class="math inline">\(\phi\)</span>) and the strength of the relation between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> (which the estimate <span class="math inline">\(\hat{\beta}\)</span> represents). The efficient correction of this sort is also the simplest: just add <span class="math inline">\(\hat{\beta}(\phi-\bar{y})\)</span> to <span class="math inline">\(\bar{x}\)</span>. In practice, the estimation of <span class="math inline">\(\hat{\beta}\)</span> may be omitted and one may simply take <span class="math inline">\(\hat{\beta}=1\)</span>, if the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> can be assumed to be one-for-one. If <span class="math inline">\(\beta\)</span> is to be estimated, the estimate (by ordinary least squares) is <span class="math display">\[\hat{\beta} = \frac{\sum_{i=1}^M x_iy_i - M\bar{x}\bar{y}}{\sum_{i=1}^M y_i^2 - M\bar{y}^2}\; .\]</span> In general, the correction term <span class="math inline">\(\hat{\beta}(\phi-\bar{y})\)</span> will have a nonzero mean, which introduces a bias in the estimate of <span class="math inline">\(\mu\)</span>. To eliminate the bias, one can compute <span class="math inline">\(\hat{\beta}\)</span> from a pre-sample of <span class="math inline">\(\{x,y\}\)</span> values.</p>
 <p>As an example of a control variate, in our simulation code to estimate the Black Scholes price for a call option we can use the stock price itself. The known stock price is the inout price <span class="math inline">\(S0\)</span>. The simulation also produces an estimate for the stock price as the dicsounted expected value of the terminal stock price <span class="math inline">\(\hat{S}=\sum_{i=1}^{n} e^{- r T } St(m,i)\)</span> where <span class="math inline">\(St(m,i)\)</span> is the <span class="math inline">\(i\)</span>th simulated stock price at time <span class="math inline">\(T\)</span>. Theoretically these should be the same umber, but due to error they typically wil not be the same.</p>
-<div id="35c7d981" class="cell" data-execution_count="4">
+<div id="6cfdf641" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>SS<span class="op">=</span>np.mean(St[m,:])<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
@@ -673,7 +673,7 @@ The error is = -0.058999995779316805</code></pre>
 </div>
 </div>
 <p>The error is <span class="math inline">\(S0-\hat{S}\)</span> which corresponds to <span class="math inline">\(\phi-y\)</span> above. We then compute <span class="math inline">\(\hat{\beta}\)</span> and comute the improved estimate <span class="math display">\[ \text{new estimate}= \text{original estimate} +\hat{\beta}(S0-\hat{S}) \]</span> In the code below we do this procedure for both samples and average the updates.</p>
-<div id="c8452234" class="cell" data-execution_count="5">
+<div id="55a0e36f" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hatbeta<span class="op">=</span> np.cov(St[m,:],cc)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(St[m,],cc)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
@@ -699,7 +699,7 @@ The average of the updated estimates = 4.751969152451551</code></pre>
 </div>
 </div>
 <p>We can compare this to the exact Black Scholes formula from before.</p>
-<div id="8ab4f027" class="cell" data-execution_count="6">
+<div id="a29fbe42" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The exact Black Scholes Price is='</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -713,8 +713,8 @@ The average of the updated estimates = 4.751969152451551</code></pre>
 &amp;= \frac{T}{T+\tau} \max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\;,
 \end{align*}\]</span> where <span class="math display">\[K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A_0\; .\]</span> Therefore, the value at date <span class="math inline">\(0\)</span> of the discretely-sampled average-price call is <span class="math display">\[\frac{T}{T+\tau} \,\mathrm{e}^{-rT} \\E^R\left[\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\right]\; .\]</span> In terms of the discussion above, the random variable the mean of which we want to estimate is <span class="math display">\[x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\; .\]</span> A random variable <span class="math inline">\(y\)</span> that will be closely correlated to <span class="math inline">\(x\)</span> is <span class="math display">\[y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S_{t_i}/N} - K^*,0\right)\; .\]</span> The mean <span class="math inline">\(\phi\)</span> of <span class="math inline">\(y\)</span> under the risk-neutral probability is given in the pricing <a href="Chapter_Asians.html#eq-disc_geom_avg_call" class="quarto-xref">Equation&nbsp;<span>15.7</span></a>. We can use the sample mean of <span class="math inline">\(y\)</span> and its known mean <span class="math inline">\(\phi\)</span> to adjust the sample mean of <span class="math inline">\(x\)</span> as an estimator of the value of the average-price call. Generally, the estimated adjustment coefficient <span class="math inline">\(\hat{\beta}\)</span> will be quite close to 1.</p>
 </section>
-<section id="sec-s_montecarlogreeks1" class="level2" data-number="21.3">
-<h2 data-number="21.3" class="anchored" data-anchor-id="sec-s_montecarlogreeks1"><span class="header-section-number">21.3</span> Monte Carlo Greeks I: Difference Ratios</h2>
+<section id="sec-s:montecarlogreeks1" class="level2" data-number="21.3">
+<h2 data-number="21.3" class="anchored" data-anchor-id="sec-s:montecarlogreeks1"><span class="header-section-number">21.3</span> Monte Carlo Greeks I: Difference Ratios</h2>
 <p>Greeks can be calculated by Monte Carlo by running the valuation program twice and computing a difference ratio, for example <span class="math inline">\((C_u-C_d)/(S_u-S_d)\)</span> to estimate a delta. However, to minimize the error, and minimize the number of computations required, one should use the same set of random draws to estimate the derivative value for different values of the parameter. For path-independent options (e.g., European puts and calls) under the Black-Scholes assumptions, we only need to generate <span class="math inline">\(S_T\)</span> and then we can compute <span class="math inline">\(S_u_T\)</span> as <span class="math inline">\([S_u_0/S_0] \times S_T\)</span> and <span class="math inline">\(S_d_T\)</span> as <span class="math inline">\([S_u_0/S_0] \times S_T\)</span>. We can estimate standard errors for the Greeks in the same way that we estimate the standard error of the derivative value.</p>
 <p>Actually, there is often a better method available that is just as simple. This is called pathwise calculation. We will explain this in the next section. Here we will describe how to estimate the delta and gamma of a derivative as sample means of difference ratios.</p>
 <p>Consider initial prices for the underlying <span class="math inline">\(S_u&gt;S&gt;S_d\)</span>. Denote the underlying price at the option maturity in a given simulation by <span class="math inline">\(S_u_T\)</span> when the initial underlying price is <span class="math inline">\(S_u\)</span>, by <span class="math inline">\(S_T\)</span> when the initial underlying price is <span class="math inline">\(S\)</span>, and by <span class="math inline">\(S_d_T\)</span> when the initial underlying price is <span class="math inline">\(S_d\)</span>. Under the Black-Scholes assumptions, the logarithm of the stock price at date <span class="math inline">\(T\)</span> starting from the three initial prices <span class="math inline">\(S_d\)</span>, <span class="math inline">\(S\)</span> and <span class="math inline">\(S_u\)</span> is <span class="math display">\[\begin{align*}
@@ -735,8 +735,8 @@ The average of the updated estimates = 4.751969152451551</code></pre>
 \times \sqrt{\sum_{i=1}^M \left[C_{ui}_T-2C_i_T+C_{di}_T\right]^2 -M\left[\overline{C_{u}_T}-2\overline{C_T}+\overline{C_{d}_T}\right]^2}\; .
 \end{multline*}\]</span></p>
 </section>
-<section id="sec-s_montecarlogreeks2" class="level2" data-number="21.4">
-<h2 data-number="21.4" class="anchored" data-anchor-id="sec-s_montecarlogreeks2"><span class="header-section-number">21.4</span> Monte Carlo Greeks II: Pathwise Estimates</h2>
+<section id="sec-s:montecarlogreeks2" class="level2" data-number="21.4">
+<h2 data-number="21.4" class="anchored" data-anchor-id="sec-s:montecarlogreeks2"><span class="header-section-number">21.4</span> Monte Carlo Greeks II: Pathwise Estimates</h2>
 <p>We will examine the bias in the Monte Carlo delta estimate discussed in the preceding section and explain pathwise estimation of Greeks. By biased, we mean that the expected value of an estimate is different from the true value. It is important to recognize that if a Monte Carlo estimate is biased, then, even if a large number of simulations is used and the standard error is nearly zero, the answer provided by the Monte Carlo method will be incorrect. For simplicity, consider a European call under the Black-Scholes assumptions.</p>
 <p>The delta estimate we have considered is the discounted sample mean of <span id="eq-montecarlodelta2"><span class="math display">\[
 \frac{C_u_T - C_d_T}{S_u-S_d}\;. \qquad(21.5)\]</span></span></p>
@@ -790,9 +790,9 @@ z &amp;=  \begin{cases} 1 &amp; \text{if} S_u_T&gt;K&gt;S_d_T\; ,\\
 \Delta \log S = \nu\,\Delta t + \sigma\sqrt{\Delta t}\,z\;,
 \qquad(21.10)\]</span></span></p>
 <p>where <span class="math inline">\(\nu = r-q-\sigma^2/2\)</span> and <span class="math inline">\(z\)</span> is a standard normal. Given that there are <span class="math inline">\(N\)</span> time periods of length <span class="math inline">\(\Delta t\)</span>, we need to generate <span class="math inline">\(N\)</span> standard normals to generate a stock price path. If we generate <span class="math inline">\(M\)</span> paths to obtain a sample of <span class="math inline">\(M\)</span> option values, then we will need to generate <span class="math inline">\(MN\)</span> standard normals.</p>
-<p>Consider for example a floating-strike lookback call. The formula for this option given in <a href="Chapter_Exotics.html#sec-s_lookbacks" class="quarto-xref"><span>Section 16.2</span></a> assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price. In practice, the minimum will be computed by recording the price at a discrete number of dates. We can value the discretely sampled lookback using Monte-Carlo by choosing <span class="math inline">\(\Delta t\)</span> to be the interval of time (e.g., a day or week) at which the price is recorded. For example, if the contract calls for weekly observation, we will attain maximum precision by setting <span class="math inline">\(N\)</span> to be the number of weeks before the option matures.</p>
-<p>For most path dependent options, a possible starting point is to generate an array of <span class="math inline">\(n\)</span> paths but since we want the entire path we choose the number of time steps that is appropriate for our application. We can use the same code as in Section @#sec-s_mc_europeans if we are working in a Black Scholes setting.</p>
-<div id="102db684" class="cell" data-execution_count="7">
+<p>Consider for example a floating-strike lookback call. The formula for this option given in <a href="Chapter_Exotics.html#sec-s:lookbacks" class="quarto-xref"><span>Section 16.2</span></a> assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price. In practice, the minimum will be computed by recording the price at a discrete number of dates. We can value the discretely sampled lookback using Monte-Carlo by choosing <span class="math inline">\(\Delta t\)</span> to be the interval of time (e.g., a day or week) at which the price is recorded. For example, if the contract calls for weekly observation, we will attain maximum precision by setting <span class="math inline">\(N\)</span> to be the number of weeks before the option matures.</p>
+<p>For most path dependent options, a possible starting point is to generate an array of <span class="math inline">\(n\)</span> paths but since we want the entire path we choose the number of time steps that is appropriate for our application. We can use the same code as in Section @#sec-s:mc_europeans if we are working in a Black Scholes setting.</p>
+<div id="b4d403ec" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
@@ -835,7 +835,7 @@ z &amp;=  \begin{cases} 1 &amp; \text{if} S_u_T&gt;K&gt;S_d_T\; ,\\
 </details>
 </div>
 <p>As before this code generates two samples the original and the antithetic. The output is an array of <span class="math inline">\(n\)</span> sample paths with <span class="math inline">\(m\)</span> time steps. The sample can also be used to find the value of a floating strike lookback call.</p>
-<div id="98a43ece" class="cell" data-execution_count="8">
+<div id="91a02f47" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> floating_strike_call(S, r, sigma, q, T, SMin):</span>
@@ -872,7 +872,7 @@ The exact formula is= 7.231056939691567</code></pre>
 </div>
 </div>
 <p>To value the fixed strike lookback call option with time <span class="math inline">\(T\)</span> payoff <span class="math inline">\(\max(\max_{0\le t \le T} S_t.0)\)</span>, we simply add the following</p>
-<div id="84eea014" class="cell" data-execution_count="9">
+<div id="313271bb" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Stmax<span class="op">=</span>np.maximum(np.<span class="bu">max</span>(St,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">-</span>K,<span class="dv">0</span>)</span>
@@ -905,7 +905,7 @@ x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\;.
 y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S_{t_i}/N} - K^*,0\right)\;.
 \]</span> The mean <span class="math inline">\(\phi\)</span> of <span class="math inline">\(y\)</span> under the risk-neutral probability is given in the pricing <a href="Chapter_Asians.html#eq-disc_geom_avg_call" class="quarto-xref">Equation&nbsp;<span>15.7</span></a>. We can use the sample mean of <span class="math inline">\(y\)</span> and its known mean <span class="math inline">\(\phi\)</span> to adjust the sample mean of <span class="math inline">\(x\)</span> as an estimator of the value of the average-price call. Generally, the estimated adjustment coefficient <span class="math inline">\(\hat{\beta}\)</span> will be quite close to 1.</p>
 <p>Again we can get a sample of payoffs using our stock price samples.</p>
-<div id="a5a63da3" class="cell" data-execution_count="10">
+<div id="e0e8d7e5" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>average <span class="op">=</span> np.mean(St,axis<span class="op">=</span><span class="dv">0</span>)</span>
@@ -923,7 +923,7 @@ The average of the estimates= 3.2640153062378374</code></pre>
 </div>
 </div>
 <p>We now construct a control variate, the geometric asian option which has a known formula for its value.</p>
-<div id="d082aa8a" class="cell" data-execution_count="11">
+<div id="bb2deb9e" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call(S, K, r, sigma, q, T):</span>
@@ -981,7 +981,7 @@ The error in the second estimate= -0.5530078187436307</code></pre>
 <p>Next we estimate the beta. As discussed before, we could simply set beta=1. Alternatively, if we estimate beta from the simulated sample, then our update could be biased. Instead we compute an independent sample from which we estimate beta. We then estimate the updated estimate for both samples from the formula <span class="math display">\[
 \text{new estimate} = \text{original estimate} + \beta * \text{error}
 \]</span></p>
-<div id="c3f7cec6" class="cell" data-execution_count="12">
+<div id="25f2c555" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>incpre <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
@@ -1017,15 +1017,15 @@ The average of the updated values is= 2.7528664341140585</code></pre>
 </section>
 <section id="sec-montecarlomultiple" class="level2" data-number="21.6">
 <h2 data-number="21.6" class="anchored" data-anchor-id="sec-montecarlomultiple"><span class="header-section-number">21.6</span> Monte Carlo Valuation of Basket and Spread Options</h2>
-<p> In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method. As noted in <span class="quarto-unresolved-ref">?sec-s_baskets</span>, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. Discounting the average terminal value gives the estimate of the option value as usual.</p>
+<p> In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method. As noted in <span class="quarto-unresolved-ref">?sec-s:baskets</span>, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. Discounting the average terminal value gives the estimate of the option value as usual.</p>
 <p>The difference between binomial and Monte Carlo methods for options written on multiple assets can be understood as follows. Both methods attempt to estimate the discounted expected value of the option (under the risk-neutral probability). In an <span class="math inline">\(N\)</span>–period model, the binomial model produces <span class="math inline">\(N+1\)</span> values for the terminal price of each underlying asset. Letting <span class="math inline">\(k\)</span> denote the number of underlying assets, this produces <span class="math inline">\((N+1)^k\)</span> combinations of asset prices. Of course, each combination has an associated probability. In contrast, the Monte Carlo method produces <span class="math inline">\(M\)</span> combinations of terminal prices, where <span class="math inline">\(M\)</span> is the number of simulations. Each combination is given the same weight (<span class="math inline">\(1/M\)</span>) when estimating the expected value.</p>
-<p>With a single underlying asset, the binomial model is more efficient, as discussed in <a href="Chapter_Binomial.html#sec-s_introbinomial" class="quarto-xref"><span>Section 22.1</span></a>, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices. However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets. The reason is that many of the <span class="math inline">\((N+1)^k\)</span> combinations of prices in the binomial model will have very low probabilities. For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest. It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value. On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation. Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations. However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy—even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.</p>
-<p>To implement Monte Carlo valuation of options on multiple assets, we must first explain how to simulate correlated asset prices. As observed in <span class="quarto-unresolved-ref">?sec-s_stochasticvolatility</span>, we can simulate the changes in two Brownian motions <span class="math inline">\(B_1\)</span> and <span class="math inline">\(B_2\)</span> that have correlation <span class="math inline">\(\rho\)</span> by generating two independent standard normals <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z_2\)</span> and defining <span class="math display">\[
+<p>With a single underlying asset, the binomial model is more efficient, as discussed in <a href="Chapter_Binomial.html#sec-s:introbinomial" class="quarto-xref"><span>Section 22.1</span></a>, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices. However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets. The reason is that many of the <span class="math inline">\((N+1)^k\)</span> combinations of prices in the binomial model will have very low probabilities. For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest. It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value. On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation. Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations. However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy—even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.</p>
+<p>To implement Monte Carlo valuation of options on multiple assets, we must first explain how to simulate correlated asset prices. As observed in <span class="quarto-unresolved-ref">?sec-s:stochasticvolatility</span>, we can simulate the changes in two Brownian motions <span class="math inline">\(B_1\)</span> and <span class="math inline">\(B_2\)</span> that have correlation <span class="math inline">\(\rho\)</span> by generating two independent standard normals <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z_2\)</span> and defining <span class="math display">\[
 \Delta B_1 = \sqrt{\Delta t}\,Z_1\;, \qquad \text{and} \qquad \Delta B_2 = \sqrt{\Delta t}\,Z\; ,
 \]</span> where <span class="math inline">\(Z\)</span> is defined as <span class="math display">\[
 Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 \]</span> The random variable <span class="math inline">\(Z\)</span> is also a standard normal, and the correlation between <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z\)</span> is <span class="math inline">\(\rho\)</span>.</p>
-<div id="ffef2f71" class="cell" data-execution_count="13">
+<div id="d78b8a27" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate 2 Geometric Brownian Motions</span></span>
@@ -1077,7 +1077,7 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 \Delta \log S_1 &amp;= \nu_1\Delta t + \sigma_1\sqrt{\Delta t}Z_1 \; ,\\
 \Delta \log S_2 &amp;= \nu_2\Delta t + \sigma_2\rho\sqrt{\Delta t}Z_1 + \sigma_2\sqrt{1-\rho^2}\sqrt{\Delta t}Z_2\;,
 \end{align*}\]</span> where <span class="math inline">\(\nu_i = r-q_1-\sigma_i^2/2\)</span> and the <span class="math inline">\(Z_i\)</span> are independent standard normals.</p>
-<div id="4aaaab98" class="cell" data-execution_count="14">
+<div id="7bb07f89" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
@@ -1087,7 +1087,7 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 </details>
 </div>
 <p>We can also construct antithetic variables.</p>
-<div id="d425bc16" class="cell" data-execution_count="15">
+<div id="836230c9" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
@@ -1097,7 +1097,7 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 </details>
 </div>
 <p>Given this sample, we can estimate the value of a best of 2 option with payoff <span class="math inline">\(\max(S_{1T},S_{2T})\)</span>.</p>
-<div id="f884c214" class="cell" data-execution_count="16">
+<div id="2d3de6e5" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(St1[m,:],St2[m,:])</span>
@@ -1145,13 +1145,13 @@ A \equiv \begin{pmatrix}a_{11} &amp; 0 \\a_{21} &amp; a_{22}\end{pmatrix}
 \]</span> satisfies <span class="math display">\[
 AA^\top = \text{covariance matrix}
 \]</span> is called the the Cholesky decomposition of the covariance matrix. Given any number <span class="math inline">\(L\)</span> of assets, provided none of the assets is redundant (perfectly correlated with a portfolio of the others), the Cholesky decomposition of the <span class="math inline">\(L\times L\)</span> covariance matrix always exists. An algorithm for computing the Cholesky decomposition in numpy is np.linalg.cholesky.</p>
-<p>We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> If there were some path dependency in the option value, we would simulate the paths of the asset prices as in <a href="#eq-mc_twoa" class="quarto-xref">Equation&nbsp;<span>21.11</span></a> - <a href="#eq-mc_twob" class="quarto-xref">Equation&nbsp;<span>21.12</span></a>. However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date <span class="math inline">\(T\)</span>, as in <a href="#sec-s_mc_europeans" class="quarto-xref"><span>Section 21.1</span></a>. The value of a basket call option at its maturity <span class="math inline">\(T\)</span> is <span class="math display">\[
+<p>We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> If there were some path dependency in the option value, we would simulate the paths of the asset prices as in <a href="#eq-mc_twoa" class="quarto-xref">Equation&nbsp;<span>21.11</span></a> - <a href="#eq-mc_twob" class="quarto-xref">Equation&nbsp;<span>21.12</span></a>. However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date <span class="math inline">\(T\)</span>, as in <a href="#sec-s:mc_europeans" class="quarto-xref"><span>Section 21.1</span></a>. The value of a basket call option at its maturity <span class="math inline">\(T\)</span> is <span class="math display">\[
 \max\left(0,\;\sum_{i=1}^L w_iS_i_T-K\right)\; ,
 \]</span> where <span class="math inline">\(L\)</span> is the number of assets in the basket (portfolio) and <span class="math inline">\(w_i\)</span> is the weight of the <span class="math inline">\(i\)</span>–th asset in the basket. The logarithm of the <span class="math inline">\(i\)</span>–th asset price at maturity is simulated as <span class="math display">\[
 \log S_i_T = \log S_i_0 +\nu_iT + \sqrt{T} \sum_{j=1}^L a_{ij}Z_j\; ,
 \]</span> where the <span class="math inline">\(Z_j\)</span> are independent standard normals. Given the simulated values of the <span class="math inline">\(\log S_i_T\)</span>, the value at maturity of the basket option is readily computed. The estimate of the date–0 value is then computed as the discounted average of the simulated values at maturity.</p>
 <p>For our two asset example we compute the value of a call opttion on an equally weighted porfotlio.</p>
-<div id="91e2c574" class="cell" data-execution_count="17">
+<div id="cbc7f4a5" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>w<span class="op">=</span><span class="fl">0.5</span></span>
@@ -1171,7 +1171,7 @@ The average of the estimates= 4.674364753984721</code></pre>
 </div>
 </div>
 <p>Below is a three asset basket option whihc uses the numpy cholesky decomposition. In contrast to the above routine, this routine is does not have the option to generate the entire path, although this can be easily modeified.</p>
-<div id="56f57574" class="cell" data-execution_count="18">
+<div id="3b177ef3" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1271,7 +1271,7 @@ The average estimate of the basket option value= 5.312623607991936</code></pre>
 </div>
 </div>
 <p>We can generate the entire path of multiple assets to value, for example, lookback options on a basket. The code below values the same European basket option as above only it calculates <span class="math inline">\(m=2\)</span> time steps; a lookback can be created by changing the payoffs and increasing <span class="math inline">\(m\)</span>.</p>
-<div id="a2288fda" class="cell" data-execution_count="19">
+<div id="941b6b65" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>

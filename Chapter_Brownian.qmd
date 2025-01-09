@@ -1,6 +1,6 @@
 {{< include macros.qmd >}}
 
-# Brownian Motion {#sec-c_brownian}
+# Brownian Motion {#sec-c:brownian}
 
 Brownian motion is a fundamental tool for modeling variables that change randomly over time.  Consider predicting a future stock price.  We don't know today what the price will be tomorrow, nor what it will be the following day, nor what it will be the day after that.  We can regard the price three days from now as today's price plus the change from today to tomorrow plus the change from tomorrow to the following day plus the change from that day to the next.  Thus, there are three random changes in this small example.  A simple way to model this situation is to assume that each change is a normally distributed random variable with some mean and variance.  Thus, the price in three days is viewed as today's price plus the sum of three normal increments.
 
@@ -104,7 +104,7 @@ fig.update_layout(
 fig.show()
 ```
 
-## Nonzero Quadratic Variation {#sec-s_quadraticvariation}
+## Nonzero Quadratic Variation {#sec-s:quadraticvariation}
 
 @fig-brownian-path and @fig-binomial-path illustrate a distinctive characteristic of a Brownian motion: it jiggles rapidly, moving up and down in a very erratic way.  The name Brownian motion derives from the botanist Robert Brown's observations of the erratic behavior of particles suspended in a fluid.  The plot of other functions with which we may be familiar will be much smoother.  This is captured in the concept of quadratic variation.  
 
@@ -177,6 +177,19 @@ A continuous martingale is a Brownian motion if and only if its quadratic variat
 
 Thus, among continuous martingales, a Brownian motion is distinguished by the condition that its quadratic variation over each time interval is equal to the length of the interval.  This is really just a normalization.  A different continuous martingale may have a different quadratic variation, but it can be converted to a Brownian motion by changing the clock speed to measure time according to the quadratic variation.  Furthermore, many continuous martingales can be constructed as stochastic integrals with respect to a Brownian motion.  We take up that topic in the next chapter.
 
+## Correlation of Brownian Motions {#sec-s:correlation}
+
+Consider two standard Brownian motions $B_1$ and $B_2$
+The relation between the two Brownian motions is determined by their covariance or correlation.  Given dates $s<t$, we know that both changes $B_1(t)-B_1(s)$ and $B_2(t)-B_1(s)$ are normally distributed with zero means and variances equal to $t-s$, given information at date $s$.  There is a stochastic process $\rho$ such that the covariance \index{covariance} of these two normally distributed random variables, given the information at date $s$, is 
+$$\E_s \left[\int_s^t \rho_u\d   u\right]\; .$$
+The process $\rho$ is called the correlation process of the two Brownian motions. \index{correlation coefficient} The correlation of the changes $B_1(t)-B_1(s)$ and $B_2(t)-B_1(s)$, given information at date $s$, is
+$$\frac{\text{covariance}}{\text{product of standard deviations}}  = \frac{\E_s\int_s^t \rho_u \d   u}{\sqrt{t-s} \sqrt{t-s}} = \frac{1}{t-s}\E_s\int_s^t \rho_u \d   u\; .$$
+Thus, the correlation is the expected average value of $\rho_u$.  In particular, when $\rho$ is constant, the correlation of the changes is $\rho$.
+
+Given increasingly fine partitions $0=t_0 < \cdots < t_n=t$ of a time interval $[0,t]$ as before, we have
+$$\sum_{i=1}^n \Delta B_{1t_i} \times \Delta B_{2t_i} \rightarrow \int_0^t \rho_s\d   s$$
+as $n \rightarrow \infty$, with probability one.  
+This is called the joint variation of $B_1$ and $B_2$.  Thus, the joint variation of two Brownian motions equals the integral of their correlation process.
 
 ## {.unnumbered}
 

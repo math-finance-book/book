@@ -1,10 +1,10 @@
 {{< include macros.qmd >}}
 
-## Monte Carlo Methods {#sec-c_montecarlo}
+## Monte Carlo Methods {#sec-c:montecarlo}
 
 In this chapter, we will introduce two principal numerical methods for valuing derivative securities: Monte Carlo and binomial models.  We will consider two applications: valuing European options in the presence of stochastic volatility with Monte Carlo and valuing American options via binomial models.   Throughout the chapter, we will assume there is a constant risk-free rate.  The last section, while quite important, could be skimmed on first reading---the rest of the book does not build upon it.
 
-## Introduction to Monte Carlo {#sec-s_mc_europeans}
+## Introduction to Monte Carlo {#sec-s:mc_europeans}
 
 According to our risk-neutral pricing @eq-riskneutralformula, the value of a security paying an amount $x$ at date $T$ is
 $$
@@ -19,10 +19,10 @@ The simplest example is valuing a European option under the Black-Scholes assump
 $$x_i = \max\left(0,\mathrm{e}^{\log S_0+\mathrm{n}u T + \sigma\sqrt{T}z_i}-K\right)\; .$$
 To value options that are path-dependent  we need to simulate the path of the underlying asset price.  Path-dependent options are discussed in Chaps.~\ref{c_exotics} and~\ref{c_montecarlo}.
 
-There are two main drawbacks to Monte-Carlo methods.  First, it is difficult (though not impossible) to value early-exercise features.^[Monte-Carlo methods for valuing early exercise include the stochastic mesh method of Broadie and Glasserman [@BG] and the regression method of Longstaff and Schwartz [@LS01].  Glasserman [@Glasserman] provides a good discussion of these methods and the relation between them.]  To value early exercise, we need to know the value at each date if not exercised, to compare to the intrinsic value.  One could consider performing a simulation at each date to calculate the value if not exercised, but this value depends on the option to exercise early at later dates, which cannot be calculated without knowing the value of being able to exercise early at even later dates, etc.  In contrast, the binomial model (and finite difference models discussed in @sec-c_pde) can easily handle early exercise but cannot easily handle path dependencies.  
+There are two main drawbacks to Monte-Carlo methods.  First, it is difficult (though not impossible) to value early-exercise features.^[Monte-Carlo methods for valuing early exercise include the stochastic mesh method of Broadie and Glasserman [@BG] and the regression method of Longstaff and Schwartz [@LS01].  Glasserman [@Glasserman] provides a good discussion of these methods and the relation between them.]  To value early exercise, we need to know the value at each date if not exercised, to compare to the intrinsic value.  One could consider performing a simulation at each date to calculate the value if not exercised, but this value depends on the option to exercise early at later dates, which cannot be calculated without knowing the value of being able to exercise early at even later dates, etc.  In contrast, the binomial model (and finite difference models discussed in @sec-c:pde) can easily handle early exercise but cannot easily handle path dependencies.  
 
 The second drawback of Monte Carlo methods is that they can be quite inefficient in terms of computation time (though, as will be explained later, they may be faster than alternative methods for derivatives written on multiple assets).  As in statistics, the standard error of the estimate depends on the sample size.  Specifically, 
-we observed in @sec-s_statistics that, given a random sample $\{x_1,\ldots,x_M\}$ of size $M$ from a population with mean $\mu$ and variance $\sigma^2$, the best estimate of $\mu$ is the sample mean $\bar{x}$, and the standard error of $\bar{x}$ (which means the standard deviation of $\bar{x}$ in repeated samples) is best estimated by
+we observed in @sec-s:statistics that, given a random sample $\{x_1,\ldots,x_M\}$ of size $M$ from a population with mean $\mu$ and variance $\sigma^2$, the best estimate of $\mu$ is the sample mean $\bar{x}$, and the standard error of $\bar{x}$ (which means the standard deviation of $\bar{x}$ in repeated samples) is best estimated by
 $$
 \sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^{M} x_i^2-M\bar{x}^2\right)}\;.
 $$ {#eq-standarderror}
@@ -34,7 +34,7 @@ To obtain an estimate with an acceptably small standard error may require a larg
 
 
 ### Monte Carlo Valuation of a European Call
-We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions.  We will also estimate the delta by each of the methods described in @sec-s_montecarlogreeks1 and~\ref{s_montecarlogreeks2}.  Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates.  We use the code in Chapter @sec-c_continuoustime.  In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process. Therefore we  set $m=1$. However, we use a large number of paths, $n=10000$ to get a large sample of terminal stock prices.
+We will illustrate Monte Carlo by valuing a European call under the Black-Scholes assumptions.  We will also estimate the delta by each of the methods described in @sec-s:montecarlogreeks1 and~\ref{s_montecarlogreeks2}.  Of course, we know the call value and its delta from the Black-Scholes formulas, and they can be used to evaluate the accuracy of the Monte Carlo estimates.  We use the code in Chapter @sec-c:continuoustime.  In this circumstance, we only need to simulate the price of the underlying at the option maturity rather than the entire path of the price process. Therefore we  set $m=1$. However, we use a large number of paths, $n=10000$ to get a large sample of terminal stock prices.
 
 ```{python}
 # Simulate Geometric Brownian Motion
@@ -143,7 +143,7 @@ Given the first terminal price, the value of the derivative will be some number 
 $$\mathrm{e}^{-rT}\frac{1}{M}\sum_{i=1}^M\frac{x_i+y_i}{2}\; .$$
 
 
-## Control Variates in Monte Carlo {#sec-s_controlvariates}
+## Control Variates in Monte Carlo {#sec-s:controlvariates}
 \index{control variate}
 Another approach to increasing the efficiency of the Monte Carlo method is to adjust the estimated mean (option value) based on the known mean of another related variable.  We can explain this in terms of linear regression in statistics.  Suppose we have a random sample $\{x_1,\ldots,x_M\}$ of a variable $x$ with unknown mean $\mu$, and suppose we have a corresponding sample $\{y_1,\ldots,y_M\}$ of another variable $y$ with known mean $\phi$.  Then an efficient estimate of $\mu$ is $\hat{\mu} = \bar{x} + \hat{\beta} (\phi-\bar{y})$, where $\bar{x}$ and $\bar{y}$ denote the sample means of $x$ and $y$, and where $\hat{\beta}$ is the coefficient of $y$ in the linear regression of $x$ on $y$ (i.e., the estimate of $\beta$ in the linear model $x = \alpha +\beta y + \varepsilon$).  The standard Monte Carlo method, which we have described thus far, simply estimates the mean of $x$ as $\bar{x}$.  The control variate method adjusts the estimate by adding $\hat{\beta} (\phi-\bar{y})$.  To understand this correction, assume for example that the true $\beta$ is positive.  If the random sample is such that $\bar{y}<\phi$, then it must be that small values of $y$ were over-represented in the sample.  Since $x$ and $y$ tend to move up and down together (this is the meaning of a positive $\beta$) it is likely that small values of $x$ were also over-represented in the sample.  Therefore, one should adjust the sample mean of $x$ upwards in order to estimate $\mu$.  The best adjustment will take into account the extent to which small values of $y$ were over-represented (i.e., the difference between $\bar{y}$ and $\phi$) and the strength of the relation between $x$ and $y$ (which the estimate $\hat{\beta}$ represents).  The efficient correction of this sort is also the simplest:  just add $\hat{\beta}(\phi-\bar{y})$ to $\bar{x}$.  In practice, the estimation of $\hat{\beta}$ may be omitted and one may simply take $\hat{\beta}=1$, if the relationship between $x$ and $y$ can be assumed to be one-for-one.  If $\beta$ is to be estimated, the estimate (by ordinary least squares) is
 $$\hat{\beta} = \frac{\sum_{i=1}^M x_iy_i - M\bar{x}\bar{y}}{\sum_{i=1}^M y_i^2 - M\bar{y}^2}\; .$$
@@ -200,7 +200,7 @@ $$y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S_{t_i}/N} - K^*,0
 The mean $\phi$ of $y$ under the risk-neutral probability is given in the pricing @eq-disc_geom_avg_call. 
 We can use the sample mean of $y$ and its known mean $\phi$ to adjust the sample mean of $x$ as an estimator of the value of the average-price call.  Generally, the estimated adjustment coefficient $\hat{\beta}$ will be quite close to 1.  
 
-## Monte Carlo Greeks I: Difference Ratios {#sec-s_montecarlogreeks1}
+## Monte Carlo Greeks I: Difference Ratios {#sec-s:montecarlogreeks1}
 
 Greeks can be calculated by Monte Carlo by running the valuation program twice and computing a difference ratio, for example $(C_u-C_d)/(S_u-S_d)$ to estimate a delta.  However, to minimize the error, and minimize the number of computations required, one should use the same set of random draws to estimate the derivative value for different values of the parameter.  For path-independent options (e.g., European puts and calls) under the Black-Scholes assumptions, we only need to generate $S_T$ and then we can compute $S_u_T$ as $[S_u_0/S_0] \times S_T$ and $S_d_T$ as $[S_u_0/S_0] \times S_T$.  We can estimate standard errors for the Greeks in the same way that we estimate the standard error of the derivative value.  
 
@@ -221,7 +221,7 @@ Therefore, under the Black-Scholes assumptions, we only need to simulate $S_T$ a
 Consider a particular simulation and let $C_d_T$ denote the value of the derivative at maturity  when the initial asset price is $S_d$, let  $C_T$ denote the value of the derivative at maturity  when the initial asset price is $S$, and let $C_u_T$ denote the value of the derivative at maturity  when the initial asset price is $S_u$.  For path-independent derivatives under the Black-Scholes assumptions, these can be computed directly from the simulation of $S_T$ as just described.  However, the following applies to general European derivatives under general assumptions about the underlying asset price (for example, it could follow a GARCH process).
 
 The estimates $C_d$, $C$ and $C_u$ of the date--0 derivative values, for the different initial prices of the underlying, are the discounted sample means of the $C_d_T$, $C_T$ and $C_u_T$.
-One way to estimate the delta is $(C_u-C_d)/(S_u-S_d)$.  This is a difference of discounted sample means, multiplied by the reciprocal of $S_u-S_d$.  Equivalently, it is the sample mean of the differences $C_u_T-C_d_T$, multiplied by $\mathrm{e}^{-rT}/(S_u-S_d)$.  As a sample mean, its standard error can be estimated as described in @sec-c_stochasticvolatility.   The standard error is
+One way to estimate the delta is $(C_u-C_d)/(S_u-S_d)$.  This is a difference of discounted sample means, multiplied by the reciprocal of $S_u-S_d$.  Equivalently, it is the sample mean of the differences $C_u_T-C_d_T$, multiplied by $\mathrm{e}^{-rT}/(S_u-S_d)$.  As a sample mean, its standard error can be estimated as described in @sec-c:stochasticvolatility.   The standard error is
 $$\frac{\mathrm{e}^{-rT}}{S_u-S_d}\sqrt{\frac{1}{M(M-1)}\left(\sum_{i=1}^M \left[C_{ui}_T-C_{di}_T\right]^2 - M\left[\overline{C_{u}_T}-\overline{C_{d}_T}\right]^2\right)}\; ,$$ \index{standard error}
 where the overline denotes the sample mean and where $C_{ui}_T$ [respectively, $C_{di}_T$] denotes the value of the derivative at maturity in simulation $i$ when the initial asset price is $S_u$ [respectively, $S_d$].
 
@@ -243,7 +243,7 @@ and the standard error of the gamma is
 \end{multline*}
 
 
-## Monte Carlo Greeks II: Pathwise Estimates {#sec-s_montecarlogreeks2}
+## Monte Carlo Greeks II: Pathwise Estimates {#sec-s:montecarlogreeks2}
 We will examine the bias in the Monte Carlo delta estimate discussed in the preceding section and explain  pathwise estimation of Greeks. By biased, we mean that the expected value of an estimate is different from the true value. \index{bias} It is important to recognize that if a Monte Carlo estimate is biased, then, even if a large number of simulations is used and the standard error is nearly zero, the answer provided by the Monte Carlo method will be incorrect.   For simplicity, consider a European call under the Black-Scholes assumptions.  
 
 The delta estimate we have considered is the discounted sample mean of 
@@ -288,7 +288,7 @@ with the ratio @eq-montecarlodelta2.  The derivative @eq-montecarlodelta3 takes 
 - If $S_T>K$,  then $\max(0,S_T-K) = S_T-K$ and the derivative equals 
 $$\frac{\partial S_T}{\partial S}=\mathrm{e}^{(r-q-\sigma^2/2)T + \sigma B_T} = \frac{S_T}{S}\; .$$
 
-Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}\\E^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c_blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c_blackscholes, $V_t=\mathrm{e}^{qt}S_t$ denotes the value of the non-dividend-paying portfolio created from the stock).] 
+Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}\\E^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c:blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c:blackscholes, $V_t=\mathrm{e}^{qt}S_t$ denotes the value of the non-dividend-paying portfolio created from the stock).] 
 $$
 \mathrm{e}^{-rT}\\E^R\left[\frac{S_T}{S} x\right]\;,
 $$ {#eq-montecarlodelta5}
@@ -335,9 +335,9 @@ $$ {#eq-pathdependent}
 where $\nu = r-q-\sigma^2/2$ and $z$ is a standard normal.  Given that there are $N$ time periods of length $\Delta t$, we need to generate $N$ standard normals to generate a stock price path.  If we generate $M$ paths to obtain a sample of $M$ option values, then we will need to generate $MN$ standard normals.  
 
 
-Consider for example a floating-strike lookback call. \index{lookback option} The formula for this option given in @sec-s_lookbacks assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price.  In practice, the minimum will be computed by recording the price at a discrete number of dates.  We can value the discretely sampled lookback using Monte-Carlo by choosing $\Delta t$ to be the interval of time (e.g., a day or week) at which the price is recorded.  For example, if the contract calls for weekly observation, we will attain maximum precision by setting $N$ to be the number of weeks before the option matures.
+Consider for example a floating-strike lookback call. \index{lookback option} The formula for this option given in @sec-s:lookbacks assumes the minimum stock price is computed over the entire path of the stock price, i.e., with continuous sampling of the stock price.  In practice, the minimum will be computed by recording the price at a discrete number of dates.  We can value the discretely sampled lookback using Monte-Carlo by choosing $\Delta t$ to be the interval of time (e.g., a day or week) at which the price is recorded.  For example, if the contract calls for weekly observation, we will attain maximum precision by setting $N$ to be the number of weeks before the option matures.
 
-For most path dependent options, a possible starting point is to generate an array of $n$ paths but since we want the entire path we choose the number of time steps that is appropriate for our application.  We can use the same code as in Section @#sec-s_mc_europeans if we are working in a Black Scholes setting.
+For most path dependent options, a possible starting point is to generate an array of $n$ paths but since we want the entire path we choose the number of time steps that is appropriate for our application.  We can use the same code as in Section @#sec-s:mc_europeans if we are working in a Black Scholes setting.
 
 ```{python}
 # Simulate Geometric Brownian Motion
@@ -551,15 +551,15 @@ print('The average of the updated values is=',(update +update1)/2)
 
 ## Monte Carlo Valuation of Basket and Spread Options {#sec-montecarlomultiple}
 
-\index{basket option} \index{spread option} \index{Monte Carlo} In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method.  As noted in @sec-s_baskets, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. 
+\index{basket option} \index{spread option} \index{Monte Carlo} In this section, we will consider the valuation of European spread and basket options by the Monte Carlo method.  As noted in @sec-s:baskets, there are no simple formulas for these options. In each simulation, we will generate a terminal price for each of the underlying assets and compute the value of the option at its maturity. 
 Discounting the average terminal value gives the estimate of the option value as usual.  
 
 The difference between binomial and Monte Carlo methods for options written on multiple assets can be understood as follows.  Both methods attempt to estimate the discounted expected value of the option (under the risk-neutral probability).  In an $N$--period model, the binomial model produces $N+1$ values for the terminal price of each underlying asset.  Letting $k$ denote the number of underlying assets, this produces $(N+1)^k$ combinations of asset prices.  Of course, each combination has an associated probability.  In contrast, the Monte Carlo method produces $M$ combinations of terminal prices, where $M$ is the number of simulations.  Each combination is given the same weight ($1/M$) when estimating the expected value.  
 
-With a single underlying asset, the binomial model is more efficient, as discussed in @sec-s_introbinomial, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices.  However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets.  The reason is that many of the $(N+1)^k$ combinations of prices in the binomial model will have very low probabilities.  For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest.  It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value.  On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation.  Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations.  However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy---even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.
+With a single underlying asset, the binomial model is more efficient, as discussed in @sec-s:introbinomial, because the specifically chosen terminal prices in the binomial model sample the set of possible terminal prices more efficiently than randomly generated terminal prices.  However, this advantage disappears, and the ranking of the methods can be reversed, when there are several underlying assets.  The reason is that many of the $(N+1)^k$ combinations of prices in the binomial model will have very low probabilities.  For example, with two assets that are positively correlated, it is very unlikely that one asset will be at its highest value in the binomial model and the other asset simultaneously at its lowest.  It is computationally wasteful to evaluate the option for such a combination, because the probability-weighted value will be very small and hence contribute little to the estimate of the expected value.  On the other hand, each set of terminal prices generated by the Monte Carlo method will be generated from a distribution having the assumed correlation.  Thus, only relatively likely combinations will typically be generated, and time is not wasted on evaluating unlikely combinations.  However, it should not be concluded that Monte Carlo valuation of a derivative on multiple assets will be quick and easy---even though the computation time required for more underlying assets does not increase as much with Monte Carlo as for binomial models, it can nevertheless be substantial.
 
 To implement Monte Carlo valuation of options on multiple assets, we must first explain how to simulate correlated asset prices.
-As observed in @sec-s_stochasticvolatility, we can simulate the changes in two Brownian motions $B_1$ and $B_2$ that have correlation $\rho$ by generating two independent standard normals $Z_1$ and $Z_2$ and defining
+As observed in @sec-s:stochasticvolatility, we can simulate the changes in two Brownian motions $B_1$ and $B_2$ that have correlation $\rho$ by generating two independent standard normals $Z_1$ and $Z_2$ and defining
 $$
 \Delta B_1 = \sqrt{\Delta t}\,Z_1\;, \qquad \text{and} \qquad \Delta B_2 = \sqrt{\Delta t}\,Z\; ,
 $$
@@ -709,7 +709,7 @@ $$
 is called the \index{Cholesky decomposition}
 the Cholesky decomposition of the covariance matrix.  Given any number $L$ of assets, provided none of the assets is redundant (perfectly correlated with a portfolio of the  others), the Cholesky decomposition of the $L\times L$ covariance matrix always exists. An algorithm for computing the Cholesky decomposition in numpy is np.linalg.cholesky. 
 
-We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoa - @eq-mc_twob.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in @sec-s_mc_europeans.  The value of a basket call option at its maturity $T$ is 
+We can use the Cholesky decomposition to perform Monte-Carlo valuation of a basket or spread option.^[For a spread option, take $L=2$, $w_1=1$ and $w_2=-1$.]  If there were some path dependency in the option value, we would simulate the paths of the asset prices as in @eq-mc_twoa - @eq-mc_twob.  However a standard basket option is not path dependent, so we only need to simulate the asset prices at the option maturity date $T$, as in @sec-s:mc_europeans.  The value of a basket call option at its maturity $T$ is 
 $$
 \max\left(0,\;\sum_{i=1}^L w_iS_i_T-K\right)\; ,
 $$

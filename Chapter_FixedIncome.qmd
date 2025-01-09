@@ -1,6 +1,6 @@
 {{< include macros.qmd >}}
 
-## Fixed-Income Concepts {#sec-c_fixedincomeconcepts}
+## Fixed-Income Concepts {#sec-c:fixedincomeconcepts}
 
 In this part of the book, we will study the pricing and hedging of fixed-income derivatives, that is, derivatives that can be viewed as written on bonds or on interest rates.  The complexities of this subject stem from the fact that the underlying bonds or rates will have time-varying and generally random volatilities and have volatilities that must be linked in some way to each other.  We are not free to arbitrarily specify the volatilities and correlations, as we can, for example, with basket equity options, because such a specification may imply there is an arbitrage opportunity available from trading the underlying assets, and, of course, one could not trust a derivative value or a hedging strategy derived from such a model.  There are many books that provide a more comprehensive and advanced treatment than we will be able to give here, among which  Rebonato [@Rebonato98, Rebonato02], James and Webber [@JW] and Brigo and Mercurio [@BM] seem particularly useful.
 
@@ -9,7 +9,7 @@ Another important topic that will not be covered is mortgages.
 
 In the first section, we introduce a fundamental construct: the yield curve, by which we mean the yields of (possibly theoretical) zero-coupon bonds of various maturities.  The last two sections of the chapter (on principal components) are optional---nothing else in the book builds upon them.
 
-## The Yield Curve {#sec-s_yieldcurve}
+## The Yield Curve {#sec-s:yieldcurve}
 
 Given prices of discount (zero-coupon) bonds of all maturities, any coupon paying bond can be priced as a portfolio of discount bonds.  The relationship between time to maturity and the price of the corresponding discount bond with \$1 face value is sometimes called the discount function.  An equivalent concept is the yield curve, \index{yield curve}which is the relationship between time to maturity and the yield of the corresponding discount bond.  Yields can be quoted according to different compounding conventions (semi-annual being the most common), but we will continue to use continuous compounding.^[The relationship between the annually compounded rate $y_a$, the semi-annually compounded rate $y_s$ and the continuously compounded rate $y_c$ is  $\mathrm{e}^{y_c} = 1+y_a = (1+y_s/2)^2$.}
 With this convention, the yield of a zero-coupon bond \index{discount bond yield} with  \$1 face value having $\tau$ years to maturity and price $P$ is defined to be the rate $y$ such that
@@ -70,7 +70,7 @@ $$ {#eq-spot1}
 
 When necessary for clarity, we call the rate $\mathcal{R}$ a spot rate \index{spot rate} (at date $t$ for the time period $\Delta t$), to distinguish it from forward rates to be defined later.  The spot rate is also called a floating rate, \index{floating rate} because it changes with market conditions.
 
-## Swaps {#sec-s_swaps}
+## Swaps {#sec-s:swaps}
 
 A plain vanilla interest rate swap \index{interest rate swap} involves the swap of a fixed interest rate for a floating interest rate on a given notional principal.  Let $\bar{\mathcal{R}}$ denote the fixed rate on a swap.    The floating rate will be LIBOR (or some other interest rate index).  In addition to $\bar{\mathcal{R}}$ and the floating rate index, the swap is defined by payment dates, which we will denote by $t_1,\dots,t_N$, with $t_{i+1}-t_i=\Delta t$.   In the most common form, the  reset dates are $t_0,\ldots,t_{N-1}$, with $t_1-t_0=\Delta t$ also.  
 
@@ -96,18 +96,18 @@ $$
 P(t,t_0) = P(t,t_N) + \mathcal{R}_t\,\Delta t\sum_{i=1}^N P(t,t_i)\;.
 $$ {#eq-swaprate1}
 
-If $t=t_0$ the rate $\mathcal{R}_t$ is a spot swap rate, \index{spot swap rate} and if $t<t_0$ the rate $\mathcal{R}_t$ is a forward swap rate.  \index{forward swap rate} The concept of forward swap rates will be important in the discussion of swaptions in @sec-s_swaptions.  Of course, there are many spot and forward swap rates at any date, corresponding to swaps with different maturities and different payment (and reset) dates.
+If $t=t_0$ the rate $\mathcal{R}_t$ is a spot swap rate, \index{spot swap rate} and if $t<t_0$ the rate $\mathcal{R}_t$ is a forward swap rate.  \index{forward swap rate} The concept of forward swap rates will be important in the discussion of swaptions in @sec-s:swaptions.  Of course, there are many spot and forward swap rates at any date, corresponding to swaps with different maturities and different payment (and reset) dates.
 
-The swap yield curve or simply swap curve \index{swap curve} is the relation between time-to-maturity and the yields of discount bonds, where the discount bond prices and yields are inferred from market swap rates.  To explain this in a manner consistent with @sec-s_yieldcurve, consider date $t=0$ and consider swaps with $t_0=0$ (i.e., spot swaps).  In the notation of @sec-s_yieldcurve, and noting that $P(0,0)=1$, @eq-swaprate1 can be written in terms of yields as
+The swap yield curve or simply swap curve \index{swap curve} is the relation between time-to-maturity and the yields of discount bonds, where the discount bond prices and yields are inferred from market swap rates.  To explain this in a manner consistent with @sec-s:yieldcurve, consider date $t=0$ and consider swaps with $t_0=0$ (i.e., spot swaps).  In the notation of @sec-s:yieldcurve, and noting that $P(0,0)=1$, @eq-swaprate1 can be written in terms of yields as
 $$
 1 = \mathrm{e}^{-y(t_N)t_N}  + \sum_{i=1}^N \mathrm{e}^{-y_{t_i}t_i}\mathcal{R}_0\,\Delta t\; .
 $$ {#eq-swaprate1b}
 
-Consider for example a collection of nineteen swaps at date $0$ with semi-annual payments and maturity dates $t_N=1.0$, $t_N=1.5$, \ldots, $t_N=10.0$.  Each market swap rate (a different rate $\mathcal{R}_0$ for each maturity) can be considered to satisfy  @eq-swaprate1b.  In these equations we have the twenty yields $y(0.5)$, $y(1.0)$, $y(10.0)$.  The yield $y(0.5)$ will be given by six-month LIBOR according to  @eq-spot1.  The other nineteen yields can be obtained by simultaneously solving the system of nineteen equations of the form @eq-swaprate1b, given the nineteen market swap rates.  In practice, there are missing maturities and the swap curve is estimated using a cubic spline or some other technique, as discussed in @sec-s_yieldcurve.
+Consider for example a collection of nineteen swaps at date $0$ with semi-annual payments and maturity dates $t_N=1.0$, $t_N=1.5$, \ldots, $t_N=10.0$.  Each market swap rate (a different rate $\mathcal{R}_0$ for each maturity) can be considered to satisfy  @eq-swaprate1b.  In these equations we have the twenty yields $y(0.5)$, $y(1.0)$, $y(10.0)$.  The yield $y(0.5)$ will be given by six-month LIBOR according to  @eq-spot1.  The other nineteen yields can be obtained by simultaneously solving the system of nineteen equations of the form @eq-swaprate1b, given the nineteen market swap rates.  In practice, there are missing maturities and the swap curve is estimated using a cubic spline or some other technique, as discussed in @sec-s:yieldcurve.
 
 
 
-## Yield to Maturity, Duration, and Convexity {#sec-s_duration}
+## Yield to Maturity, Duration, and Convexity {#sec-s:duration}
 
 Consider a bond with cash flows $C_1, \ldots, C_N$ at dates $u_1 < \cdots < u_N$ and price $P$ at date $t$, where $t< u_1$.  Write $\tau_j = u_j-t$ as the time remaining until the $j$--th cash flow is paid.  The (continuously compounded) yield to maturity \index{yield to maturity} of the bond at date $t$ is defined to be the rate $\mathbf{y}$ such that
 $$
@@ -116,14 +116,14 @@ $$ {#eq-yieldtomaturity}
 
 The bold character $\mathbf{y}$ is meant to distinguish this from the yield $y$ of a discount bond. 
 Viewing the right-hand side of @eq-yieldtomaturity as a function of $\mathbf{y}$, we can express the first derivative in differential form as
-$$\d  P = -\sum_{j=1}^N \tau_j\mathrm{e}^{-\mathbf{y}\tau_j}C_j\, \d  \mathbf{y}\; ,$$
+$$\d  P = -\sum_{j=1}^N \tau_j\mathrm{e}^{-\mathbf{y}\tau_j}C_j\d   \mathbf{y}\; ,$$
 or, equivalently,
-$$\frac{\d  P}{P} = -\sum_{j=1}^N \frac{\mathrm{e}^{-\mathbf{y}\tau_j}C_j}{P}\tau_j\, \d  \mathbf{y}\; .$$
+$$\frac{\d  P}{P} = -\sum_{j=1}^N \frac{\mathrm{e}^{-\mathbf{y}\tau_j}C_j}{P}\tau_j\d   \mathbf{y}\; .$$
 The factor 
 $$\sum_{j=1}^N \frac{\mathrm{e}^{-\mathbf{y}\tau_j}C_j}{P}\tau_j$$
 is called the Macaulay duration \index{Macaulay duration} of the bond, and we will simplify this to duration.  \index{duration} It is a weighted average of the times to maturity $\tau_j$ of the cash flows, the weight on each time $\tau_j$ being the fraction of the bond value that the cash flow constitutes (using the same rate $\mathbf{y}$ to discount all of the cash flows).   Thus, we have
 $$
-\frac{\d  P}{P} = - \text{Duration} \times \,\d  \mathbf{y}\;.
+\frac{\d  P}{P} = - \text{Duration} \times \d   \mathbf{y}\;.
 $$ {#eq-durationreturn}
 
 Given the initial yield $\mathbf{y}$ and a change in the yield to $\mathbf{y}'$, this equation suggests 
@@ -139,12 +139,12 @@ The relationship @eq-durationreturn2 is the foundation for duration hedging.  \i
 
 Actually, because of the convexity \index{convexity} of the bond price @eq-yieldtomaturity as a function of the yield $\mathbf{y}$, the approximation @eq-durationreturn2 will overstate the loss on an asset when the yield rises and understate the gain when the yield falls.  Given a change in yield $\Delta \mathbf{y}$, the change in price $\Delta P = P'-P$ would actually satisfy
 $$\Delta P > -  \text{Duration} \times P \times \Delta \mathbf{y}\; .$$
-Thus, if a liability is duration hedged, and the asset value is a more convex function of its yield than is the liability value, then an equal change $\Delta \mathbf{y}$ in their yields will lead to a net gain, the asset value falling less than the liability if $\Delta \mathbf{y} >0$ and gaining more than the liability if $\Delta \mathbf{y}<0$.  The value of convexity (as a function of the yield to maturity) in a bond portfolio is the same as the value of convexity (as a function of the price of the underlying) in option hedging---cf.~@sec-s_deltahedging.
+Thus, if a liability is duration hedged, and the asset value is a more convex function of its yield than is the liability value, then an equal change $\Delta \mathbf{y}$ in their yields will lead to a net gain, the asset value falling less than the liability if $\Delta \mathbf{y} >0$ and gaining more than the liability if $\Delta \mathbf{y}<0$.  The value of convexity (as a function of the yield to maturity) in a bond portfolio is the same as the value of convexity (as a function of the price of the underlying) in option hedging---cf.~@sec-s:deltahedging.
 
 In general, the changes in the yields of an asset and a liability (or two different coupon bonds) will not be equal.  To understand how the changes will be related, note that @eq-yieldtomaturity of the yield to maturity and @eq-yieldcurve1 relating a bond price to the yields of discount bonds imply
 $$\sum_{j=1}^N \mathrm{e}^{-\mathbf{y}\tau_j}C_j =  \sum_{j=1}^{N} \mathrm{e}^{-y(\tau_{j})\tau_{j}}C_{j}\; .$$
 Taking differentials of both sides, we have
-$$\d  P = -P \times \text{Duration} \times \d  \mathbf{y} = -\sum_{j=1}^{N} \tau_j \mathrm{e}^{-y(\tau_{j})\tau_{j}}C_{j}\,\d  y(\tau_j)\; .$$
+$$\d  P = -P \times \text{Duration} \times \d  \mathbf{y} = -\sum_{j=1}^{N} \tau_j \mathrm{e}^{-y(\tau_{j})\tau_{j}}C_{j}\d   y(\tau_j)\; .$$
 If we suppose that the changes $\d  y(\tau_j)$ in the yields of the discount bonds are equal, to, say, $\d  y$, then we have
 $$\d  P = -P \times \text{Duration} \times \d  \mathbf{y} = -P \times \text{Duration}' \times \d  y,$$
 where we define
@@ -162,19 +162,19 @@ $$ {#eq-yieldtomaturityt}
 Note that even if the yield to maturity were constant over time, the bond price would change with $t$ as a result of the changes in the times to maturity $u_j-t$ of the cash flows.  This creates the dependence on $t$ in the function $f(t,\mathbf{y})$.
 
 From Ito's formula, we have
-$$\d  P = \frac{\partial f}{\partial t} \, \d  t + \frac{\partial f}{\partial \mathbf{y}} \,\d  \mathbf{y} + \frac{1}{2} \frac{\partial ^2 f}{\partial \mathbf{y}^2} (\d  \mathbf{y})^2\; .$$  
+$$\d  P = \frac{\partial f}{\partial t} \d   t + \frac{\partial f}{\partial \mathbf{y}} \d   \mathbf{y} + \frac{1}{2} \frac{\partial ^2 f}{\partial \mathbf{y}^2} (\d  \mathbf{y})^2\; .$$  
 As explained above, the factor $\partial f/\partial \mathbf{y}$ equals $ -  \text{Duration} \times P$.  The value of convexity appears here in the last term, the derivative $\partial ^2 f/\partial \mathbf{y}^2$ being positive as a result of convexity and analogous to the gamma of an option.
-Assuming $\d  \mathbf{y}_t = \alpha_t\,\d  t+\sigma_t\,\d  B_t$ for a Brownian motion $B$ and some $\alpha$ and $\sigma$, we have
-$$\frac{\d  P}{P} = \frac{1}{P}\left(\frac{\partial f}{\partial t}  + \frac{\partial f}{\partial \mathbf{y}}\alpha + \frac{1}{2} \frac{\partial ^2 f}{\partial \mathbf{y}^2} \sigma^2\right)\d  t-  \text{Duration}\times\sigma \,\d  B\; .$$
- If the yields of an asset and liability are driven by the same Brownian motion and the duration hedge is adjusted for the relative volatilities of the asset and liability (holding more of the asset if its yield volatility is lower), then a duration hedge will hedge the risky part of the change in the liability value.  If adjusted continuously, it will provide a perfect hedge, exactly analogous to a delta hedge of an option position.  The Vasicek model we will discuss in @sec-c_vasicek and the Cox-Ingersoll-Ross model we will discuss in @sec-c_survey are examples of continuous-time models that assume a single Brownian motion driving all yields (i.e., they are single-factor models).\index{single-factor model}The Ho-Lee, Black-Derman-Toy, and Black-Karasinski binomial models that will be discussed in @sec-c_survey are also single-factor models and have the same implication for hedging.  In the following section, we will discuss the fact that, empirically, there appears to be more than one factor determining the yield curve.
+Assuming $\d  \mathbf{y}_t = \alpha_t\d   t+\sigma_t\d   B_t$ for a Brownian motion $B$ and some $\alpha$ and $\sigma$, we have
+$$\frac{\d  P}{P} = \frac{1}{P}\left(\frac{\partial f}{\partial t}  + \frac{\partial f}{\partial \mathbf{y}}\alpha + \frac{1}{2} \frac{\partial ^2 f}{\partial \mathbf{y}^2} \sigma^2\right)\d  t-  \text{Duration}\times\sigma \d   B\; .$$
+ If the yields of an asset and liability are driven by the same Brownian motion and the duration hedge is adjusted for the relative volatilities of the asset and liability (holding more of the asset if its yield volatility is lower), then a duration hedge will hedge the risky part of the change in the liability value.  If adjusted continuously, it will provide a perfect hedge, exactly analogous to a delta hedge of an option position.  The Vasicek model we will discuss in @sec-c:vasicek and the Cox-Ingersoll-Ross model we will discuss in @sec-c:survey are examples of continuous-time models that assume a single Brownian motion driving all yields (i.e., they are single-factor models).\index{single-factor model}The Ho-Lee, Black-Derman-Toy, and Black-Karasinski binomial models that will be discussed in @sec-c:survey are also single-factor models and have the same implication for hedging.  In the following section, we will discuss the fact that, empirically, there appears to be more than one factor determining the yield curve.
  
  
-## Principal Components {#sec-s_principalcomponents}
+## Principal Components {#sec-s:principalcomponents}
 
 This section will describe a popular statistical method for determining the factors that have the most impact on the yield curve.  We consider yields at fixed maturities $\tau_1, \ldots, \tau_N$, the yield for maturity $\tau_j$ at date $t$ being denoted $y(t,\tau_j)$.  We assume that we have a sample of past yields at dates $t_0, \ldots, t_M$ at equally spaced dates.  Thus, $t_i-t_{i-1} = \Delta t$  for some $\Delta t$ and each $i$.  We compute the changes in yields:
 $$\Delta_{ij} = y(t_i, \tau_j) - y(t_{i-1}, \tau_j)\; .$$
 Thus we are looking at the changes in the yield curve over time periods of length $\Delta t$, focusing on $N$ points on the yield curve defined by the maturities $\tau_j$.  Let $V$ denote the sample covariance matrix \index{covariance matrix} of the changes in  yields: 
- the element in row $j$ and column $k$ of $V$ is the sample covariance of the changes in yields at maturities $\tau_j$ and $\tau_k$; thus, the diagonal elements are the sample variances.^[The sample covariance matrix $V$  is an estimate of the  unconditional covariances.  It is a common finding that variances and covariances change over time.  Thus,  we could (and probably should) use methods such as those described in @sec-c_stochasticvolatility] to estimate the covariance matrix.  The following applies equally well to other estimates $V$ of the covariance matrix.  
+ the element in row $j$ and column $k$ of $V$ is the sample covariance of the changes in yields at maturities $\tau_j$ and $\tau_k$; thus, the diagonal elements are the sample variances.^[The sample covariance matrix $V$  is an estimate of the  unconditional covariances.  It is a common finding that variances and covariances change over time.  Thus,  we could (and probably should) use methods such as those described in @sec-c:stochasticvolatility] to estimate the covariance matrix.  The following applies equally well to other estimates $V$ of the covariance matrix.  
 
 The method of principal components \index{principal components} is to compute the eigenvectors and eigenvalues of the estimated covariance matrix $V$.  An eigenvector \index{eigenvector} is a vector $x$ for which there corresponds a number $\lambda$ such that $Vx = \lambda x$.  The number $\lambda$ is called the eigenvalue \index{eigenvalue} corresponding to the eigenvector $x$.  Given the $N \times N$ symmetric matrix $V$, we can construct an $N\times N$ matrix $C$ whose columns are eigenvectors of $V$ and an $N \times N$ diagonal matrix $D$ containing the eigenvalues of $V$ on the diagonal.  The eigenvectors can be normalized to have unit length and to be mutually orthogonal, which means that the matrix $C$ of eigenvectors has the property that $C^{-1} = C^\top$, where $C^{-1}$ denotes the inverse of $C$ and $C^\top$ its transpose.  The property $Vx = \lambda x$ for the columns $x$ of $C$ implies that $VC= CD$.  Hence $C^\top VC = C^\top CD = D$.
 
@@ -229,20 +229,20 @@ We can interpret these as follows.  A positive value in a given month for the fa
 
 
 
-## Hedging Principal Components {#sec-s_hedgingprincipalcomponents}
+## Hedging Principal Components {#sec-s:hedgingprincipalcomponents}
 
 Consider again  a bond with cash flows $C_1, \ldots, C_N$ at dates $\tau_1 < \cdots < \tau_N$ and price $P$ and recall that the price at date $0 < \tau_1$ should be
 $$P = \sum_{j=1}^{N} \mathrm{e}^{-y_j\tau_{j}}C_{j}\; ,$$
 where for convenience we are writing $y_j$ for the yield $y(0,\tau_j)$ of the discount bond maturing at $\tau_j$.  Viewing the price as a function of $y_1, \ldots, y_N$, we can write the differential as
-$$\d  P = -\sum_{j=1}^{N} \tau_j\mathrm{e}^{-y_j\tau_{j}}C_{j}\, \d  y_j\; .$$
+$$\d  P = -\sum_{j=1}^{N} \tau_j\mathrm{e}^{-y_j\tau_{j}}C_{j}\d   y_j\; .$$
 Equivalently,
-$$\frac{\d  P}{P} = -\sum_{j=1}^{N} \frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j}{P}\, \d  y_j\; .$$
+$$\frac{\d  P}{P} = -\sum_{j=1}^{N} \frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j}{P}\d   y_j\; .$$
 Given discrete changes $\Delta y_j$ in the yields, this implies the following approximation for the return:
 $$
 \frac{\Delta P}{P} \approx -\sum_{j=1}^{N} \frac{\mathrm{e}^{-y_j\tau_{j}}C_{j}\tau_j}{P}\, \Delta y_j\;.
 $$ {#eq-durationreturn11}
 
-As in @sec-s_duration, because of convexity, the approximation understates the new price $P' = P + \Delta P$.  In @sec-s_duration we considered this equation assuming equal changes in the yields (a parallel shift in the yield curve).  Here, we will discuss the more general case.
+As in @sec-s:duration, because of convexity, the approximation understates the new price $P' = P + \Delta P$.  In @sec-s:duration we considered this equation assuming equal changes in the yields (a parallel shift in the yield curve).  Here, we will discuss the more general case.
 
 
 
@@ -343,6 +343,6 @@ d_2 & =    0.02725
  Suppose you have shorted \$100 million of the two-year bond with the semi-annual coupon of \$0.03.  How much of the five-year bond with the semi-annual coupon of \$0.02 should you hold to duration hedge the short position?
 :::
 ::: Exercise
- Suppose you have shorted \$100 million of the two-year bond with the semi-annual coupon of \$0.03.  Using the data from the principal components example in @sec-s_hedgingprincipalcomponents, find a portfolio of the one-year bond with a coupon of \$0.04 and the five-year bond with a coupon of \$0.02 that will hedge the first two principal components of the short position.  Assume the loadings of the six-month yield on the two factors are the averages of the loadings of the one-month and one-year yields, the loadings of the 1.5 year yield on the two factors are the averages of the loadings of the 1.0 and 2.0 years, the loadings of the 2.5 year yield are the averages of the loadings of the 2.0 and 3.0 year yields, etc.
+ Suppose you have shorted \$100 million of the two-year bond with the semi-annual coupon of \$0.03.  Using the data from the principal components example in @sec-s:hedgingprincipalcomponents, find a portfolio of the one-year bond with a coupon of \$0.04 and the five-year bond with a coupon of \$0.02 that will hedge the first two principal components of the short position.  Assume the loadings of the six-month yield on the two factors are the averages of the loadings of the one-month and one-year yields, the loadings of the 1.5 year yield on the two factors are the averages of the loadings of the 1.0 and 2.0 years, the loadings of the 2.5 year yield are the averages of the loadings of the 2.0 and 3.0 year yields, etc.
 :::
 

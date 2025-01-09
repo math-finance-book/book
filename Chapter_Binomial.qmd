@@ -1,15 +1,15 @@
 {{< include macros.qmd >}}
 
-## Binomial and Trinomial Models {#sec-c_binomial}
+## Binomial and Trinomial Models {#sec-c:binomial}
 
 In this chapter, we will introduce two principal numerical methods for valuing derivative securities: Monte Carlo and binomial models.  We will consider two applications: valuing European options in the presence of stochastic volatility with Monte Carlo and valuing American options via binomial models.   Throughout the chapter, we will assume there is a constant risk-free rate.  The last section, while quite important, could be skimmed on first reading---the rest of the book does not build upon it.
 
 
-## Introduction to Binomial Models {#sec-s_introbinomial}
+## Introduction to Binomial Models {#sec-s:introbinomial}
 
 As in the previous section, \index{binomial model} we will work with the dynamics of the logarithms of asset prices under the risk-neutral probability.  Thus, our starting point is the equation
 $$
-\d  \log S = \left(r-q-\frac{\sigma^2}{2}\right)\,\d  t + \sigma\,\d  B\;,
+\d  \log S = \left(r-q-\frac{\sigma^2}{2}\right)\d   t + \sigma\d   B\;,
 $$ {#eq-logstock_riskneutral}
 
 where $B$  represents a Brownian motion under the risk-neutral probability.
@@ -30,7 +30,7 @@ $$ {#eq-binomialsum}
 
 Multiplying the expectation by $\mathrm{e}^{-rT}$ yields the option value.
 
-It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section.  In the Monte-Carlo method for valuing a European call option, we generate $M$ random values for $S_T$ and estimate the expectation $\\E^R[\max(0,S_T-K)]$ by averaging the $M$ values.  This amounts to approximating the distribution of $S_T$ by an $M$--point distribution, each point being assigned equal probability.  In the binomial method, we choose a particular set of points for $S_T$ and assign the probabilities specified above in order to approximate the distribution of $S_T$.  Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of $S_T$ as the number of points increases.  However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods $N$ in the binomial model than we would need simulations $M$ in the Monte-Carlo method.  Thus, the binomial method will be much faster.   Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options.  On the other hand, as mentioned in the previous section, to value a path-dependent option in  an $N$--period binomial tree would require the analysis of $2^N$ separate paths, so Monte Carlo may be faster for path-dependent options.  Finally, as we will discuss in @sec-s_curse, Monte Carlo may be faster for options on multiple assets.
+It is worthwhile to emphasize the close connection between this method and the Monte-Carlo method discussed in the previous section.  In the Monte-Carlo method for valuing a European call option, we generate $M$ random values for $S_T$ and estimate the expectation $\\E^R[\max(0,S_T-K)]$ by averaging the $M$ values.  This amounts to approximating the distribution of $S_T$ by an $M$--point distribution, each point being assigned equal probability.  In the binomial method, we choose a particular set of points for $S_T$ and assign the probabilities specified above in order to approximate the distribution of $S_T$.  Both the Monte-Carlo and the binomial approximations are known to converge to the continuous-time distribution of $S_T$ as the number of points increases.  However, by specifically choosing the points and their probabilities, the binomial method allows us to use a much smaller number of points to obtain the same accuracy; i.e., for a given desired accuracy, we can use many fewer periods $N$ in the binomial model than we would need simulations $M$ in the Monte-Carlo method.  Thus, the binomial method will be much faster.   Furthermore, as we will discuss in the next section, the binomial method is much better for pricing American options.  On the other hand, as mentioned in the previous section, to value a path-dependent option in  an $N$--period binomial tree would require the analysis of $2^N$ separate paths, so Monte Carlo may be faster for path-dependent options.  Finally, as we will discuss in @sec-s:curse, Monte Carlo may be faster for options on multiple assets.
 
 
 
@@ -48,7 +48,7 @@ Discounting back through the tree like this, we reach date $0$ and return the op
 
 ![](images/fig2.png)
 
-## Binomial Parameters {#sec-s_binomialparameters}
+## Binomial Parameters {#sec-s:binomialparameters}
 
 
 Several different ways have been proposed for matching the binomial model to the continuous-time model.  Consider an $N$--period binomial model for a time period of $T$ years.  This means that the length of each period is $\Delta t = T/N$.  In the continuous-time model, over a discrete time period $\Delta t$, we have
@@ -196,7 +196,7 @@ print('The Value of the European Call is=',Call)
 
 Early exercise \index{early exercise} features are very simple to handle in a binomial framework.  One only has to use the backward induction approach and check the optimality of early exercise at each node.  Exercise is optimal when the intrinsic value of the option exceeds the discounted expected value of the option contingent on not exercising.  When we back up in the tree, we check whether exercise is optimal, and, when it is, we replace the discounted expected value with the intrinsic value.  
 
-Early exercise is more important for puts than for calls (as discussed in @sec-s_fundamentalconcepts, an American call on a non-dividend-paying stock should not be exercised early) so we will change our symbol for the option value from $C$ to $P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
+Early exercise is more important for puts than for calls (as discussed in @sec-s:fundamentalconcepts, an American call on a non-dividend-paying stock should not be exercised early) so we will change our symbol for the option value from $C$ to $P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
 $$
 P(i) = \max\left(0,K-u^{i}d^{N-i}S\right)\;,
 $$ {#eq-binomial003}
@@ -402,7 +402,7 @@ $$ {#eq-trig2}
 
 
 
-## Binomial Greeks {#sec-s_binomial_greeks}
+## Binomial Greeks {#sec-s:binomial_greeks}
 
 To estimate Greeks in any valuation model, one can run the valuation program twice, for two different parameter values, and then estimate the Greek as the difference in value divided by the difference in parameters.   For example, to estimate vega when the volatility of the underlying is $\sigma$, we could estimate the derivative value for a volatility of $0.99\sigma$ and for a volatility of $1.01\sigma$.  Denoting the former derivative value by $C_d$ and the latter by $C_u$, the vega can be estimated by 
 $$\frac{C_u-C_d}{1.01\sigma-0.99\sigma} = \frac{C_u-C_d}{0.02\sigma}\; .$$  We can in principle obtain a more precise estimate of the derivative by making a smaller change in the parameter (e.g., using $0.999\sigma$ and $1.001\sigma$) but computer round-off errors limit how small a parameter change one should take in practice.  
@@ -433,7 +433,7 @@ Hence, the derivative price calculated at the middle node will be the price we a
 
 ### Trinomial Valuation of American Options
 
-The trinomial model is a special case of an explicit finite difference method for solving partial differnetial equations studied in @sec-c_pde; however, it requires no knowledge of partial differential equations.  It is similar to a binomial model in that it is a tree. As the name suggests, the trinomial model has three branches up, down, and middle.  The middle branch eliminates the up down behavior and can lead to smoother exercise boundaries.  We will use the following parameterization:  at each node the stock price grows by a factor $u=e^{\sigma \sqrt{3 \Delta t}}$, stays the same, or declines by a factor of $d=1/u$.  In this sense, it inherits some of the tractabilty of the Cox, Ross, and Rubenstein model in the sense that the stock price at all nodes can be expressed as the initial stock price times $u$ to a power.  The probabilities are given by   
+The trinomial model is a special case of an explicit finite difference method for solving partial differnetial equations studied in @sec-c:pde; however, it requires no knowledge of partial differential equations.  It is similar to a binomial model in that it is a tree. As the name suggests, the trinomial model has three branches up, down, and middle.  The middle branch eliminates the up down behavior and can lead to smoother exercise boundaries.  We will use the following parameterization:  at each node the stock price grows by a factor $u=e^{\sigma \sqrt{3 \Delta t}}$, stays the same, or declines by a factor of $d=1/u$.  In this sense, it inherits some of the tractabilty of the Cox, Ross, and Rubenstein model in the sense that the stock price at all nodes can be expressed as the initial stock price times $u$ to a power.  The probabilities are given by   
 
 $$
 p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2}{2}\right)~~~p_m =2/3~~p_d= \frac{1}{6} - \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2}{2}\right)
@@ -744,16 +744,16 @@ else:
   
 
 
-## Binomial Valuation of Basket and Spread Options {#sec-s_curse}
+## Binomial Valuation of Basket and Spread Options {#sec-s:curse}
 
 \index{basket option} \index{spread option} \index{binomial model} By combining binomial models, we can  value options or other derivatives on multiple assets.  We will illustrate for an option on two assets.  This is the most important case, and the extension to more than two assets is straightforward.
 
 Consider two stocks with constant dividend yields $q_i$ and constant volatilities $\sigma_i$.  Suppose the two Brownian motions driving the two stocks have a constant correlation coefficient $\rho$.  We will denote the price of stock $i$ ($i=1,2$) in the up state in each period by $u_iS_i$ and the price in the down state by $d_iS_i$, where $S_i$ is the price at the beginning of the period, and $u_i$ and $d_i$ are parameters to be specified.  In each period, there are four possible combinations of returns on the two stocks:  up for both stocks, up for stock 1 and down for stock~2, down for stock 1 and up for stock 2, and down for both stocks.  Denote the probabilities of these four combinations by $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$ respectively.  Thus, there are eight parameters in the binomial model: the number $N$ of periods (which defines the length of each period as $\Delta t=T/N$ where $T$ is the option maturity), the up and down parameters $u_i$ and $d_i$ for each stock, and three probabilities (the fourth probability being determined by the condition that the probabilities sum to one).
 
-Given the period length $\Delta t$, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns $\Delta S_i/S_i$ or the continuously-compounded returns $\Delta \log S_i$.  There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters.  As in @sec-c_introcomputation, it is convenient to take $d_i = 1/u_i$, leaving five restrictions and five free parameters.
+Given the period length $\Delta t$, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns $\Delta S_i/S_i$ or the continuously-compounded returns $\Delta \log S_i$.  There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters.  As in @sec-c:introcomputation, it is convenient to take $d_i = 1/u_i$, leaving five restrictions and five free parameters.
 
-As discussed in @sec-s_binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
-Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s_binomialparameters,
+As discussed in @sec-s:binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
+Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s:binomialparameters,
 \begin{align*}
 \log u_i&=\sqrt{\sigma_i^2\Delta t + \nu_i^2(\Delta t)^2}\; ,\\
 p_i &= \frac{1}{2}+\frac{\nu_i\Delta t}{2\log u_i}\;.
@@ -786,7 +786,7 @@ $$ {#eq-prob3}
 
 
 
-We can solve the system @eq-prob1 - @eq-prob3, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a  Python function for valuing an American spread call option are given later.  This function operates much like the binomial valuation of American options described in @sec-c_introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
+We can solve the system @eq-prob1 - @eq-prob3, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a  Python function for valuing an American spread call option are given later.  This function operates much like the binomial valuation of American options described in @sec-c:introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
 The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.  
 
 Likewise, in an $N$--period model for a basket option written on three assets, there are $(n+1)^3$ combinations of nodes to be considered at date $n$; if there are five assets, there are $(n+1)^5$ combinations, etc.  Thus, the computation time required increases exponentially with the number of assets.  This can be a serious problem.  For example, with five assets and $N=99$, we would have $100^5$ (10 billion) combinations.  As this suggests, problems with multiple assets quickly become intractable in a binomial framework.  This is called the curse of dimensionality. \index{curse of dimensionality}  

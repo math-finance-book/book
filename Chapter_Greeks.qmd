@@ -1,6 +1,6 @@
 {{< include macros.qmd >}}
 
-# Greeks and Hedging {#sec-c_greeks}
+# Greeks and Hedging {#sec-c:greeks}
 
 ![](under_construction.jpg)
 
@@ -74,15 +74,15 @@ We can calculate the Greeks of a European put option from the call option Greeks
 $$\text{Put Price} = \text{Call Price} +\mathrm{e}^{-rT}K- \mathrm{e}^{-q T}S_0\; .$$
 For example, the delta of a put is the delta of a call (with the same strike and maturity) minus $\mathrm{e}^{-q T}$, and the gamma of a put is the same as the gamma of the corresponding call.
 
-## Delta Hedging {#sec-s_deltahedging}
+## Delta Hedging {#sec-s:deltahedging}
 
-The ability to create a fully hedged (risk-free) portfolio of the stock and an option is the essence of the arbitrage argument underlying the Black-Scholes formula, as we saw in @sec-c_arbitrage for the binomial model.  For a call option, such a portfolio consists of delta shares of the underlying asset and a short call option, or a short position of delta shares of the underlying and a long call option.  \index{delta hedge} These portfolios have no instantaneous exposure to the price of the underlying.  To create a perfect hedge, the portfolio must be adjusted continuously, because the delta changes when the price of the underlying changes and when time passes.  In practice, any hedge will therefore be imperfect, even if the assumptions of the model are satisfied. 
+The ability to create a fully hedged (risk-free) portfolio of the stock and an option is the essence of the arbitrage argument underlying the Black-Scholes formula, as we saw in @sec-c:arbitrage for the binomial model.  For a call option, such a portfolio consists of delta shares of the underlying asset and a short call option, or a short position of delta shares of the underlying and a long call option.  \index{delta hedge} These portfolios have no instantaneous exposure to the price of the underlying.  To create a perfect hedge, the portfolio must be adjusted continuously, because the delta changes when the price of the underlying changes and when time passes.  In practice, any hedge will therefore be imperfect, even if the assumptions of the model are satisfied. 
 
 We first consider the continuous-time hedging argument.  Consider a European call option with maturity $T$, and let $C(S,t)$ denote the value of the option at date $t<T$ when the stock price is $S$ at date $t$.  Consider a portfolio that is short one call option and long $\delta$ shares of the underlying asset and that has a (short) cash position equal to $C-\delta S$.  This portfolio has zero value at date $t$.  
 
 The change in the value of the portfolio in an instant $\d  t$ is
 $$
--\d  C + \delta \,\d  S + q \delta S\,\d  t+(C-\delta S)r\,\d  t\;.
+-\d  C + \delta \d   S + q \delta S\d   t+(C-\delta S)r\d   t\;.
 $$ {#eq-changeportfoliovalue}
 
 The first term reflects the change in the value of the option, the second term is the capital gain or loss on $\delta$ shares of stock, the third term is the dividends received on $\delta$ shares of stock, and the fourth term is the interest expense on the short cash position.
@@ -90,16 +90,16 @@ The first term reflects the change in the value of the option, the second term i
 On the other hand, we know from Ito's formula that
 
 $$
-\d  C = \frac{\partial C}{\partial S}\,\d  S + \frac{\partial C}{\partial t}\,\d  t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\d  S)^2  
+\d  C = \frac{\partial C}{\partial S}\d   S + \frac{\partial C}{\partial t}\d   t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\d  S)^2  
 $$
 $$
-= \delta \,\d  S + \Theta \,\d  t + \frac{1}{2}\Gamma \sigma^2S^2\,\d  t\;.
+= \delta \d   S + \Theta \d   t + \frac{1}{2}\Gamma \sigma^2S^2\d   t\;.
 $$ {#eq-changeportfoliovalue2}
 
 
 Substituting @eq-changeportfoliovalue2 into @eq-changeportfoliovalue shows that  the change in the value of the portfolio is
 $$
--\Theta \,\d  t - \frac{1}{2}\Gamma \sigma^2S^2\,\d  t+ q \delta S\,\d  t+(C-\delta S)r\,\d  t\;.
+-\Theta \d   t - \frac{1}{2}\Gamma \sigma^2S^2\d   t+ q \delta S\d   t+(C-\delta S)r\d   t\;.
 $$ {#eq-hedgeprofits}
 
 Several aspects of this are noteworthy.  First, as noted earlier, the delta hedge (being long $\delta$ shares of the underlying) eliminates the exposure to changes in the price of the underlying---there is no $\d  S$ term in @eq-hedgeprofits.  Second, $\Theta$ will be negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$.  Third, this portfolio is short gamma.  We can also say it is short convexity, the term convexity \index{convexity} referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).  The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses.  Finally, the portfolio is earning dividends but paying interest.
@@ -110,7 +110,7 @@ Therefore, the delta hedge is a perfect hedge.  The portfolio, which has a zero 
 
 To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in $S$ over time and sum the gains and losses over discrete rebalancing periods.  One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses.  
 
-## Gamma Hedging {#sec-s_gammahedging}
+## Gamma Hedging {#sec-s:gammahedging}
 
 To attempt to improve the performance of a discretely rebalanced delta hedge, one can use another option to create a portfolio that is both delta and gamma neutral.  Being delta neutral means hedged as in the previous section---the portfolio value has no exposure to changes in the underlying asset price.  In other words, it means that the derivative of the portfolio value with respect to the price of the underlying (the portfolio delta) is zero.  Being gamma neutral means that the delta of the portfolio has no exposure to changes in the underlying price, which is equivalent to the second derivative of the portfolio value with respect to the price of the underlying (the portfolio gamma) being zero.  If the delta truly did not change, then there would be no need to rebalance continuously, and hence no hedging error introduced by only adjusting the portfolio at discrete times rather than continuously.   However, there is certainly no guarantee that a discretely-rebalanced delta/gamma hedge will perform better than a discretely rebalanced delta hedge.  \index{gamma hedge}
 
