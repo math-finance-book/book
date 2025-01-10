@@ -286,95 +286,41 @@ Consider two Ito processes
 
 
 $$
-\d  X_t = \mu_x_t\d   t + \sigma_x_t\d   B_x_t\;,
+\d  X_{1t} = \mu_{1t}\d   t + \sigma_{1t}\d   B_{1t}\;,
 $$ {#eq-itoprocess110}
 
 $$
-\d  Y_t = \mu_y_t\d   t + \sigma_y_t\d   B_y_t\;,
+\d  X{2t} = \mu_{2t}\d   t + \sigma_{2t}\d   B_{2t}\;,
 $$ {#eq-itoprocess111}
 
 
 
-where $B_x$ and $B_y$ can be different Brownian motions.  The relation between the two Brownian motions is determined by their covariance or correlation.  Given dates $t<u$, we know that both changes $B_x(u)-B_x_t$ and $B_y(u)-B_y_t$ are normally distributed with mean 0 and variance equal to $u-t$.  There will exist a (possibly random) process $\rho$ such that the covariance \index{covariance} of these two normally distributed random variables, given the information at date $t$, is 
-$$\E_t \left[\int_t^u \rho_s\d   s\right]\; .$$
-The process $\rho$ is called the correlation coefficient of the two Brownian motions, \index{correlation coefficient} because when it is constant the correlation of the changes $B_x(u)-B_x_t$ and $B_y(u)-B_y_t$ is
-$$\frac{\text{covariance}}{\text{product of standard deviations}}  = \frac{\int_t^u \rho \d   s}{\sqrt{u-t} \sqrt{u-t}} = \frac{(u-t)\rho}{u-t} = \rho\; .$$
-Moreover, given increasingly fine partitions $0=t_0 < \cdots < t_N=T$ of an interval $[0,T]$ as before, we will have
-$$\sum_{i=1}^N \Delta B_x_{t_i} \times \Delta B_y_{t_i} \rightarrow \int_0^T \rho_t\d   t$$
-as $N \rightarrow \infty$, with probability one.  
-
-We know that
-$$\sum _{i=1}^N [\Delta X_{t_i}]^2 \rightarrow \int_0^T \sigma_x^2_t\d   t \quad \text{and}\quad  \sum _{i=1}^N [\Delta Y_{t_i}]^2 \rightarrow \int_0^T\sigma_y^2_t\d   t\;.
-$$ {#eq-itoprocess112}
-
-Furthermore, it can be shown that the sum of products satisfies
-$$
-\sum_{i=1}^N \Delta X_{t_i} \times \Delta Y_{t_i} \rightarrow \int_0^T \sigma_x_t\sigma_y_t\rho_t\d   t\;.
-$$ {#eq-itoprocess113}
-
-
+where $B_1$ and $B_2$ are standard Brownian motions.  We calculate the product of differentials of Ito processes as follows.
 ::: Rule
 ## 
-By adding the rule 
-$$
-(\d  B_x)(\d  B_y) = \rho\d   t 
-$$ {#eq-\d   B\d   B}
- to the rules @eq-\d   tsquared--@eq-\d   Bsquared, we can compute the limit in @eq-itoprocess113 as
-
-$$
-\lim_{N \rightarrow\infty} \sum_{i=1}^N \Delta X_{t_i} \times \Delta Y_{t_i}  = \int_0^T (\d  X)(\d  Y)
-$$
-$$
-= \int_0^T (\mu_x\d   t +\sigma_x\d   B_x)(\mu_y\d   t+\sigma_y\d   B_y)
-$$
-$$
-= \int_0^T\sigma_x_t\sigma_y_t \rho_t\d   t\;.
-$$ {#eq-itojointvariation}
-
-
+If $X_1$ and $X_2$ are Ito processes as in @eq-itoprocess111 and @eq-itoprocess112, then
+$$(\d X_1)(\d X_2) = (\sigma_{1s}\d B_{1s})(\sigma_{2s}\d B_{2s})= \sigma_1\sigma_2\rho\d t$$
+where $\rho$ is the correlation process of the two Brownian motions. 
 :::
+The real meaning of this rule is that it is possible to calculate the joint variation (i.e., limit of sum of products of changes) of the two Ito processes from $0$ to $t$ as
+$$\int_0^t (\d X_{1s})(\d X_{2s}) = \int_0^t (\sigma_{1s}\d B_{1s})(\sigma_{2s}\d B_{2s}) = \int_0^t \sigma_{1s}\sigma_{2s}\rho_s\d s\,.
+$$ {#eq-itojointvariation}
+Using this rule for products of differentials, we can state Ito's formula for a function of time and two Ito processes as follows.
 
 
-The most general case of Ito's formula that we will need is for a function $Z_t = g(t, X_t, Y_t)$ where $X$ and $Y$ are Ito processes as in @eq-itoprocess110 - @eq-itoprocess111.  In this case, Ito's formula is^[We need to assume $g(t,x,y)$ is continuously differentiable in $t$ and twice continuously differentiable in $(x,y)$ for @eq-itogeneralnew and @eq-itogeneralnew2 to be valid.  Note also that we are using a short-hand notation here.  The partial derivatives of $g$ will generally depend on $t$, $X_t$ and $Y_t$ just as $g$ does.]
-
-$$
-Z_t = Z_0 + \int_0^T \frac{\partial g}{\partial t}\d   t + \int_0^T \frac{\partial g}{\partial x}\d   X_t + \int_0^T \frac{\partial g}{\partial y}\d   Y_t 
-$$
-$$
-+ \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial x^2}\,(\d  X_t)^2 +  \frac{1}{2} \int_0^T \frac{\partial^2 g}{\partial y^2}\,(\d  Y_t)^2 
-$$
-$$
-+  \int_0^T \frac{\partial^2 g}{\partial x\partial y}\,(\d  X_t)( \d  Y_t)\;.
-$$ {#eq-itogeneralnew}
-
-
-In this equation, we apply  @eq-dtsquared--@eq-dB to compute
-\begin{align*}
-(\d  X_t)^2&= \sigma_x^2_t\d   t\; ,\\
-(\d  Y_t)^2 &= \sigma_y^2_t\d   t\; ,\\
-(\d  X_t)( \d  Y_t) &= \sigma_x_t\sigma_y_t\rho_t\d   t\;.
-\end{align*}
-Ito's formula (@eq-itogeneralnew) appears a bit simpler (and easier to remember) if we write it in differential form.  We have:
-
-
-::: Rule
+::: {.Rule #rule-itoformula3}
 ## Ito's Formula 3
-If $Z_t = g(t, X_t, Y_t)$ where $X$ and $Y$ are Ito processes as in @eq-itoprocess110 - @eq-itoprocess111, then
-
-$$
-\d  Z =  \frac{\partial g}{\partial t}\d   t + \frac{\partial g}{\partial x}\d   X +  \frac{\partial g}{\partial y}\d   Y + \frac{1}{2} \frac{\partial^2 g}{\partial x^2}\,(\d  X)^2 +  \frac{1}{2}  \frac{\partial^2 g}{\partial y^2}\,(\d  Y)^2 
-$$
-$$
-+ \frac{\partial^2 g}{\partial x\partial y}\,(\d  X)(\d  Y)\;.
-$$ {#eq-itogeneralnew2}
-
-
+If $Y_t = f(t, X_{1t}, X_{2t})$ where $X_1$ and $X_2$ are Ito processes and $f$ is continuously differentiable in $t$ and twice continuously differentiable in $X_1$ and $X_2$, then 
+$$\begin{multline}
+\d  Y =  \frac{\partial f}{\partial t}\d   t + \frac{\partial f}{\partial X_1}\d   X_1 +  \frac{\partial f}{\partial X_2}\d   X_2 + \frac{1}{2} \frac{\partial^2 f}{\partial X_1^2}\,(\d  X_1)^2 +  \frac{1}{2}  \frac{\partial^2 f}{\partial X_2^2}\,(\d  X_2)^2 \\
++ \frac{\partial^2 f}{\partial X_1\partial X_2}\,(\d  X_1)(\d  X_2)\;.
+\end{multline}$$ {#eq-itogeneralnew2}
 
 :::
 
 
 ## Examples {#sec-s:examples}
-The following are the applications of Ito's formula that will be used most frequently in the book.  They follow from the boxed formula at the end of the previous section by taking $g(x,y)=xy$ or $g(x,y)=y/x$ or $g(x)=\e^x$ or $g(x) = \log x$.
+The following are the applications of Ito's formula that will be used most frequently in the book.  They follow from Calculation Rule \ref{rule-itoformula3} by taking $f(x,y)=xy$ or $f(x,y)=y/x$ or $f(x)=\e^x$ or $f(x) = \log x$.
 
 
 
