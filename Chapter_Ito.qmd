@@ -16,7 +16,7 @@ First, let's drop the randomness entirely.  Consider the equation
 $$X_{t_i} -  X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t$$ {#eq-ito_discrete_1}
 for a constant $\mu$.  Thus, we have "change $\,=\,$ mean," where the mean is proportional to the previous value with proportionality factor $\mu \Delta t$.  @fig-discrete-interest presents a plot of $X$, for particular values of $X_0$, $\mu$, and $\Delta t$.
 
-If we increase $n$, making $\Delta t$ smaller, then $X$ will converge to the solution of the ordinary differential equation
+If we increase $n$, making $\Delta t$ smaller, then $X$ converges to the solution of the ordinary differential equation
 $$\d X_t = \mu X_t\d  t\,.$$ {#eq-ito_discrete_2}
 @eq-ito_discrete_2 has a known solution, which is 
 $$X_t = X_0 \e^{\mu t}\,.$$ {#eq-ito_discrete_3}
@@ -26,7 +26,7 @@ The function presented in @eq-ito_discrete_3 is also shown in @fig-discrete-inte
 
 ::: Extra
 
-To see how one might guess that @eq-ito_discrete_3 is the solution of @eq-ito_discrete_2, we can examine the logarithm of $X$.  A general rule gives us $\d \log X = \d X / X$, so $\d \log X = \mu \d t$.  We can integrate both sides of this to obtain $\log X_t - \log X_0 = \mu t$.  Now, rearranging and exponentiating gives $X_t = X_0\e^{\mu t}$.  We will eventually follow similar steps to see that @eq-ito_discrete_6 is the solution of @eq-ito_discrete_5.
+To see how one might guess that @eq-ito_discrete_3 is the solution of @eq-ito_discrete_2, we can examine the logarithm of $X$.  A general rule gives us $\d \log X = \d X / X$, so $\d \log X = \mu \d t$.  We can integrate both sides of this to obtain $\log X_t - \log X_0 = \mu t$.  Now, rearranging and exponentiating gives $X_t = X_0\e^{\mu t}$.  Later, we follow similar steps to see that @eq-ito_discrete_6 is the solution of @eq-ito_discrete_5.
 :::
 
 ```{python}
@@ -47,7 +47,7 @@ fig.show()
 
 Now, let's include randomness.  Let's make the noise proportional to the value of $X$,  So, let $B$ be a standard Brownian motion and consider the equation
 $$X_{t_i} - X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t + \sigma X_{t_{i-1}} \Delta B_{t_i}$$ {#eq-ito_discrete_4}
-where $\sigma$ is another constant, and $\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}$.  A solution $X$ of this equation will have random paths, due to the random noise $\Delta B_{t_i}$.  An example of a path is shown in @fig-discrete-random.
+where $\sigma$ is another constant, and $\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}$.  A solution $X$ of this equation  has random paths, due to the random noise $\Delta B_{t_i}$.  An example of a path is shown in @fig-discrete-random.
 Ito showed how we can take the limit of this equation as we make $\Delta t$ smaller and make sense of the equation
 $$
 \d X_t = \mu X_t\d  t + \sigma X_t \d  B_t\,.
@@ -113,7 +113,7 @@ $$ {#eq-regularity1}
 for each $t$, then the Ito process is a continuous martingale, and the variance of its date--$t$ value, calculated with the information available at date $0$, is:
 $$\mathrm{var}(X_t) = \E \left[\int_0^t \theta^2_t\d  s\right]\; .$$  
 
-## Quadratic Variation of an Ito Process
+## Quadratic and Joint Variation of  Ito Processes
 
 The quadratic variation of the Ito process $X$ defined in @eq-ito2 through each date $t$ is 
 $$
@@ -121,7 +121,7 @@ $$
 $$ 
 with probability one.  In fact, when @eq-regularity1 holds, a somewhat more precise definition of the stochastic integral is the (unique) martingale with quadratic variation given by @eq-itoquadraticvariation.
 
-To compute the quadratic variation of an Ito process, we use the following simple and important rules (for the sake of brevity, we drop the subscript $t$ from $B_t$ here and sometimes later).  These rules should be regarded as mnemonic devices.  The calculations we will do with them lead to the correct results, but the objects have no real mathematical meaning.
+To compute the quadratic variation of an Ito process, we use the following simple and important rules (for the sake of brevity, we drop the subscript $t$ from $B_t$ here and sometimes later).  These rules should be regarded as mnemonic devices.  The calculations we do with them lead to the correct results, but the objects have no real mathematical meaning.
 
 ::: Rule
 ## 
@@ -165,7 +165,31 @@ $$
 $$ {#eq-itoquadraticvariation2}
 
 
+Consider two Ito processes
 
+
+$$
+\d  X_{1t} = \mu_{1t}\d   t + \sigma_{1t}\d   B_{1t}\;,
+$$ {#eq-itoprocess110}
+
+$$
+\d  X{2t} = \mu_{2t}\d   t + \sigma_{2t}\d   B_{2t}\;,
+$$ {#eq-itoprocess111}
+
+
+
+where $B_1$ and $B_2$ are standard Brownian motions.  We calculate the product of differentials of Ito processes as follows.
+
+::: Rule
+
+If $X_1$ and $X_2$ are Ito processes as in @eq-itoprocess111 and @eq-itoprocess112, then
+$$(\d X_1)(\d X_2) = (\sigma_{1s}\d B_{1s})(\sigma_{2s}\d B_{2s})= \sigma_1\sigma_2\rho\d t$$
+where $\rho$ is the correlation process of the two Brownian motions. 
+:::
+
+The real meaning of this rule is that it is possible to calculate the joint variation (i.e., limit of sum of products of changes) of the two Ito processes from $0$ to $t$ as
+$$\int_0^t (\d X_{1s})(\d X_{2s}) = \int_0^t (\sigma_{1s}\d B_{1s})(\sigma_{2s}\d B_{2s}) = \int_0^t \sigma_{1s}\sigma_{2s}\rho_s\d s\,.
+$$ {#eq-itojointvariation}
 
 ## Introduction to Ito's Formula {#sec-s:itosformula}
 
@@ -219,7 +243,7 @@ To see the accuracy of Ito's approximation over different time steps, as well as
 $$\e^{B_t}=1 + \int_0^t \e^{B_s} \d B_s + \frac{1}{2}\int_0^t \e^{B_s} \d s$$
 using the discretization 
 $$\Delta \e^{B_{t_i}}= \e^{B_{t_{i-1}}} \Delta B_{t_i} + \frac{1}{2} \e^{B_{t_{i-1}}} \Delta t \,.$$
-Notice that the discretization is just a second-order Taylor series expansion.  The discretization will approximate the true value better if we take $n$ larger and $\Delta t$ smaller.  The important take-away from the figure is that the cumulative second-derivative terms in the discretization 
+Notice that the discretization is just a second-order Taylor series expansion.  The discretization approximates the true value better if we take $n$ larger and $\Delta t$ smaller.  The important take-away from the figure is that the cumulative second-derivative terms in the discretization 
 do not vanish as we take $n$ larger but instead continue to contribute significantly to the approximation.
 
 
@@ -255,7 +279,7 @@ This verifies @eq-ito_discrete_5.
 Now consider the more general case $Y_t = f(t, X_t)$ where $X$ is an Ito process.  As explained before, this means that
 $$\d X_t = \alpha_t\d t + \theta_t \d B_t
 $$ {#eq-itoagain}
-for some stochastic processes $\alpha$ and $\theta$, where $B$ is a standard Brownian motion.  Then, from our previous rules, $(\d X)^2 = \theta^2\d t$.  Ito's formula in this more general case takes the same form as Calculation Rule \ref{ruleito1}.
+for some stochastic processes $\alpha$ and $\theta$, where $B$ is a standard Brownian motion.  Then, from our previous rules, $(\d X)^2 = \theta^2\d t$.  Ito's formula in this more general case takes the same form as Calculation Rule \ref{ruleito1}, replacing the Brownian motion $B$ with the Ito process $X$.
 
 ::: {.Rule #ruleito2}
 ## Ito's Formula 2
@@ -268,6 +292,32 @@ $$ {#eq-ito-secondformula}
 
 We can write @eq-ito-secondformula in terms of $\d t$ and $\d B$ terms by substituting from @eq-itoagain and using $(\d X)^2 = \theta^2\d t$.  This produces
 $$\d Y_t = \left(\frac{\partial f(t, X_t)}{\partial t} + \alpha_t\frac{\partial f(t, X_t)}{\partial X} + \frac{1}{2}\theta_t^2 \frac{\partial^2 f(t, X_t)}{\partial X^2}\right)\d t + \theta_t\frac{\partial f(t, X_t)}{\partial X}\d B_t\,.$$
+
+Here are some important examples of Ito's formula.
+
+::: Rule
+## Ito's Formula for Exponentials
+
+If $Z=\mathrm{e}^X$, then 
+$$\frac{\d  Z}{Z}=\d  X + \frac{(\d  X)^2}{2}\;.
+$$ {#eq-rule5}
+
+
+:::
+
+
+
+::: Rule
+
+## Ito's Formula for Logarithms
+If $Z=\log X$, then
+$$
+\d  Z=\frac{\d  X}{X} - \frac{1}{2}\left(\frac{\d  X}{X}\right)^2\;.
+$$ {#eq-rule6}
+
+
+:::
+
 
 ::: Extra
 We already verified that $X$ defined in @eq-ito_discrete_6 satisfies @eq-ito_discrete_5, but it is also useful to see how we could start from @eq-ito_discrete_5 and deduce that @eq-ito_discrete_6 is the solution.  We can do that by taking logarithms, as we did in the non-random case in @sec-s:discrete.  Set $Y_t = \log X_t$.  Then, using Calculation Rule \ref{ruleito2}, we have
@@ -282,29 +332,7 @@ Exponentiating gives @eq-ito_discrete_6.
 
 ## Extension to Functions of Multiple Ito Processes
 
-Consider two Ito processes
 
-
-$$
-\d  X_{1t} = \mu_{1t}\d   t + \sigma_{1t}\d   B_{1t}\;,
-$$ {#eq-itoprocess110}
-
-$$
-\d  X{2t} = \mu_{2t}\d   t + \sigma_{2t}\d   B_{2t}\;,
-$$ {#eq-itoprocess111}
-
-
-
-where $B_1$ and $B_2$ are standard Brownian motions.  We calculate the product of differentials of Ito processes as follows.
-::: Rule
-## 
-If $X_1$ and $X_2$ are Ito processes as in @eq-itoprocess111 and @eq-itoprocess112, then
-$$(\d X_1)(\d X_2) = (\sigma_{1s}\d B_{1s})(\sigma_{2s}\d B_{2s})= \sigma_1\sigma_2\rho\d t$$
-where $\rho$ is the correlation process of the two Brownian motions. 
-:::
-The real meaning of this rule is that it is possible to calculate the joint variation (i.e., limit of sum of products of changes) of the two Ito processes from $0$ to $t$ as
-$$\int_0^t (\d X_{1s})(\d X_{2s}) = \int_0^t (\sigma_{1s}\d B_{1s})(\sigma_{2s}\d B_{2s}) = \int_0^t \sigma_{1s}\sigma_{2s}\rho_s\d s\,.
-$$ {#eq-itojointvariation}
 Using this rule for products of differentials, we can state Ito's formula for a function of time and two Ito processes as follows.
 
 
@@ -320,7 +348,7 @@ $$\begin{multline}
 
 
 ## Examples {#sec-s:examples}
-The following are the applications of Ito's formula that will be used most frequently in the book.  They follow from Calculation Rule \ref{rule-itoformula3} by taking $f(x,y)=xy$ or $f(x,y)=y/x$ or $f(x)=\e^x$ or $f(x) = \log x$.
+The following are the applications of Ito's formula that are used most frequently in the book.  They follow from Calculation Rule \ref{rule-itoformula3} by taking $f(x,y)=xy$ or $f(x,y)=y/x$ or $f(x)=\e^x$ or $f(x) = \log x$.
 
 
 
@@ -345,31 +373,6 @@ $$ {#eq-rule2}
 If $Z=Y/X$, then 
 $$\frac{\d  Z}{Z} = \frac{\d  Y}{Y} -\frac{\d  X}{X} - \left(\frac{\d  Y}{Y}\right)\left(\frac{\d  X}{X}\right) + \left(\frac{\d  X}{X}\right)^2\;.
 $$ {#eq-rule4}
-
-
-:::
-
-
-
-::: Rule
-## Ito's Formula for Exponentials
-
-If $Z=\mathrm{e}^X$, then 
-$$\frac{\d  Z}{Z}=\d  X + \frac{(\d  X)^2}{2}\;.
-$$ {#eq-rule5}
-
-
-:::
-
-
-
-::: Rule
-
-## Ito's Formula for Logarithms
-If $Z=\log X$, then
-$$
-\d  Z=\frac{\d  X}{X} - \frac{1}{2}\left(\frac{\d  X}{X}\right)^2\;.
-$$ {#eq-rule6}
 
 
 :::
