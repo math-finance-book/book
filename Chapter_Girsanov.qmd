@@ -4,9 +4,9 @@
 
 When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  However, the Brownian motion $B$ will still be an Ito process under the new probability measure.  In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire) this will always be true for us.]  Changing probabilities only changes the drift of an Ito process.  
 
-In a sense, this should not be surprising.  It was noted in @sec-s:quadraticvariation that a Brownian motion $B$ can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval $[0,T]$ is equal to $T$.  Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in $B$) but it will not affect how each path jiggles. So, under the new probability measure, $B$ should still be like a Brownian motion but it may have a nonzero drift.  If we consider a general Ito process, the reasoning is the same.  The diffusion coefficient $\sigma$ determines how much each path jiggles, and this is unaffected by changing the probability measure.  Furthermore, instantaneous covariances---the $(\d  X)(\d  Y)$ terms---between Ito processes are unaffected by changing the probability measure.  Only the drifts are affected.
+This should not be surprising.  @sec-s:quadraticvariation explains that a Brownian motion $B$ can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval $[0,T]$ is equal to $T$.  Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in $B$) but it will not affect how each path jiggles. So, under the new probability measure, $B$ should still be like a Brownian motion but it may have a nonzero drift.  If we consider a general Ito process, the reasoning is the same.  The diffusion coefficient $\sigma$ determines how much each path jiggles, and this is unaffected by changing the probability measure.  Furthermore, instantaneous covariances---the $(\d  X)(\d  Y)$ terms---between Ito processes are unaffected by changing the probability measure.  Only the drifts are affected.
 
-## Changing Measures {#sec-s:girsanov}
+## Probability Measures and Drifts {#sec-s:girsanov}
 
 As explained in @sec-c:arbitrage, we need to know the distribution of the underlying under probability measures corresponding to different numeraires.  Let $S$ be the price of an asset that has a constant dividend yield $q$, and, as in @sec-s:reinvestingdividends, let $V_t=\mathrm{e}^{qt}S_t$.  This is the price of the portfolio in which all dividends are reinvested, and we have 
 $$\frac{\d  V}{V} = q\d   t + \frac{\d  S}{S}\; .$$
@@ -28,7 +28,8 @@ $$\frac{\d  Z}{Z} =-r\d   t + \frac{\d  V}{V} = (q-r)\d   t + \frac{\d  S}{S}\; 
 For $Z$ to be a martingale, the drift ($\d  t$ part) of $\d  Z/Z$ must be zero.  Therefore, the drift of $\d  S/S$ must be $(r-q)\d   t$ under the risk-neutral probability.  Because the change of measure does not affect the volatility, this implies:
 
 ::: Rule
-## 
+## Risk-Neutral Probability
+If $S$ is the price of the price of an asset with dividend yield equal to $q$, then
 $$
 \frac{\d  S}{S} =( r-q)\d   t+\sigma\d   B^*\;,
 $$ {#eq-riskneutral11}
@@ -49,11 +50,11 @@ S$ is $(r -q + \sigma^2_s)\d   t$.  We conclude that:
 
 ::: Rule
 ## 
+If $S$ is the price of the price of an asset with dividend yield equal to $q$, then
 $$
 \frac{\d  S}{S} = (r-q+ \sigma^2_s)\d   t+\sigma\d   B^*\;,
 $$ {#eq-own11}
-
-where now $B^*$ denotes a Brownian motion when $V_t=\mathrm{e}^{qt}S_t$ is the numeraire.
+where now $B^*$ is a Brownian motion when $V_t=\mathrm{e}^{qt}S_t$ is the numeraire.
 :::
 
 
@@ -71,6 +72,7 @@ $(r-q+ \rho\sigma\phi)\d   t$.  We conclude that:
 
 ::: Rule
 ## 
+If $S$ is the price of the price of an asset with dividend yield equal to $q$, then
 $$
 \frac{\d  S}{S} = (r-q+ \rho\sigma\phi)\d   t+\sigma\d   B^*\;,
 $$ {#eq-other11}
@@ -107,75 +109,5 @@ $$(q-r)\d   t + \frac{\d  S}{S} = \sigma\d   B^* \quad \Longleftrightarrow \quad
 as in  @eq-riskneutral11.
 :::
 
-## Tail Probabilities {#sec-tailprobs}
-
-For each of the numeraires discussed in the previous section, we have
-$$
-\d  \log S = \alpha\d   t + \sigma\d   B\;,
-$$ {#eq-tailprob1}
-
-for some $\alpha$ and $\sigma$, where $B$ is a Brownian motion under the probability measure associated with the numeraire.  Specifically, $\sigma=\sigma$, $B=B^*$, and
-
-
-
-\renewcommand{\labelenumi}{(\arabic{enumi})}
-1. for the risk-neutral probability, $\alpha = r-q-\sigma^2/2$,
-2. when $\mathrm{e}^{qt}S_t$ is the numeraire, $\alpha = r-q +\sigma^2/2$,
-3. when another risky asset price $Y$ is the numeraire, $\alpha = r-q+\rho\sigma\phi-\sigma^2/2$.
-
-
-
-We will assume in this section that $\alpha$ and $\sigma$ are constants.
-The essential calculation in pricing options is to compute $\text{prob}(S_t>K)$ and $\text{prob}(S_t<K)$ for a constant $K$ (the strike price of an option), where $\text{prob}$ denotes the probabilities at date $0$ (the date we are pricing an option) associated with a particular numeraire.  
-
-@eq-tailprob1 gives us
-$$\log S_t = \log S_0 + \alpha T + \sigma B_t\; .$$
-Given this, we deduce
-
-$$ 
-S_t > K  \quad\Longleftrightarrow\quad \log S_t > \log K
-$$
-$$
- \quad\Longleftrightarrow\quad \sigma B_t > \log K - \log S_0-\alpha T
-$$
-$$
- \quad\Longleftrightarrow\quad \frac{B_t}{\sqrt{T}} > \frac{\log K - \log S_0-\alpha T}{\sigma\sqrt{T}}
-$$
-$$
- \quad\Longleftrightarrow\quad -\frac{B_t}{\sqrt{T}} < \frac{\log S_0-\log K + \alpha T}{\sigma\sqrt{T}}
-$$
-$$
- \quad\Longleftrightarrow\quad -\frac{B_t}{\sqrt{T}} < \frac{\log \left(\frac{S_0}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
-$$ {#eq-tailprob2}
-
-
-The random variable on the left-hand side of @eq-tailprob2 has the standard normal distribution---it is normally distributed with mean equal to zero and variance equal to one.  As is customary, we will denote the probability that a standard normal is less than some number $d$ as $\mathrm{N}(d)$.  We conclude:
-
-::: Rule
-## 
-Assume $\d  \log S = \alpha\d   t + \sigma\d   B$, where $B$ is a Brownian motion.  Then, for any number $K$,
-$$
-\text{prob}(S_t>K) = \mathrm{N}(d)\;,
-$$ {#eq-tailprob01}
-
-where
-$$
-d = \frac{\log \left(\frac{S_0}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
-$$ {#eq-tailprob3}
-
-:::
-
-
-The  probability $\text{prob}(S_t<K)$ can be calculated similarly, but the simplest way to derive it is to note that the events $S_t>K$ and $S_t<K$ are complementary---their probabilities sum to one (the event $S_t=K$ having zero probability).  Therefore $\text{prob}(S_t<K) = 1-\mathrm{N}(d)$.  This is the probability that a standard normal is greater than $d$, and by virtue of the symmetry of the standard normal distribution, it equals the probability that a standard normal is less than $-d$.  Therefore, we have:
-
-::: Rule
-## 
-Assume $\d  \log S = \alpha\d   t + \sigma\d   B$, where $B$ is a Brownian motion.  Then, for any number $K$,
-$$
-\text{prob}(S_t<K) = \mathrm{N}(-d)\;,
-$$ {#eq-tailprob02}
-
-where $d$ is defined in @eq-tailprob3.
-:::
 
 ## Girsanov's Theorem

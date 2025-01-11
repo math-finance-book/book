@@ -8,9 +8,11 @@ The pricing and hedging results in this book are not tied to any particular curr
 
 ## Fundamental Ideas in a Simple Setting {#sec-s:oneperiodbinomial}
 
-We consider in this section the following very simple framework.  \index{binomial model} There is a stock with price $S$ today (which we call date $0$).  At the end of some period of time of length $T$, the stock price will take one of two values: either $S_u$ or $S_d$, where $S_u > S_d$.  If the stock price equals $S_u$ we say we are in the up state of the world, and if it equals $S_d$ we say we are in the down state.  The stock does not pay a dividend prior to $T$.  There is also a risk-free asset earning a continuously compounded rate of interest $r$.  Finally we want to consider a European call option on the stock with maturity $T$ and strike $K$.   A call option gives the owner the right (but not the obligation) to buy the stock at the fixed price called the strike.  The value of this at the option maturity $T$ is the excess of the stock price over $K$ if the excess is positive and is zero otherwise, which we write as $C_u=\max(0,S_u-K)$ in the up state and $C_d=\max(0,S_d-K)$ in the down state. 
+We consider in this section the following very simple framework.  \index{binomial model} There is a stock with price $S$ today (which we call date $0$).  At the end of some period of time of length $t$, the stock price will take one of two values: either $S_u$ or $S_d$, where $S_u > S_d$.  If the stock price equals $S_u$ we say we are in the up state of the world, and if it equals $S_d$ we say we are in the down state.  The stock does not pay a dividend prior to $t$.  There is also a risk-free asset earning a continuously compounded rate of interest $r$.  Finally we want to consider a European call option on the stock with maturity $t$ and strike $K$.   A call option gives the owner the right (but not the obligation) to buy the stock at the fixed price called the strike.  The value of this at the option maturity $t$ is the excess of the stock price over $K$ if the excess is positive and is zero otherwise, which we write as $C_u=\max(0,S_u-K)$ in the up state and $C_d=\max(0,S_d-K)$ in the down state. 
 
-We assume
+We can relax the assumption that the stock does not pay a dividend prior to $t$.  We do that by assuming we are enrolled in a dividend-reinvestment program, so instead of receiving cash dividends, we instead receive additional shares of the asset.   Of course, if a company does not operate a dividend-reinvestment program, we can simulate this on our own by buying shares with cash dividends received.  In our model, we start with one share at date $0$ with price $S_0$, and we consider the future value -- either $S_u$ or $S_d$ -- of owning more than one share at date $t$, because the number of shares grows through reinvestment of dividends.   We call this a "dividend-reinvested asset."  We formulate valuation principles for dividend-reinvested assets throughout the book.
+
+Assume
 $$
 \frac{S_u}{S} > \mathrm{e}^{rT} > \frac{S_d}{S}\;.
 $$ {#eq-binomialnoarbitrage}
@@ -154,17 +156,19 @@ $$ {#eq-binomialR5}
 
 An assignment of probabilities to events is called a probability measure, or simply a measure (because it measures the events, in a sense).  Thus, we have described two different probability measures: one using the risk-free asset as numeraire and one using the stock as numeraire.  The probability measure using the risk-free asset as numeraire defined in the previous section is universally called the risk-neutral probability.  When we use one of these probabilities, we commonly say that we are changing numeraires.
 
+
+
 ::: Principle
-If there are no arbitrage opportunities, then for each (non-dividend-paying) asset, there exists a probability measure  such that the ratio of any other (non-dividend-paying) asset price to the first (numeraire) asset price is a martingale.
+If there are no arbitrage opportunities, then for each dividend-reinvested asset, there exists a probability measure  such that the ratio of any other dividend-reinvested asset price to the first (numeraire) asset price is a martingale.
 :::
 
-We have applied this statement to the risk-free asset, which pays dividends (interest).  However, the price $R_u=R_d=\mathrm{e}^{rT}$ includes the interest, so no interest has been withdrawn---the interest has been reinvested---prior to the maturity $T$ of the option.  This is what we mean by a non-dividend-paying asset.  In general, we apply the formulas developed in this and the following section to dividend-paying assets by considering the portfolios in which dividends are reinvested.
+We have applied this statement to the risk-free asset, which pays dividends (interest).  However, the price $R_u=R_d=\mathrm{e}^{rT}$ includes the interest, so no interest has been withdrawn---the interest has been reinvested---prior to the maturity $T$ of the option.  This is what we mean by a dividend-reinvested asset.  In general, we apply the formulas developed in this and the following section to dividend-paying assets by considering the portfolios in which dividends are reinvested.
 
 ### Practical Implementation
 
 For this exposition, it was convenient to first calculate the state prices and then calculate the various probabilities.  However, that is not the most efficient way to proceed in most applications.  In a typical application, we would view the prices of the stock and risk-free asset in the various states of the world as given, and we would be attempting to compute the value of the call option.  Note that t @eq-binomialC2--@eq-binomialR2, @eq-binomialC4--@eq-binomialR4, and @eq-binomialC5--@eq-binomialR5 are all equivalent.  In each case we would consider that there are three unknowns---the value $C$ of the call option and either two state prices or two probabilities.  In each case the state prices or probabilities can be computed from the last two equations in the set of three equations and then the call value $C$ can be computed from the first equation in the set.  All three sets of equations produce the same call value.  
 
-In fact, as we will see, it is not even necessary to calculate the probabilities.  The fact  that ratios of non-dividend paying asset prices to the numeraire asset price are martingales tell us enough about the probabilities to calculate derivative values without having to calculate the probabilities themselves.
+In fact, as we will see, it is not even necessary to calculate the probabilities.  The fact  that ratios of dividend-reinvested asset prices to the numeraire asset price are martingales tell us enough about the probabilities to calculate derivative values without having to calculate the probabilities themselves.
 
 ### Stochastic Discount Factor 
 
@@ -197,16 +201,16 @@ We call the random variable $m$ the stochastic discount factor.  @eq-binomialS6-
 
 ## More General Models
 
-Now, we drop the assumption that there are only two possible future prices of the stock and allow a general distribution with potentially a continuum of possible values.  Denote the future price as $S_T$.   Our principle regarding the stochastic discount factor developed in the preceding section can in general be expressed as:^[We have proven this in the two-state model, but we will not prove it in general.  As is standard in the literature, we simply adopt it as an assumption.  A general proof is in fact difficult and requires a definition of no arbitrage that is considerably more complicated than the simple assumption @eq-binomialnoarbitrage that is sufficient in thetwo-state up-and-down model.] 
+Now, we drop the assumption that there are only two possible future prices of the stock and allow a general distribution with potentially a continuum of possible values.  Denote the future price as $S_t$.   Our principle regarding the stochastic discount factor developed in the preceding section can in general be expressed as:^[We have proven this in the two-state model, but we will not prove it in general.  As is standard in the literature, we simply adopt it as an assumption.  A general proof is in fact difficult and requires a definition of no arbitrage that is considerably more complicated than the simple assumption @eq-binomialnoarbitrage that is sufficient in thetwo-state up-and-down model.] 
 
 ::: Principle
-If there are no arbitrage opportunities, then there exists for each date $T$ a positive random variable $m_T$, called a stochastic discount factor, such that the date--$0$ value of any non-dividend-paying security with price $P$ is 
+If there are no arbitrage opportunities, then there exists for each date $t$ a positive random variable $m_t$, called a stochastic discount factor, such that the date--$0$ value of any dividend-reinvested asset with price $P$ is 
 $$
-P_0 = \E[m_TP_T]\;.
+P_0 = \E[m_tP_t]\;.
 $$ {#eq-continuum1}
 :::
 
-Here, $\E[m_TS_T]$ denotes the expectation of the random variable $m_TS_T$.   In a two-state model (or in any model with only a finite number of states of the world), the concept of an expectation is clear: it is just a weighted average of outcomes, the weights being the probabilities.  In the two-state model, the right-hand side of @eq-binomialS6 is the same as the right-hand side of @eq-continuum1.^[
+Here, $\E[m_tS_t]$ denotes the expectation of the random variable $m_tS_t$.   In a two-state model (or in any model with only a finite number of states of the world), the concept of an expectation is clear: it is just a weighted average of outcomes, the weights being the probabilities.  In the two-state model, the right-hand side of @eq-binomialS6 is the same as the right-hand side of @eq-continuum1.^[
 In general the expectation (or mean) of a random variable is an intuitive concept, and an intuitive understanding  is sufficient for this book, so we will not give a formal definition.  It should be understood that we are assuming implicitly, whenever necessary, that the expectation exists (which is not always the case).  In this regard, it is useful to note in passing that a product of two random variables $XY$ has a finite mean whenever $X$ and $Y$ have finite variances.]  
 
 
@@ -234,17 +238,17 @@ $$ {#eq-expSnumeraire2}
 
 ### Fundamental Pricing Formula
 
-Our key result in the two-state up-and-down example considered earlier was that the ratio of the price of any non-dividend paying asset to the price of the numeraire asset is not expected to change when we use the probability measure corresponding to the numeraire.  We now demonstrate the same result in this more general model.   Recall that $T$ denotes an arbitrary but fixed date at which we have defined the probabilities using $S$ as the numeraire in @eq-probSnumeraire.  At each date $t<T$, let $\E^P_t$ denote the expectation given information at time $t$ and using a non-dividend-paying asset price $P$ as the numeraire (we continue to write the expectation at date $0$ without a subscript; i.e., $\E^S$ has the same meaning as $\E^S_0$).  Let $Y$ denote the price of another non-dividend-paying asset.  We will show that
+Our key result in the two-state up-and-down example considered earlier was that the ratio of the price of any dividend-reinvested asset to the price of the numeraire asset is not expected to change when we use the probability measure corresponding to the numeraire.  We now demonstrate the same result in this more general model.   Recall that $T$ denotes an arbitrary but fixed date at which we have defined the probabilities using $S$ as the numeraire in @eq-probSnumeraire.  At each date $t<T$, let $\E^P_t$ denote the expectation given information at time $t$ and using a dividend-reinvested asset price $P$ as the numeraire (we continue to write the expectation at date $0$ without a subscript; i.e., $\E^S$ has the same meaning as $\E^S_0$).  Let $Y$ denote the price of another dividend-reinvested asset.  We will show that
 $$
 \frac{Y_t}{P_t} = \E^P_t \left[\frac{Y_T}{P_T}\right]\;.
 $$ {#eq-preformula}
 
 Thus, the expected future (date--$T$) value of the ratio $Y/S$ always equals the current (date--$t$) value when we use $S$ as the numeraire.  As discussed in the preceding section, the mathematical term for a random variable whose expected future value always equals its current value is martingale.  Thus, we can express @eq-preformula as stating that the ratio $Y/P$ is a martingale when we compute expectations using the probability measure that corresponds to $S$ being the numeraire.
 
-The usefulness of @eq-preformula is that it gives us a formula for the asset price $Y_t$ at any time $t$---and recall that this formula holds for every non-dividend paying asset.  The formula is obtained from @eq-preformula by multiplying through by $P_t$:
+The usefulness of @eq-preformula is that it gives us a formula for the asset price $Y_t$ at any time $t$---and recall that this formula holds for every dividend-reinvested asset.  The formula is obtained from @eq-preformula by multiplying through by $P_t$:
 
-::: Principle
-In the absence of arbitrage opportunities, prices $P$ and $Y$ of non-dividend-paying assets satisfy
+::: {.Principle #principle-fundamental}
+In the absence of arbitrage opportunities, prices $P$ and $Y$ of dividend-reinvested assets satisfy
 $$
 Y_t = P_t\E^P_t \left[\frac{Y_T}{P_T}\right]\;.
 $$ {#eq-formula}
