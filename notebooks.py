@@ -2,7 +2,7 @@ import os
 import json
 import subprocess
 
-finished = ["Brownian"]
+finished = ["Brownian", "Ito"]
 finished = ["Chapter_" + f + ".qmd" for f in finished]
 
 image_path = "https://www.dropbox.com/scl/fi/6hwvdff7ajaafmkpmnp0o/under_construction.jpg?rlkey=3dex2dx86anniqoutwyqashnu&dl=1"
