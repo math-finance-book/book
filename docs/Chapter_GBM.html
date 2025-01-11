@@ -112,18 +112,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
 </script>
 <style>
-.Done {
-  --color1: #e8cc97;
-  --color2: #7d6538;
-}
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
-}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
@@ -132,6 +120,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   --color1: #a7f2d8;
   --color2: #50997f;
 }
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
+}
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
@@ -139,6 +131,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
+}
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
+.Done {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 </style>
 
@@ -541,7 +541,7 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 \qquad(7.7)\]</span></span></p>
 <p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S_{t_{i-1}}\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>7.7</span></a>. Thus, the geometric Brownian motion model (<a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>7.3</span></a>)implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_StochasticVol.html" class="quarto-xref"><span>Chapter 18</span></a>).</p>
 <p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>7.6</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
-<div id="90ac82da" class="cell" data-execution_count="1">
+<div id="3da33c86" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -587,7 +587,7 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 </div>
 </div>
 <p>The plot below is the distribution of the simulated stock price at <span class="math inline">\(T\)</span>.</p>
-<div id="fe1bf98a" class="cell" data-execution_count="2">
+<div id="5e85a0d8" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -609,8 +609,51 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <p>While geometric Brownian motion is an important stochastic process to model stock prices, the process with drift equal to zero given by <span class="math display">\[X_t = \exp\left(-\frac{\kappa^2}{2} + \kappa B_t\right)\]</span></p>
 <p>satisfies <span class="math inline">\(\mathbb{E}[X_t]=1\)</span> and <span class="math inline">\(\mathbb{E}[X_t|X_s]=X_s\)</span> and is an important example of a strictly positive martingale. Again, these facts can be verified using the formula for the expected value of a lognormal random variable. Notice that we can write <span class="math display">\[\,\mathrm{d}X_t= \kappa X_t \,\mathrm{d}B_t\;,\]</span> which agrees with the martingale characterization of <span class="math inline">\(\int_0^t \sigma(X_t,t) \,\mathrm{d}B_t\)</span>.</p>
 </section>
-<section id="sec-s:volatilities" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="sec-s:volatilities"><span class="header-section-number">7.2</span> Volatilities</h2>
+<section id="sec-tailprobs" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-tailprobs"><span class="header-section-number">7.2</span> Tail Probabilities of Geometric Brownian Motions</h2>
+<p>For each of the numeraires discussed in the previous section, we have <span id="eq-tailprob1"><span class="math display">\[
+\,\mathrm{d}\log S = \alpha\,\mathrm{d}t + \sigma\,\mathrm{d}B\;,
+\qquad(7.9)\]</span></span></p>
+<p>for some <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\sigma\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion under the probability measure associated with the numeraire. Specifically, <span class="math inline">\(\sigma=\sigma\)</span>, <span class="math inline">\(B=B^*\)</span>, and</p>
+<ol type="1">
+<li>for the risk-neutral probability, <span class="math inline">\(\alpha = r-q-\sigma^2/2\)</span>,</li>
+<li>when <span class="math inline">\(\mathrm{e}^{qt}S_t\)</span> is the numeraire, <span class="math inline">\(\alpha = r-q +\sigma^2/2\)</span>,</li>
+<li>when another risky asset price <span class="math inline">\(Y\)</span> is the numeraire, <span class="math inline">\(\alpha = r-q+\rho\sigma\phi-\sigma^2/2\)</span>.</li>
+</ol>
+<p>We will assume in this section that <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\sigma\)</span> are constants. The essential calculation in pricing options is to compute <span class="math inline">\(\text{prob}(S_t&gt;K)\)</span> and <span class="math inline">\(\text{prob}(S_t&lt;K)\)</span> for a constant <span class="math inline">\(K\)</span> (the strike price of an option), where <span class="math inline">\(\text{prob}\)</span> denotes the probabilities at date <span class="math inline">\(0\)</span> (the date we are pricing an option) associated with a particular numeraire.</p>
+<p><a href="#eq-tailprob1" class="quarto-xref">Equation&nbsp;<span>7.9</span></a> gives us <span class="math display">\[\log S_t = \log S_0 + \alpha T + \sigma B_t\; .\]</span> Given this, we deduce</p>
+<p><span class="math display">\[
+S_t &gt; K  \quad\Longleftrightarrow\quad \log S_t &gt; \log K
+\]</span> <span class="math display">\[
+\quad\Longleftrightarrow\quad \sigma B_t &gt; \log K - \log S_0-\alpha T
+\]</span> <span class="math display">\[
+\quad\Longleftrightarrow\quad \frac{B_t}{\sqrt{T}} &gt; \frac{\log K - \log S_0-\alpha T}{\sigma\sqrt{T}}
+\]</span> <span class="math display">\[
+\quad\Longleftrightarrow\quad -\frac{B_t}{\sqrt{T}} &lt; \frac{\log S_0-\log K + \alpha T}{\sigma\sqrt{T}}
+\]</span> <span id="eq-tailprob2"><span class="math display">\[
+\quad\Longleftrightarrow\quad -\frac{B_t}{\sqrt{T}} &lt; \frac{\log \left(\frac{S_0}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
+\qquad(7.10)\]</span></span></p>
+<p>The random variable on the left-hand side of <a href="#eq-tailprob2" class="quarto-xref">Equation&nbsp;<span>7.10</span></a> has the standard normal distribution—it is normally distributed with mean equal to zero and variance equal to one. As is customary, we will denote the probability that a standard normal is less than some number <span class="math inline">\(d\)</span> as <span class="math inline">\(\mathrm{N}(d)\)</span>. We conclude:</p>
+<div id="section" class="Rule" title="">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.3</strong></summary><div>Assume <span class="math inline">\(\,\mathrm{d}\log S = \alpha\,\mathrm{d}t + \sigma\,\mathrm{d}B\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion. Then, for any number <span class="math inline">\(K\)</span>, <span id="eq-tailprob01"><span class="math display">\[
+\text{prob}(S_t&gt;K) = \mathrm{N}(d)\;,
+\qquad(7.11)\]</span></span><p></p>
+<p>where <span id="eq-tailprob3"><span class="math display">\[
+d = \frac{\log \left(\frac{S_0}{K}\right) + \alpha T}{\sigma\sqrt{T}}\;.
+\qquad(7.12)\]</span></span></p>
+</div></details>
+</div>
+<p>The probability <span class="math inline">\(\text{prob}(S_t&lt;K)\)</span> can be calculated similarly, but the simplest way to derive it is to note that the events <span class="math inline">\(S_t&gt;K\)</span> and <span class="math inline">\(S_t&lt;K\)</span> are complementary—their probabilities sum to one (the event <span class="math inline">\(S_t=K\)</span> having zero probability). Therefore <span class="math inline">\(\text{prob}(S_t&lt;K) = 1-\mathrm{N}(d)\)</span>. This is the probability that a standard normal is greater than <span class="math inline">\(d\)</span>, and by virtue of the symmetry of the standard normal distribution, it equals the probability that a standard normal is less than <span class="math inline">\(-d\)</span>. Therefore, we have:</p>
+<div id="section-1" class="Rule" title="">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.4</strong></summary><div>Assume <span class="math inline">\(\,\mathrm{d}\log S = \alpha\,\mathrm{d}t + \sigma\,\mathrm{d}B\)</span>, where <span class="math inline">\(B\)</span> is a Brownian motion. Then, for any number <span class="math inline">\(K\)</span>, <span id="eq-tailprob02"><span class="math display">\[
+\text{prob}(S_t&lt;K) = \mathrm{N}(-d)\;,
+\qquad(7.13)\]</span></span><p></p>
+<p>where <span class="math inline">\(d\)</span> is defined in <a href="#eq-tailprob3" class="quarto-xref">Equation&nbsp;<span>7.12</span></a>.</p>
+</div></details>
+</div>
+</section>
+<section id="sec-s:volatilities" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="sec-s:volatilities"><span class="header-section-number">7.3</span> Products and Ratios of Geometric Brownian Motions</h2>
 <p>As mentioned in <a href="#sec-s:geometricbrownianmotion" class="quarto-xref"><span>Chapter 7</span></a>, when we encounter an equation of the form <span class="math display">\[\frac{\,\mathrm{d}S}{S} = \mu\,\mathrm{d}t + \sigma\,\mathrm{d}B\]</span> where <span class="math inline">\(B\)</span> is a Brownian motion, we will say <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(S\)</span>. We will occasionally need to compute the volatilities of products or ratios of random processes. These computations follow directly from Ito’s formula.</p>
 <p>Suppose <span class="math display">\[\frac{\,\mathrm{d}X}{X} = \mu_x\,\mathrm{d}t + \sigma_x\,\mathrm{d}B_x \qquad \text{and} \qquad
 \frac{\,\mathrm{d}Y}{Y} = \mu_y\,\mathrm{d}t + \sigma_y\,\mathrm{d}B_y\; ,\]</span> where <span class="math inline">\(B_x\)</span> and <span class="math inline">\(B_y\)</span> are Brownian motions with correlation <span class="math inline">\(\rho\)</span>, and <span class="math inline">\(\mu_x\)</span>, <span class="math inline">\(\mu_y\)</span>, <span class="math inline">\(\sigma_x\)</span>, <span class="math inline">\(\sigma_y\)</span>, and <span class="math inline">\(\rho\)</span> may be quite general random processes.</p>
@@ -618,15 +661,15 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <h3 class="anchored" data-anchor-id="products">Products</h3>
 <p>If <span class="math inline">\(Z=XY\)</span>, then <a href="Chapter_Ito.html#eq-rule2" class="quarto-xref">Equation&nbsp;<span>6.28</span></a> gives us <span id="eq-volproduct1"><span class="math display">\[
 \frac{\,\mathrm{d}Z}{Z} = (\mu_x+\mu_y+\rho\sigma_x\sigma_y)\,\mathrm{d}t + \sigma_x\,\mathrm{d}B_x + \sigma_y\,\mathrm{d}B_y\;.
-\qquad(7.9)\]</span></span></p>
+\qquad(7.14)\]</span></span></p>
 <p>The instantaneous variance of <span class="math inline">\(\,\mathrm{d}Z/Z\)</span> is calculated, using the rules for products of differentials, as <span class="math display">\[\begin{align*}
 \left(\frac{\,\mathrm{d}Z}{Z}\right)^2 &amp;= (\sigma_x\,\mathrm{d}B_x + \sigma_y\,\mathrm{d}B_y)^2\\
 &amp;= (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\,\mathrm{d}t\;.
 \end{align*}\]</span> As will be explained below, the volatility is the square root of the instantaneous variance (dropping the <span class="math inline">\(\,\mathrm{d}t\)</span>). This implies:</p>
-<div id="section" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.3</strong></summary><div>The volatility of <span class="math inline">\(XY\)</span> is <span id="eq-volatilityproduct"><span class="math display">\[
+<div id="section-2" class="Rule" title="">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.5</strong></summary><div>The volatility of <span class="math inline">\(XY\)</span> is <span id="eq-volatilityproduct"><span class="math display">\[
 \sqrt{\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y}\;.
-\qquad(7.10)\]</span></span><p></p>
+\qquad(7.15)\]</span></span><p></p>
 </div></details>
 </div>
 </section>
@@ -634,35 +677,38 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <h3 class="anchored" data-anchor-id="ratios">Ratios</h3>
 <p>If <span class="math inline">\(Z=Y/X\)</span>, then <a href="Chapter_Ito.html#eq-rule4" class="quarto-xref">Equation&nbsp;<span>6.29</span></a> gives us <span id="eq-ratioproduct1"><span class="math display">\[
 \frac{\,\mathrm{d}Z}{Z} = (\mu_y-\mu_x-\rho\sigma_x\sigma_y+\sigma_x^2)\,\mathrm{d}t + \sigma_y\,\mathrm{d}B_y - \sigma_x\,\mathrm{d}B_x\;.
-\qquad(7.11)\]</span></span></p>
+\qquad(7.16)\]</span></span></p>
 <p>The instantaneous variance of <span class="math inline">\(\,\mathrm{d}Z/Z\)</span> is therefore <span class="math display">\[\begin{align*}
 \left(\frac{\,\mathrm{d}Z}{Z}\right)^2 &amp;= (\sigma_y\,\mathrm{d}B_y - \sigma_x\,\mathrm{d}B_x)^2\\
 &amp;= (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\,\mathrm{d}t\;.
 \end{align*}\]</span> This implies:</p>
-<div id="section-1" class="Rule" title="">
-<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.4</strong></summary><div>The volatility of <span class="math inline">\(Y/X\)</span> is<br>
+<div id="section-3" class="Rule" title="">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 7.6</strong></summary><div>The volatility of <span class="math inline">\(Y/X\)</span> is<br>
 <span id="eq-volatilityratio"><span class="math display">\[
 \sqrt{\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y}\;.
-\qquad(7.12)\]</span></span><p></p>
+\qquad(7.17)\]</span></span><p></p>
 </div></details>
 </div>
 <div id="Extra-7.1" class="Extra">
 <p></p><details class="Extra fbx-simplebox fbx-default"><summary><strong>Theory Extra 7.1</strong></summary><div>To understand why taking the square root of <span class="math inline">\((\,\mathrm{d}Z/Z)^2\)</span> (dropping the <span class="math inline">\(\,\mathrm{d}t\)</span>) gives the volatility, consider for example the product case <span class="math inline">\(Z=XY\)</span>. Define a random process <span class="math inline">\(B\)</span> by <span class="math inline">\(B_0=0\)</span> and <span class="math display">\[
 \,\mathrm{d}B = \frac{\sigma_x}{\sigma}\,\mathrm{d}B_x + \frac{\sigma_y}{\sigma}\,\mathrm{d}B_y\;,
 \]</span> {#eq-foreign}<p></p>
-<p>where <span class="math inline">\(\sigma\)</span> is the volatility defined in <a href="#eq-volatilityproduct" class="quarto-xref">Equation&nbsp;<span>7.10</span></a>. Then we can write <a href="#eq-volproduct1" class="quarto-xref">Equation&nbsp;<span>7.9</span></a> as <span id="eq-volproduct2"><span class="math display">\[
-\frac{\,\mathrm{d}Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d}t + \sigma\,\mathrm{d}B\;. \qquad(7.13)\]</span></span></p>
+<p>where <span class="math inline">\(\sigma\)</span> is the volatility defined in <a href="#eq-volatilityproduct" class="quarto-xref">Equation&nbsp;<span>7.15</span></a>. Then we can write <a href="#eq-volproduct1" class="quarto-xref">Equation&nbsp;<span>7.14</span></a> as <span id="eq-volproduct2"><span class="math display">\[
+\frac{\,\mathrm{d}Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\,\mathrm{d}t + \sigma\,\mathrm{d}B\;. \qquad(7.18)\]</span></span></p>
 <p>From the discussion in <a href="Chapter_Ito.html#sec-s:itoprocesses" class="quarto-xref"><span>Section 6.2</span></a>, we know that <span class="math inline">\(B\)</span> is a continuous martingale. We can compute its quadratic variation from <span class="math display">\[\begin{align*}
 (\,\mathrm{d}B)^2 &amp;= \left(\frac{\sigma_x\,\mathrm{d}B_x + \sigma_s\,\mathrm{d}B_s}{\sigma}\right)^2\\
 &amp;= \frac{(\sigma_x^2 + \sigma_s^2 + 2\rho\sigma_x\sigma_s)\,\mathrm{d}t}{\sigma^2}\; ,\\
 &amp;= \,\mathrm{d}t\;.
-\end{align*}\]</span> By Levy’s theorem (see <a href="Chapter_Brownian.html#sec-s:quadraticvariation" class="quarto-xref"><span>Section 5.3</span></a>), any continuous martingale with this quadratic variation is necessarily a Brownian motion. Therefore, <a href="#eq-volproduct2" class="quarto-xref">Equation&nbsp;<span>7.13</span></a> shows that <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(Z\)</span> as defined at the beginning of the section.</p>
+\end{align*}\]</span> By Levy’s theorem (see <a href="Chapter_Brownian.html#sec-s:quadraticvariation" class="quarto-xref"><span>Section 5.3</span></a>), any continuous martingale with this quadratic variation is necessarily a Brownian motion. Therefore, <a href="#eq-volproduct2" class="quarto-xref">Equation&nbsp;<span>7.18</span></a> shows that <span class="math inline">\(\sigma\)</span> is the volatility of <span class="math inline">\(Z\)</span> as defined at the beginning of the section.</p>
 </div></details>
 </div>
 </section>
 </section>
-<section id="section-2" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="section-2"></h2>
+<section id="stochastic-coefficients" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="stochastic-coefficients"><span class="header-section-number">7.4</span> Stochastic Coefficients</h2>
+</section>
+<section id="section-4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="section-4"></h2>
 <div id="Exercise-7.1" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.1</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider the function <span class="math display">\[X_t=\mathrm{e}^t\; .\]</span> Write a code, which computes and plots <span class="math inline">\(\sum_{i=1}^N [\Delta X_{t_i}]^2\)</span>, where <span class="math display">\[\Delta X_{t_i} = X_{t_i}-X_{t_{i-1}} = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .\]</span><p></p>
 </div></details>
@@ -698,10 +744,10 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <div id="Exercise-7.9" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.9</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider a geometric Brownian motion <span class="math display">\[\frac{\,\mathrm{d}Z}{Z} = \mu\,\mathrm{d}t + \sigma\,\mathrm{d}B\; .\]</span> An approximate path <span class="math inline">\(\tilde{Z}_t\)</span> of the geometric Brownian motion can be simulated as <span id="eq-exponential111"><span class="math display">\[
 \Delta \tilde{Z}_{t_i} = \tilde{Z}_{t_{i-1}} \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
-\qquad(7.14)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z_t\)</span> and an approximate path <span class="math inline">\(\tilde{Z}_t\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>7.16</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}_0 = Z_0\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
+\qquad(7.19)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z_t\)</span> and an approximate path <span class="math inline">\(\tilde{Z}_t\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>7.21</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}_0 = Z_0\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
 For <span class="math inline">\(N\)</span> larger than about <span class="math inline">\(100 T\)</span>, the approximation will look perfect—you won’t be able to tell that there are two plots in the figure. One reason this is true is an exact formula is <span id="eq-exponential112"><span class="math display">\[
 Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
-\qquad(7.15)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2\)</span> and <span class="math inline">\((\,\mathrm{d}B_t)^2=\Delta t\)</span>.<p></p>
+\qquad(7.20)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2\)</span> and <span class="math inline">\((\,\mathrm{d}B_t)^2=\Delta t\)</span>.<p></p>
 </div></details>
 </div>
 <div id="Exercise-7.10" class="Exercise">
@@ -715,8 +761,8 @@ Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t 
 </div></details>
 </div>
 </section>
-<section id="section-3" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="section-3"></h2>
+<section id="section-5" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="section-5"></h2>
 <div id="Exercise-7.11" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.11</strong></summary><div>Use Ito’s formula to derive the stochastic differential equation for <span class="math inline">\(S_t^2\)</span>. Argue that <span class="math inline">\(S_t^2\)</span> is geometric Brownian motion and find <span class="math inline">\(\mathbb{E}[S_t^2]\)</span>.<p></p>
 </div></details>
@@ -728,10 +774,10 @@ Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t 
 <div id="Exercise-7.13" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 7.13</strong></summary><div>Consider a discrete partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots t_N=T\)</span> of the time interval <span class="math inline">\([0,T]\)</span> with <span class="math inline">\(t_i - t_{i-1} = \Delta t = T/N\)</span> for each <span class="math inline">\(i\)</span>. Consider a geometric Brownian motion <span class="math display">\[\frac{\,\mathrm{d}Z}{Z} = \mu\,\mathrm{d}t + \sigma\,\mathrm{d}B\; .\]</span> An approximate path <span class="math inline">\(\tilde{Z}_t\)</span> of the geometric Brownian motion can be simulated as <span id="eq-exponential111"><span class="math display">\[
 \Delta \tilde{Z}_{t_i} = \tilde{Z}_{t_{i-1}} \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
-\qquad(7.16)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z_t\)</span> and an approximate path <span class="math inline">\(\tilde{Z}_t\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>7.16</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}_0 = Z_0\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
+\qquad(7.21)\]</span></span> Modify the code to generate both a path <span class="math inline">\(Z_t\)</span> and an approximate path <span class="math inline">\(\tilde{Z}_t\)</span> according to <a href="#eq-exponential111" class="quarto-xref">Equation&nbsp;<span>7.21</span></a>, using the same <span class="math inline">\(\Delta B\)</span> for both paths and taking <span class="math inline">\(\tilde{Z}_0 = Z_0\)</span>. Plot both paths in the same figure. How well does the approximation work for large <span class="math inline">\(N\)</span>? Warning:<br>
 For <span class="math inline">\(N\)</span> larger than about <span class="math inline">\(100 T\)</span>, the approximation will look perfect—you won’t be able to tell that there are two plots in the figure. One reason this is true is an exact formula is <span id="eq-exponential112"><span class="math display">\[
 Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
-\qquad(7.17)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(\mathrm{e}^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(\mathrm{e}^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2\)</span> and <span class="math inline">\((\,\mathrm{d}B_t)^2=\Delta t\)</span>.<p></p>
+\qquad(7.22)\]</span></span> and using Taylor’s Theorem for small <span class="math inline">\(\Delta t\)</span>, <span class="math inline">\(\mathrm{e}^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t\)</span> and <span class="math inline">\(\mathrm{e}^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2\)</span> and <span class="math inline">\((\,\mathrm{d}B_t)^2=\Delta t\)</span>.<p></p>
 </div></details>
 </div>
 <div id="Exercise-7.14" class="Exercise">
