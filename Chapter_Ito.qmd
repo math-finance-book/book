@@ -31,17 +31,55 @@ To see how one might guess that @eq-ito_discrete_3 is the solution of @eq-ito_di
 
 ```{python}
 #| label: fig-discrete-interest
-#| fig-cap: The functions $X$ satisfying @eq-ito_discrete_1 and @eq-ito_discrete_3 for X0 = 1, mu = 1, and Delta t = 0.1.
+#| fig-cap: The functions $X$ satisfying @eq-ito_discrete_1 (difference equation) and @eq-ito_discrete_3 (differential equation) for X0 = 1, mu = 1, and Delta t = 0.1.
 
-import numpy as np 
-import plotly.graph_objects as go 
+import numpy as np
+import plotly.graph_objects as go
+
+mu = 1
+n = 10   # number of subdivisions
+t = 1     # last date
+Deltat = t/n
+X1 = np.ones(n+1)
+for i in range(1, n+1):
+    X1[i] = X1[i-1] + mu * X1[i-1] * Deltat
+
+X2 = np.exp(mu * np.arange(0, t+Deltat, Deltat))
+
 fig = go.Figure()
+fig.add_trace(
+    go.Scatter(
+        x=np.arange(0, t+Deltat, Deltat), 
+        y=X1, 
+        mode='markers', 
+        name='Difference Eq.',
+        hovertemplate='t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>'  # 
+    )
+)
+
+fig.add_trace(
+    go.Scatter(
+        x=np.arange(0, t+Deltat, Deltat), 
+        y=X2, 
+        mode='lines', 
+        name='Differential Eq.',
+        hovertemplate='t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>'  # 
+    )
+)
 fig.update_layout(
+    showlegend=True,
     xaxis_title='Time',
-    yaxis_title='Binomial Process',
+    yaxis_title='',
     template='plotly_white',
     height=300,
+    legend=dict(
+        x=0.1,
+        y=1,
+        xanchor="left",
+        yanchor="top",
+    )
 )
+
 fig.show()
 ```
 
@@ -60,15 +98,68 @@ An approximate path of this process $X$ is also shown in @fig-discrete-random.  
 #| label: fig-discrete-random
 #| fig-cap: Paths of the processes satisfying @eq-ito_discrete_4 and @eq-ito_discrete_6 for X0 = 1, mu = 1, Delta t = 0.1, and sigma = 1.
 
-import numpy as np 
-import plotly.graph_objects as go 
+iimport numpy as np
+import plotly.graph_objects as go
+
+mu = 1
+sigma = 1
+t = 1
+
+# Brownian path
+n = 1000   
+dt = t/n
+dB = np.random.normal(scale = np.sqrt(dt), size=n)
+B = np.zeros(n+1)
+B[1:] = np.cumsum(dB)
+
+# Brownian path with discrete steps
+n_discrete = 10
+Deltat = t/n_discrete
+B_discrete = B[::int(n/n_discrete)]
+DeltaB = np.diff(B_discrete)
+
+# X in discrete-time 
+X1 = np.ones(n_discrete+1)
+for i in range(1, n_discrete+1):
+    X1[i] = X1[i-1] + mu * X1[i-1] * Deltat + sigma * X1[i-1] * DeltaB[i-1]
+
+# Continuous-time
+X2 = np.exp((mu - 0.5 * sigma**2) * np.arange(0, t+dt, dt) + sigma * B)
+
 fig = go.Figure()
+fig.add_trace(
+    go.Scatter(
+        x=np.arange(0, t+Deltat, Deltat), 
+        y=X1, 
+        mode='markers', 
+        name='Difference Eq.',
+        hovertemplate='t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>'  # 
+    )
+)
+
+fig.add_trace(
+    go.Scatter(
+        x=np.arange(0, t+dt, dt), 
+        y=X2, 
+        mode='lines', 
+        name='Differential Eq.',
+        hovertemplate='t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>'  # 
+    )
+)
 fig.update_layout(
+    showlegend=True,
     xaxis_title='Time',
-    yaxis_title='Binomial Process',
+    yaxis_title='',
     template='plotly_white',
     height=300,
+    legend=dict(
+        x=0.1,
+        y=1,
+        xanchor="left",
+        yanchor="top",
+    )
 )
+
 fig.show()
 ```
 
