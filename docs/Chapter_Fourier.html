@@ -132,13 +132,17 @@ div.csl-indent {
   });
 </script>
 <style>
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
-.ToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
+}
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
 }
 .Done {
   --color1: #e8cc97;
@@ -152,17 +156,13 @@ div.csl-indent {
   --color1: #a1bced;
   --color2: #38568f;
 }
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+.ToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
-}
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
 }
 </style>
 
@@ -579,7 +579,7 @@ C(X_T) = \max(e^{X_T} - K, 0)
 C(K) = \frac{e^{-rT}}{2\pi} \int_{-\infty}^{\infty} e^{-iuk} \hat{C}(u) \phi_X(u) \, du,
 \qquad(24.1)\]</span></span> where <span class="math inline">\(\phi_X(u)\)</span> is the <strong>characteristic function</strong> of the log-price process at time <span class="math inline">\(T\)</span>, <span class="math inline">\(k = \ln(K)\)</span> is the log-strike, and <span class="math inline">\(\hat{C}(u)\)</span> is the Fourier transform of the payoff function.</p>
 <p>By evaluating this integral (typically done numerically), we recover the option price. This illustrate the main idea behind the appilcation of Fourier transform in pricing options.</p>
-<p>Unfortunately, the Fast Fourier Transform (FFT) cannot be used to evaluate the pricing integral <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-FTpricing</span></a>, since the integrand is singular at the required evaluation point <span class="math inline">\(u = 0\)</span>. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method <span class="citation" data-cites="CarrMadan">(<a href="#ref-CarrMadan" role="doc-biblioref">Carr and Madan 1999</a>)</span> that can leverage the efficiency of the FFT.</p>
+<p>Unfortunately, the Fast Fourier Transform (FFT) cannot be used to evaluate the pricing integral <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;<span>24.1</span></a>, since the integrand is singular at the required evaluation point <span class="math inline">\(u = 0\)</span>. Given the considerable speed advantages of the FFT, we introduce the Carr-Madan method <span class="citation" data-cites="CarrMadan">(<a href="#ref-CarrMadan" role="doc-biblioref">Carr and Madan 1999</a>)</span> that can leverage the efficiency of the FFT.</p>
 </section>
 <section id="the-carr-madan-method" class="level2" data-number="24.3">
 <h2 data-number="24.3" class="anchored" data-anchor-id="the-carr-madan-method"><span class="header-section-number">24.3</span> The Carr-Madan Method</h2>
@@ -624,7 +624,7 @@ g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j), m=1,...,N
 \]</span> Combinig the FFT with the Simpson’s rule, we have <span id="eq-FFTSimpson"><span class="math display">\[
 g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j)w(j), m=1,...,N,
 \qquad(24.3)\]</span></span> where <span class="math inline">\(w(j)=4\)</span> if <span class="math inline">\(j\)</span> is even, <span class="math inline">\(w(j)=2\)</span> if <span class="math inline">\(j\)</span> is odd, and <span class="math inline">\(w(1)=w(N+1)=1\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p>To apply the FFT <a href="#eq-FFTSimpson" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-FFTSimpson</span></a>, we discretize the integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-carrmadan</span></a> over <span class="math inline">\(u\)</span>:</p>
+<p>To apply the FFT <a href="#eq-FFTSimpson" class="quarto-xref">Equation&nbsp;<span>24.3</span></a>, we discretize the integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;<span>24.2</span></a> over <span class="math inline">\(u\)</span>:</p>
 <ul>
 <li>Define <span class="math inline">\(u_j = \eta (j-1)\)</span>, where <span class="math inline">\(\eta\)</span> is the spacing between points and $j = 1, 2, , N $.</li>
 <li>Similarly, define <span class="math inline">\(k_m = -b + \lambda \, (m-1)\)</span>, where <span class="math display">\[
@@ -633,12 +633,12 @@ g(m)=\sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N}(j-1) (m-1)\right)y(j)w(j), m=1,.
 b=\frac{N \lambda}{2}
 \]</span> is the integration upper limit of <span class="math inline">\(k\)</span>, and <span class="math inline">\(m = 1, 2,  \dots, N\)</span>.</li>
 </ul>
-<p>The integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-carrmadan</span></a> becomes a sum:</p>
+<p>The integral <a href="#eq-carrmadan" class="quarto-xref">Equation&nbsp;<span>24.2</span></a> becomes a sum:</p>
 <p><span class="math display">\[
 \tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j)  \eta.
 \]</span> To further improve the efficiency, we use Simpson’s rule to choose the weights of each term to arrive at <span id="eq-carrmadanFFT"><span class="math display">\[
 \tilde{C}(k_m) \approx \frac{e^{-\alpha k_m}}{\pi} \sum_{j=1}^{N} \exp\left(-i \frac{2\pi}{N} (j-1)\, (m-1) \right) e^{i u_j b} \phi_{C}(u_j) \frac{\eta}{3}(3+(-1)^{j}-\delta_{j-1}),
-\qquad(24.4)\]</span></span> where <span class="math inline">\(\delta_n=1\)</span> is equal to 1 if and only if <span class="math inline">\(n=0\)</span>. <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-carrmadanFFT</span></a> can be efficiently computed using the FFT method.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+\qquad(24.4)\]</span></span> where <span class="math inline">\(\delta_n=1\)</span> is equal to 1 if and only if <span class="math inline">\(n=0\)</span>. <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span>24.4</span></a> can be efficiently computed using the FFT method.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 </section>
 <section id="implementation-steps" class="level3">
 <h3 class="anchored" data-anchor-id="implementation-steps">Implementation Steps</h3>
@@ -662,7 +662,7 @@ b=\frac{N \lambda}{2}
 \]</span></p>
 </section>
 <section id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price." class="level4">
-<h4 class="anchored" data-anchor-id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price.">4. Apply the FFT <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-carrmadanFFT</span></a> to get the option price.</h4>
+<h4 class="anchored" data-anchor-id="apply-the-fft-eq-carrmadanfft-to-get-the-option-price.">4. Apply the FFT <a href="#eq-carrmadanFFT" class="quarto-xref">Equation&nbsp;<span>24.4</span></a> to get the option price.</h4>
 </section>
 </section>
 </section>
@@ -1501,7 +1501,7 @@ Computational Time (Monte Carlo): 0.121629 seconds</code></pre>
 <section id="section" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="section"></h2>
 <div id="Exercise-24.1" class="Exercise">
-<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 24.1</strong></summary><div>Create a Python code to compare the Carr-Madan method with the direct Fourier Transform method using <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-FTpricing</span></a> for pricing in-the-money, at-the-money, and out-of-the-money European call options in terms of speed and accuracy in the Black-Scholes model.<p></p>
+<p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 24.1</strong></summary><div>Create a Python code to compare the Carr-Madan method with the direct Fourier Transform method using <a href="#eq-FTpricing" class="quarto-xref">Equation&nbsp;<span>24.1</span></a> for pricing in-the-money, at-the-money, and out-of-the-money European call options in terms of speed and accuracy in the Black-Scholes model.<p></p>
 </div></details>
 </div>
 <div id="Exercise-24.2" class="Exercise">
