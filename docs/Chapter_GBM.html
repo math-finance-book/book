@@ -112,17 +112,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
 </script>
 <style>
-.Done {
-  --color1: #e8cc97;
-  --color2: #7d6538;
-}
 .ToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
 }
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
+}
+.Done {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .Rule {
   --color1: #a1bced;
@@ -132,13 +132,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   --color1: #e3aab2;
   --color2: #8f575f;
 }
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
-}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
 }
 </style>
 
@@ -536,12 +536,12 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <p>Over a discrete time interval <span class="math inline">\(\Delta t\)</span>, <a href="#eq-exponential3" class="quarto-xref">Equation&nbsp;<span>7.5</span></a> implies that the change in the logarithm of <span class="math inline">\(S\)</span> is <span id="eq-exponential11"><span class="math display">\[
 \Delta \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\Delta t+ \sigma\,\Delta B\;.
 \qquad(7.6)\]</span></span></p>
-<p>If <span class="math inline">\(S\)</span> is the price of a non-dividend-paying asset, then over the time period <span class="math inline">\(t_{i-1}\)</span> to <span class="math inline">\(t_i\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t\)</span>, we have <span id="eq-exponential10"><span class="math display">\[
+<p>If <span class="math inline">\(S\)</span> is the price of a dividend-reinvested asset, then over the time period <span class="math inline">\(t_{i-1}\)</span> to <span class="math inline">\(t_i\)</span>, with <span class="math inline">\(t_i-t_{i-1}=\Delta t\)</span>, we have <span id="eq-exponential10"><span class="math display">\[
 \Delta \log S = r_i\,\Delta t\;,
 \qquad(7.7)\]</span></span></p>
 <p>where <span class="math inline">\(r_i\)</span> is the continuously compounded annualized rate of return during the period <span class="math inline">\(\Delta t\)</span>. This follows from the definition of the continuously compounded rate of return as the constant rate over the time period <span class="math inline">\(\Delta t\)</span> that would cause <span class="math inline">\(S\)</span> to grow (or fall) from <span class="math inline">\(S_{t_{i-1}}\)</span> to <span class="math inline">\(S_{t_i}\)</span>. To be precise, <span class="math inline">\(r_i\)</span> is defined by <span class="math display">\[\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; ,\]</span> which is equivalent to <a href="#eq-exponential10" class="quarto-xref">Equation&nbsp;<span>7.7</span></a>. Thus, the geometric Brownian motion model (<a href="#eq-Y" class="quarto-xref">Equation&nbsp;<span>7.3</span></a>)implies that the continuously compounded annualized rate of return over a period of length <span class="math inline">\(\Delta t\)</span> is given by <span class="math display">\[r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .\]</span> This means that <span class="math inline">\(r_i\)</span> is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. Given historical data on the rates of return, the parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> can be estimated by standard methods (see <a href="Chapter_StochasticVol.html" class="quarto-xref"><span>Chapter 18</span></a>).</p>
 <p>We can simulate a path of <span class="math inline">\(S\)</span> by simulating the changes <span class="math inline">\(\Delta \log S\)</span>. The random variable <span class="math inline">\(\sigma \Delta B\)</span> in <a href="#eq-exponential11" class="quarto-xref">Equation&nbsp;<span>7.6</span></a> has a normal distribution with zero mean and variance equal to <span class="math inline">\(\sigma^2\Delta t\)</span>. We simulate it as <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span> multiplied by a standard normal. The code below simulates <span class="math inline">\(n=10000\)</span> paths with <span class="math inline">\(m=1000\)</span> time steps. There are some features of the simulation which will prove useful later. The drift <span class="math inline">\(\mu\)</span> is labelled the interest rate <span class="math inline">\(r=0.1\)</span>. Other parameters are <span class="math inline">\(\sigma = 0.2\)</span>, and <span class="math inline">\(T=0.5\)</span>. The drift of the log stock price is labelled <span class="math inline">\(drift=r-\frac{\sigma^2}{2}\)</span>. The plot output is one of the simulated sample paths. In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, <span class="math inline">\(n=1\)</span>. Given a simulated mean zero normal random variable, <span class="math inline">\(z\)</span>, changing the sign to <span class="math inline">\(-z\)</span> is also a simulated normal random variable with zero mean and the same standard deviation. As a result, we have two simulations for the stock price labelled <span class="math inline">\(St\)</span> and <span class="math inline">\(St1\)</span>, but we only plot one sample path for <span class="math inline">\(St\)</span>.</p>
-<div id="3da33c86" class="cell" data-execution_count="1">
+<div id="87828c7f" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -587,7 +587,7 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 </div>
 </div>
 <p>The plot below is the distribution of the simulated stock price at <span class="math inline">\(T\)</span>.</p>
-<div id="5e85a0d8" class="cell" data-execution_count="2">
+<div id="23b3fb77" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -602,7 +602,7 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <section id="sec-s:reinvestingdividends" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="sec-s:reinvestingdividends"><span class="header-section-number">7.1</span> Reinvesting Dividends</h2>
 <p>Frequently, we will assume that the asset underlying a derivative security pays a constant dividend yield, which we will denote by <span class="math inline">\(q\)</span>. This means, for an asset with price <span class="math inline">\(S_t\)</span>, that the dividend in an instant <span class="math inline">\(\,\mathrm{d}t\)</span> is <span class="math inline">\(q S_t\,\mathrm{d}t\)</span>. If the dividends are reinvested in new shares, the number of shares will grow exponentially at rate <span class="math inline">\(q\)</span>. To see this, consider the portfolio starting with a single share of the asset and reinvesting dividends until some date <span class="math inline">\(T\)</span>. Let <span class="math inline">\(X_t\)</span> denote the number of shares resulting from this strategy at any time <span class="math inline">\(t\leq T\)</span>. Then the dividend received at date <span class="math inline">\(t\)</span> is <span class="math inline">\(q S_tX_t\,\mathrm{d}t\)</span>, which can be used to purchase <span class="math inline">\(q X_t\,\mathrm{d}t\)</span> new shares. This implies that <span class="math inline">\(\,\mathrm{d}X_t=q X_t\,\mathrm{d}t\)</span>, or <span class="math inline">\(\,\mathrm{d}X_t/\,\mathrm{d}t = q X_t\)</span>, and it is easy to check (and very well known) that this equation is solved by <span class="math inline">\(X_t=\mathrm{e}^{q t}X_0\)</span>. In our case, with <span class="math inline">\(X_0=1\)</span>, we have <span class="math inline">\(X_t=\mathrm{e}^{q t}\)</span>.</p>
-<p>The dollar value of the trading strategy just described will be <span class="math inline">\(X_tS_t = \mathrm{e}^{q t}S_t\)</span>. Denote this by <span class="math inline">\(V_t\)</span>. This is the value of a non-dividend-paying portfolio, because all dividends are reinvested. From the Compounding/Discounting example in <span class="quarto-unresolved-ref">?sec-s:examples</span>, we know that <span id="eq-reinvestingdividends"><span class="math display">\[
+<p>The dollar value of the trading strategy just described will be <span class="math inline">\(X_tS_t = \mathrm{e}^{q t}S_t\)</span>. Denote this by <span class="math inline">\(V_t\)</span>. This is the value of a dividend-reinvested portfolio, because all dividends are reinvested. From the Compounding/Discounting example in <span class="quarto-unresolved-ref">?sec-s:examples</span>, we know that <span id="eq-reinvestingdividends"><span class="math display">\[
 \frac{\,\mathrm{d}V}{V} = q\,\mathrm{d}t + \frac{\,\mathrm{d}S}{S}\;.
 \qquad(7.8)\]</span></span></p>
 <p>This means that the rate of return on the portfolio is the dividend yield <span class="math inline">\(q\,\mathrm{d}t\)</span> plus the return <span class="math inline">\(\,\mathrm{d}S/S\)</span> due to capital gains.</p>
