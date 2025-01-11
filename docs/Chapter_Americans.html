@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Futures and Swaps – Pricing and Hedging Derivative Securities: Theory and Methods</title>
+<title>11&nbsp; American Options – Pricing and Hedging Derivative Securities: Theory and Methods</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,8 +64,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./Chapter_Arbitrage.html" rel="next">
-<link href="./Chapter_Options.html" rel="prev">
+<link href="./Chapter_Greeks.html" rel="next">
+<link href="./Chapter_BlackScholes.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -78,10 +112,6 @@ ul.task-list li input[type="checkbox"] {
   });
 </script>
 <style>
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
-}
 .ToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
@@ -89,10 +119,6 @@ ul.task-list li input[type="checkbox"] {
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
 }
 .Extra {
   --color1: #d5deed;
@@ -102,12 +128,49 @@ ul.task-list li input[type="checkbox"] {
   --color1: #eaacf2;
   --color2: #75387d;
 }
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
 }
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
+}
 </style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -120,7 +183,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_Options.html">Part I: Foundations</a></li><li class="breadcrumb-item"><a href="./Chapter_Futures.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Futures and Swaps</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_BlackScholes.html">Part III: Black-Scholes and Extensions</a></li><li class="breadcrumb-item"><a href="./Chapter_Americans.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">American Options</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -177,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_Futures.html" class="sidebar-item-text sidebar-link active">
+  <a href="./Chapter_Futures.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Futures and Swaps</span></span></a>
   </div>
 </li>
@@ -253,7 +316,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_Americans.html" class="sidebar-item-text sidebar-link">
+  <a href="./Chapter_Americans.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">American Options</span></span></a>
   </div>
 </li>
@@ -426,9 +489,9 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_Options.html">Part I: Foundations</a></li><li class="breadcrumb-item"><a href="./Chapter_Futures.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Futures and Swaps</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_BlackScholes.html">Part III: Black-Scholes and Extensions</a></li><li class="breadcrumb-item"><a href="./Chapter_Americans.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">American Options</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-c:futures" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Futures and Swaps</span></span></h1>
+<h1 class="title"><span id="sec-c:americans" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">American Options</span></span></h1>
 </div>
 
 
@@ -446,8 +509,216 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p><img src="under_construction.jpg" class="img-fluid"></p>
+<section id="calls-are-better-alive-than-dead" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="calls-are-better-alive-than-dead"><span class="header-section-number">11.1</span> Calls are Better Alive than Dead</h2>
+</section>
+<section id="binomial-valuation-of-american-options" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="binomial-valuation-of-american-options"><span class="header-section-number">11.2</span> Binomial Valuation of American Options</h2>
+</section>
+<section id="sec-s:discrete" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="sec-s:discrete"><span class="header-section-number">11.3</span> American Calls with Discrete Dividends</h2>
+<p>It can be optimal to exercise an American call option early if the underlying asset pays a dividend. The optimal exercise date will be immediately prior to the asset going ex-dividend. Consider a call option maturing at <span class="math inline">\(T'\)</span> on an asset that will pay a known cash dividend <span class="math inline">\(D\)</span> at a known date <span class="math inline">\(T&lt;T'\)</span>. We assume there is no continuous dividend payment, so <span class="math inline">\(q=0\)</span>. For simplicity, we assume that the date of the dividend payment is also the date that the asset goes ex-dividend; i.e., ownership of the asset at any date <span class="math inline">\(t&lt;T\)</span> entitles the owner to receive the dividend at date <span class="math inline">\(T\)</span>. Under this assumption, it is reasonable also to assume that the stock price drops by <span class="math inline">\(D\)</span> when the dividend is paid.</p>
+<p>There is some ambiguity about how to define the asset price at the instant the dividend is paid—whether to include or exclude the dividend. We will let <span class="math inline">\(S_T\)</span> denote the price including the dividend and denote the price excluding the dividend by <span class="math inline">\(Z_T\)</span>, so <span class="math inline">\(Z_T = S_T-D\)</span>. In fact, it is convenient to let <span class="math inline">\(Z_t\)</span> denote the price stripped of the dividend value at all dates <span class="math inline">\(t \leq T\)</span>, so we will define <span class="math display">\[
+Z_t = \begin{cases}S_t-\mathrm{e}^{-r(T-t)}D &amp; \text{if $t \leq T$\;,}\\
+S_t &amp; \text{if $t &gt; T$\;.}
+\end{cases}
+\]</span></p>
+<p>Note that <span class="math inline">\(Z\)</span> is the price of the following non-dividend-paying portfolio: buy one unit of the asset at date <span class="math inline">\(0\)</span>, borrow <span class="math inline">\(\mathrm{e}^{-rT}D\)</span> at date <span class="math inline">\(0\)</span> to help finance the purchase, and use the dividend <span class="math inline">\(D\)</span> at date <span class="math inline">\(T\)</span> to retire the debt.</p>
+<p>If we assume as usual that the asset price <span class="math inline">\(S\)</span> has a constant volatility, then, using <a href="Chapter_GBM.html#eq-exponential1" class="quarto-xref">Equation&nbsp;<span>7.2</span></a> for a geometric Brownian motion and letting <span class="math inline">\(B^*\)</span> denote a Brownian motion under the risk-neutral probability, we have <span class="math display">\[\begin{align*}
+S_{T'} &amp;= [S_T-D]\exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*_{T'}-\sigma B^*_T\right\}\\
+&amp;= \left[S_0\exp\left\{(r-\sigma^2/2)T+\sigma B^*_T\right\}-D\right]\\
+&amp;\qquad \times \exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*_{T'}-\sigma B^*_T\right\}\\
+&amp;=S_0\exp\left\{(r-\sigma^2/2)T'+\sigma B^*_{T'}\right\} \\
+&amp;\qquad - D\exp\left\{(r-\sigma^2/2)(T'-T)+\sigma B^*_{T'}-\sigma B^*_T\right\}\;.
+\end{align*}\]</span> Thus, <span class="math inline">\(S\)</span> will be a sum of lognormal random variables. A sum of lognormals is not itself lognormal, so <span class="math inline">\(S\)</span> will not be lognormal, and we are unable to calculate the option value in a simple way.</p>
+<p>We will assume instead that <span class="math inline">\(Z\)</span> has a constant volatility <span class="math inline">\(\sigma\)</span>. Thus, <span class="math inline">\(Z\)</span> is the price of a non-dividend-paying portfolio, it satisfies the Black-Scholes assumptions, and we have <span class="math inline">\(S_{T'}=Z_{T'}\)</span>. To value a European option, we would simply use <span class="math inline">\(Z_0=S_0-\mathrm{e}^{-rT}D\)</span> as the initial asset price and <span class="math inline">\(\sigma\)</span> as the volatility.</p>
+<section id="american-call-payoff" class="level3">
+<h3 class="anchored" data-anchor-id="american-call-payoff">American Call Payoff</h3>
+If the call is not exercised before the dividend is paid at date <span class="math inline">\(T\)</span>, then its value at date <span class="math inline">\(T\)</span> will be
+where <code>Z</code> <span class="math inline">\(=Z_T\)</span>. Hence, exercise is optimal when
+<p>A lower bound for the Black-Scholes call value on the right-hand side is <span class="math inline">\(Z_T-\mathrm{e}^{-r(T'-T)}K\)</span>. If <span class="math inline">\(Z_T+D-K\)</span> is less than or equal to this lower bound, then exercise cannot be optimal. Thus, if <span class="math inline">\(D-K\)</span> is less than or equal to <span class="math inline">\(-\mathrm{e}^{-r(T'-T)}K\)</span>, then exercise will never be optimal. In this circumstance, the dividend is simply too small to offset the time value of money on the exercise price <span class="math inline">\(K\)</span>, and the value of the American call written on the asset with price <span class="math inline">\(S\)</span> is the same as the value of the European call written on the non-dividend-paying portfolio with price <span class="math inline">\(Z\)</span>.</p>
+On the other hand, if <span class="math inline">\(D-K &gt; -\mathrm{e}^{-r(T'-T)}K\)</span>, then exercise will be optimal for sufficiently large <span class="math inline">\(Z_T\)</span>. In this case, there is some <span class="math inline">\(Z^*\)</span> such that the owner of the call will be indifferent about exercise, and exercise will be optimal for all <span class="math inline">\(Z_T&gt;Z^*\)</span>. This <span class="math inline">\(Z^*\)</span> is defined by
+<p>As in the previous section, we can compute <span class="math inline">\(Z^*\)</span> by bisection.</p>
+<p>Define <span class="math display">\[\begin{align*}
+x&amp;= \begin{cases} 1 &amp;\text{if $Z_T&gt;Z^*$\;,}\\
+                               0 &amp; \text{otherwise\;,}
+        \end{cases}\\
+y&amp;= \begin{cases} 1 &amp;\text{if $Z_T\leq Z^*$ and $Z_{T'}&gt;K$\;,}\\
+                               0 &amp; \text{otherwise\;.}
+        \end{cases}
+\end{align*}\]</span> Then the American call option will pay <span class="math inline">\([Z_T+D-K]x\)</span> at date <span class="math inline">\(T\)</span> (due to early exercise) and <span class="math inline">\([Z_{T'}-K]y\)</span> at date <span class="math inline">\(T'\)</span> (due to exercise at maturity), if <span class="math inline">\(D-K &gt; -\mathrm{e}^{-r(T'-T)}K\)</span>.</p>
+</section>
+<section id="numeraires" class="level3">
+<h3 class="anchored" data-anchor-id="numeraires">Numeraires</h3>
+<p>Assume for now that <span class="math inline">\(D-K &gt; -\mathrm{e}^{-r(T'-T)}K\)</span>. The payoff <span class="math inline">\((D-K)x\)</span> is the payoff of <span class="math inline">\(D-K\)</span> digital options maturing at <span class="math inline">\(T\)</span>, and the payoff <span class="math inline">\(Z_Tx\)</span> is the payoff of one share digital on the portfolio with price <span class="math inline">\(Z\)</span>. Therefore, the value of receiving <span class="math inline">\([Z_T+D-K]x\)</span> at date <span class="math inline">\(T\)</span> is <span class="math display">\[
+Z_0\mathrm{N}(d_1) + \mathrm{e}^{-rT}(D-K)\mathrm{N}(d_2)\; ,
+\]</span> where</p>
+<p><span class="math display">\[
+d_1 = \frac{\log\left(\frac{Z_0}{Z^*}\right)+\left(r+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}
+\]</span> <span id="eq-americancalld1star"><span class="math display">\[
+= \frac{\log\left(\frac{S_0-\mathrm{e}^{-rT}D}{Z^*}\right)+\left(r+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}} \;,
+\qquad(11.1)\]</span></span></p>
+<p><span id="eq-americancalld2star"><span class="math display">\[
+d_2=d_1-\sigma\sqrt{T}\;.
+\qquad(11.2)\]</span></span></p>
+<p>As in the previous section,<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> the value of receiving <span class="math inline">\([Z_T-K]y\)</span> at date <span class="math inline">\(T'\)</span> is <span class="math display">\[
+Z_0\times \text{prob}^Z(y=1) - \mathrm{e}^{-rT'}K\times \text{prob}^R(y=1)\; .
+\]</span> ### Calculating Probabilities The calculations are very similar to the calculations we did for a call option on a call. In fact, they are exactly the same as we would do for a put option on a call.</p>
+<ol type="1">
+<li>The event <span class="math inline">\(y=1\)</span> is equivalent to <span class="math display">\[
+\log Z_0 + \left(r+\frac{1}{2}\sigma^2\right)T+\sigma B^*_T \leq \log Z^*
+\]</span> and <span class="math display">\[
+\log Z_0 + \left(r+\frac{1}{2}\sigma^2\right)T'+\sigma B^*_{T'} &gt; \log K\; ,
+\]</span></li>
+</ol>
+<p>where <span class="math inline">\(B^*\)</span> is a Brownian motion when the underlying asset (with price <span class="math inline">\(Z\)</span>) is used as the numeraire. We can write this as <span id="eq-new100"><span class="math display">\[
+\frac{B^*_T}{\sqrt{T}}&lt;-d_1 \quad \text{and} \quad - \frac{B^*_{T'}}{\sqrt{T'}} &lt; d_1'\;,
+\qquad(11.3)\]</span></span></p>
+<p>where <span class="math inline">\(d_1\)</span> is defined in <a href="#eq-americancalld1star" class="quarto-xref">Equation&nbsp;<span>11.1</span></a>,</p>
+<p><span class="math display">\[
+d_1' = \frac{\log\left(\frac{Z_0}{K}\right)+\left(r+\frac{1}{2}\sigma^2\right)T'}{\sigma\sqrt{T'}}
+\]</span> <span id="eq-americancalld1"><span class="math display">\[
+= \frac{\log\left(\frac{S_0-\mathrm{e}^{-rT}D}{K}\right)+\left(r+\frac{1}{2}\sigma^2\right)T'}{\sigma\sqrt{T'}}
+\qquad(11.4)\]</span></span></p>
+<p><span id="eq-americancalld2"><span class="math display">\[
+d_2'=d_1'-\sigma\sqrt{T'}\;.
+\qquad(11.5)\]</span></span></p>
+<p>The two standard normal variables on the left-hand sides in <a href="#eq-new100" class="quarto-xref">Equation&nbsp;<span>11.3</span></a> have a covariance equal to <span class="math display">\[
+-\frac{1}{\sqrt{TT'}}\mathrm{cov}(B_T,B_{T'}) = -\frac{1}{\sqrt{TT'}}\mathrm{cov}(B_T,B_T) = -\sqrt{\frac{T}{T'}}\; .
+\]</span></p>
+<p>Hence, <span class="math inline">\(\text{prob}^Z(y=1)\)</span> is the probability that <span class="math inline">\(a\leq -d_1\)</span> and <span class="math inline">\(b\leq d_1'\)</span>, where <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are standard normal random variables with covariance (= correlation coefficient) of <span class="math inline">\(-\sqrt{T/T'}\)</span>. We are writing this probability as <span class="math inline">\(\mathrm{M}\!\left(-d_1,d_1',-\sqrt{T/T'}\right)\)</span>.</p>
+<ol start="2" type="1">
+<li>The calculation for <span class="math inline">\(\text{prob}^R(y=1)\)</span> is similar. The event <span class="math inline">\(y=1\)</span> is equivalent to <span class="math display">\[
+\log Z_0 + \left(r+\frac{1}{2}\sigma^2\right)T+\sigma B^*_T \leq \log Z^*
+\]</span> and <span class="math display">\[
+\log Z_0 + \left(r+\frac{1}{2}\sigma^2\right)T'+\sigma B^*_{T'} &gt; \log K\; ,
+\]</span> where <span class="math inline">\(B^*\)</span> now denotes a Brownian motion under the risk-neutral probability. These are equivalent to <span id="eq-new11"><span class="math display">\[
+\frac{B^*_T}{\sqrt{T}}\leq -d_2 \quad \text{and} \quad - \frac{B^*_{T'}}{\sqrt{T'}} &lt; d_2'\;.
+\qquad(11.6)\]</span></span></li>
+</ol>
+<p>Hence, <span class="math inline">\(\text{prob}^R(y=1)=\mathrm{M}\!\left(-d_2,d_2',-\sqrt{T/T'}\right)\)</span>.</p>
+</section>
+<section id="american-call-pricing-formula" class="level3">
+<h3 class="anchored" data-anchor-id="american-call-pricing-formula">American Call Pricing Formula</h3>
+<div id="section" class="Rule" title="">
+<p></p><details class="Rule fbx-simplebox fbx-default" open=""><summary><strong>Calculation Rule 11.1</strong></summary><div>Under our assumptions, the value of an American call option maturing at <span class="math inline">\(T'\)</span> with a dividend payment of <span class="math inline">\(D\)</span> at date <span class="math inline">\(T&lt;T'\)</span> is as follows.<br>
+If <span class="math display">\[
+D-K \leq -\mathrm{e}^{-r(T'-T)}K\;,
+\]</span> then the value of the call is given by the Black-Scholes formula <span class="math display">\[
+[S_0-\mathrm{e}^{-rT}D]\mathrm{N}(d_1')-\mathrm{e}^{-rT}K\mathrm{N}(d_2')\; ,
+\]</span><p></p>
+<p>where <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-americancalld1" class="quarto-xref">Equation&nbsp;<span>11.4</span></a> - <a href="#eq-americancalld2" class="quarto-xref">Equation&nbsp;<span>11.5</span></a>. On the other hand, if <span class="math display">\[
+D-K &gt; -\mathrm{e}^{-r(T'-T)}K\;,
+\]</span> then the value of the call is</p>
+<p><span id="eq-americancall"><span class="math display">\[
+\begin{multline}
+[S_0-\mathrm{e}^{-rT}D]\mathrm{N}(d_1) + \mathrm{e}^{-rT}(D-K)\mathrm{N}(d_2)\\ +[S_0-\mathrm{e}^{-rT}D]\mathrm{M}\!\left(-d_1,d_1',-\sqrt{T/T'}\right) \\- \mathrm{e}^{-rT'}K\mathrm{M}\!\left(-d_2,d_2',-\sqrt{T/T'}\right)\;,
+\end{multline}
+\qquad(11.7)\]</span></span></p>
+<p>where <span class="math inline">\(d_1\)</span> and <span class="math inline">\(d_2\)</span> are defined in <a href="#eq-americancalld1star" class="quarto-xref">Equation&nbsp;<span>11.1</span></a> - <a href="#eq-americancalld2star" class="quarto-xref">Equation&nbsp;<span>11.2</span></a> and <span class="math inline">\(d_1'\)</span> and <span class="math inline">\(d_2'\)</span> are defined in <a href="#eq-americancalld1" class="quarto-xref">Equation&nbsp;<span>11.4</span></a> - <a href="#eq-americancalld2" class="quarto-xref">Equation&nbsp;<span>11.5</span></a>.</p>
+</div></details>
+</div>
+<p>To value an American call when there is one dividend payment before the option matures, we input the initial asset price <span class="math inline">\(S_0\)</span> and then compute <span class="math inline">\(Z_0=X_0-\mathrm{e}^{-rT}D\)</span>. If <span class="math inline">\(D-K \leq -\mathrm{e}^{-r(T'-T)}K\)</span>, we return the Black-Scholes value of a European call written on <span class="math inline">\(Z\)</span>. Otherwise, we need to compute <span class="math inline">\(Z^*\)</span> and our bisection algorithm requires an upper bound for <span class="math inline">\(Z^*\)</span>, which would be any value of <span class="math inline">\(Z_T\)</span> such that exercise at <span class="math inline">\(T\)</span> is optimal. It is not obvious what this should be, so we start with <span class="math inline">\(K\)</span> and keep doubling this until we obtain a value of <span class="math inline">\(Z_T\)</span> at which exercise would be optimal. Then, we use the bisection algorithm to compute <span class="math inline">\(Z^*\)</span> and finally compute the option value <a href="#eq-americancall" class="quarto-xref">Equation&nbsp;<span>11.7</span></a>.</p>
+<div id="cell-American_Call_Dividend" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">from scipy.stats import norm</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">import scipy.optimize as optimize</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">def black_scholes_call(S, K, r, sigma, q, T):</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">    if sigma == 0:</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">        return max(0, np.exp(-q * T) * S - np.exp(-r * T) * K)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">    else:</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">        d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">        d2 = d1 - sigma * np.sqrt(T)</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">        N1 = norm.cdf(d1)</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">        N2 = norm.cdf(d2)</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">        return np.exp(-q * T) * S * N1 - np.exp(-r * T) * K * N2</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">def american_call_dividend(S, K, r, sigma, Div, TDiv, TCall):</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">    LessDiv = S - np.exp(-r * TDiv) * Div</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">    if Div / K &lt;= 1 - np.exp(-r * (TCall - TDiv)):</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">        return black_scholes_call(LessDiv, K, r, sigma, 0, TCall)</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">    upper = K</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">    while upper + Div - K &lt; black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv):</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">        upper *= 2</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">    tol = 1e-6</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co">    lower = 0</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co">    flower = Div - K</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="co">    fupper = upper + Div - K - black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv)</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co">    guess = 0.5 * lower + 0.5 * upper</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="co">    fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co">    while upper - lower &gt; tol:</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co">        if fupper * fguess &lt; 0:</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co">            lower = guess</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="co">            flower = fguess</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co">            guess = 0.5 * lower + 0.5 * upper</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co">            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co">        else:</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co">            upper = guess</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co">            fupper = fguess</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="co">            guess = 0.5 * lower + 0.5 * upper</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="co">            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="co">    LessDivStar = guess</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="co">    d1 = (np.log(LessDiv / LessDivStar) + (r + sigma ** 2 / 2) * TDiv) / (sigma * np.sqrt(TDiv))</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="co">    d2 = d1 - sigma * np.sqrt(TDiv)</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="co">    d1prime = (np.log(LessDiv / K) + (r + sigma ** 2 / 2) * TCall) / (sigma * np.sqrt(TCall))</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="co">    d2prime = d1prime - sigma * np.sqrt(TCall)</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="co">    rho = -np.sqrt(TDiv / TCall)</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="co">    N1 = norm.cdf(d1)</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="co">    N2 = norm.cdf(d2)</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="co">    M1 = binormal_prob(-d1, d1prime, rho)</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="co">    M2 = binormal_prob(-d2, d2prime, rho)</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co">    return LessDiv * N1 + np.exp(-r * TDiv) * (Div - K) * N2 + LessDiv * M1 - np.exp(-r * TCall) * K * M2</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="co">S = 100</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="co">K = 90</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="co">r = 0.05</span></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="co">sigma = 0.2</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="co">Div = 5</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="co">TDiv = 0.5</span></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="co">TCall = 1</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="co">N = 10</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="co">print("American Call with Dividend:", american_call_dividend(S, K, r, sigma, Div, TDiv, TCall))</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="american_call_dividend" class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>'\n    if sigma == 0:\n        return max(0, np.exp(-q * T) * S - np.exp(-r * T) * K)\n    else:\n        d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n        d2 = d1 - sigma * np.sqrt(T)\n        N1 = norm.cdf(d1)\n        N2 = norm.cdf(d2)\n        return np.exp(-q * T) * S * N1 - np.exp(-r * T) * K * N2\n\n\ndef american_call_dividend(S, K, r, sigma, Div, TDiv, TCall):\n    LessDiv = S - np.exp(-r * TDiv) * Div\n    if Div / K &lt;= 1 - np.exp(-r * (TCall - TDiv)):\n        return black_scholes_call(LessDiv, K, r, sigma, 0, TCall)\n\n    upper = K\n    while upper + Div - K &lt; black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv):\n        upper *= 2\n\n    tol = 1e-6\n    lower = 0\n    flower = Div - K\n    fupper = upper + Div - K - black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv)\n    guess = 0.5 * lower + 0.5 * upper\n    fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)\n    while upper - lower &gt; tol:\n        if fupper * fguess &lt; 0:\n            lower = guess\n            flower = fguess\n            guess = 0.5 * lower + 0.5 * upper\n            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)\n        else:\n            upper = guess\n            fupper = fguess\n            guess = 0.5 * lower + 0.5 * upper\n            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)\n    LessDivStar = guess\n\n    d1 = (np.log(LessDiv / LessDivStar) + (r + sigma ** 2 / 2) * TDiv) / (sigma * np.sqrt(TDiv))\n    d2 = d1 - sigma * np.sqrt(TDiv)\n    d1prime = (np.log(LessDiv / K) + (r + sigma ** 2 / 2) * TCall) / (sigma * np.sqrt(TCall))\n    d2prime = d1prime - sigma * np.sqrt(TCall)\n    rho = -np.sqrt(TDiv / TCall)\n    N1 = norm.cdf(d1)\n    N2 = norm.cdf(d2)\n    M1 = binormal_prob(-d1, d1prime, rho)\n    M2 = binormal_prob(-d2, d2prime, rho)\n\n    return LessDiv * N1 + np.exp(-r * TDiv) * (Div - K) * N2 + LessDiv * M1 - np.exp(-r * TCall) * K * M2\n\n# Example usage\n\nS = 100\nK = 90\nr = 0.05\nsigma = 0.2\nDiv = 5\nTDiv = 0.5\nTCall = 1\nN = 10\n\nprint("American Call with Dividend:", american_call_dividend(S, K, r, sigma, Div, TDiv, TCall))\n'</code></pre>
+</div>
+</div>
 
 
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The only difference is that here <span class="math inline">\(Z\)</span> is the price of a non-dividend-paying portfolio, so, in the notation of the previous section, we have <span class="math inline">\(V_t=Z_t\)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1016,13 +1287,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./Chapter_Options.html" class="pagination-link" aria-label="Options">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Options</span></span>
+      <a href="./Chapter_BlackScholes.html" class="pagination-link" aria-label="Black-Scholes">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./Chapter_Arbitrage.html" class="pagination-link" aria-label="Arbitrage Pricing">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Chapter_Greeks.html" class="pagination-link" aria-label="Greeks and Hedging">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Greeks and Hedging</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1031,4 +1302,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-code.git/blob/main/Chapter_Futures.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-code.git/blob/main/Chapter_Americans.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
