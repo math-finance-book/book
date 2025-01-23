@@ -113,39 +113,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
+
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
 <script type="text/javascript">
+
 window.PlotlyConfig = {MathJaxConfig: 'local'};
+
 if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+
 if (typeof require !== 'undefined') {
+
 require.undef("plotly");
+
 requirejs.config({
+
     paths: {
+
         'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+
     }
+
 });
+
 require(['plotly'], function(Plotly) {
+
     window._Plotly = Plotly;
+
 });
+
 }
+
 </script>
 
+
+
 <style>
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
-}
-.CodeToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
 }
 .Done {
   --color1: #e8cc97;
@@ -155,6 +162,22 @@ require(['plotly'], function(Plotly) {
   --color1: #ede29d;
   --color2: #8c813a;
 }
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
+}
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
+}
+.CodeToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
@@ -162,10 +185,6 @@ require(['plotly'], function(Plotly) {
 .WritingToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
-}
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
 }
 </style>
 
@@ -576,43 +595,43 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <div id="87568855" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate geometric Brownian motion</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">import matplotlib.pyplot as plt</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">n = 10000</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1000</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate)</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">r = 0.1</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">sig = 0.2</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">S0 = 42</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">T = 0.5</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">dt = T/m</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">drift = (r-0.5*sig**2)</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">vol = sig * np.sqrt(dt)</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">t = np.array(range(0,m + 1,1)) * dt</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">seed= 2020</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">np.random.seed(seed)</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">inc = np.zeros(shape = (m + 1, n))</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">St = np.zeros(shape = (m + 1, n))</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co">St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t,St[:,1])</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="87568855"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="87568855-1"><a href="#87568855-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="87568855-2"><a href="#87568855-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate geometric Brownian motion</span></span>
+<span id="87568855-3"><a href="#87568855-3" aria-hidden="true" tabindex="-1"></a><span class="co">import numpy as np</span></span>
+<span id="87568855-4"><a href="#87568855-4" aria-hidden="true" tabindex="-1"></a><span class="co">import matplotlib.pyplot as plt</span></span>
+<span id="87568855-5"><a href="#87568855-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="87568855-6"><a href="#87568855-6" aria-hidden="true" tabindex="-1"></a><span class="co">n = 10000</span></span>
+<span id="87568855-7"><a href="#87568855-7" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
+<span id="87568855-8"><a href="#87568855-8" aria-hidden="true" tabindex="-1"></a><span class="co">m = 1000</span></span>
+<span id="87568855-9"><a href="#87568855-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate)</span></span>
+<span id="87568855-10"><a href="#87568855-10" aria-hidden="true" tabindex="-1"></a><span class="co">r = 0.1</span></span>
+<span id="87568855-11"><a href="#87568855-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="87568855-12"><a href="#87568855-12" aria-hidden="true" tabindex="-1"></a><span class="co">sig = 0.2</span></span>
+<span id="87568855-13"><a href="#87568855-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="87568855-14"><a href="#87568855-14" aria-hidden="true" tabindex="-1"></a><span class="co">S0 = 42</span></span>
+<span id="87568855-15"><a href="#87568855-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="87568855-16"><a href="#87568855-16" aria-hidden="true" tabindex="-1"></a><span class="co">T = 0.5</span></span>
+<span id="87568855-17"><a href="#87568855-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="87568855-18"><a href="#87568855-18" aria-hidden="true" tabindex="-1"></a><span class="co">dt = T/m</span></span>
+<span id="87568855-19"><a href="#87568855-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
+<span id="87568855-20"><a href="#87568855-20" aria-hidden="true" tabindex="-1"></a><span class="co">drift = (r-0.5*sig**2)</span></span>
+<span id="87568855-21"><a href="#87568855-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="87568855-22"><a href="#87568855-22" aria-hidden="true" tabindex="-1"></a><span class="co">vol = sig * np.sqrt(dt)</span></span>
+<span id="87568855-23"><a href="#87568855-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="87568855-24"><a href="#87568855-24" aria-hidden="true" tabindex="-1"></a><span class="co">t = np.array(range(0,m + 1,1)) * dt</span></span>
+<span id="87568855-25"><a href="#87568855-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="87568855-26"><a href="#87568855-26" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="87568855-27"><a href="#87568855-27" aria-hidden="true" tabindex="-1"></a><span class="co">seed= 2020</span></span>
+<span id="87568855-28"><a href="#87568855-28" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="87568855-29"><a href="#87568855-29" aria-hidden="true" tabindex="-1"></a><span class="co">np.random.seed(seed)</span></span>
+<span id="87568855-30"><a href="#87568855-30" aria-hidden="true" tabindex="-1"></a><span class="co">inc = np.zeros(shape = (m + 1, n))</span></span>
+<span id="87568855-31"><a href="#87568855-31" aria-hidden="true" tabindex="-1"></a><span class="co">inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))</span></span>
+<span id="87568855-32"><a href="#87568855-32" aria-hidden="true" tabindex="-1"></a><span class="co">St = np.zeros(shape = (m + 1, n))</span></span>
+<span id="87568855-33"><a href="#87568855-33" aria-hidden="true" tabindex="-1"></a><span class="co">St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
+<span id="87568855-34"><a href="#87568855-34" aria-hidden="true" tabindex="-1"></a><span class="co">St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])</span></span>
+<span id="87568855-35"><a href="#87568855-35" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="87568855-36"><a href="#87568855-36" aria-hidden="true" tabindex="-1"></a><span class="co">plt.plot(t,St[:,1])</span></span>
+<span id="87568855-37"><a href="#87568855-37" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>'\n# Simulate geometric Brownian motion\nimport numpy as np\nimport matplotlib.pyplot as plt\n# number of paths\nn = 10000\n#number of divisions\nm = 1000\n# Interest rate (We set the drift equal to the interest rate)\nr = 0.1\n# Volatility\nsig = 0.2\n# Initial Stock Price\nS0 = 42\n# Maturity\nT = 0.5\n# Delta t\ndt = T/m\n# Drift\ndrift = (r-0.5*sig**2)\n# Volatility\nvol = sig * np.sqrt(dt)\n\nt = np.array(range(0,m + 1,1)) * dt\n\n# seed for random generator\nseed= 2020\n# define a random generator\nnp.random.seed(seed)\ninc = np.zeros(shape = (m + 1, n))\ninc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))\nSt = np.zeros(shape = (m + 1, n))\nSt = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nSt1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])\nplt.figure(figsize=(9,6))\nplt.plot(t,St[:,1])\n'</code></pre>
@@ -622,10 +641,10 @@ S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 <div id="66aa00c8" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">a=plt.hist(St[m,:], bins=100)</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="66aa00c8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="66aa00c8-1"><a href="#66aa00c8-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="66aa00c8-2"><a href="#66aa00c8-2" aria-hidden="true" tabindex="-1"></a><span class="co">plt.figure(figsize=(9,6))</span></span>
+<span id="66aa00c8-3"><a href="#66aa00c8-3" aria-hidden="true" tabindex="-1"></a><span class="co">a=plt.hist(St[m,:], bins=100)</span></span>
+<span id="66aa00c8-4"><a href="#66aa00c8-4" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>'\nplt.figure(figsize=(9,6))\na=plt.hist(St[m,:], bins=100)\n'</code></pre>
