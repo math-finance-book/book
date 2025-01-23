@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -111,26 +111,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
-}
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
+}
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .CodeToDo {
   --color1: #a7f2d8;
@@ -140,13 +151,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   --color1: #d5deed;
   --color2: #6d778a;
 }
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
 }
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 </style>
 
@@ -296,7 +315,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -516,6 +535,11 @@ window.Quarto = {
 </header>
 
 
+<div id="e0c5ff7f" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>Variance swaps are a type of futures contracts that allows investors to trade future realized volatility against current option implied variance. Unlike traditional futures, which provide a payoff based on the difference between the underlying asset’s price and the futures price, variance swaps provide a payoff based on the difference between the realized variance of the underlying asset and the predetermined variance level (termed ``Strike’’ in practice), which is the futures price in variance unit.</p>
 <p>Variance swaps have gained popularity due to their ability to provide pure exposure to the volatility of an underlying asset, independent of its price movements. Unlike traditional options, variance swaps allow investors to speculate on or hedge against changes in volatility without the need for constant delta hedging. This makes them an effective tool for managing volatility risk and for executing volatility arbitrage strategies, as they simplify the trading of variance and offer a more straightforward payoff structure based on realized versus implied volatility.</p>
 <section id="payoff-of-a-variance-swap" class="level3">
@@ -570,7 +594,7 @@ window.Quarto = {
 <p><span class="math display">\[ K_{\text{var}} = \frac{2 e^{rT}}{T} \left( \int_0^{F_0} \frac{P(K)}{K^2} \, dK + \int_{F_0}^\infty \frac{C(K)}{K^2} \, dK \right)
 \]</span></p>
 <p>This formula allows us to compute the fair strike price of a variance swap using the prices of European call and put options. The following code provides an example of this computation using data from Yahoo finance for Apple.</p>
-<div id="variance_swap_pricing" class="cell" data-execution_count="1">
+<div id="variance_swap_pricing" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -627,7 +651,7 @@ window.Quarto = {
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Variance Swap Strike: </span><span class="sc">{</span>variance_swap_strike<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Variance Swap Strike: 0.7320</code></pre>
+<pre><code>Variance Swap Strike: 0.6075</code></pre>
 </div>
 </div>
 

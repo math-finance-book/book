@@ -77,7 +77,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -131,16 +131,27 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
 .CodeToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
-}
-.WritingToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
 }
@@ -152,21 +163,29 @@ div.csl-indent {
   --color1: #d5deed;
   --color2: #6d778a;
 }
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
-}
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
-}
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
 .InProgress {
   --color1: #eaacf2;
   --color2: #75387d;
+}
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
 }
 </style>
 
@@ -316,7 +335,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -536,6 +555,11 @@ window.Quarto = {
 </header>
 
 
+<div id="c7a97381" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>In this chapter we will see how to estimate derivative values by numerically solving the partial differential equation (pde) that the derivative value satisfies, using finite difference methods. More advanced discussions of this topic can be found in Wilmott, DeWynne and Howison <span class="citation" data-cites="WDH">(<a href="#ref-WDH" role="doc-biblioref">Wilmott, Dewynne, and Howison 2000</a>)</span>, Wilmott <span class="citation" data-cites="Wilmott">(<a href="#ref-Wilmott" role="doc-biblioref">Wilmott 2000</a>)</span>, and Tavella <span class="citation" data-cites="Tavella">(<a href="#ref-Tavella" role="doc-biblioref">Tavella 2002</a>)</span>, among other places. We will only consider derivatives written on a single underlying asset, but the ideas generalize to derivatives written on multiple underlying assets (e.g., basket and spread options) in much the same way that binomial models can be applied to derivatives on multiple underlying assets. The curse of dimensionality is the same for finite difference methods as for binomial models—the computation time increases exponentially with the number of underlying assets.</p>
 <section id="sec-fundamentalpde" class="level2" data-number="23.1">
 <h2 data-number="23.1" class="anchored" data-anchor-id="sec-fundamentalpde"><span class="header-section-number">23.1</span> Fundamental PD\E</h2>
@@ -735,7 +759,7 @@ C_L = \frac{z_L+ b_Lu_{L-1}}{1-b_Lb_{L-1}}\;.
 <p>As elsewhere in this chapter, <span class="math inline">\(N\)</span> denotes the number of time periods, and <span class="math inline">\(2M+1\)</span> will be the number of <span class="math inline">\(x\)</span> values on the grid. We use the symbol <span class="math inline">\(D\)</span> to denote the distance of the top (or bottom) of the grid from <span class="math inline">\(\log S_0\)</span>. In other words, <span class="math inline">\(D = x_M-x_0\)</span>. A reasonable value for <span class="math inline">\(D\)</span> would be three standard deviations for <span class="math inline">\(\log S\)</span>, which would mean <span class="math inline">\(D = |\nu|T +3 \sigma\sqrt{T}\)</span>. For example, for a one-year option on a stock with a volatility of 30%, it should suffice to input <span class="math inline">\(D=1\)</span>.</p>
 <p>As should be clear, the program is conceptually very similar to a binomial model. The difference is that the backing up procedure, which involves node-by-node discounting in a binomial model, here is accomplished via the Crank-Nicolson algorithm.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 <p>The following code illustrates how to use the Crank_Nicolson method to vale a European call option.</p>
-<div id="crank_nicolson" class="cell" data-execution_count="1">
+<div id="crank_nicolson" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -822,7 +846,7 @@ C_{\text{left}} = \max\left(\big(1-r\Delta t\big)\big(p_uC_{\text{up}}+pC + p_dC
 <p>For barrier options, the boundary information <a href="#eq-cn_boundary" class="quarto-xref">Equation&nbsp;<span>23.16</span></a> can be replaced by assigning a value of zero at the knock-out boundary. For example, for a down-and-out option, the condition <a href="#eq-crank4a" class="quarto-xref">Equation&nbsp;<span>23.17</span></a> can be replaced by <span class="math inline">\(C=0\)</span>. If the contract specifies that a rebate is to be paid to the buyer when the option is knocked out, then condition <a href="#eq-crank4a" class="quarto-xref">Equation&nbsp;<span>23.17</span></a> should be replaced by <span class="math inline">\(C=\)</span> Rebate.</p>
 <p>To price a down-and-out (or up-and-out option), we put the bottom (or top) of the grid at the boundary. The boundary condition that we use is that the value at the boundary is zero. We will consider the example of a down-and-out call option. In this case, the boundary condition at the bottom of the grid is <a href="#eq-crank4aa" class="quarto-xref">Equation&nbsp;<span>23.19</span></a> with <span class="math inline">\(z_1=0\)</span> and <span class="math inline">\(b_1 = 0\)</span>. The boundary condition at the top is the same as for an ordinary call. We can easily handle a rebate paid when the option is knocked out by inputting the value of the rebate as <span class="math inline">\(z_1\)</span>.</p>
 <p>The main new issue that we encounter in valuing barriers is locating the boundary of the grid at the barrier. For the down-and-out, we will input the value of the stock price at which the option is knocked out as <code>Bar</code>. We want the bottom of the grid to lie at the natural logarithm of this number. This will influence our choice of the space step <span class="math inline">\(\Delta x\)</span>, because we want to have an integer number of steps between the bottom of the grid and <span class="math inline">\(\log S_0\)</span>. We assume that the value <span class="math inline">\(M\)</span> input by the user represents the desired number of space steps above <span class="math inline">\(\log S_0\)</span>. We start with <span class="math inline">\(\Delta x=D/M\)</span> as an initial estimate of the size of the space step. We then decrease it, if necessary, to ensure that the distance between <code>Bar</code> and <span class="math inline">\(\log S_0\)</span> is an integer multiple of <span class="math inline">\(\Delta x\)</span>. We then increase <span class="math inline">\(M\)</span>, if necessary, to ensure that the top of the grid will still be at or above <span class="math inline">\(D+\log S_0\)</span>. Finally, we define the top of the grid to be at <span class="math inline">\(\log S_0 +M \cdot \Delta x\)</span>.</p>
-<div id="my_code_block" class="cell" data-execution_count="2">
+<div id="my_code_block" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> down_and_out_call_cn(S0, K, r, sigma, q, T, N, M, Dist, Bar):</span>

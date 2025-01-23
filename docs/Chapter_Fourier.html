@@ -77,7 +77,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -131,10 +131,45 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
 .WritingToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
+}
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
+}
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
+}
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
 }
 .CodeToDo {
   --color1: #a7f2d8;
@@ -144,29 +179,13 @@ div.csl-indent {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
-}
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
-}
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
 }
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
-}
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 </style>
 
@@ -316,7 +335,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -536,6 +555,11 @@ window.Quarto = {
 </header>
 
 
+<div id="cbdbd045" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <section id="introduction" class="level2" data-number="24.1">
 <h2 data-number="24.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">24.1</span> Introduction</h2>
 <p>The Fourier Transform has become an essential tool in option pricing, particularly for complex models like those with stochastic volatility and Lévy processes including variance gamma and jump diffusion processes. In this chapter, we will explore how the Fourier Transform simplifies the pricing of derivative securities, examine its advantages, and provide analytical examples and Python code for practical illustration.</p>
@@ -679,7 +703,7 @@ b=\frac{N \lambda}{2}
 \phi_T(u) = \exp\left(iu \left(\ln(S_0) + \left(r -q-\frac{\sigma^2}{2}\right)T\right) - \frac{1}{2} \sigma^2 T u^2 \right),
 \]</span> where <span class="math inline">\(S_0\)</span> is the initial asset price, <span class="math inline">\(r\)</span> is the risk-free rate, <span class="math inline">\(\sigma\)</span> is the volatility of the asset, <span class="math inline">\(T\)</span> is the time to maturity, and <span class="math inline">\(u\)</span> is the complex Fourier variable.</p>
 <p>The following code implements the Carr-Madan method, which uses the FFT to price European call options by transforming the characteristic function of the Black-Scholes model into the frequency domain. The option prices are then obtained by applying Simpson’s Rule for integration and FFT for efficient computation. These prices are compared to those obtained using the Black-Scholes formula. The code also visualizes the comparison and the differences between the two methods. The results suggest that the Carr-Madan method yields an accurate call price.</p>
-<div id="03f49e97" class="cell" data-execution_count="1">
+<div id="fe5a6782" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -778,14 +802,14 @@ b=\frac{N \lambda}{2}
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-2-output-1.png" width="808" height="523" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-3-output-1.png" width="808" height="523" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-2-output-2.png" width="846" height="523" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-3-output-2.png" width="846" height="523" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -813,7 +837,7 @@ g &amp;= \frac{b - d}{b + d}, \\
 \end{aligned}
 \]</span> <span class="math inline">\(v_0\)</span> is the initial variance (volatility squared), <span class="math inline">\(q\)</span> is the dividend yield, <span class="math inline">\(\theta\)</span> is the long-term mean of the variance, <span class="math inline">\(\kappa\)</span> is the rate at which the variance reverts to <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\rho\)</span> is the correlation between the asset price and its volatility, <span class="math inline">\(\sigma\)</span> is the volatility of volatility, and <span class="math inline">\(\lambda\)</span> is the volatility risk premium.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Heston Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="7723a70e" class="cell" data-execution_count="2">
+<div id="a647d280" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1055,20 +1079,20 @@ g &amp;= \frac{b - d}{b + d}, \\
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-3-output-1.png" width="813" height="533" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-4-output-1.png" width="813" height="533" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-3-output-2.png" width="834" height="533" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-4-output-2.png" width="834" height="533" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Computation Time (Carr-Madan Method): 0.06 seconds
-Computation Time (Monte Carlo Simulation): 7.75 seconds
+Computation Time (Monte Carlo Simulation): 5.76 seconds
 Maximum Price Difference: 0.024669</code></pre>
 </div>
 </div>
@@ -1112,7 +1136,7 @@ X_t = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta
 \theta_{\mathbb{Q}} = (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta \nu - \frac{1}{2} \sigma^2 \nu \right).
 \]</span></p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Variance Gamma Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="08b65d69" class="cell" data-execution_count="3">
+<div id="53176121" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1282,21 +1306,21 @@ X_t = \left( (r - q) - \frac{1}{2} \sigma^2 - \frac{1}{\nu} \log\left(1 - \theta
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-4-output-1.png" width="821" height="523" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-5-output-1.png" width="821" height="523" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-4-output-2.png" width="829" height="523" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-5-output-2.png" width="829" height="523" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Maximum Absolute Price Difference: 0.010150
-Computational Time (Carr-Madan FFT): 0.025778 seconds
-Computational Time (Monte Carlo): 0.987467 seconds</code></pre>
+Computational Time (Carr-Madan FFT): 0.022629 seconds
+Computational Time (Monte Carlo): 0.493940 seconds</code></pre>
 </div>
 </div>
 <p><strong>Pricing Options in a Jump Diffusion Model</strong></p>
@@ -1321,7 +1345,7 @@ S_t = S_0 \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W_t + \sum_{i=1}^{N
 \]</span></p>
 <p>This formula captures both the diffusion (Brownian motion) and jump components, making it applicable for more accurate modeling of stock prices that experience sudden jumps in addition to continuous fluctuations.</p>
 <p>The following Python code implements the Carr-Madan method to price a European call option under the Jump Diffusion Model and compare it to the prices obtained from simulation. The results suggest that the Carr-Madan method yields almost the same prices as those from Monte Carlo simulation. In addition, the Carr-Madan method runs hundreds of times faster than simulation.</p>
-<div id="13c30c7b" class="cell" data-execution_count="4">
+<div id="109bddbd" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1484,20 +1508,20 @@ S_t = S_0 \exp\left( (r - q - \frac{1}{2}\sigma^2)t + \sigma W_t + \sum_{i=1}^{N
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-5-output-1.png" width="808" height="523" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-6-output-1.png" width="808" height="523" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Chapter_Fourier_files/figure-html/cell-5-output-2.png" width="840" height="523" class="figure-img"></p>
+<p><img src="Chapter_Fourier_files/figure-html/cell-6-output-2.png" width="840" height="523" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Computational Time (Carr-Madan FFT): 0.055040 seconds
-Computational Time (Monte Carlo): 0.121629 seconds</code></pre>
+<pre><code>Computational Time (Carr-Madan FFT): 0.021696 seconds
+Computational Time (Monte Carlo): 0.063854 seconds</code></pre>
 </div>
 </div>
 </section>

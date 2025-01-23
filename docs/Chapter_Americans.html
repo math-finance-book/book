@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -111,42 +111,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
-}
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
-}
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .InProgress {
   --color1: #eaacf2;
   --color2: #75387d;
 }
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
+}
 .CodeToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
 }
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
+}
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
 }
 </style>
 
@@ -296,7 +315,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -516,6 +535,11 @@ window.Quarto = {
 </header>
 
 
+<div id="21d19883" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p><img src="under_construction.jpg" class="img-fluid"></p>
 <section id="calls-are-better-alive-than-dead" class="level2" data-number="11.1">
 <h2 data-number="11.1" class="anchored" data-anchor-id="calls-are-better-alive-than-dead"><span class="header-section-number">11.1</span> Calls are Better Alive than Dead</h2>
@@ -627,7 +651,7 @@ D-K &gt; -\mathrm{e}^{-r(T'-T)}K\;,
 </div></details>
 </div>
 <p>To value an American call when there is one dividend payment before the option matures, we input the initial asset price <span class="math inline">\(S_0\)</span> and then compute <span class="math inline">\(Z_0=X_0-\mathrm{e}^{-rT}D\)</span>. If <span class="math inline">\(D-K \leq -\mathrm{e}^{-r(T'-T)}K\)</span>, we return the Black-Scholes value of a European call written on <span class="math inline">\(Z\)</span>. Otherwise, we need to compute <span class="math inline">\(Z^*\)</span> and our bisection algorithm requires an upper bound for <span class="math inline">\(Z^*\)</span>, which would be any value of <span class="math inline">\(Z_T\)</span> such that exercise at <span class="math inline">\(T\)</span> is optimal. It is not obvious what this should be, so we start with <span class="math inline">\(K\)</span> and keep doubling this until we obtain a value of <span class="math inline">\(Z_T\)</span> at which exercise would be optimal. Then, we use the bisection algorithm to compute <span class="math inline">\(Z^*\)</span> and finally compute the option value <a href="#eq-americancall" class="quarto-xref">Equation&nbsp;<span>11.7</span></a>.</p>
-<div id="cell-American_Call_Dividend" class="cell" data-execution_count="1">
+<div id="cell-American_Call_Dividend" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -713,7 +737,7 @@ D-K &gt; -\mathrm{e}^{-r(T'-T)}K\;,
 <span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="co">print("American Call with Dividend:", american_call_dividend(S, K, r, sigma, Div, TDiv, TCall))</span></span>
 <span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="american_call_dividend" class="cell-output cell-output-display" data-execution_count="1">
+<div id="american_call_dividend" class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>'\n    if sigma == 0:\n        return max(0, np.exp(-q * T) * S - np.exp(-r * T) * K)\n    else:\n        d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))\n        d2 = d1 - sigma * np.sqrt(T)\n        N1 = norm.cdf(d1)\n        N2 = norm.cdf(d2)\n        return np.exp(-q * T) * S * N1 - np.exp(-r * T) * K * N2\n\n\ndef american_call_dividend(S, K, r, sigma, Div, TDiv, TCall):\n    LessDiv = S - np.exp(-r * TDiv) * Div\n    if Div / K &lt;= 1 - np.exp(-r * (TCall - TDiv)):\n        return black_scholes_call(LessDiv, K, r, sigma, 0, TCall)\n\n    upper = K\n    while upper + Div - K &lt; black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv):\n        upper *= 2\n\n    tol = 1e-6\n    lower = 0\n    flower = Div - K\n    fupper = upper + Div - K - black_scholes_call(upper, K, r, sigma, 0, TCall - TDiv)\n    guess = 0.5 * lower + 0.5 * upper\n    fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)\n    while upper - lower &gt; tol:\n        if fupper * fguess &lt; 0:\n            lower = guess\n            flower = fguess\n            guess = 0.5 * lower + 0.5 * upper\n            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)\n        else:\n            upper = guess\n            fupper = fguess\n            guess = 0.5 * lower + 0.5 * upper\n            fguess = guess + Div - K - black_scholes_call(guess, K, r, sigma, 0, TCall - TDiv)\n    LessDivStar = guess\n\n    d1 = (np.log(LessDiv / LessDivStar) + (r + sigma ** 2 / 2) * TDiv) / (sigma * np.sqrt(TDiv))\n    d2 = d1 - sigma * np.sqrt(TDiv)\n    d1prime = (np.log(LessDiv / K) + (r + sigma ** 2 / 2) * TCall) / (sigma * np.sqrt(TCall))\n    d2prime = d1prime - sigma * np.sqrt(TCall)\n    rho = -np.sqrt(TDiv / TCall)\n    N1 = norm.cdf(d1)\n    N2 = norm.cdf(d2)\n    M1 = binormal_prob(-d1, d1prime, rho)\n    M2 = binormal_prob(-d2, d2prime, rho)\n\n    return LessDiv * N1 + np.exp(-r * TDiv) * (Div - K) * N2 + LessDiv * M1 - np.exp(-r * TCall) * K * M2\n\n# Example usage\n\nS = 100\nK = 90\nr = 0.05\nsigma = 0.2\nDiv = 5\nTDiv = 0.5\nTCall = 1\nN = 10\n\nprint("American Call with Dividend:", american_call_dividend(S, K, r, sigma, Div, TDiv, TCall))\n'</code></pre>
 </div>
 </div>

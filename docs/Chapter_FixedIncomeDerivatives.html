@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -111,10 +111,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
-.CodeToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
+}
+.Done {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .Exercise {
   --color1: #ede29d;
@@ -128,25 +151,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   --color1: #e3aab2;
   --color2: #8f575f;
 }
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
-}
-.Done {
-  --color1: #e8cc97;
-  --color2: #7d6538;
-}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
+}
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
 }
 .InProgress {
   --color1: #eaacf2;
   --color2: #75387d;
 }
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+.CodeToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 </style>
 
@@ -296,7 +315,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -516,6 +535,11 @@ window.Quarto = {
 </header>
 
 
+<div id="1b0910a8" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>In this chapter, we will introduce some fundamental fixed-income derivatives (caps, floors and swaptions) and explain the market model approach to valuation. We will also explain the relation between caps, floors and swaptions on the one hand and discount and coupon bond options on the other. This leads to other approaches for valuing caps, floors and swaptions, which will be developed in the following chapters.</p>
 <section id="caps-and-floors" class="level2" data-number="27.1">
 <h2 data-number="27.1" class="anchored" data-anchor-id="caps-and-floors"><span class="header-section-number">27.1</span> Caps and Floors</h2>
@@ -585,7 +609,7 @@ d_2 = d_1 - \sigma\sqrt{t_i}\;.
 F_i_0 = \mathcal{R}_i_0\,\Delta t = \frac{P(0,t_i)}{P(0,t_{i+1})} - 1\;,
 \qquad(27.8)\]</span></span></p>
 <p>as given in <a href="#eq-forward2" class="quarto-xref">Equation&nbsp;<span>27.2</span></a> and <a href="#eq-F_i" class="quarto-xref">Equation&nbsp;<span>27.4</span></a>. The exercise price of each caplet is <span class="math inline">\(K=\bar{\mathcal{R}}\,\Delta t\)</span>. We also need to input the discounting factor <span class="math inline">\(P(0,t_{i+1})\)</span>. The discount bond prices <span class="math inline">\(P(0,t_1)\)</span>, , <span class="math inline">\(P(0, t_N)\)</span> are input as a vector <code>P</code>. The discount bond price <span class="math inline">\(P(0,t_0)\)</span> is input as <code>P0</code>. We will assume the same volatility for each forward rate.</p>
-<div id="market_model_cap" class="cell" data-execution_count="1">
+<div id="market_model_cap" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -665,7 +689,7 @@ d_2 = d_1-\sigma\sqrt{T}.
 P(t,t_0)- P(t,t_N) \;+ \;\text{Value of Receiver Swaption}.
 \end{multline}\]</span> {#eq-swaptionparity}</p>
 <p>The following code uses the Margrabe formula to price a European swaption.</p>
-<div id="payer_swaption" class="cell" data-execution_count="2">
+<div id="payer_swaption" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> margrabe(S1, S2, sigma, q1, q2, T):</span>

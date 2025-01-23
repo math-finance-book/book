@@ -43,7 +43,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -97,18 +97,53 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
 }
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
 }
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
+}
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .Done {
   --color1: #e8cc97;
@@ -117,22 +152,6 @@ div.csl-indent {
 .CodeToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
-}
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
-}
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
 }
 </style>
 
@@ -282,7 +301,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -502,6 +521,11 @@ window.Quarto = {
 </header>
 
 
+<div id="c5f69a1b" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>In this part of the book, we will study the pricing and hedging of fixed-income derivatives, that is, derivatives that can be viewed as written on bonds or on interest rates. The complexities of this subject stem from the fact that the underlying bonds or rates will have time-varying and generally random volatilities and have volatilities that must be linked in some way to each other. We are not free to arbitrarily specify the volatilities and correlations, as we can, for example, with basket equity options, because such a specification may imply there is an arbitrage opportunity available from trading the underlying assets, and, of course, one could not trust a derivative value or a hedging strategy derived from such a model. There are many books that provide a more comprehensive and advanced treatment than we will be able to give here, among which Rebonato <span class="citation" data-cites="Rebonato98">(<a href="#ref-Rebonato98" role="doc-biblioref">Rebonato 1998, Rebonato02</a>)</span>, James and Webber <span class="citation" data-cites="JW">(<a href="#ref-JW" role="doc-biblioref">James and Webber 200AD</a>)</span> and Brigo and Mercurio <span class="citation" data-cites="BM">(<a href="#ref-BM" role="doc-biblioref">Brigo and Mercurio 2001</a>)</span> seem particularly useful.</p>
 <p>We will focus on derivatives and underlyings that have very little default risk and ignore the pricing of default (credit) risk. Credit risk and credit derivatives are booming areas in both theory and practice. For this topic, one can consult the recent books of Bielecki and Rutkowski <span class="citation" data-cites="BR">(<a href="#ref-BR" role="doc-biblioref">Bielecki and Rutkowski 2002</a>)</span>, Duffie and Singleton <span class="citation" data-cites="DS">(<a href="#ref-DS" role="doc-biblioref">Duffie and Singleton 2003</a>)</span>, Sch{"o}nbucher <span class="citation" data-cites="Schonbucher">(<a href="#ref-Schonbucher" role="doc-biblioref">Schönbucher 2003</a>)</span>, and Tavakoli <span class="citation" data-cites="Tavakoli">(<a href="#ref-Tavakoli" role="doc-biblioref">Tavakoli 2001</a>)</span>. Another important topic that will not be covered is mortgages.</p>
 <p>In the first section, we introduce a fundamental construct: the yield curve, by which we mean the yields of (possibly theoretical) zero-coupon bonds of various maturities. The last two sections of the chapter (on principal components) are optional—nothing else in the book builds upon them.</p>

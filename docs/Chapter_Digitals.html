@@ -23,7 +23,7 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -77,23 +77,26 @@ ul.task-list li input[type="checkbox"] {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
-.Done {
-  --color1: #e8cc97;
-  --color2: #7d6538;
-}
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
-}
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
-}
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
@@ -102,17 +105,33 @@ ul.task-list li input[type="checkbox"] {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
-.CodeToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
+}
+.Done {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
 }
+.CodeToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
 .WritingToDo {
   --color1: #a7f2d8;
   --color2: #50997f;
+}
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
 }
 </style>
 
@@ -262,7 +281,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -482,6 +501,11 @@ window.Quarto = {
 </header>
 
 
+<div id="7f925505" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>A complete development of derivative pricing requires the continuous-time mathematics to be covered in the next chapter. However, we can present the basic ideas using the tools already developed. Consider the problem of pricing a European call option. Let <span class="math inline">\(T\)</span> denote the maturity of the option and <span class="math inline">\(K\)</span> its strike price, and let <span class="math inline">\(S\)</span> denote the price of the underlying. We will assume for now that the underlying does not pay dividends, but we will make no assumptions about the distribution of its price <span class="math inline">\(S(T)\)</span> at the maturity of the option. Assume there is a risk-free asset with constant interest rate <span class="math inline">\(r\)</span>.</p>
 <p>Our convention will be that date <span class="math inline">\(0\)</span> denotes the date at which we are attempting to value a derivative. The value of the option at maturity is <span class="math inline">\(\max(0,S(T)-K)\)</span>. Consider a contract that pays <span class="math inline">\(S(T)\)</span> at date <span class="math inline">\(T\)</span> when <span class="math inline">\(S(T) \geq K\)</span> and that pays zero when <span class="math inline">\(S(T)&lt;K\)</span>, and consider another contract that pays <span class="math inline">\(K\)</span> at date <span class="math inline">\(T\)</span> when <span class="math inline">\(S(T)\geq K\)</span> and zero when <span class="math inline">\(S(T)&lt;K\)</span>. In <span class="quarto-unresolved-ref">?sec-c_blackscholes</span>, we will call the first contract a share digital and the second contract a digital. The call option is equivalent to a portfolio that is long the first contract and short the second, because the value of the call at maturity is <span class="math inline">\(S(T)-K\)</span> when <span class="math inline">\(S(T)\geq K\)</span> and it is zero otherwise. So, we can value the call if we can value the share digital and the digital. This splitting up of complex payoffs into simpler contracts is a key to analyzing many types of derivatives.</p>
 <section id="pricing-share-digitals" class="level3">

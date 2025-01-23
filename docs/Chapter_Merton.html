@@ -77,7 +77,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -131,38 +131,57 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
-<style>
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
 }
+</script>
+
+<style>
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
 }
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
 }
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
 }
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
 }
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 .CodeToDo {
   --color1: #a7f2d8;
@@ -316,7 +335,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -536,6 +555,11 @@ window.Quarto = {
 </header>
 
 
+<div id="a6821321" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>In this chapter, we will derive three important generalizations of the Black-Scholes formula. We will derive them from the Black-Scholes formula, which shows that all of the formulas are equivalent. We will start with Margrabe’s <span class="citation" data-cites="Margrabe">(<a href="#ref-Margrabe" role="doc-biblioref">Margrabe 1978</a>)</span> formula for an option to exchange one asset for another. Standard calls and puts are special cases, involving the exchange of cash for an asset or an asset for cash. From Margrabe’s formula, we will derive Black’s <span class="citation" data-cites="Black">(<a href="#ref-Black" role="doc-biblioref">Black 1976</a>)</span> formulas for options on forward and futures contracts. Then, from Black’s formulas, we will derive Merton’s <span class="citation" data-cites="Merton">(<a href="#ref-Merton" role="doc-biblioref">Merton 1973</a>)</span> formulas for calls and puts in the absence of a constant risk-free rate.</p>
 <p>Unless explicitly stated otherwise, we will not assume in this chapter the existence of a risk-free asset (or even an instantaneously risk-free asset as described in <a href="Chapter_Arbitrage.html" class="quarto-xref"><span>Chapter 3</span></a>). This implies that the market is incomplete and there are many risk-neutral probabilitys. Nevertheless, we can price exchange options, forward and futures options, and stock options by arbitrage. Understanding this issue is not essential for deriving the formulas in this chapter—as mentioned, they will all be derived from the Black-Scholes formula—but the issue is nonetheless important. It is discussed in the final section of the chapter.</p>
 <p>Naturally, all of the option-pricing formulas discussed in this chapter are quite similar. The similarity can be seen from the Black-Scholes formula for a call option, which we can write as follows (replacing <span class="math inline">\(d_1\)</span> by <span class="math inline">\(x\)</span> and <span class="math inline">\(d_2\)</span> by <span class="math inline">\(y\)</span>): <span id="eq-blackscholesagain"><span class="math display">\[
@@ -590,7 +614,7 @@ d_2=d_1-\sigma\sqrt{T}\;,
 <p>The dividend yield on the first asset remains <span class="math inline">\(q_1\)</span>. To see this, note that the dividend paid in the natural currency is <span class="math inline">\(q_1S_1_t\,\mathrm{d}t\)</span> in an instant <span class="math inline">\(\,\mathrm{d}t\)</span> and the value of this dividend using the second asset as numeraire is <span class="math inline">\([q_1S_1_t/S_2_t]\,\mathrm{d}t\)</span>, which is the fraction <span class="math inline">\(q_1\,\mathrm{d}t\)</span> of the value <span class="math inline">\(S_1_t/S_2_t\)</span> of the first asset using the second asset as numeraire.</p>
 <p>The volatility of the first asset using the second as numeraire is the volatility of the ratio <span class="math inline">\(S_1_t/S_2_t\)</span>, which is <span class="math inline">\(\sigma\)</span> defined in <a href="#eq-margrabesigma" class="quarto-xref">Equation&nbsp;<span>14.6</span></a>. Applying the Black-Scholes formula with these inputs yields Margrabe’s formula directly.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
 <p>In terms of programming, we could of course write entirely separate programs for the options discussed so far and those to be discussed in this chapter but it will become clear that they have common structure. As discussed in the introduction to this chapter, each is the present value of what is received upon exercise multiplied by <span class="math inline">\(\mathrm{N}(x)\)</span> minus the present value of what is delivered upon exercise multiplied by <span class="math inline">\(\mathrm{N}(y)\)</span> and <span class="math inline">\(x\)</span> in each case is the logarithm of the ratio of present values plus one-half <span class="math inline">\(\sigma^2T\)</span>, all divided by <span class="math inline">\(\sigma\sqrt{T}\)</span>. Thus, we first write a code for a generic option price. Later we use this generic option price function to price other options.</p>
-<div id="2da4d73f" class="cell" data-execution_count="1">
+<div id="6e9df3da" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -626,7 +650,7 @@ d_2=d_1-\sigma\sqrt{T}\;,
 </div>
 </div>
 <p>Now we can use the following one-line programs to value exchange options.</p>
-<div id="e17b5cf3" class="cell" data-execution_count="2">
+<div id="d1842c85" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> margrabe(S1, S2, sigma, q1, q2, T):</span>
@@ -724,7 +748,7 @@ d^m_2 &amp;= -\frac{\log\left(\frac{F_0}{K}\right)+\frac{1}{2}\sigma^2T}{\sigma\
 <p>We still need to explain why <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> defined in <a href="#eq-blackexchange" class="quarto-xref">Equation&nbsp;<span>14.17</span></a> are asset prices, in fact the prices of dividend-reinvested assets since we have taken <span class="math inline">\(q_1=q_2=0\)</span> in applying Margrabe’s formula. The case of <span class="math inline">\(S_2\)</span> should be clear: it is the price of <span class="math inline">\(K\)</span> units of the discount bond maturing at <span class="math inline">\(T'\)</span>. The case of <span class="math inline">\(S_1\)</span> is more subtle. It is the price of the following portfolio constructed at date <span class="math inline">\(0\)</span> and held until date <span class="math inline">\(T\)</span>: go long one forward contract and buy <span class="math inline">\(F_0\)</span> units of the discount bond maturing at <span class="math inline">\(T'\)</span>. The value at date <span class="math inline">\(t\)</span> of the bonds in the portfolio is <span class="math inline">\(F_0P(t,T')\)</span>. The value at date <span class="math inline">\(t\)</span> of the long forward contract can be seen by considering unwinding it by selling a forward at date <span class="math inline">\(t\)</span> at the market price <span class="math inline">\(F_t\)</span>. This cancels the delivery/receipt obligations on the underlying and results in a net cash flow of <span class="math inline">\(F_t-F_0\)</span> to be received at date <span class="math inline">\(T'\)</span>. The value at date <span class="math inline">\(t\)</span> of this future cash flow is <span class="math inline">\(P(t,T')[F_t-F_0]\)</span> and when we add this to the value of the bonds we obtain <span class="math inline">\(P(t,T')F_t = S_1_t\)</span>.</p>
 <p>Put-call parity for options on forwards is <span class="math display">\[\text{Call Price}  + P(0,T')K = \text{Put Price}  + P(0,T')F_0\; .\]</span> The left-hand side is the cost of the call and <span class="math inline">\(K\)</span> units of the discount bond, which have value <span class="math inline">\(\max(F_T,K)P(T,T')\)</span> at time <span class="math inline">\(T\)</span>. The right-hand side is the cost of the put option and <span class="math inline">\(F_0\)</span> units of the discount bond, which, together with a long forward contract initiated at date <span class="math inline">\(0\)</span>, also have value <span class="math inline">\(\max(F_T,K)P(T,T')\)</span> at time <span class="math inline">\(T\)</span>.</p>
 <p>As in the case of exchange option, we can also write one-line programs for pricing options on futures and forwards.</p>
-<div id="c4c770d6" class="cell" data-execution_count="3">
+<div id="cde7fdd3" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_call(F, K, P, sigma, T):</span>
@@ -849,7 +873,7 @@ d_2=d_1-\sigma\sqrt{T}\;,
 \qquad(14.33)\]</span></span></p>
 </div></details>
 </div>
-<div id="3eb6d5a7" class="cell" data-execution_count="4">
+<div id="5447ece2" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> margrabe_deferred(S1, S2, sigma, q1, q2, Tmat, Texch):</span>

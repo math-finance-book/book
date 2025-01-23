@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -111,34 +111,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
-<style>
-.Done {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
 }
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
+</script>
+
+<style>
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
 }
 .Example {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
-}
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
 }
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
 }
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
+.Done {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .CodeToDo {
   --color1: #a7f2d8;
@@ -147,6 +162,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 </style>
 
@@ -296,7 +315,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -516,6 +535,11 @@ window.Quarto = {
 </header>
 
 
+<div id="7087fcb2" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>This chapter addresses some “non-vanilla” options that are very important for hedging: Asian options, basket options, and spread options. More exotic options are studied in the following chapter.</p>
 <section id="asian-options" class="level2" data-number="15.1">
 <h2 data-number="15.1" class="anchored" data-anchor-id="asian-options"><span class="header-section-number">15.1</span> Asian Options</h2>
@@ -631,7 +655,7 @@ V_t = \mathrm{e}^{-r(T-t)}\\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log 
 </div></details>
 </div>
 <p>The following code computes the price of a geometric-average-price call.</p>
-<div id="cell-Geometric_Average_Price_Calls" class="cell" data-execution_count="1">
+<div id="cell-Geometric_Average_Price_Calls" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
@@ -646,7 +670,7 @@ V_t = \mathrm{e}^{-r(T-t)}\\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log 
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">print("Discrete Geometric Average Price Call:", discrete_geom_average_price_call(S, K, r, sigma, q, T, N))</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="geometric_average_price_calls" class="cell-output cell-output-display" data-execution_count="1">
+<div id="geometric_average_price_calls" class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>'\ndef discrete_geom_average_price_call(S, K, r, sigma, q, T, N):\n    dt = T / N\n    nu = r - q - 0.5 * sigma ** 2\n    a = N * (N + 1) * (2 * N + 1) / 6\n    V = np.exp(-r * T) * S * np.exp(((N + 1) * nu / 2 + sigma ** 2 * a / (2 * N ** 2)) * dt)\n    sigavg = sigma * np.sqrt(a) / (N ** 1.5)\n    return black_scholes_call(V, K, r, sigavg, q, T)\n\nprint("Discrete Geometric Average Price Call:", discrete_geom_average_price_call(S, K, r, sigma, q, T, N))\n'</code></pre>
 </div>
 </div>

@@ -23,7 +23,7 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -77,34 +77,53 @@ ul.task-list li input[type="checkbox"] {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <style>
-.Done {
+.Example {
   --color1: #e8cc97;
   --color2: #7d6538;
-}
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
-}
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
-}
-.CodeToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
 }
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
 }
-.Example {
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
+}
+.CodeToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
+.Done {
   --color1: #e8cc97;
   --color2: #7d6538;
+}
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
 }
 .Rule {
   --color1: #a1bced;
@@ -262,7 +281,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Chapter_Girsanov.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Girsanov’s Theorem</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Changing Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -482,6 +501,11 @@ window.Quarto = {
 </header>
 
 
+<div id="c2f87bbd" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
 <p>We will see in this chapter how to apply the Black-Scholes formulas to value currency options and options on foreign assets. We will also discuss currency forwards and futures, quanto forwards, and return swaps.</p>
 <p>For concreteness, we will call one currency the domestic currency and the other the foreign currency. Let <span class="math inline">\(X_t\)</span> denote the exchange rate at time <span class="math inline">\(t\)</span> measured in units of the domestic currency per unit of the foreign currency. Exchange rates can be confusing, because we can look at them from the perspective of either currency, so it may help to keep in mind that <span class="math inline">\(X_t\)</span> here means the price of a unit of the foreign currency, just as we might consider the price of a stock. When we speak of the cost or value of something without specifying the currency, it should be understood to be the domestic currency that we mean. If <span class="math inline">\(S\)</span> is the price of a foreign asset, denominated in units of the foreign currency, we can convert it into a domestic asset price simply by multiplying by the exchange rate: <span class="math inline">\(X_tS_t\)</span> is the price of the asset, denominated in the domestic currency. For example, if the domestic currency is dollars and the foreign currency is yen, then <span class="math inline">\(S\)</span> is in units of yen and <span class="math inline">\(X\)</span> is units of dollars per unit of yen, so <span class="math inline">\(XS\)</span> is in units of dollars.</p>
 <p>Throughout the chapter, we will maintain assumptions similar to the Black-Scholes assumptions. There is a foreign asset with price <span class="math inline">\(S\)</span> in the foreign currency. It has a constant dividend yield <span class="math inline">\(q\)</span> and a constant volatility <span class="math inline">\(\sigma_s\)</span>. The exchange rate has a constant volatility <span class="math inline">\(\sigma_x\)</span> and a constant correlation <span class="math inline">\(\rho\)</span> with the foreign asset. There is a domestic risk-free asset with constant interest rate <span class="math inline">\(r\)</span> and a foreign risk-free asset with constant interest rate <span class="math inline">\(r_f\)</span>. The term risk free means of course that they are risk-free in their respective currencies. For example, an investment in the foreign risk-free asset is not risk free to a domestic investor, because of exchange rate risk.</p>
