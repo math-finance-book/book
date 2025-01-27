@@ -79,50 +79,39 @@ ul.task-list li input[type="checkbox"] {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
-
-
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-
 <script type="text/javascript">
-
 window.PlotlyConfig = {MathJaxConfig: 'local'};
-
 if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
-
 if (typeof require !== 'undefined') {
-
 require.undef("plotly");
-
 requirejs.config({
-
     paths: {
-
         'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
-
     }
-
 });
-
 require(['plotly'], function(Plotly) {
-
     window._Plotly = Plotly;
-
 });
-
 }
-
 </script>
-
-
 
 <style>
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
 }
-.Example {
-  --color1: #e8cc97;
-  --color2: #7d6538;
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
+.Principle {
+  --color1: #e3aab2;
+  --color2: #8f575f;
+}
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
 }
 .Rule {
   --color1: #a1bced;
@@ -132,28 +121,49 @@ require(['plotly'], function(Plotly) {
   --color1: #a7f2d8;
   --color2: #50997f;
 }
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
-.Principle {
-  --color1: #e3aab2;
-  --color2: #8f575f;
+.Example {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .InProgress {
   --color1: #eaacf2;
   --color2: #75387d;
 }
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
-}
 </style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -485,14 +495,22 @@ require(['plotly'], function(Plotly) {
 </header>
 
 
-<div id="59bb47a1" class="cell" data-execution_count="1">
+<div id="cf4bc398" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
 <script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
 </div>
 </div>
+<section id="example-replicating-portfolios-and-simulating-portfolio-insurance" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="example-replicating-portfolios-and-simulating-portfolio-insurance"><span class="header-section-number">8.1</span> Example: Replicating Portfolios and Simulating Portfolio Insurance</h2>
+<p>Another derivation of the Black Scholes formula is provided by Merton. He asked whether the payoff to a European call option can be replicated by trading the stock and the risk free asset. Let <span class="math inline">\(\theta_t\)</span> be the number of shares of the stock held at time <span class="math inline">\(t\)</span> and <span class="math inline">\(\alpha_t\)</span> the number of shares of an initial investment of one dollar in the risk free asset. Then the portfolio is worth <span class="math inline">\(\alpha_t R_t + \theta_t S_t\)</span> where <span class="math inline">\(R_t= e^{rt}\)</span> is the time <span class="math inline">\(t\)</span> value of an initial time <span class="math inline">\(0\)</span> investment of one dollar in the risk free asset. The portfolio should start with an initial value, should not have any cash inflows or outflows and have a terminal value equal to a call payoff so the changes in value are completely dictated by the changes in the value of the assets. That is, assuming continuous trading, <span class="math display">\[  d W_t = \theta_t d S_t + \alpha_t  d R_t = \theta_t \left(\mu S_t dt + q S_t dt + \sigma S_t d B_t\right)  + \alpha_t r R_t dt\]</span> with terminal condition <span class="math display">\[ W_T = \alpha_T R_T + \theta_T S_T = (S_T - K)^{+} \]</span> The problem is to find <span class="math inline">\(\theta_t\)</span> and <span class="math inline">\(\alpha_t\)</span> for all times and states. If we can accomplish this, then by `no-arbitrage’ the call price must be the value of the initial investment. Assume the call price is a function of the stock price and time: <span class="math inline">\(C(t,S_t)\)</span>. Then by Ito’s Lemma <span class="math display">\[ d C(t,S_t) = \left(\frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2 \right) dt + \frac{\partial C}{\partial S} \sigma S_t dB_t \]</span> It should be apparent that we want to hold <span class="math inline">\(\theta = \frac{\partial C}{\partial S}\)</span>, which is the delta of the call option. By doing so, we match the diffusion term in thw change in wealth and the change in the call option. Then matching the drift terms in both expressions <span class="math display">\[ \frac{\partial C}{\partial S} \mu S_t + \alpha_t r R_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> which can be solved to give <span class="math display">\[ \alpha_t r R_t=r \left(W_t -\frac{\partial C}{\partial S} S_t\right)  = \frac{\partial C}{\partial t}-\frac{\partial C}{\partial S} q S_t  + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> which gives the equation <span class="math display">\[r W_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S}(r-q) S_t+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2\]</span> with a boundary condition <span class="math inline">\(W_T = (S_T-K)^{+}\)</span>. However, no-arbitrage suggests <span class="math inline">\(W_t = C(t,S_t)\)</span> which gives us the partial differential equation <span class="math display">\[r C = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (r-q) S+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S^2\]</span> with a boundary condition <span class="math inline">\(C(T,S_T)= (S_T - K)^{+}\)</span>. This is a partial differential equation and a fairly tedious set of calcuations show the Black Scholes formula is a solution (in fact it is the only positive solution). Close observation of the right hand side we see this is the drift term of Ito expansion for <span class="math inline">\(C\)</span> if we work in the risk-neutral probability. The right hand side then says in the risk-neutral probability, the call option earns the risk free return.</p>
+<p>However, there is nothing special about a call option. The same argument will apply for any European style option. The only difference is the boundary condition. This procedure allows us to replicate the payoff of any European option even for those which might not be traded. This observation had a profound effect on practice. A particularly popular example is portfolio insurance.</p>
+<p>Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by <span class="math inline">\(\max(K,S_T)\)</span>. The reason for the name protective put is apparent since the position can pay off no less than <span class="math inline">\(K\)</span>. The cost of this insurance is the price of the put. However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously. The basic recipe is to start with inital wealth equal to that for a protective put position: <span class="math inline">\(W_0 = P(0,S_0)+S_0\)</span>. The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is <span class="math inline">\(N(d_1)\)</span>, where <span class="math inline">\(d_1\)</span> is calculated at each point in time. However, in practice we cannot trade continuously. A simple discrete strategy would rebalance at intervals <span class="math inline">\(\Delta t\)</span>. The strategy calculates <span class="math inline">\(N(d_1)\)</span> at time 0 and holds <span class="math inline">\(P(0,S_0)+S_0 - N(d_1)S_0\)</span> dollars in the risk free asset and <span class="math inline">\(N(d_1)\)</span> shares of the asset. Thereafter these holdings are adjusted. The change in portfolio value over the interval <span class="math inline">\(\Delta t\)</span> is <span class="math display">\[\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} \]</span> <span class="math display">\[
+= (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t})
+\]</span> where <span class="math inline">\(N(d1-)\)</span> is the delta chosen at time <span class="math inline">\((i-1)\Delta t\)</span>. The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be? This is simulated in the following code:</p>
 <p><img src="under_construction.jpg" class="img-fluid"></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
