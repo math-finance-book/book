@@ -448,7 +448,92 @@ plt.tight_layout()
 plt.show()
 ```
 
-To see how the Greeks respond to changes in the various inputs to the Black-Scholes formula (e.g., interest rate ($r$), time to maturity ($T$) and volatility ($\sigma$)), we encourage readers to interact with the plot below.
+To see how the Greeks respond to changes in the various inputs to the Black-Scholes formula (e.g., interest rate ($r$), time to maturity ($T$) and volatility ($\sigma$)), we encourage readers to interact with the plot below.  The code used for the calculations is here:
+
+``` {python}
+import numpy as np
+from scipy.stats import norm
+
+def d1(S, K, r, sigma, T):
+    """
+    Computes d1 used in Black-Scholes.
+    """
+    return (np.log(S / K) + (r + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
+
+def d2(S, K, r, sigma, T):
+    """
+    Computes d2 used in Black-Scholes.
+    """
+    return d1(S, K, r, sigma, T) - sigma * np.sqrt(T)
+
+def call_price(S, K, r, sigma, T):
+    """
+    Black-Scholes price for a call option.
+    """
+    d_1 = d1(S, K, r, sigma, T)
+    d_2 = d2(S, K, r, sigma, T)
+    return S * norm.cdf(d_1) - K * np.exp(-r * T) * norm.cdf(d_2)
+
+def put_price(S, K, r, sigma, T):
+    """
+    Black-Scholes price for a put option.
+    """
+    d_1 = d1(S, K, r, sigma, T)
+    d_2 = d2(S, K, r, sigma, T)
+    return K * np.exp(-r * T) * norm.cdf(-d_2) - S * norm.cdf(-d_1)
+
+def greeks(S, K, r, sigma, T, option_type="call"):
+    """
+    Return the main Greeks for Black-Scholes.
+
+    Parameters
+    ----------
+    S : float or numpy array
+        Underlying price.
+    K : float
+        Strike price.
+    r : float
+        Risk-free interest rate.
+    sigma : float
+        Volatility.
+    T : float
+        Time to maturity (in years).
+    option_type : str
+        'call' or 'put'.
+    """
+    d_1 = d1(S, K, r, sigma, T)
+    d_2 = d2(S, K, r, sigma, T)
+    pdf_d1 = norm.pdf(d_1)
+    cdf_d1 = norm.cdf(d_1)
+    cdf_d2 = norm.cdf(d_2)
+    
+    if option_type == "call":
+        # Delta
+        delta = cdf_d1
+        # Gamma (same for call & put)
+        gamma = pdf_d1 / (S * sigma * np.sqrt(T))
+        # Vega (same for call & put, but typically scaled by 0.01 if desired in %)
+        vega = S * pdf_d1 * np.sqrt(T)
+        # Theta
+        theta = - (S * pdf_d1 * sigma) / (2 * np.sqrt(T)) \
+                - r * K * np.exp(-r * T) * cdf_d2
+        # Rho
+        rho = K * T * np.exp(-r * T) * cdf_d2
+    else:  # put
+        # Delta
+        delta = cdf_d1 - 1
+        # Gamma (same for call & put)
+        gamma = pdf_d1 / (S * sigma * np.sqrt(T))
+        # Vega (same for call & put)
+        vega = S * pdf_d1 * np.sqrt(T)
+        # Theta
+        theta = - (S * pdf_d1 * sigma) / (2 * np.sqrt(T)) \
+                + r * K * np.exp(-r * T) * norm.cdf(-d_2)
+        # Rho
+        rho = - K * T * np.exp(-r * T) * norm.cdf(-d_2)
+
+    return delta, gamma, vega, theta, rho
+```
 
 
 
