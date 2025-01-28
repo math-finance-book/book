@@ -150,21 +150,25 @@ require(['plotly'], function(Plotly) {
 
 
 <style>
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
+}
+.InProgress {
+  --color1: #eaacf2;
+  --color2: #75387d;
+}
 .Exercise {
   --color1: #ede29d;
   --color2: #8c813a;
 }
-.Extra {
-  --color1: #d5deed;
-  --color2: #6d778a;
+.Done {
+  --color1: #e8cc97;
+  --color2: #7d6538;
 }
 .Principle {
   --color1: #e3aab2;
   --color2: #8f575f;
-}
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
 }
 .CodeToDo {
   --color1: #a7f2d8;
@@ -174,17 +178,13 @@ require(['plotly'], function(Plotly) {
   --color1: #e8cc97;
   --color2: #7d6538;
 }
-.InProgress {
-  --color1: #eaacf2;
-  --color2: #75387d;
+.Extra {
+  --color1: #d5deed;
+  --color2: #6d778a;
 }
 .Rule {
   --color1: #a1bced;
   --color2: #38568f;
-}
-.Done {
-  --color1: #e8cc97;
-  --color2: #7d6538;
 }
 </style>
 
@@ -567,7 +567,7 @@ A_T &amp;= \exp\left(\log \frac{1}{T}\int_0^T S_t\right)\\
 \end{align*}\]</span> Consequently, approximating the value of an average-price or average-strike option by substituting <span class="math inline">\(A_\text{g}_T\)</span> for <span class="math inline">\(A_T\)</span> will produce a biased estimate of the value. Nevertheless, the geometric average<span class="math inline">\(A_\text{g}_T\)</span> and the arithmetic average <span class="math inline">\(A_T\)</span> will be highly correlated, so <span class="math inline">\(A_\text{g}_T\)</span> forms a very useful for Monte-Carlo valuation of average-price and average-strike options, as will be discussed later. To implement the idea, we need a valuation formula for options written on <span class="math inline">\(A_\text{g}_T\)</span>. We will derive this for an average-price call, in which <span class="math inline">\(A_\text{g}_T\)</span> substitutes for <span class="math inline">\(A_T\)</span>.</p>
 <p>Specifically, consider a contract that pays <span class="math display">\[
 \max(0,A_\text{g}_T-K)
-\]</span> at its maturity <span class="math inline">\(T\)</span>. This is a geometric-average-price call,, and we will analyze it in the same way that we analyzed quanto options in <a href="Chapter_FX.html" class="quarto-xref"><span>Chapter 11</span></a>. Let <span class="math inline">\(V_t\)</span> denote the value at date <span class="math inline">\(t\)</span> of receiving <span class="math inline">\(A_\text{g}_T\)</span> at date <span class="math inline">\(T\)</span>. This can be calculated, and the result will be given below. <span class="math inline">\(V_t\)</span> is the value of a dividend-reinvested portfolio, and, by definition, <span class="math inline">\(V_T=A_\text{g}_T\)</span>, so the geometric-average-price call is equivalent to a standard call with <span class="math inline">\(V\)</span> being the price of the underlying. We will show that <span class="math inline">\(V\)</span> has a time-varying but non-random volatility. Therefore, we can apply the Black-Scholes formula, inputting the average volatility as described in <a href="Chapter_BlackScholes.html#sec-s:timevaryingvolatility" class="quarto-xref"><span>Section 9.6</span></a>, to value the geometric-average-price call. We could attempt the same route to price average-price options, but we would find that the volatility of the corresponding value <span class="math inline">\(V\)</span> would vary randomly, just as we found the basket portfolio to have a random volatility in the previous section.</p>
+\]</span> at its maturity <span class="math inline">\(T\)</span>. This is a geometric-average-price call,, and we will analyze it in the same way that we analyzed quanto options in <a href="Chapter_FX.html" class="quarto-xref"><span>Chapter 11</span></a>. Let <span class="math inline">\(V_t\)</span> denote the value at date <span class="math inline">\(t\)</span> of receiving <span class="math inline">\(A_\text{g}_T\)</span> at date <span class="math inline">\(T\)</span>. This can be calculated, and the result will be given below. <span class="math inline">\(V_t\)</span> is the value of a dividend-reinvested portfolio, and, by definition, <span class="math inline">\(V_T=A_\text{g}_T\)</span>, so the geometric-average-price call is equivalent to a standard call with <span class="math inline">\(V\)</span> being the price of the underlying. We will show that <span class="math inline">\(V\)</span> has a time-varying but non-random volatility. Therefore, we can apply the Black-Scholes formula, inputting the average volatility as described in <a href="Chapter_BlackScholes.html#sec-s:timevaryingvolatility" class="quarto-xref"><span>Section 9.10</span></a>, to value the geometric-average-price call. We could attempt the same route to price average-price options, but we would find that the volatility of the corresponding value <span class="math inline">\(V\)</span> would vary randomly, just as we found the basket portfolio to have a random volatility in the previous section.</p>
 <p>The value <span class="math inline">\(V_t\)</span> can be calculated as <span class="math display">\[
 V_t= \mathrm{e}^{-r(T-t)}\\E^R_t\big[A_\text{g}_T\big]\; .
 \]</span> Define <span class="math display">\[
@@ -586,7 +586,7 @@ V_0 = \mathrm{e}^{-rT}S_0\exp\left(\frac{(r-q-\sigma^2/2)T}{2} + \frac{\sigma^2T
 S_t^{\frac{T-t}{T}}\;,
 \]</span> and, by Ito’s formula, <span class="math display">\[
 \frac{ \,\mathrm{d}S^{\frac{T-t}{T}}}{S^{\frac{T-t}{T}}} = \text{something}\,\mathrm{d}t + \left(\frac{T-t}{T}\right)\sigma\,\mathrm{d}B\;.
-\]</span> This implies that the average volatility, in the sense of <a href="Chapter_BlackScholes.html#sec-s:timevaryingvolatility" class="quarto-xref"><span>Section 9.6</span></a>, is <span class="math display">\[
+\]</span> This implies that the average volatility, in the sense of <a href="Chapter_BlackScholes.html#sec-s:timevaryingvolatility" class="quarto-xref"><span>Section 9.10</span></a>, is <span class="math display">\[
 \sigma_{\text{avg}} = \sqrt{\frac{1}{T}\int_0^T \left(\frac{T-t}{T}\right)^2\sigma^2\,\mathrm{d}t}
 =\frac{\sigma}{\sqrt{3}}\;.
 \]</span> Applying the Black-Scholes formula yields:</p>
@@ -614,7 +614,7 @@ V_0 = \mathrm{e}^{-rT}S_0\exp\left( \frac{(N+1)\nu\Delta t}{2} + \frac{(N+1)(2N+
 \qquad(13.5)\]</span></span></p>
 <p>Second, the volatility of <span class="math inline">\(V_t\)</span> comes from the factor <span class="math inline">\(S_t^{(k+1)/N}\)</span>, and <span class="math display">\[
 \frac{ \,\mathrm{d}S^{\frac{k+1}{N}}}{S^{\frac{k+1}{N}}} = \text{something}\,\mathrm{d}t + \left(\frac{k+1}{N}\right)\sigma\,\mathrm{d}B\;.
-\]</span> This implies that the average volatility, in the sense of <a href="Chapter_BlackScholes.html#sec-s:timevaryingvolatility" class="quarto-xref"><span>Section 9.6</span></a>, is</p>
+\]</span> This implies that the average volatility, in the sense of <a href="Chapter_BlackScholes.html#sec-s:timevaryingvolatility" class="quarto-xref"><span>Section 9.10</span></a>, is</p>
 <p><span class="math display">\[
 \sigma_{\text{avg}} = \sqrt{\frac{1}{N}\sum_{k=0}^{N-1} \left(\frac{k+1}{N}\right)^2\sigma^2\,\mathrm{d}t}
 \]</span> <span id="eq-asiansigmaavg"><span class="math display">\[
