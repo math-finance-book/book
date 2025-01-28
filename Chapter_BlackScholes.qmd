@@ -295,9 +295,6 @@ def greeks(S, K, r, sigma, T, option_type="call"):
 ```
 
 
-
-
-
 ::: {#fig-bs-greeks} 
 <iframe height="750" width ="720" src="https://bs-greeks.streamlit.app/?embed=true"></iframe>
 Black-Scholes Greeks Explorer
@@ -305,35 +302,27 @@ Black-Scholes Greeks Explorer
 
 
 
-## Greeks and Delta Hedges {#sec-s:deltahedging}
+## Theta and Gamma in Delta Hedges {#sec-s:deltahedging}
 
-The ability to create a fully hedged (risk-free) portfolio of the stock and an option is the essence of the arbitrage argument underlying the Black-Scholes formula, as we saw in @sec-c:arbitrage for the binomial model.  For a call option, such a portfolio consists of delta shares of the underlying asset and a short call option, or a short position of delta shares of the underlying and a long call option.  \index{delta hedge} These portfolios have no instantaneous exposure to the price of the underlying.  To create a perfect hedge, the portfolio must be adjusted continuously, because the delta changes when the price of the underlying changes and when time passes.  In practice, any hedge will therefore be imperfect, even if the assumptions of the model are satisfied. 
-
-We first consider the continuous-time hedging argument.  Consider a European call option with maturity $T$, and let $C(S,t)$ denote the value of the option at date $t<T$ when the stock price is $S$ at date $t$.  Consider a portfolio that is short one call option and long $\delta$ shares of the underlying asset and that has a (short) cash position equal to $C-\delta S$.  This portfolio has zero value at date $t$.  
-
-The change in the value of the portfolio in an instant $\d  t$ is
-$$
--\d  C + \delta \d   S + q \delta S\d   t+(C-\delta S)r\d   t\;.
-$$ {#eq-changeportfoliovalue}
-
-The first term reflects the change in the value of the option, the second term is the capital gain or loss on $\delta$ shares of stock, the third term is the dividends received on $\delta$ shares of stock, and the fourth term is the interest expense on the short cash position.
-
-On the other hand, we know from Ito's formula that
+Let $C(t, S_t)$ denote the value at date $t$ of a European call option that matures at $T>t$ under the Black-Scholes assumption.  This value is given by the Black-Scholes call formula, taking the initial underlying asset price to be $S_t$ and the time to maturity to be $T-t$.
+Ito's formula tells us that
 
 $$
 \d  C = \frac{\partial C}{\partial S}\d   S + \frac{\partial C}{\partial t}\d   t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\d  S)^2  
 $$
-$$
-= \delta \d   S + \Theta \d   t + \frac{1}{2}\Gamma \sigma^2S^2\d   t\;.
-$$ {#eq-changeportfoliovalue2}
 
-
-Substituting @eq-changeportfoliovalue2 into @eq-changeportfoliovalue shows that  the change in the value of the portfolio is
+Using our notation for Greeks, this is 
 $$
--\Theta \d   t - \frac{1}{2}\Gamma \sigma^2S^2\d   t+ q \delta S\d   t+(C-\delta S)r\d   t\;.
+\d  C = \delta \d   S + \Theta \d   t + \frac{1}{2}\Gamma (\d  S)^2  = \delta \d S - \Theta \d t + \frac{1}{2}\Gamma \sigma^2 S^2 \d t\,.
+$$
+
+If we sell a call option and combine the proceeds with borrowed funds to buy $\delta$ shares of the underlying asset, as discussed in @sec-c:deltas, then the change in the portfolio value is
+$$\delta (\d S + q S \d t) - (\delta S - C)r\d t - \d C$$
+which simplifies to
+$$\delta q S \d t - (\delta S - C)r\d t - \Theta \d t - \frac{1}{2}\Gamma \sigma^2 S^2 \d t\,.
 $$ {#eq-hedgeprofits}
 
-Several aspects of this are noteworthy.  First, as noted earlier, the delta hedge (being long $\delta$ shares of the underlying) eliminates the exposure to changes in the price of the underlying---there is no $\d  S$ term in @eq-hedgeprofits.  Second, $\Theta$ will be negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$.  Third, this portfolio is short gamma.  We can also say it is short convexity, the term convexity \index{convexity} referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).  The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses.  Finally, the portfolio is earning dividends but paying interest.
+Several aspects of this are noteworthy.  First, as noted earlier, the delta hedge eliminates the exposure to changes in the price of the underlying---there is no $\d  S$ term in @eq-hedgeprofits.  Second, $\Theta$ is negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$.  Third, this portfolio is short gamma.  We can also say it is short convexity, the term convexity \index{convexity} referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).^[A curious reader may ask why we don't say that the portfolio is long concavity instead of saying that it is short convexity.  This is a mystery to your authors also.]  The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses.  Finally, the portfolio is earning dividends but paying interest.
 
 It is straightforward to check, from the definitions of $\Theta$, $\Gamma$ and $\delta$ in the preceding section, that
 the sum of the terms in @eq-hedgeprofits is zero.  The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest.
@@ -341,12 +330,15 @@ Therefore, the delta hedge is a perfect hedge.  The portfolio, which has a zero 
 
 ## Discretely Rebalanced Delta Hedges 
 
-A simple discrete strategy would rebalance at intervals $\Delta t$.  The strategy calculates $N(d_1)$ at time 0 and holds $P(0,S_0)+S_0 - N(d_1)S_0$ dollars in the risk free asset and $N(d_1)$ shares of the asset.  Thereafter these holdings are adjusted.  The change in portfolio value over the interval $\Delta t$ is 
-$$\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} $$
-$$ 
-= (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t}) 
-$$
-where $N(d1-)$ is the delta chosen at time $(i-1)\Delta t$.  The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be?  This is simulated in the following code:
+In practice of course, we cannot continuously rebalance to maintain a perfect delta hedge at every instant.  There is risk when rebalancing at discrete times.  We can model a discretely rebalanced delta hedge as follows.  Consider equally spaced dates $0 = t_0 < t_1 < \cdots < t_n < t_{n+1} = T$.  Let $\Delta t$ denote the time between successive dates.  Suppose we set up a delta hedge at date $0$ for a call option that we have sold.  We sell the call at the Black-Scholes price $C(0, S_0)$.  We use the proceeds plus borrowed funds to buy $\delta_0 = \e^{-qT}\mathrm{N}(d_1)$ shares, where $d_1$ is the parameter at date 0 for the Black-Scholes call value and delta.   We rebalance the hedge at each date $t_1, \ldots, t_n$, holding the short call position until it matures at date $T$.  Rebalancing means that we trade to re-establish the delta hedge based on the Black-Scholes call delta at that date, buying shares when the delta has gone up and selling shares when the delta has fallen.  Let $\delta_t$ denote the Black-Scholes delta at each $t$ and let $C_t denote the Black-Scholes call value $C(t, S_t)$.  
+
+Our cash position at date 0 is $ - (\delta_0S_0 - C_0$.  The cash position changes at each subsequent date due to (i) interest earned/paid on the cash position during the period, (ii) dividends received during the period on the shares owned, and (iii) cash paid or received when buying or selling stock to re-establish the delta hedge.  Approximate the interest on cash in each time period as $r\cdot \Delta t$ per dollar of cash at the beginning of the period.  Approximate the dividends received in each time period as $q \cdot \Delta t$ per dollar value of stock at the beginning of the period.  
+
+The portfolio starts at a zero value at date $0$, because we used none of our own funds to put it on.  Let $V_t$ denote the portfolio value at date $t$.  The change in the portfolio value from $t_i$ to $t_{i+1}$ for each $i$ is
+$$V_{t_{i+1}} - V_{t_i} = - (\delta_{t_i}S_{t_i} - V_{t_i})r\Delta t + \delta_{t_i}S_{t_i}q\Delta t + \delta_{t_i}
+(S_{t_{i+1}} - S_{t_i}) - (C_{t_{i+1}} - C_{t_i})\,.$$
+The terms on the right-hand side are (i) interest paid on borrowed funds, (ii) dividends received on shares owned, (iii) gain or loss on the shares owned, (iv) change in the value of the short call position.  The following figure simulates stock price paths and computes the portfolio value at date $t_{n+1}=T$.  Of course, the call value at date $T$ is its intrinsic value.
+
 
 
 ::: {#fig-discrete-hedge} 
@@ -357,11 +349,9 @@ Discretely Rebalanced Delta Hedge
 
 ## Gamma Hedging {#sec-s:gammahedging}
 
-To see how well this works with only discrete adjustments to the hedge, one can simulate the changes in $S$ over time and sum the gains and losses over discrete rebalancing periods.  One should input the actual (not risk-neutral) expected rate of return on the asset to compute the actual distribution of gains and losses.  
+To attempt to improve the performance of a discretely rebalanced delta hedge, we can use another option to create a portfolio that is both delta and gamma neutral.  Being gamma neutral means that the marginal change in the portfolio delta is zero when the underlying price changes.  This reduces the amount of rebalancing needed to maintain a delta hedge, so a discretely rebalanced delta/gamma hedge may be less risky than a discretely rebalanced delta hedge.  
 
-To attempt to improve the performance of a discretely rebalanced delta hedge, one can use another option to create a portfolio that is both delta and gamma neutral.  Being delta neutral means hedged as in the previous section---the portfolio value has no exposure to changes in the underlying asset price.  In other words, it means that the derivative of the portfolio value with respect to the price of the underlying (the portfolio delta) is zero.  Being gamma neutral means that the delta of the portfolio has no exposure to changes in the underlying price, which is equivalent to the second derivative of the portfolio value with respect to the price of the underlying (the portfolio gamma) being zero.  If the delta truly did not change, then there would be no need to rebalance continuously, and hence no hedging error introduced by only adjusting the portfolio at discrete times rather than continuously.   However, there is certainly no guarantee that a discretely-rebalanced delta/gamma hedge will perform better than a discretely rebalanced delta hedge.  \index{gamma hedge}
-
-A delta/gamma hedge can be constructed as follows.  Suppose we have written (shorted) a call option and we want to hedge both the delta and gamma using the underlying asset and another option, for example, another call option with a different strike.  In practice, one would want to use a liquid option for this purpose, which typically means that the strike of the option will be near the current value of the underlying (i.e., the option used to hedge would be approximately at the money). 
+A delta/gamma hedge can be constructed as follows.  Suppose we have sold a call option and we want to hedge both the delta and gamma using the underlying asset and another option, for example, another call option with a different strike.  In practice, one would want to use a liquid option for this purpose, which typically means that the strike of the option will be near the current value of the underlying (i.e., the option used to hedge would be approximately at the money). 
 
 Let $\delta$ and $\Gamma$ denote the delta and gamma of the written option and let $\delta'$ and $\Gamma'$ denote the delta and gamma of the option used to hedge.  Consider holding  $a$ of shares of the stock and $b$ units of the option used to hedge in conjunction with the short option.  The delta of the stock is one ($\d  S/\d  S = 1$), so to obtain a zero portfolio delta we need
 
@@ -385,17 +375,6 @@ $$
 a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 $$
 
-## Portfolio Insurance 
-
-This procedure allows us to replicate the payoff of any European option even for those which might not be traded.  This observation had a profound effect on practice.  A particularly popular example is portfolio insurance.
-
-Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by $\max(K,S_T)$.  The reason for the name protective put is apparent since the position can pay off no less than $K$.  The cost of this insurance is the price of the put.  However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously.  The basic recipe is to start with inital wealth equal to that for a protective put position: $W_0 = P(0,S_0)+S_0$.  The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is $N(d_1)$, where $d_1$ is calculated at each point in time.  However, in practice we cannot trade continuously.  
-
-## Monte-Carlo Approximation of Black-Scholes
-
-
-## Binomial Approximation of Black-Scholes
-
 
 
 ## Implied Volatilities {#sec-s:impliedvolatility}
@@ -404,10 +383,6 @@ All of the inputs into the option pricing formulas are in theory observable, exc
 
 
 Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small.  Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity.  To some extent, the implied volatility normalizes the price relative to the exercise price and maturity.  Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!
-
-
-
-## Term Structure of Volatility {#sec-s:timevaryingvolatility}
 
 The option pricing formulas in this chapter are derived from the fact that the natural logarithm of the stock price at maturity is normally distributed with a certain mean (depending on the numeraire) and variance equal to $\sigma^2T$.  It is not actually necessary that the volatility be constant.  The formulas are still valid if
 $$\frac{\d  S_t}{S_t}= \mu_t\d   t + \sigma_t\d   B_t$$
@@ -443,195 +418,26 @@ $$\sigma_t = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i
 for $T_i<t\leq T_{i+1}$, provided the expression inside the square root symbol is positive. This $\sigma_t$ is often called the term structure of (implied) volatilities.  \index{term structure of volatility} Generally, we may expect $\sigma_t$ to be a decreasing function of time $t$ when the current market is especially volatile and to be an increasing function when the current market is especially quiet.  
 
 ## Smiles and Smirks {#sec-s:smiles}
+
 If we compute implied volatilities for options  with the same maturity but different strikes, we will again obtain different implied volatilities for different options.  If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money).  The implied volatility will then generally flatten out or increase slightly at higher strikes.  The graph looks like a twisted smile (smirk).  \index{smile} \index{smirk} This pattern has been very pronounced in equity index option prices since the crash of 1987.  In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model.  It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed).  We will return to this subject in @sec-s:smilesagain.
 
 
 
+## Monte-Carlo Approximation of Black-Scholes
+
+
+## Binomial Approximation of Black-Scholes
 
 
 
 
 
 
-
-
-## Example: Replicating Portfolios and Simulating Portfolio Insurance
-
-Another derivation of the Black Scholes formula is provided by Merton.  He asked  whether the payoff to a European call option can be replicated by trading the stock and the risk free asset.  Let $\theta_t$ be the number of shares of the stock held at time $t$ and $\alpha_t$ the number of shares of an initial investment of one dollar in the risk free asset.   Then the portfolio is worth $\alpha_t R_t + \theta_t S_t$ where $R_t= e^{rt}$ is the time $t$ value of an initial time $0$ investment of one dollar in the risk free asset. The portfolio should start with an initial value, should not have any cash inflows or outflows and have a terminal value equal to a call payoff so the changes in value are completely dictated by the changes in the value of the assets.  That is, assuming continuous trading,
-$$  d W_t = \theta_t d S_t + \alpha_t  d R_t = \theta_t \left(\mu S_t dt + q S_t dt + \sigma S_t d B_t\right)  + \alpha_t r R_t dt$$
-with terminal condition 
-$$ W_T = \alpha_T R_T + \theta_T S_T = (S_T - K)^{+} $$
-The problem is to find $\theta_t$ and $\alpha_t$ for all times and states.  If we can accomplish this, then by `no-arbitrage' the call price must be the value of the initial investment.  Assume the call price is a function of the stock price and time: $C(t,S_t)$.  Then by Ito's Lemma
-$$ d C(t,S_t) = \left(\frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2 \right) dt + \frac{\partial C}{\partial S} \sigma S_t dB_t $$
-It should be apparent that we want to hold $\theta = \frac{\partial C}{\partial S}$, which is the delta of the call option.  By doing so, we match the diffusion term in thw change in wealth and the change in the call option.  Then matching the drift terms in both expressions
-$$ \frac{\partial C}{\partial S} \mu S_t + \alpha_t r R_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S_t + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2$$
-which can be solved to give
-$$ \alpha_t r R_t=r \left(W_t -\frac{\partial C}{\partial S} S_t\right)  = \frac{\partial C}{\partial t}-\frac{\partial C}{\partial S} q S_t  + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2$$
-which gives the equation
-$$r W_t = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S}(r-q) S_t+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2$$
-with a boundary condition $W_T = (S_T-K)^{+}$.  However, no-arbitrage suggests $W_t = C(t,S_t)$ which gives us the partial differential equation
-$$r C = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (r-q) S+\frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S^2$$
-with a boundary condition $C(T,S_T)= (S_T - K)^{+}$.  This is a partial differential equation and a fairly tedious set of calcuations show the Black Scholes formula is a solution (in fact it is the only positive solution).  Close observation of the right hand side we see this is the drift term of Ito expansion for $C$ if we work in the risk-neutral probability.  The right hand side then says in the risk-neutral probability, the call option earns the risk free return.
-
-However, there is nothing special about a call option.  The same argument will apply for any European style option.  The only difference is the boundary condition.  This procedure allows us to replicate the payoff of any European option even for those which might not be traded.  This observation had a profound effect on practice.  A particularly popular example is portfolio insurance.
-
-Recall, that a protective put position buys a put and buys a share and the payoff at the expiration of the put is given by $\max(K,S_T)$.  The reason for the name protective put is apparent since the position can pay off no less than $K$.  The cost of this insurance is the price of the put.  However, if the put is not traded, we can synthetically replicate this payoff using the prodedure above assuming we can trade continuously.  The basic recipe is to start with inital wealth equal to that for a protective put position: $W_0 = P(0,S_0)+S_0$.  The delta of the protective put position can be calcuated to be the delta of the put plus 1 which is $N(d_1)$, where $d_1$ is calculated at each point in time.  However, in practice we cannot trade continuously.  A simple discrete strategy would rebalance at intervals $\Delta t$.  The strategy calculates $N(d_1)$ at time 0 and holds $P(0,S_0)+S_0 - N(d_1)S_0$ dollars in the risk free asset and $N(d_1)$ shares of the asset.  Thereafter these holdings are adjusted.  The change in portfolio value over the interval $\Delta t$ is 
-$$\Delta W= W_{i \Delta t}- W_{(i-1)\Delta t} $$
-$$ 
-= (P((i-1)\Delta t,S_{(i-1)\Delta t})+S_{(i-1)\Delta t} - N(d_1-)S_{(i-1)\Delta t})(R_{i\Delta t}-R_{(i-1)\Delta t}) + N(d1-)(S_{i\Delta t}-S_{(i-1)\Delta t}) 
-$$
-where $N(d1-)$ is the delta chosen at time $(i-1)\Delta t$.  The question is if the Black Scoles model is correct, how accurate can a discrete rebalancing scheme be?  This is simulated in the following code:
-
-```{python}
-
-import numpy as np
-# from bsfunctions import *
-import matplotlib.pyplot as plt
-import time
-from math import pow, exp, sqrt
-from scipy import stats
-# incs = np.genfromtxt('incs.csv',delimiter=",",skip_header=1)
-def blackscholes(S0, K, r, q, sig, T, call = True):
-    '''Calculate option price using B-S formula.
-
-    Args:
-        S0 (num): initial price of underlying asset.
-        K (num): strick price.
-        r (num): risk free rate.
-        q (num): dividend yield
-        sig (num): Black-Scholes volatility.
-        T (num): maturity.
-        call (bool): True returns call price, False returns put price.
-
-    Returns:
-        num
-    '''
-    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
-    d2 = d1 - sig*np.sqrt(T)
-#     norm = sp.stats.norm
-    norm = stats.norm
-    if call:
-        return np.exp(-q*T)*S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1)
-    else:
-        return np.exp(-q*T)*S0 * -norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
-
-def blackscholes_delta(S0, K, r, q, sig, T, call = True):
-    '''Calculate option price using B-S formula.
-
-    Args:
-        S0 (num): initial price of underlying asset.
-        K (num): strick price.
-        r (num): risk free rate.
-        q (num): dividend yield
-        sig (num): Black-Scholes volatility.
-        T (num): maturity.
-        call (bool): True returns call price, False returns put price.
-
-    Returns:
-        num
-    '''
-    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
-    d2 = d1 - sig*np.sqrt(T)
-#     norm = sp.stats.norm
-    norm = stats.norm
-    if type(call) == bool:
-        if call:
-            return np.exp(-q*T)*norm.cdf(d1,0,1)
-        else:
-            return np.exp(-q*T)*norm.cdf(-d1,0,1)
-    else:
-        print("Not a valid value for call")
-
-# parameters
-# number of paths
-# n = incs.shape[1]
-n = 100000
-# number of divisions
-# m = incs.shape[0]
-m = 100
-# interest rate
-r = .1
-# dividend yield
-q=0.0
-# true drift
-mu = .15
-# volatility
-sig = .2
-# Initial Stock Price
-S0 = 42
-# Strike Price
-K = 42
-# Maturity
-T = 0.5
-
-
-# seed for random generator
-seed= 1234
-# define a random generator
-rg = np.random.RandomState(seed)
-# initialize
-
-
-# generate normal random vairables
-dt= T/m
-vol=sig*np.sqrt(dt)
-incs = rg.normal(0,vol,[m,n])
-
-
-tline = np.linspace(0,T,m+1)
-
-
-St = np.zeros((m+1,n))
-#St1 = np.zeros((m+1,n))
-
-V_vec = np.zeros((m+1,n))
-
-delta = np.zeros((m,n))
-
-put= blackscholes(S0,K,r, q, sig,T,call=False)
-
-incs_cumsum =  np.concatenate((np.zeros((1,n)),incs),axis=0).cumsum(axis=0)
-V_vec = np.zeros((m+1,n))
-t_mat =  np.repeat(tline.reshape((m+1,1)), n, axis=1)
-drift_cumsum = (mu -q -0.5*sig**2) * t_mat
-
-St = S0 * np.exp(incs_cumsum + drift_cumsum)
-
-delta = blackscholes_delta(St[:-1,:],K,r, q, sig,T-t_mat[:-1,:])
-
-V_vec[0,:] = S0 + put
-
-for i in range(1,m+1):
-    V_vec[i,:] = V_vec[i-1,:] + (np.exp(r*dt)-1) * (V_vec[i-1,:] - delta[i-1,:] * St[i-1,:])+ delta[i-1,:] * (St[i,:]-St[i-1,:])
-
-# Uses actual simulated changes in riskfree and stock price not the dt and dB approximations 
-# plot ST versus VT
-plt.scatter(St[m,:],V_vec[m,:])
-plt.xlabel('Stock Price at Maturity')
-plt.ylabel('Value of Portfolio Insurance')
-plt.show()
-```
-With $m=100$ rebalancing dates over $T=0.5$ for the parameters chosen the repliacting strategy does a pretty good job.  The hedging errors occur when the stock price is close to the strike price.  This is not surprising since the delta changes (measured by the gamma) fastest around this point.  A gamma hedge would potentially improve the performance.
-
-The portfolio insurance rebalancing scheme involves sell stock and buying bonds when the stock price goes down and buying stocks and selling bonds when the stock price goes up.  This can be destabilizing and was identified as a contributor to the 1987 stock market crash.
-
-
-### Discretely-Rebalanced Delta Hedges
-To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return $\mu$.  We consider adjusting the hedge at dates $0=t_0<t_1<\cdots<t_N=T$, with $t_i-t_{i-1}=\Delta t = T/N$ for each $i$.  The changes in the natural logarithm of the stock price between successive dates $t_{i-1}$ and $t_i$ are simulated as
-$$\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\Delta B\; ,$$
-where $\Delta B$ is normally distributed with mean zero and variance $\Delta t$.  The random variables $\Delta B$ are simulated as standard normals multiplied by
-$\sqrt{\Delta t}$.  We begin with the portfolio that is short a call, long $\delta$ shares of the underlying, and short $\delta S-C$ in cash.  After the stock price changes, say from $S$ to $S'$, we compute the new delta $\delta'$.  The cash flow from adjusting the hedge is $(\delta-\delta')S'$.  Accumulation (or payment) of interest on the cash position is captured by the factor $e^{r\Delta t}$.  Continuous payment of dividends is modelled similarly: the dividends earned during the period $\Delta t$ is taken to be $\delta S\left(e^{q\Delta t}-1\right)$.  The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge.  At date $T$, the value of the portfolio is the cash position less the intrinsic value of the option.
-
-To describe the distribution of gains and losses, we compute percentiles of the distribution.  You should see that the hedge becomes more nearly perfect as the number of periods $N$ is increased.  Note that this is true regardless of the $\mu$ that is input, which reaffirms the point that option values and hedges do not depend on the expected rate of return of the underlying. 
 
 
 
 ## {.unnumbered}
 
-::: {#exr-problem4.1}
-  Create a Python code which inputs $K$, $r$, $\sigma$, $q$ and $T$.  Compute the delta of a call option 
-for stock prices $S = .01K$, $.02K$, \ldots, $1.99K$, $2K$ (i.e., $S = iK/100$ for $i=1, \ldots 200$) and plot the delta against the stock price.  
-:::
 
 ::: Exercise
  The delta of a digital option that pays \$1 when $S_T>K$ is 
