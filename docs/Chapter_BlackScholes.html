@@ -150,33 +150,25 @@ require(['plotly'], function(Plotly) {
 
 
 <style>
-.Rule {
-  --color1: #a1bced;
-  --color2: #38568f;
-}
 .Example {
   --color1: #e8cc97;
   --color2: #7d6538;
-}
-.Exercise {
-  --color1: #ede29d;
-  --color2: #8c813a;
 }
 .InProgress {
   --color1: #eaacf2;
   --color2: #75387d;
 }
-.WritingToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
-}
-.CodeToDo {
-  --color1: #a7f2d8;
-  --color2: #50997f;
+.Exercise {
+  --color1: #ede29d;
+  --color2: #8c813a;
 }
 .Done {
   --color1: #e8cc97;
   --color2: #7d6538;
+}
+.CodeToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 .Principle {
   --color1: #e3aab2;
@@ -185,6 +177,14 @@ require(['plotly'], function(Plotly) {
 .Extra {
   --color1: #d5deed;
   --color2: #6d778a;
+}
+.Rule {
+  --color1: #a1bced;
+  --color2: #38568f;
+}
+.WritingToDo {
+  --color1: #a7f2d8;
+  --color2: #50997f;
 }
 </style>
 
@@ -553,12 +553,12 @@ window.Quarto = {
 </header>
 
 
-<div id="87ba8d7e" class="cell" data-execution_count="1">
+<div id="ae6e2bbb" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
 <script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
 </div>
 </div>
-<p>This chapter explains the Black-Scholes formulas for the values of European calls and puts. We will also see how to calculate implied volatilities and the option Greeks. The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield <span class="math inline">\(q\)</span> and has price <span class="math inline">\(S\)</span> satisfying <span id="eq-bs1"><span class="math display">\[
+<p>This chapter explains the very important Black-Scholes formulas for the values of European calls and puts. Options are written on asset prices, not dividend-reinvested asset prices, with which we have been primarily dealing to this point. U.S. companies pay dividends quarterly (if they pay dividends). If the option will mature before the next dividend is paid (to be more precise, if it matures before the next ex-dividend date, which is when the stock begins trading without right to the subsequent dividend) then dividends are not an issue. We discuss a model suitable for valuing options that mature after one or more upcoming dividend payments in <a href="Chapter_Americans.html" class="quarto-xref"><span>Chapter 10</span></a>. In this chapter, we make a simplifying assumption. We assume that dividends are paid continuously at a rate proportional to the underlying asset price. the Black-Scholes model suitable for quarterly dividendsThe Black-Scholes assumptions are that the underlying asset pays a constant dividend yield <span class="math inline">\(q\)</span> and has price <span class="math inline">\(S\)</span> satisfying <span id="eq-bs1"><span class="math display">\[
 \frac{\,\mathrm{d}S}{S} = \mu\,\mathrm{d}t + \sigma\,\mathrm{d}B
 \qquad(9.1)\]</span></span></p>
 <p>for a Brownian motion B. Here <span class="math inline">\(\sigma\)</span> is assumed to be constant (though we will allow it to vary in a non-random way at the end of the chapter) and <span class="math inline">\(\mu\)</span> can be a quite general random process. It is also assumed that there is a constant continuously-compounded risk-free rate <span class="math inline">\(r\)</span>.</p>
@@ -594,7 +594,7 @@ y =  \begin{cases} 1 &amp; \text{if $S_T&lt;K$}\; ,\\
 \mathrm{e}^{-rT}K + \text{Call Price} = \mathrm{e}^{-q T}S_0+ \text{Put Price}\;.
 \qquad(9.4)\]</span></span></p>
 <p>The following figure shows how the Black-Scholes call and put values depend on the underlying asset price and other model parameters. The call and put values are computed with the following code.</p>
-<div id="a9ddc68a" class="cell" data-execution_count="2">
+<div id="7b52c143" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -740,7 +740,7 @@ Figure&nbsp;9.1: Black-Scholes Explorer
 \end{align*}\]</span></p>
 <p>We can calculate the Greeks of a European put option from the call option Greeks and put-call parity: <span class="math display">\[\text{Put Price} = \text{Call Price} +\mathrm{e}^{-rT}K- \mathrm{e}^{-q T}S_0\; .\]</span> For example, the delta of a put is the delta of a call (with the same strike and maturity) minus <span class="math inline">\(\mathrm{e}^{-q T}\)</span>, and the gamma of a put is the same as the gamma of the corresponding call.</p>
 <p>To see how the Greeks respond to changes in the various inputs to the Black-Scholes formula (e.g., interest rate (<span class="math inline">\(r\)</span>), time to maturity (<span class="math inline">\(T\)</span>) and volatility (<span class="math inline">\(\sigma\)</span>)), we encourage readers to interact with the plot below. The code used for the calculations is here:</p>
-<div id="36a96193" class="cell" data-execution_count="3">
+<div id="ad91d3a4" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -893,22 +893,10 @@ a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 <h2 data-number="9.6" class="anchored" data-anchor-id="sec-s:impliedvolatility"><span class="header-section-number">9.6</span> Implied Volatilities</h2>
 <p>All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient <span class="math inline">\(\sigma\)</span>. We can estimate <span class="math inline">\(\sigma\)</span> from historical data (see <a href="Chapter_StochasticVol.html" class="quarto-xref"><span>Chapter 16</span></a>), or estimate it from the prices of other options. The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the <span class="math inline">\(\sigma\)</span> that is input, so one can take the price as given and infer <span class="math inline">\(\sigma\)</span> from the formula. The <span class="math inline">\(\sigma\)</span> computed in this way is called the implied volatility. The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.</p>
 <p>Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small. Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity. To some extent, the implied volatility normalizes the price relative to the exercise price and maturity. Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!</p>
-<p>The option pricing formulas in this chapter are derived from the fact that the natural logarithm of the stock price at maturity is normally distributed with a certain mean (depending on the numeraire) and variance equal to <span class="math inline">\(\sigma^2T\)</span>. It is not actually necessary that the volatility be constant. The formulas are still valid if <span class="math display">\[\frac{\,\mathrm{d}S_t}{S_t}= \mu_t\,\mathrm{d}t + \sigma_t\,\mathrm{d}B_t\]</span> where <span class="math inline">\(\sigma_t\)</span> is some non-random function of time (and again <span class="math inline">\(\mu\)</span> can be a quite general random process). In this case, the variance of <span class="math inline">\(\log S_T\)</span> will be <span id="eq-totalvariance"><span class="math display">\[
-\int_0^T \sigma^2_t\,\mathrm{d}t\;,
-\qquad(9.9)\]</span></span></p>
-<p>which is essentially the sum of the instantaneous variances <span class="math inline">\(\sigma^2_t\,\mathrm{d}t\)</span>. In the <span class="math inline">\(d_1\)</span>’s and <span class="math inline">\(d_2\)</span>’s in the option pricing formulas, <span class="math inline">\(\sigma^2T\)</span> should be replaced by <a href="#eq-totalvariance" class="quarto-xref">Equation&nbsp;<span>9.9</span></a>. A convenient way of expressing this is as follows. Let <span class="math inline">\(\sigma_{\text{avg}}\)</span> be the positive number such that <span id="eq-sigmaavg100"><span class="math display">\[
-\sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2_t\,\mathrm{d}t\;.
-\qquad(9.10)\]</span></span></p>
-<p>Then we simply need to input <span class="math inline">\(\sigma_{\text{avg}}\)</span> as in our option pricing functions. We will call <span class="math inline">\(\sigma_{\text{avg}}\)</span> the average volatility, though note that it is not really the average of <span class="math inline">\(\sigma_t\)</span> but instead is the square root of the average of <span class="math inline">\(\sigma^2_t\)</span>.</p>
-<p>It is important to recognize that, throughout this chapter, date <span class="math inline">\(0\)</span> means the date at which the option is being valued. It is not necessarily the date at which the option was first bought or sold. So <span class="math inline">\(\sigma_{\text{avg}}\)</span> is the average (in a sense) volatility during the remaining lifetime of the option, which need not be the same as the average during the option’s entire lifetime. It is this remaining volatility that is important for pricing and hedging. Moreover, it is a mistake at date <span class="math inline">\(0\)</span> to use <span class="math inline">\(\sigma_0\)</span> as the volatility to compute prices and hedges. Instead, prices and hedges should be based on <span class="math inline">\(\sigma_{\text{avg}}\)</span>.</p>
-<p>These considerations provide a way to address the following situation. If we compute implied volatilities for options with different maturities, we will normally get different numbers. For example, consider two at-the-money options with maturities <span class="math inline">\(T_1\)</span> and <span class="math inline">\(T_2\)</span> where <span class="math inline">\(T_2&gt;T_1\)</span>. Denote the implied volatilities by <span class="math inline">\(\hat{\sigma}_1\)</span> and <span class="math inline">\(\hat{\sigma}_2\)</span>. We want to interpret these as average volatilities for the time periods <span class="math inline">\([0,T_1]\)</span> and <span class="math inline">\([0,T_2]\)</span> respectively. This requires the existence of a function <span class="math inline">\(\sigma_t\)</span> such that <span class="math display">\[\hat{\sigma}_1^2 = \frac{1}{T_1}\int_0^{T_1} \sigma^2_t\,\mathrm{d}t \quad \text{and} \quad \hat{\sigma}_2^2 = \frac{1}{T_2}\int_0^{T_2} \sigma^2_t\,\mathrm{d}t\; .\]</span> This would imply <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 = \int_{T_1}^{T_2} \sigma^2_t\,\mathrm{d}t\; ,\]</span> which requires <span class="math display">\[\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 \geq 0\; .\]</span> Equivalently, <span class="math display">\[\hat{\sigma}_2 \geq \sqrt{\frac{T_1}{T_2}} \hat{\sigma}_1\; .\]</span> Provided this last inequality is satisfied, we can easily construct the function <span class="math inline">\(\sigma_t\)</span> as <span class="math display">\[\sigma_t = \begin{cases} \hat{\sigma}_1 &amp; \quad\text{for $t\leq T_1$} \\
-\sqrt{\frac{\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1}{T_2-T_1}} &amp;\quad\text{for $T_1 &lt; t\leq T_2$}.
-\end{cases}
-\]</span> More generally, given a sequence of at-the-money options with maturities <span class="math inline">\(T_1&lt;T_2&lt;\cdots T_N\)</span> and implied volatilities <span class="math inline">\(\hat{\sigma}_1,\dots,\hat{\sigma}_N\)</span>, we define <span class="math display">\[\sigma_t = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}\]</span> for <span class="math inline">\(T_i&lt;t\leq T_{i+1}\)</span>, provided the expression inside the square root symbol is positive. This <span class="math inline">\(\sigma_t\)</span> is often called the term structure of (implied) volatilities. Generally, we may expect <span class="math inline">\(\sigma_t\)</span> to be a decreasing function of time <span class="math inline">\(t\)</span> when the current market is especially volatile and to be an increasing function when the current market is especially quiet.</p>
+<p>If we compute implied volatilities for options with the same maturity but different strikes, we will typically obtain different implied volatilities for different options. If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money). The implied volatility then generally flattens out or increases slightly at higher strikes. The graph looks like a twisted smile (smirk). This pattern has been very pronounced in equity index option prices since the crash of 1987. This moneyness structure of implied volatilities is inconsistent with the Black-Scholes model. It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed).</p>
 </section>
-<section id="sec-s:smiles" class="level2" data-number="9.7">
-<h2 data-number="9.7" class="anchored" data-anchor-id="sec-s:smiles"><span class="header-section-number">9.7</span> Smiles and Smirks</h2>
-<p>If we compute implied volatilities for options with the same maturity but different strikes, we will again obtain different implied volatilities for different options. If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money). The implied volatility will then generally flatten out or increase slightly at higher strikes. The graph looks like a twisted smile (smirk). This pattern has been very pronounced in equity index option prices since the crash of 1987. In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model. It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed). We will return to this subject in <a href="Chapter_Jumps.html#sec-s:smilesagain" class="quarto-xref"><span>Section 17.1</span></a>.</p>
+<section id="fundamental-pde" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="fundamental-pde"><span class="header-section-number">9.7</span> Fundamental PDE</h2>
 </section>
 <section id="monte-carlo-approximation-of-black-scholes" class="level2" data-number="9.8">
 <h2 data-number="9.8" class="anchored" data-anchor-id="monte-carlo-approximation-of-black-scholes"><span class="header-section-number">9.8</span> Monte-Carlo Approximation of Black-Scholes</h2>
@@ -961,13 +949,13 @@ a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
 <div id="Exercise-9.11" class="Exercise">
 <p></p><details class="Exercise fbx-simplebox fbx-default"><summary><strong>Exercise 9.11</strong></summary><div>Suppose an investor invests in a portfolio with price <span class="math inline">\(S\)</span> and constant dividend yield <span class="math inline">\(q\)</span>. Assume the investor is charged a constant expense ratio <span class="math inline">\(\alpha\)</span> (which acts as a negative dividend) and at date <span class="math inline">\(T\)</span> receives either his portfolio value or his initial investment, whichever is higher. This is similar to a popular type of variable annuity. Letting <span class="math inline">\(D\)</span> denote the number of dollars invested in the contract, the contract pays <span id="eq-bsp1"><span class="math display">\[
 \max\left(D,\frac{D\mathrm{e}^{(q-\alpha)T}S_T}{S_0}\right)
-\qquad(9.11)\]</span></span> at date <span class="math inline">\(T\)</span>.<br>
-We can rearrange the expression <a href="#eq-bsp1" class="quarto-xref">Equation&nbsp;<span>9.11</span></a> as<p></p>
+\qquad(9.9)\]</span></span> at date <span class="math inline">\(T\)</span>.<br>
+We can rearrange the expression <a href="#eq-bsp1" class="quarto-xref">Equation&nbsp;<span>9.9</span></a> as<p></p>
 <p><span class="math display">\[
 \max\left(D,\frac{D\mathrm{e}^{(q-\alpha)T}S_T}{S_0}\right) = D + \max\left(0, \frac{D\mathrm{e}^{(q-\alpha)T}S_T}{S_0}-D\right)
 \]</span> <span id="eq-bsp2"><span class="math display">\[
 = D + \mathrm{e}^{-\alpha T}D\max\left(0,\frac{\mathrm{e}^{qT}S_T}{S_0}-\mathrm{e}^{\alpha T}\right)\;.
-\qquad(9.12)\]</span></span></p>
+\qquad(9.10)\]</span></span></p>
 <p>Thus, the contract payoff is equivalent to the amount invested plus a certain number of call options written on the gross holding period return <span class="math inline">\(\mathrm{e}^{qT}S_T/S_0\)</span>. Note that <span class="math inline">\(Z_t = \mathrm{e}^{qt}S_t/S_0\)</span> is the date–<span class="math inline">\(t\)</span> value of the portfolio that starts with <span class="math inline">\(1/S_0\)</span> units of the asset (i.e., with a $1 investment) and reinvests dividends. Thus, the call options are call options on a dividend-reinvested portfolio with the same volatility as <span class="math inline">\(S\)</span> and initial price of $1. This implies that the date–0 value of the contract to the investor is <span class="math inline">\(\mathrm{e}^{-rT}D\)</span> plus</p>
 <p><span class="math inline">\(e^{-\alpha*T}*D*\)</span><code>Black_Scholes_Call</code><span class="math inline">\((1,e^{-\alpha*T},r,sigma,q,T)\)</span></p>
 <ol type="1">
