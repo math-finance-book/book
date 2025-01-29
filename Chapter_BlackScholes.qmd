@@ -18,7 +18,7 @@ display(
 ```
 
 
-This chapter explains the Black-Scholes formulas for the values of European calls and puts.  We will also see how to calculate implied volatilities and the option Greeks.  The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
+This chapter explains the very important Black-Scholes formulas for the values of European calls and puts.  Options are written on asset prices, not dividend-reinvested asset prices, with which we have been primarily dealing to this point.  U.S. companies pay dividends quarterly (if they pay dividends).  If the option will mature before the next dividend is paid (to be more precise, if it matures before the next ex-dividend date, which is when the stock begins trading without right to the subsequent dividend) then dividends are not an issue.  We discuss a model suitable for valuing options that mature after one or more upcoming dividend payments in @sec-c:americans.  In this chapter, we make a simplifying assumption.  We assume that dividends are paid continuously at a rate proportional to the underlying asset price.   the Black-Scholes model suitable for quarterly dividendsThe Black-Scholes assumptions are that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
 $$
 \frac{\d  S}{S} = \mu\d   t + \sigma\d   B
 $$ {#eq-bs1}
@@ -384,44 +384,9 @@ All of the inputs into the option pricing formulas are in theory observable, exc
 
 Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small.  Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity.  To some extent, the implied volatility normalizes the price relative to the exercise price and maturity.  Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!
 
-The option pricing formulas in this chapter are derived from the fact that the natural logarithm of the stock price at maturity is normally distributed with a certain mean (depending on the numeraire) and variance equal to $\sigma^2T$.  It is not actually necessary that the volatility be constant.  The formulas are still valid if
-$$\frac{\d  S_t}{S_t}= \mu_t\d   t + \sigma_t\d   B_t$$
-where $\sigma_t$ is some non-random function of time (and again $\mu$ can be a quite general random process).  In this case, the variance of $\log S_T$ will be
-$$
-\int_0^T \sigma^2_t\d   t\;,
-$$ {#eq-totalvariance}
+If we compute implied volatilities for options with the same maturity but different strikes, we will typically obtain different implied volatilities for different options.  If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money).  The implied volatility then generally flattens out or increases slightly at higher strikes.  The graph looks like a twisted smile (smirk).  This pattern has been very pronounced in equity index option prices since the crash of 1987.  This moneyness structure of implied volatilities is inconsistent with the Black-Scholes model.  It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed).  
 
-which is essentially the sum of the instantaneous variances $\sigma^2_t\d   t$.  In the $d_1$'s and $d_2$'s in the option pricing formulas, $\sigma^2T$ should be replaced by @eq-totalvariance.  A convenient way of expressing this is as follows.  Let $\sigma_{\text{avg}}$ be the positive number such that
-$$
-\sigma_{\text{avg}}^2 = \frac{1}{T}\int_0^T \sigma^2_t\d   t\;.
-$$ {#eq-sigmaavg100}
-
-Then we simply need to input $\sigma_{\text{avg}}$ as \verb!sigma! in our option pricing functions.  We will call $\sigma_{\text{avg}}$ the average volatility, though note that it is not really the average of $\sigma_t$ but instead is the square root of the average of $\sigma^2_t$.
-
-It is important to recognize that, throughout this chapter, date $0$ means the date at which the option is being valued.  It is not necessarily the date at which the option was first bought or sold.  So $\sigma_{\text{avg}}$ is the average (in a sense) volatility during the remaining lifetime of the option, which need not be the same as the average during the option's  entire lifetime.  It is this remaining volatility that is important for pricing and hedging.  Moreover, it is a mistake at date $0$ to use $\sigma_0$ as the volatility to compute prices and hedges.  Instead, prices and hedges should be based on $\sigma_{\text{avg}}$.
-
-These considerations provide a way to address the following situation.  If we compute implied volatilities for options with different maturities, we will normally get different numbers.  For example, consider two at-the-money  options with maturities $T_1$ and $T_2$ where $T_2>T_1$.  Denote the implied volatilities by $\hat{\sigma}_1$ and $\hat{\sigma}_2$.  We want to interpret these as average volatilities for the time periods $[0,T_1]$ and $[0,T_2]$ respectively.  This requires the existence of a function $\sigma_t$ such that
-$$\hat{\sigma}_1^2 = \frac{1}{T_1}\int_0^{T_1} \sigma^2_t\d   t \quad \text{and} \quad \hat{\sigma}_2^2 = \frac{1}{T_2}\int_0^{T_2} \sigma^2_t\d   t\; .$$
-This would imply
-$$\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 = \int_{T_1}^{T_2} \sigma^2_t\d   t\; ,$$
-which requires
-$$\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1 \geq 0\; .$$
-Equivalently,
-$$\hat{\sigma}_2 \geq \sqrt{\frac{T_1}{T_2}} \hat{\sigma}_1\; .$$
-Provided this last inequality is satisfied, we can easily construct the function $\sigma_t$ as
-$$\sigma_t = \begin{cases} \hat{\sigma}_1 & \quad\text{for $t\leq T_1$} \\
-\sqrt{\frac{\hat{\sigma}_2^2T_2 - \hat{\sigma}_1^2T_1}{T_2-T_1}} &\quad\text{for $T_1 < t\leq T_2$}.
-\end{cases}
-$$
-More generally, given a sequence of at-the-money options with maturities $T_1<T_2<\cdots T_N$ and implied volatilities $\hat{\sigma}_1,\dots,\hat{\sigma}_N$, we define
-$$\sigma_t = \sqrt{\frac{\hat{\sigma}_{i+1}^2T_{i+1} - \hat{\sigma}_i^2T_i}{T_{i+1}-T_i}}$$
-for $T_i<t\leq T_{i+1}$, provided the expression inside the square root symbol is positive. This $\sigma_t$ is often called the term structure of (implied) volatilities.  \index{term structure of volatility} Generally, we may expect $\sigma_t$ to be a decreasing function of time $t$ when the current market is especially volatile and to be an increasing function when the current market is especially quiet.  
-
-## Smiles and Smirks {#sec-s:smiles}
-
-If we compute implied volatilities for options  with the same maturity but different strikes, we will again obtain different implied volatilities for different options.  If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money).  The implied volatility will then generally flatten out or increase slightly at higher strikes.  The graph looks like a twisted smile (smirk).  \index{smile} \index{smirk} This pattern has been very pronounced in equity index option prices since the crash of 1987.  In contrast to the term structure of implied volatilities, this moneyness structure of implied volatilities is simply inconsistent with the model.  It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed).  We will return to this subject in @sec-s:smilesagain.
-
-
+## Fundamental PDE
 
 ## Monte-Carlo Approximation of Black-Scholes
 
