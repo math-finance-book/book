@@ -1,22 +1,6 @@
 {{< include macros.qmd >}}
 
-# Ito Processes and Ito's Formula {#sec-c:ito} 
-
-```{python}
-#| eval: true
-#| echo: false
-
-import plotly
-from IPython.display import display, HTML
-
-plotly.offline.init_notebook_mode(connected=True)
-display(
-    HTML(
-        '<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>'
-    )
-)
-```
-
+# Ito Processes and Ito's Formula {#sec-c:ito}
 
 We use the changes of a Brownian motion to model randomness.  We build other stochastic processes using those changes.  The general idea is
 $$\text{change} = \text{mean} + \text{std dev} \times \text{change in Brownian motion}\,.$$
@@ -47,7 +31,7 @@ To see how one might guess that @eq-ito_discrete_3 is the solution of @eq-ito_di
 
 ```{python}
 #| label: fig-discrete-interest
-#| fig-cap: The functions $X$ satisfying @eq-ito_discrete_1 (difference equation) and @eq-ito_discrete_3 (differential equation) for X0 = 1, mu = 1, and Delta t = 0.1.  The solution of the difference equation is shown with linear interpolation.  
+#| fig-cap: The functions $X$ satisfying @eq-ito_discrete_1 (difference equation) and @eq-ito_discrete_3 (differential equation) for X0 = 1, mu = 1, and Delta t = 0.1.
 
 import numpy as np
 import plotly.graph_objects as go
@@ -67,8 +51,7 @@ fig.add_trace(
     go.Scatter(
         x=np.arange(0, t+Deltat, Deltat), 
         y=X1, 
-        mode='lines+markers', 
-        line={'shape': 'spline', 'smoothing': 0},
+        mode='markers', 
         name='Difference Eq.',
         hovertemplate='t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>'  # 
     )
@@ -113,7 +96,7 @@ An approximate path of this process $X$ is also shown in @fig-discrete-random.  
 
 ```{python}
 #| label: fig-discrete-random
-#| fig-cap: Paths of the processes satisfying @eq-ito_discrete_4 (difference equation) and @eq-ito_discrete_6 (differential equation) for X0 = 1, mu = 1, Delta t = 0.1, and sigma = 1.  The solution of the difference equation is shown with linear interpolation.
+#| fig-cap: Paths of the processes satisfying @eq-ito_discrete_4 (difference equation) and @eq-ito_discrete_6 (differential equation) for X0 = 1, mu = 1, Delta t = 0.1, and sigma = 1.
 
 import numpy as np
 import plotly.graph_objects as go
@@ -148,8 +131,7 @@ fig.add_trace(
     go.Scatter(
         x=np.arange(0, t+Deltat, Deltat), 
         y=X1, 
-        mode='lines+markers', 
-        line={'shape': 'spline', 'smoothing': 0},
+        mode='markers', 
         name='Difference Eq.',
         hovertemplate='t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>'  # 
     )
@@ -228,7 +210,7 @@ The quadratic variation of the Ito process $X$ defined in @eq-ito2 through each 
 $$
 \int_0^t \theta^2_s\d  s
 $$ 
-with probability one.  In fact, when @eq-regularity1 holds, a somewhat more precise definition of the stochastic integral is the (unique) martingale with quadratic variation given by @eq-itoquadraticvariation.
+with probability one.  
 
 To compute the quadratic variation of an Ito process, we use the following simple and important rules (for the sake of brevity, we drop the subscript $t$ from $B_t$ here and sometimes later).  These rules should be regarded as mnemonic devices.  The calculations we do with them lead to the correct results, but the objects have no real mathematical meaning.
 
@@ -296,7 +278,7 @@ where $\rho$ is the correlation process of the two Brownian motions.
 The real meaning of this rule is that it is possible to calculate the joint variation (i.e., limit of sum of products of changes) of the two Ito processes from $0$ to $t$ as
 $$\int_0^t (\d X_{1s})(\d X_{2s}) = \int_0^t (\sigma_{1s}\d B_{1s})(\sigma_{2s}\d B_{2s}) = \int_0^t \sigma_{1s}\sigma_{2s}\rho_s\d s\,.
 $$ {#eq-itojointvariation}
-The last integral in this equation is the correct formula for the quadratic variation.  As with squaring differentials, taking products of differentials is a mnemonic device to get us to the correct formula.
+The last integral in this equation is the correct formula for the quadratic variation.  As with squaring differentials, taking products of differentials is a mnemonic device to get us to the correct formula.  A somewhat more precise definition than our previous description of the stochastic integral $\int_0^t \sigma_{1,t} dB_{1t}$ is when @eq-regularity1 holds, the stochastic integral is the (unique) martingale with joint variation with any other Ito process given by @eq-itojointvariation.
 
 ## Introduction to Ito's Formula {#sec-s:itosformula}
 
@@ -350,7 +332,7 @@ To see the accuracy of Ito's approximation over different time steps, as well as
 $$\e^{B_t}=1 + \int_0^t \e^{B_s} \d B_s + \frac{1}{2}\int_0^t \e^{B_s} \d s$$
 using the discretization 
 $$\Delta \e^{B_{t_i}}= \e^{B_{t_{i-1}}} \Delta B_{t_i} + \frac{1}{2} \e^{B_{t_{i-1}}} \Delta t \,.$$
-The discretization approximates the true value better if we take $n$ larger and $\Delta t$ smaller.  The important take-away from the figure is that the cumulative second-derivative terms in the discretization 
+Notice that the discretization is just a second-order Taylor series expansion.  The discretization approximates the true value better if we take $n$ larger and $\Delta t$ smaller.  The important take-away from the figure is that the cumulative second-derivative terms in the discretization 
 do not vanish as we take $n$ larger but instead continue to contribute significantly to the approximation.
 
 
@@ -358,7 +340,7 @@ do not vanish as we take $n$ larger but instead continue to contribute significa
 <iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/ito_approx_plot"></iframe>
 :::
 
-## Ito's Formula for Functions of Brownian Motion
+## Univariate Ito's Formula
 
 We extend the example in the previous section slightly.
 Consider a process $Y$ defined as $Y_t = f(t, B_t)$ for some function $f$.  The following rule states that $Y$ is an Ito process with drift equal to
@@ -379,7 +361,7 @@ $$ {#eq-ito-firstformula}
 We can apply Calculation Rule \ref{ruleito1} to finish the discussion in @sec-s:discreteito regarding the process defined in @eq-ito_discrete_6.  We want to show that it satisfies @eq-ito_discrete_5.  We do that by differentiating and applying the above rule.  For $f(t, B) = \e^{(\mu - \sigma^2/2)t + \sigma B}$, we have
 $$\frac{\partial f}{\partial t} = \left(\mu-\frac{1}{2}\sigma^2\right)f(t, B)\,,\quad \frac{\partial f}{\partial B} = \sigma f(t, B)\,, \quad \frac{\partial^2 f}{\partial B^2} = \sigma^2f(t, B)\,.$$
 Therefore,
-$$\d Y = \left(\mu-\frac{1}{2}\sigma^2\right)Y\d t + \sigma Y \d B + \frac{1}{2}\sigma^2 Y\,(\d B)^2 = \mu Y\d t + \sigma Y \d B$$ {#eq-ito-example1}
+$$\d Y = \left(\mu-\frac{1}{2}\sigma^2\right)Y\d t + \sigma Y \d B + \frac{1}{2}\sigma^2 Y\,(\d B)^2 = \mu Y\d t + \sigma Y \d B$$
 This verifies @eq-ito_discrete_5.
 :::
 
@@ -417,21 +399,8 @@ $$ {#ito-powerformula}
 ## Ito's Formula for Exponentials
 
 If $Y=\mathrm{e}^X$, then 
-$$
-\frac{\d  Y}{Y}=\d  X + \frac{(\d  X)^2}{2} = \left(\alpha + \frac{1}{2}\theta^2\right)\d t + \theta\d B\;.
+$$\frac{\d  Y}{Y}=\d  X + \frac{(\d  X)^2}{2}\;.
 $$ {#eq-rule5}
-:::
-
-::: {.Example #example:ito2}
-{#}
-Calculation Rule \ref{rule:ito-exponentials} allows us to generalize Example \ref{example:ito2}.  Suppose $Y$ satisfies @eq-ito-example1 but with random time-varying coefficients; that is, suppose
-$$\frac{\d Y_s}{Y_s} = \mu_s\d s + \sigma_s \d B_s$$ {#eq-gbm-timevarying}
-where $\mu$ and $\sigma$ can be stochastic processes.  We have
-$$\mu\d s + \sigma \d B = \d X + \frac{(\d  X)^2}{2}$$
-where
-$$\d X = \left(\mu - \frac{1}{2}\sigma^2\right)\d s + \sigma\d B\,.$$
-Taking $X0 = \log Y_0$,  Calculation Rule \ref{rule:ito-exponentials} implies that $Y=\e^X$ satisfies @eq-gbm-timevarying.  Spelling this out a bit more, the solution of @eq-gbm-timevarying is s
-$$Y_t = Y_Y_0\exp\left(\int_0^t (\mu_s-\sigma_s^2/2)\d s + \int_0^t \sigma_s\d B_s\right)\,.$$
 :::
 
 ::: {.Rule #rule:ito-log}
@@ -468,17 +437,17 @@ $$\begin{multline}
 
 This is analogous to a second-order Taylor series expansion in the variables $X_1$ and $X_2$.  A similar formula applies to functions of more two Ito processes.  We just need to include a term for each $\d X_i$, each $(\d X_i)^2$ and each $(\d X_i)(\d X_j)$.
 
-Here are some important examples. Use the notation
-\begin{align*}
-\d X_1 = \mu_1We switch notation from $X_1$ and $X_2$ to $X$ and $Y$ and from $Y$ to $Z$ so we can drop the subscripts.  These formulas follow from Calculation Rule \ref{rule-itoformula3} by taking $f(x,y)=xy$ or $f(x,y)=y/x$.
+Here are some important examples.  We switch notation from $X_1$ and $X_2$ to $X$ and $Y$ and from $Y$ to $Z$ so we can drop the subscripts.  These formulas follow from Calculation Rule \ref{rule-itoformula3} by taking $f(x,y)=xy$ or $f(x,y)=y/x$.
+
+
 
 
 ::: {.Rule #rule:ito-product}
 ## Ito's Formula for Products
 
-If $Z=X_1X_2_$, then $\d  Z=X_1\d X_2+X_2\d   X_1 + (\d  X_1)(\d  X_2)$.  We can write this as
+If $Z=XY$, then $\d  Z=X\d   Y+Y\d   X + (\d  X)(\d  Y)$.  We can write this as
 $$
-\frac{\d  Z}{Z}=\frac{\d  X_1}{X_1} + \frac{\d X_2}{X_2} + \left(\frac{\d  X_1}{X_1}\right)\left(\frac{\d X_2}{X_2}\right)\;.
+\frac{\d  Z}{Z}=\frac{\d  X}{X} + \frac{\d  Y}{Y} + \left(\frac{\d  X}{X}\right)\left(\frac{\d  Y}{Y}\right)\;.
 $$ {#eq-rule2}
 
 
@@ -490,8 +459,8 @@ $$ {#eq-rule2}
 ::: {.Rule #rule:ito-ratio}
 ## Ito's Formula for Ratios
 
-If $Z=X_1/X_2$, then 
-$$\frac{\d  Z}{Z} = \frac{\d  X_1}{X_1} -\frac{\d  X_2}{X_2} - \left(\frac{\d  X_1}{X_1}\right)\left(\frac{\d  X_2}{X_2}\right) + \left(\frac{\d  X_2}{X_2}\right)^2\;.
+If $Z=Y/X$, then 
+$$\frac{\d  Z}{Z} = \frac{\d  Y}{Y} -\frac{\d  X}{X} - \left(\frac{\d  Y}{Y}\right)\left(\frac{\d  X}{X}\right) + \left(\frac{\d  X}{X}\right)^2\;.
 $$ {#eq-rule4}
 
 
@@ -512,56 +481,16 @@ $$ {#eq-compdisc1}
 This is the same as in the usual calculus.  
 :::
 
-## Volatilities of Products and Ratios  {#sec-s:volatilities}
 
-Suppose $X_1$ and $X_2$ are given to us in the form of @eq-ito_discrete_5; that is,
-$$\frac{\d X_i}{X_i} = \mu_i\d t + \sigma_i\d B_i$$
-for Brownian motions $B_1$ and $B_2$.  Let $\rho$ denote the correlation process of the two Brownian motions.  Here we allow the $\mu_i$ and $\sigma_i$ to be stochastic processes.  As remarked before, we say that $\sigma_i$ is the volatility of $X_i$.  We frequently want to know the volatility of the product $X_1X_2$ or the ratio $X_1/X_2$.  
-
-
-For $Z=X_1X_2$,  Calculation Rule \ref{rule:ito-product} gives us
-$$
-\begin{align}
-\frac{\d  Z}{Z} &= (\mu_1+\mu_2+\rho\sigma_1\sigma_2)\d   t + \sigma_1\d   B_1 + \sigma_2\d   B_2\\
-&= (\mu_1+\mu_2+\rho\sigma_1\sigma_2)\d   t + \sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\sigma_1\sigma_2} \d B
-\end{align}
-$$ {#eq-volproduct1}
-where
-$$\d B = \frac{\sigma_1 \d B_1 + \sigma_2 \d B_2}{\sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\sigma_1\sigma_2}}\,.
-$$
-Using the rules for products of differentials, we have $(\d B)^2 = \d t$, so by Levy's Theorem, $B$ is a Brownian motion.  Thus, {@eq-volproduct1} shows that the volatility of $X_1X_2$ is $\sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\sigma_1\sigma_2}$.\
-
-For $Z=X_1/X_2$, Calculation Rule \ref{rule:ito-ratio} gives us
-$$
-\begin{align}
-\frac{\d  Z}{Z} &= (\mu_1-\mu_2-\rho\sigma_1\sigma_2+\sigma_2^2)\d   t + \sigma_1\d   B_1 - \sigma_2\d   B_2\\
-&= (\mu_1-\mu_2-\rho\sigma_1\sigma_2+\sigma_2^2)\d   t + \sqrt{\sigma_1^2 + \sigma_2^2 - 2\rho\sigma_1\sigma_2}\d   B
-\end{align}
-$$ {#eq-ratioproduct1}
-where
-$$\d B = \frac{\sigma_1 \d B_1 - \sigma_2 \d B_2}{\sqrt{\sigma_1^2 + \sigma_2^2 - 2\rho\sigma_1\sigma_2}}\,.$$
-As for products, $B$ is a Brownian motion, so the volatility of $X_1/X_2$ is $\sqrt{\sigma_1^2 + \sigma_2^2 - 2\rho\sigma_1\sigma_2}$.
 
 ## {.unnumbered}
 
 
 ::: Exercise
- Consider a discrete partition $0=t_0 < t_1 < \cdots t_n=t$ of a time interval $[0,t]$ with $t_i - t_{i-1} = \Delta t = t/n$ for each $i$.  Consider the function 
-$$X_t=\mathrm{e}^t\; .$$
-Write code that computes and plots $\sum_{i=1}^n [\Delta X_{t_i}]^2$, where 
-$$\Delta X_{t_i} = X_{t_i}-X_{t_{i-1}} = \mathrm{e}^{t_i} - \mathrm{e}^{t_{i-1}}\; .$$
-:::
-::: Exercise
- Repeat the previous problem for the function $X_t = t^3$.  In both this and the previous problem, what happens to $\sum_{i=1}^n [\Delta X_{t_i}]^2$ as $N \rightarrow \infty$?
-:::
-::: Exercise
- Write code to compute $\sum_{i=1}^n [\Delta B_{t_i}]^2$, where $B$ is a simulated Brownian motion.  For a given $t$, what happens to the sum as $n \rightarrow \infty$?  
-:::
-::: Exercise
- Repeat the previous problem to compute $\sum_{i=1}^n [\Delta B_{t_i}]^3$, where $B$ is a simulated Brownian motion.  For a given $t$, what happens to the sum as $n \rightarrow \infty$?  
-:::
-::: Exercise
- Repeat the previous problem, computing instead $\sum_{i=1}^n |\Delta B_{t_i}|$, where $| \cdot |$ denotes the absolute value.  What happens to this sum as $n \rightarrow \infty$?
-:::
+Ito's Lemma can be used in different ways to get the same answer.  For example, let $X_t = a t + b B_t$ and use Ito's lemma on the function $e^{X_t}$.  Alternatively, let $f(t, B_t) = e^{a t + bB_t}$.  Use Ito's lemma on $f(,)$.
+::: 
 
 
+::: Exercise
+Let $\d X_t = \mu X_t \d t + \sigma X_t \d B_t$.  Use Ito's lemma to find $\log(X_t)$ .  What is the expected value and variance of $\log(X_t)$ ?
+:::

@@ -1,0 +1,360 @@
+{{< include macros.qmd >}}
+
+# Continuous Time No Arbitrage
+
+Our no-arbitrage conditions work in the continuous time setting.  We remind the reader that no-arbitrage (in simple strategies) means the existence of a risk neutral measure under which all discounted dividend reinvested trading strategies follow martingales.  In the  risk neutral measure (denoted by $R$) are for $t \le \tau$
+$$ \frac{R(t)}{R(t)} = \E_t^R\left[\frac{R(\tau)}{R(\tau)}\right] =1$$
+in other words the discounted investment in the risk free asset is trivially a martingale while 
+$$ \frac{S(t)}{R(t)} = \E_t^R\left[\frac{S(\tau)}{R(\tau)}\right], $$
+in other words, the discounted value of an non dividend paying investment or any dividend reinvested strategy is a martingale.
+
+However, we also saw we do not need to use the risk free investment as a numeraire.  Using any strictly positive dividend reinvested trading strategy, $V(t)$, we have in the $V$ as numeraire measure (denoted by $V$), for $t \le \tau$
+$$\frac{R(t)}{V(t)} = \E_t^V\left[\frac{R(\tau)}{V(\tau)}\right].$$
+the number of shares of $V$ an investment in the risk free asset is worth follows a martingale, while
+
+$$ \frac{S(t)}{V(t)} = \E_t^V\left[\frac{S(\tau)}{V(\tau)}\right] $$
+for any dividend reinvested strategy the number of shares of $V$ it is worth follows a martingale while
+$$ \frac{V(t)}{V(t)} = E_t^V\left[\frac{V(\tau)}{V(\tau)}\right] =1,$$
+in other words, the number of shares of an investment in $V$ is always $1$, a trivial martingale. 
+
+It is important to realize that when we change numeraire, we also change the probabilities used for pricing. We first describe some elementary payoffs, called digital options, which are similar to Arrrow securities.   The payoffs to digital options describe these probabilities.
+
+## Digital Options
+
+In a continuous time environment with a continuum of possible states, for technical reasons we can not use Arrow securities. For example, if $x$ is lognormally distributed, the probability of $x=5$ is zero.  However, the probability $x \in (5-\epsilon, \epsilon)$ is greater than zero for all $\epsilon >0$.  Therefore, the primitive securities are essentially intervals in time and state with given payoffs.  For European style payoffs, we can focus on digital option payoffs with a fixed expiration $T$.  Digital options specify a payoff if a certain event occurs and nothing otherwise.  For example, an option which pays $1$ at expiration $T$ on the event $S(T)>K$.  Using mathematical notation, we use indicator functions ${\bf{1}}_{\{A\}}$ which is a random variable equal to $1$ if the event $A$ occurs and $0$ if $A$ does not occur (i.e. the complement of $A$ occurs).  Using this notation, the payoff for this example is ${\bf{1}}_{\{S(T)>K\}}$.  Given the prices of these primitive securities, combined with the risk free asset can give us the prices of all European derivatives.  For example,  buying the risk free asset with payoff $1$ and selling the example produces a payoff of 1 dollar on the complement.  The payoff to this strategy if $1 -{\bf{1}}_{\{S(T)>K\}} = {\bf{1}}_{\{S(T)<K\}}$.  By combining digital options with different strikes we can approximate any payoff at time $T$. It is useful to note that $\E[{\bf{1}}_{|[A]}]= \text{prob}(A)$.  Therefore the prices of digital options give the risk neutral probabilities of various events. 
+
+We can use our no arbitrage results to price these digital options:  the time $t$ price of the payoff ${\bf{1}}_{\{S(T)>K\}}$ at time $T$ is given by 
+$$ R(t) \E_t^R \left[\frac{1}{R(T)} {\bf{1}}_{\{S(T)>K\}}\right]  = e^{-r(T-t)} \text{prob}^R(S(T)>K)$$, assuming the risk free rate is constant.
+
+However, we can also consider payoffs in different numeraires.  For example, an option which pays one share of $S$ when $S(T) >K$.  The time $t$ price of such an option can be written as 
+$$ R(t) \E_t^R \left[\frac{S(T)}{R(T)}  {\bf{1}}_{\{S(T) >K\}}\right].$$ 
+However, we can use the share as numeraire (assuming the share does not pay dividends) is the same as 
+$$S(t) \E_t^S \left[ {\bf{1}}_{\{S(T) >K\}}\right] = S(t) \text{prob}^S(S(T)>K)$$
+
+
+
+
+
+In the next section, we show how a mathematical result called Girsanov's Theorem lets us construct the different probability measures.
+
+
+
+## Changes of Probability Measure and Girsanov's Theorem {#sec-c:girsanov}
+
+When we change probability measures, we cannot expect a process $B$ that was a Brownian motion to remain a Brownian motion.    The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of $B$ is likely to become nonzero.  However, the Brownian motion $B$ will still be an Ito process under the new probability measure.  In fact, every Ito process under one probability measure will still be an Ito process under the new probability measure, and the diffusion coefficient of the Ito process will be unaffected by the change in probabilities.^[To be a little more precise, this is true provided sets of states of the world having zero probability continue to have zero probability when the probabilities are changed.  Because of the way we change probability measures when we change numeraires (cf.  @eq-probSnumeraire) this will always be true for us.]  Changing probabilities only changes the drift of an Ito process.  
+
+This should not be surprising.  @sec-s:quadraticvariation explains that a Brownian motion $B$ can be defined as a continuous martingale with paths that jiggle in such a way that the quadratic variation over any interval $[0,T]$ is equal to $T$.  Changing the probabilities will change the probabilities of the various paths (so it may affect the expected change in $B$) but it will not affect how each path jiggles. So, under the new probability measure, $B$ should still be like a Brownian motion but it may have a nonzero drift.  If we consider a general Ito process, the reasoning is the same.  The diffusion coefficient $\sigma$ determines how much each path jiggles, and this is unaffected by changing the probability measure.  Furthermore, instantaneous covariances---the $(\d  X)(\d  Y)$ terms---between Ito processes are unaffected by changing the probability measure.  Only the drifts are affected.
+
+## Example: Risk-Neutral Probability
+
+Denote the price of a dividend-reinvested asset by $S$.  Assume there is a constant continuously-compounded risk-free rate $r$, and set $R_t = \e^{rt}$, which is a dividend-reinvested asset price.  The Key Principle \ref{principle-fundamental} tells us that, in the absence of arbitrage opportunities, there is a probability measure (called the risk-neutral probability) with respect to which $S/R$ is a martingale.  
+
+Setting $Y=S/R$, we have, from Calculation Rule \ref{rule:compounding} that
+$$\frac{\d Y}{Y} = \frac{\d S}{S} - r\d t\,.$$
+Because $Y$ is a martingale under the risk-neutral probability, it cannot have a drift under that probability measure, so the drift of $S$ must be the risk-free rate under that probability measure.  So, we have shown the following.
+
+::: Principle
+The expected rate of return of any asset under the risk-neutral probability must be the risk-free rate.
+:::
+
+Suppose 
+$$\frac{\d S}{S} = \mu\d t + \sigma \d B$$
+for a constant $\sigma$, where $B$ is a Brownian motion.  
+Because only the drift of $S$ changes when we change probability measures, and because the drift under the risk-neutral probability is the risk-free rate, we have
+$$\frac{\d S}{S} = r\d t + \sigma \d B^*$$
+where $B^*$ is a Brownian motion under the risk-neutral probability.
+
+We could follow similar reasoning to calculate the drift of $S$ under other probability measures, but instead we will apply a general result called Girsanov's Theorem.
+
+## Girsanov's Theorem in the Black Scholes Model
+
+In the Black Scholes model, denote the dividend reinvested value by 
+$$ dS_t = \mu S_t \d t + \sigma S_t \d B_t $$
+where $B$ is a Brownian motion.  However, when we say $B_t$ is a Brownian motion this involves a probability measure since $B_t$ is assumed to be normally distributed with zero mean and standard deviation $\sqrt{t}$.  We can rewrite the process
+$$ dS_t = r S_t \d t + \sigma S_t \d \left(B_t + \frac{\mu - r}{\sigma}t\right) $$
+and the risk neutral measure is one which makes $B_t + \frac{\mu - r}{\sigma}t$ a Brwonian Motion.  Girsanov's Theorem tells us how to change the probability measure so that $B_t + \frac{\mu - r}{\sigma}t$ is a Brownian motion.  Define $\kappa = \frac{\mu - r}{\sigma}$.  The term $\kappa$ is called the price of risk, or Sharpe ratio.
+
+::: Principle
+Define 
+$$Z_t = \exp\left(-\frac{1}{2}\kappa^2 t - \kappa B_t \right).$$
+Because $Z_T$ is lognormal, $\E[Z_T]=1$.  Then the under the probability measure defined for any $Y$ which is a function of $B_t;~0\le t \le T$ by
+$$ \E^\kappa[Y] = \E[Z_T Y] $$
+$B_t^\kappa= B_t + \kappa t$  is a Brownian motion with $\E^\kappa[B_t^\kappa]= 0$ and standard deviation $\sqrt{t}$. Moreover, if $M_t$ is a martingale under $P^\kappa$, then $Z_t M_t$ is a martingale under the original probability measure.
+:::
+
+This is a simple version of Girsanov's Theorem.  Notice $Z_t$ is the exponential martingale discussed in Chapter @sec-s:geometricbrownianmotion. Therefore, given the original measure under which $B_t$ is a brownian motion, Girsanov's Theorem tells us how to construct the risk neutral measure. In our leading case, we use Ito's Lemma to show $Z_t \frac{S(t)}{R(t)}$ is a martingale. Alternatively, using our the expectations of lognormal random variables we can see, recalling $\kappa = \frac{\mu-r}{\sigma}$,
+$$Z_t \frac{S_(t)}{R(t)}= S(0) \exp\left(\left(\mu -r -\frac{1}{2}\kappa^2 \right)t +(\sigma - \kappa)B_t \right) = S(0) \exp\left(-\frac{1}{2}(\sigma - \kappa)^2 t + (\sigma - \kappa)B_t \right) $$
+so 
+$$\E\left[Z_t \frac{S(t)}{R(t)}\right]= S(0) .$$
+Finally, we can use the last statement in the Key Principle to find $\kappa$.  Since we know $\frac{S(t)}{R(t)}$ is a martingale in the risk neutral measure, then in the original measure $Z_t \frac{S(t)}{R(t)}$ is a martingale.  Using the product rule form of Ito's Lemma,
+$$\d Z_t \frac{S(t)}{R(t)} = (\mu - r) Z_t \frac{S(t)}{R(t)} \d t + (\sigma - \kappa) Z_t \frac{S(t)}{R(t)} \d B_t + \d <Z,\frac{S}{R}>_t. $$
+For this to be a martingale, we must have 
+$$ (\mu - r) Z_t \frac{S(t)}{R(t)} \d t= -\d <Z,\frac{S}{R}>_t= \kappa \sigma Z_t \frac{S(t)}{R(t)} \d t,$$
+which immediately yields $\kappa= \frac{\mu-r}{\sigma}$.
+
+
+Some further justification for this form of Girsanov's Theorem is in the box below which may be skipped.  
+
+
+
+::: Extra
+To illustrate why this form of the Theorem holds, condsider the special case where we compute $\E[Z_T f(B_T)]$.  The distribution of a Brownian motion at time $T$ has mean zero and standard deviation $\sqrt{T}$.  The density is
+$$\frac{1}{\sqrt{2 \pi T}} \exp\left(-\frac{1}{2} \frac{x^2}{T} \right)$$
+and the expected value of any function of the Brownian motion is
+$$ \E[f(B_T)] = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2 \pi T}} \exp\left(-\frac{1}{2} \frac{x^2}{T} \right) f(x) dx $$
+ Let us compute 
+$$ \E\left[\exp\left(-\frac{1}{2} \kappa^2 T + \kappa B_T\right)f(B_T)\right]= \int_{-\infty}^{\infty} \frac{1}{\sqrt{2 \pi T}} \exp\left(-\frac{1}{2} \frac{x^2}{T} \right) \exp\left(-\frac{1}{2} \kappa^2 T + \kappa x\right) f(x) dx $$
+Now observe that 
+$$\exp\left(-\frac{1}{2} \frac{x^2}{T} \right) \exp\left(-\frac{1}{2} \kappa^2 T + \kappa x\right) = \exp\left(-\frac{1}{2} \frac{x^2 + \kappa^2 T^2 - 2 \kappa x T}{T}\right)$$ 
+$$= \exp\left(-\frac{1}{2} \frac{(x-\kappa T)^2}{T} \right) $$
+so this is the density of a Brownian motion with drift $\kappa$; the mean is  $\kappa T$ and the standard deviation is $\sqrt{T}$.  Therefore
+$$ \E\left[\exp\left(-\frac{1}{2} \kappa^2 t + \kappa B_t\right)f(B_t)\right]= \E^\kappa\left[f(B_t)\right] $$
+but under the probabilty $P^{\kappa}$ defined by the density 
+$$\frac{1}{\sqrt{2 \pi T}}\exp\left(-\frac{1}{2} \frac{(x-\kappa T)^2}{T} \right),$$
+ $B_T$ has mean $\kappa T$. Demeaning this expression gives $B_T-\kappa T$ has zero mean and standard deviation $\sqrt{T}$ and we conclude $B_t + \kappa t$ is a Brownian motion.
+:::
+
+
+
+
+We now explain various changes of numeraire.
+
+## Stochastic Discount Factor
+ Given the change of measure, the stochastic discount factor is given by
+ $$m_t=e^{-r t} Z_t $$.
+ In differential form,
+ $$ dm_t = -r m_t \d t -\kappa m_t \d B_t $$
+We then have 
+$$\E[m_T Y]= \E^R[e^{-rT}Y].$$
+We can also use Ito's Lemma to show $m_t S(t)$ is an Itoo process without drift in our original probability measure:
+$$  \d m_t S(t) = m_t \d S_t + S_t \d m_t + \d <m,S>_t$$
+$$= \left(m_t S_t \sigma -\kappa m_t S_t \right) \d B_t$$
+ is an Ito process without drift under the original probability measure, while $e^{-rt} S(t)$ is an Ito process without drift in the risk neutral probability measure:
+ $$ \d e^{-rt} S(t) = e^{-rt} \d S(t) - S(t) r e^{-rt}  \d t = e^{-rt} S(t) \sigma \d B^R_t$$,
+ since the cross variation term $<\frac{1}{R},S>_t=0$.  Recall an Ito process without drift is not necessarily a martingale but if the diffusion coefficient is well behaved it is a martingale; in fact @eq-regularity1 holds for this case.  Alternatively, the martingale property in this simple example with constant coefficients $\mu$, $r$, and $\sigma$ follows from direct calculation using the formula for the expected value of a lognormal random variable.
+ 
+ We have two equivalent expressions for the value, $X(t)$, at time $t \le T$, for time $T$ payoffs, $X$, 
+$$ X(t) = \frac{1}{m_t} \E_t\left[ m_T X \right] $$
+and 
+$$ X(t) = \frac{1}{R(t)} \E^R_t\left[\frac{X}{R(T)}\right]$$
+In fact, while it is beyond the scope of this book, the stochatic discount factor is the reciprical of the portfolio strategy which maximizes the expected continuously compounded portfolio grwoth rate and therefore corresponds to another change of numeraire (see ??? Long, Heath Platen, etc). In other words, the pricing formulae above correspond to a change of numeraire where $V(t)= \frac{1}{m_t}$ and the probabilities are the original probabilities.
+
+
+##  Underlying as Numeraire
+
+Another important numeraire in the Black Scholes model is the underlying asset.  For now, assume the underlying asset pays no dividends before time $T$.  Then our pricing relationships become
+$$ \frac{R(t)}{S(t)} = \E^S_t\left[\frac{R(T)}{S(T)} \right] $$
+$$ \frac{S(t)}{S(t)} = \E^S_t\left[\frac{S(T)}{S(T)}\right] =1$$
+
+In other words, using the $S$ probability measure, $\frac{R(t)}{S(t)}$ is a martingale for $0 \le t \le T$.  We have 
+$$ \frac{R(t)}{S(t)} = \frac{1}{S(0)} \exp\left(\frac{1}{2} \sigma^2 t- \sigma B_t^R \right) $$
+where $B_t^R = B_t + \frac{\mu-r}{\sigma} t$ is a Brownian motion in the risk neutral measure.  This is obviously not a martingale in the risk neutral measure, but
+$$ \frac{R(t)}{S(t)} = \frac{1}{S(0)} \exp\left(-\frac{1}{2} \sigma^2 t  - \sigma B_t^S \right) $$
+is a martingale if $B_t^S = B_t^R + \sigma t$ is a martingale for some probability measure $\text{prob}^S$. Girsanov's theorem then tells us the probability measure
+$$ \text{prob}^S(A)= \E^R\left[Z_T {\bf{1}}_{\{A\}} \right] $$
+where 
+$$ Z_t = \exp\left(-\frac{1}{2} \sigma^2 t - \sigma B_t^R \right)  $$
+is a lognormally distributed exponential martingale.  Under this change of measure,
+$$ dS(t) = \left(r + \sigma^2 \right) \d t + \sigma B_t^S. $$
+
+Alternatively, we can use Girsanov's Theorem.  In this case, we solve for $\kappa$ which makes $Z_t \frac{R(t)}{S(t)}$ into a martingale in te original measure.  Using the product rule from Ito's Lemma,
+$$ \d \frac{R(t)}{S(t)} = \left(r-\mu - \sigma^2 \right) \frac{R(t)}{S(t)} \d t - \sigma \frac{R(t)}{S(t)} \d B_t $$
+$$ \d Z_t \frac{R(t)}{S(t)} = \left(r-\mu + \sigma^2\right) Z_t \frac{R(t)}{S(t)} \d t -(\sigma + \kappa) Z_t \frac{R(t)}{S(t)} \d B_t + \d <Z,\frac{R}{S} >_t $$
+In order for this to be a martingale, we must have
+$$ \left(r-\mu - \sigma^2 \right) Z_t \frac{R(t)}{S(t)} \d t = -\d <Z,\frac{R}{S} >_t = \kappa \sigma Z_t \frac{R(t)}{S(t)} \d t, $$
+which gives $\kappa = \frac{\mu-r}{\sigma} - \sigma$.  Notice that if $B_t^S = B_t + \kappa t$ then
+$$ \d S(t) = \left(r + \sigma^2 \right) S(t) \d t + \sigma S(t) \d B_t^S .$$
+
+::: Rule
+## 
+If $S$ is the price of the price of an non-dividend paying asset, then
+$$
+\frac{\d  S}{S} = (r+ \sigma^2)\d   t+\sigma\d   B^S\;,
+$$ {#eq-own11}
+where now $B^S$ is a Brownian motion when $S_t$ is the numeraire.
+:::
+
+
+## Digital Options in the Black Scholes Model
+
+Given our results above, we can now value digital options in the Black Scholes model.  
+
+The digital option which pays ${\bf{1}}_{\{S(T) \ge K\}}$ is fairly easy to value by taking the risk neutral expectation $\E^R\left[e^{-rT} {\bf{1}}_{\{S(T) \ge K}\right]$.  Notice that using 
+$$S(T)= S(0) \exp\left( \left(r-\frac{\sigma^2}{2}\right) t + \sigma B_t^R \right)$$
+Then the tail probabilities are calculated as in @sec-s:geometricbrownianmotion :
+$$\{ S(T) \ge K\} = \{\log(S(T)) \ge \log(K)\} = \{\frac{\log\left(S(0){K}\right) + \left(r - \frac{\sigma^2}{2} \right) T}{\sigma \sqrt{T}} \ge - \frac{B_T}{\sqrt{T}} \} ,$$
+and $-\frac{B_T}{\sqrt{T}}$ is distributed according to a standard noraml random variable (mean 0 and standard deviation 1).  Therefore, the value of this digital option is
+$$ e^{- r t} N(d_2)$$
+where $d_2= \frac{\log\left(S(0){K}\right) + \left(r - \frac{\sigma^2}{2} \right) T}{\sigma \sqrt{T}}$ and $N(d)$ is the probability that a standard normal random variable is less than or equal to $d$; that is
+$$N(d)= \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^d e^{-\frac{x^2}{2}} dx. $$
+
+The payoff $S(T) {\bf{1}}_{\{S(T) \ge K\}}$ can, in principle, be found by taking the risk neutral expectations of the discounted payoff:
+$$\E^R\left[S(T) {\bf{1}}_{\{S(T) \ge K\}}\right].$$
+However, it is easier to use the stock as numeriare:
+$$S(0) \E^S\left[ {\bf{1}}_{\{S(T) \ge K\}}\right]$$
+Then since
+$$ \d S(t) = (r+ \sigma^2) S(t) \d t + \sigma S(t) \d B_t^S $$
+where $B_t^S$ is a Brownian motion in the measure $P^S$.  But finding the expectaion of the indicator is now the same exercise as before.  By writing the explicit solution for $S(T)$, the price of the payoff is found to be 
+$$S(0) N(d_1)$$
+where $d_1= \frac{\log\left(S(0){K}\right) + \left(r + \frac{\sigma^2}{2} \right) T}{\sigma \sqrt{T}}$.
+
+## General Probability Measures and Drifts {#sec-s:girsanov}
+
+We now expand our discussion to include correlated Brownian motions as discussed in @sec-s:correlation.  Our main analysis will focus on the case with two correlated Brownian motions and we state results for an arbitrary number of Brownian motions.
+
+We begin with a $d$ dimensional Brownian motion, 
+$${\bf{B}}_t = \left(\begin{array}[pos]{spalten}
+B_{1,t} \\ B_{2,t} \\ \vdots \\ B_{d,t}
+  \end{array} \right) $$.
+ where the $B_{i,t}$ are uncorrelated, and a vector 
+$${\bf{\kappa}}_t = \left(\begin{array}[pos]{spalten}
+\kappa_{1,t} \\ \kappa_{2,t} \\ \vdots \\ \kappa_{d,t}
+  \end{array} \right) $$.
+ and remind the reader $||{\bf{\kappa}}_t||^2 = \sum_{i=1}^d \kappa_{i,t}^2$. The stochastic integral 
+ $$\int_0^t {\bf{\kappa}}_t^{\prime} \d {\bf{B}}_s = \sum_{i=1}^d \int_0^t \kappa_{i,s} \d B_{i,s} $$
+ is defined in the natural way.  The following is a more general statement of Girsanov's Theorem.
+
+
+:::Principle
+Let 
+$$Z_t = \exp\left(-\frac{1}{2}\int_0^t ||{\bf{\kappa}}_s||^2 \d s - \int_0^t {\bf{\kappa}}_s^{\prime} \d {\bf{B}}_s \right)$$
+ and assume $\E[Z_T]=1$.  Then under the probability measure 
+$$\text{prob}^{\kappa}(A) = \E\left[Z_T {\bf{1}}_{\{A\}}\right],$$
+ $B_{i,t}^\kappa = B_{i,t} + \int_0^t \kappa_{i,s} \d t$ is a Brownian motion for $0 \le t \le T$.  Moreover, if $M_t$ is a martingale under $P^\kappa$ then $Z_t M_t$ is a martingale under the original probability measure.
+:::
+
+As explained in @sec-c:arbitrage, we need to know the distribution of the underlying under probability measures corresponding to different numeraires.  Let $S$  be the price of an asset which does not pay dividends.
+Let $V$ be the price of another another asset that does not pay dividends.  Let $r_t$ denote the instantaneous risk-free rate at date $t$ and let $R_t = \exp\left(\int_0^t r_s\d   s\right)$.  Assume
+\begin{align*}
+ \d  S(t) &= \mu_t S(t) \d   t+\sigma_t S(t) \d   B_t\; ,\\
+ \d  V(t) &= \theta_t V(t) \d   t+\phi_t V(t) \d   W_t\;,
+\end{align*}
+where $B_t=B_{1,t}$ and $W_t=\rho_t B_{1,t} + \sqrt{1-\rho_t^2} B_{2,t}$ are Brownian motions under the actual probability measure with correlation $\rho$, and where $\mu, \theta, \sigma, \phi$ and $\rho$ can be quite general random processes, although they must satisfy some restrictions below.    
+
+We consider the dynamics of the asset prices $S$ and $V$ under three different probability measures.  In each case, we follow the same steps: (i) we note that the ratio of an asset price to the numeraire asset price must be a martingale, (ii) we use Ito's formula to calculate the drift of this ratio, and (iii) we use the fact that the drift of a martingale must be zero to compute the drift of $\d  S/S$.  
+
+
+### Risk-Neutral Probability
+Under the risk-neutral probability,  
+$$\frac{S(t)}{R(t)} = \exp\left(-\int_0^t r_s\d   s\right) S(t)$$
+is a martingale and 
+$$\frac{V(t)}{R(t)} = \exp\left(-\int_0^t r_s \right) V(t) $$
+is a martingale. 
+
+::: Rule
+## Risk-Neutral Probability
+In the risk neutral measure, $B_{1,t}^R = B_{1,t} + \int_0^t \kappa_{1,s} \d s$ and $B_{2,t}^R = B_{2,t} + \int_0^t \kappa_{2,s} \d s$
+$$
+\frac{\d  S(t)}{S(t)} = r_t \d   t+\sigma_t\d   B_{1,t}^R\;,
+$$ {#eq-riskneutral11}
+$$
+\frac{\d  V(t)}{V(t)} = r_t \d   t+ \phi_t \d  W_t^R\;,
+$$ {#eq-riskneutral12}
+
+where $B_{1,t}^R$, $B_{2,t}^R$, and $W_t^R = \rho_t B_{1,t}^R + \sqrt{1-\rho_t^2} B_{2,t}$ are a Brownian motions under the risk-neutral probability. 
+:::
+
+
+
+ We can use Girsanov's Theorem to solve for $\kappa$.  We should have $Z_t S(t)$ is a martingale and $Z_t V(t)$ is a martingale.  Therefore, using the product rule from Ito's Lemma
+$$ \d Z_t \frac{S(t)}{R(t)} = (\mu_t-r_t ) Z_t \frac{S(t)}{R(t)} \d t + (\sigma_t - \kappa_{1,t} ) Z_t \frac{S(t)}{R(t)} \d B_{1,t} + \d <Z,\frac{S}{R}>_t $$
+
+$$\d Z_t \frac{V(t)}{R(t)} = (\theta_t-r_t ) Z_t \frac{V(t)}{R(t)} \d t + (\rho_t \phi_t - \kappa_{1,t} ) Z_t \frac{V(t)}{R(t)} \d B_{1,t} + (\sqrt{1-\rho_t^2} \phi_t Z_t \frac{V(t)}{R(t)} \d B_{2,t}+ \d <Z,\frac{V}{R}>_t $$
+Therefore, we must have 
+$$(\mu_t - r_t) Z_t \frac{S(t)}{R(T)} \d t = - \d <Z,\frac{S}{R}>_t = \kappa_{1,t} \sigma_t Z_t \frac{S(t)}{R(t)} \d t $$
+and 
+$$(\theta_t - r_t) Z_t \frac{V(t)}{R(T)} \d t = - \d <Z,\frac{V}{R}>_t = \left(\kappa_{1,t} \rho_t \phi_t  + \kappa_{2,t} \sqrt{1-\rho_t^2} \phi_t \right) Z_t \frac{V(t)}{R(t)} \d t $$
+where the cross variation is computed using the rule in @sec-s:geometricbrownianmotion.  Solving we obtain
+$$ \kappa_{1,t} = \frac{\mu_t-r_t}{\sigma_t} $$
+$$ \kappa_{2,t} = \frac{\theta_t - r_t}{\sqrt{1-\rho_t^2} \phi_t} -\frac{\mu_t -r_t}{\sigma_t} \frac{\rho_t}{\sqrt{1-\rho_t^2}}$$
+if $\rho_t \neq \pm 1$.  These equations do not make sense if $\sigma_t=0$ and $\mu_t - r_t \neq 0$ or $\phi_t=0$ and $\theta_t -r_t \neq )$.  This is perfectly natural; if either condition is violated, loosely speaking, an asset with no instantaneous risk offers a different return from the risk free asset which is an arbitrage.  The case where $\rho_t = \pm 1$ is where the Brownian motions are perfectly correlated or negatively correlated is important and must be solved differently.  In this case, the equations become
+$$\kappa_{1,t}= \frac{\mu_t-r_t}{\sigma_t}$$
+$$\kappa_{1,t} = \pm \frac{\theta_t -r_t}{\phi_t}$$
+These equations say when the assets are  pefectly positively or negatively correlated, the compensation for risk is the same.  This is a no-arbitrage condition; otherwise, there is an arbitrage.^[There are other restrictions which are buried in the statement ``Assume $\E[Z_T]=1$.''  A sufficient condition is $||\kappa||$ is uniformly bounded but it is not necessary.]
+
+
+
+
+
+
+ 
+
+
+### Another Asset as the Numeraire
+When $S$ is the numeraire, the process
+$Y_t$ defined as 
+$$Y_t = \frac{R(t)}{S(t)} = \frac{\exp\left(\int_0^t r_s\d   s\right)}{S(t)}$$
+is a martingale.  Using the rule for ratios from Ito's Lemma, we have
+$$\frac{\d  Y}{Y} =r\d   t - \frac{\d  S}{S} + \left(\frac{\d  S}{S}\right)^2 = (r + \sigma^2)\d   t - \frac{\d  S}{S}\; .$$
+Because the drift of $\d  Y/Y$ must be zero, this implies that the drift of $\d  S/
+S$ is $(r + \sigma^2)\d   t$. 
+
+On the other hand, $X_t$ defined as 
+$$X_t = \frac{V(t)}{S(t)}$$
+is also a martingale.  Again, using the product rule from Ito's Lemma,
+$$\frac{\d X}{X}= \frac{\d V}{V} - \frac{\d S}{S} -\left(\frac{\d V}{V}\right)\left(\frac{\d S}{S}\right) + \left(\frac{\d S}{S}\right)^2 .$$
+Since the drift must be zero, we conclude
+$$ \frac{\d V}{V} = \left(r + \rho \phi \sigma \right) \d t + \phi \d W^S $$
+We conclude that:
+
+::: Rule
+## 
+If $S$ is the numeraire, then
+$$
+\frac{\d  S}{S} = (r + \sigma^2)\d   t+\sigma\d   B^S\;,
+$$ {#eq-own11}
+$$ \frac{\d V}{V} = \left(r + \rho \phi \sigma \right) \d t + \phi \d W^S $$
+where now $B^S$ is a Brownian motion when $S(t)$ is the numeraire.
+:::
+
+
+
+### Another Risky Asset as the Numeraire
+When the other asset with price $V$ is the numeraire, $X_t$ defined as 
+$$X_t = \frac{S(t)}{V(t)}$$ must be a martingale.  
+We can have use our previous example to compute the dynamics of $S$ and  $V$ when $V$ is the numeraire.  We conclude that:
+
+::: Rule
+## 
+If $V$, is the numeraire, then
+$$
+\frac{\d  S}{S} = (r +  \rho\sigma\phi)\d   t+\sigma\d   B_{1,}^V\;,
+$$ {#eq-other11}
+$$ \frac{\d V}{V} = \left(r + \phi^2 \right) \d t + \phi \d W^V $$
+
+where  $B^V$ and $W^V$ denote a Brownian motions under the probability measure corresponding to the dividend-reinvested risky asset $V$ being the numeraire, and where $\rho$ is the correlation of $S$ and $V$.
+:::
+
+
+Notice that @eq-other11, while more complicated, is also more general than the others.  In fact, it includes  @eq-riskneutral11 and @eq-own11 as special cases: (i) if $Y$ is the price of the instantaneously risk-free asset, then $\phi=0$ and @eq-other11 simplifies to @eq-riskneutral11, and (ii) if $Y=
+V$, then $\phi=\sigma$ and $\rho=1$, so @eq-other11 simplifies to @eq-own11.
+
+
+## {.unnumbered}
+
+::: Exercise
+Use simulation to find  $\E^R[e^{-r T}{\mathbf{1}}_{\{S(T) \ge K\}}]$ in the risk-neutral probability where
+\begin{equation*}
+\d   S(t)= r S(t) \d   t + \sigma S(t) \d   B_t^R
+\end{equation*}
+Verify that $S(t)/e^{r t}$ is a martingale in the $R$ measure where $B^R$ is a Brownian motion.
+Then use simulation to find $S_0\E^S[\frac{1}{S(T)} {\mathbf{1}}_{\{S(T) \ge K\}}]$ in the pricing measure which uses the share as numeraire where 
+\begin{equation*}
+\d   S(t) = (r + \sigma^2) S(t) \d   t + \sigma S(t) \d   B_t^S
+\end{equation*}
+so the log satisfies
+\begin{equation*}
+\log(S(t)) = \log(S(0)) + (r + \frac{\sigma^2}{2})t + \sigma B_t^S
+\end{equation*}
+You should verify $e^{rt}/S(t)$ is a martingale in the $S$ measure where $B^S$ is a Brownian motion.
+Both estimates should be the same up to simulation error and give the time zero value of the random payoff ${\mathbf{1}}_{\{S(T) \ge K\}}$ which is a random variable equal to $1$ if $S(T)\ge K$ and $0$ otherwise.  You should choose the values for $r$, $\sigma$, $T$, and $K$.
+::: 
+::: Exercise
+Calculate the price of the digital option which pays ${\bf{1}}_{\{S(T) \le K}}$ using the assupmtions of the Black Scholes model.
+:::
+::: Exercise
+Calculate the price of the digital option which pays $S(T) {\bf{1}}_{\{S(T) \le K}}$ using the assumptions of the Black Scholes model.
+:::
+::: Exercise
+Supppose $S$ and $V$ are as in @sec-s:girsanov with constant coefficients.  Find the value of an option which pays $V(T) {\bf{1}}_{\{V(T) \ge S(T)\}}$.  Hint: use $V$ as a numeraire.
+:::
