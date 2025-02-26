@@ -2,6 +2,24 @@
 
 
 ## Geometric Brownian Motion {#sec-s:geometricbrownianmotion}
+
+
+```{python}
+#| eval: true
+#| echo: false
+
+import plotly
+from IPython.display import display, HTML
+
+plotly.offline.init_notebook_mode(connected=True)
+display(
+    HTML(
+        '<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>'
+    )
+)
+```
+
+
 A random variable is lognormally distributed if it can be written as $\tilde{y}=  e^{\tilde{x}}$ where $\tilde{x}$ is distributed according to a normal distribution with mean $m$ and standard deviation $s$.  The expected value of $\tilde{y}$ is given by $\E[\tilde{y}] = e^{m+\frac{s^2}{2}}$.
 
 ::: Rule
@@ -73,53 +91,66 @@ This means that $r_i$ is normally distributed with mean $\mu-\sigma^2/2$ and var
 We can simulate a path of $S$ by simulating the changes $\Delta \log S$.  The random variable $\sigma \Delta B$  in  @eq-exponential11 has a normal distribution with zero mean and variance equal to $\sigma^2\Delta t$.  We simulate it as $\sigma\sqrt{\Delta t}$ multiplied by a standard normal.  The code below simulates $n=10000$ paths with $m=1000$ time steps. There are some features of the simulation which will prove useful later.  The drift $\mu$ is labelled the interest rate $r=0.1$.  Other parameters are $\sigma = 0.2$, and $T=0.5$.  The drift of the log stock price is labelled $drift=r-\frac{\sigma^2}{2}$.  The plot output is one of the simulated sample paths.  In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, $n=1$.  Given a simulated mean zero normal random variable, $z$, changing the sign to $-z$ is also a simulated normal random variable with zero mean and the same standard deviation.  As a result, we have two simulations for the stock price labelled $St$ and $St1$, but we only plot one sample path for $St$. 
 
 ```{python}
-"""
-# Simulate geometric Brownian motion
+#| label: fig-gbm-sim
+#| fig-cap: "A path of a simulated stock price with 1,000 steps."
 import numpy as np
-import matplotlib.pyplot as plt
-# number of paths
-n = 10000
-#number of divisions
-m = 1000
-# Interest rate (We set the drift equal to the interest rate)
-r = 0.1
-# Volatility
-sig = 0.2
-# Initial Stock Price
-S0 = 42
-# Maturity
-T = 0.5
-# Delta t
-dt = T/m
-# Drift
-drift = (r-0.5*sig**2)
-# Volatility
-vol = sig * np.sqrt(dt)
+import plotly.graph_objects as go
 
+n = 10000   # number of paths
+m = 1000    #number of divisions
+r = 0.1     # Interest rate (We set the drift equal to the interest rate)
+sig = 0.2   # Volatility
+S0 = 42     # Initial Stock Price
+T = 0.5     # Maturity
+dt = T/m    # Delta t
+drift = (r-0.5*sig**2)      # Drift
+vol = sig * np.sqrt(dt)     # Volatility
 t = np.array(range(0,m + 1,1)) * dt
-
-# seed for random generator
-seed= 2020
-# define a random generator
-np.random.seed(seed)
+seed= 2020                  # seed for random generator
+np.random.seed(seed)        # define a random generator
 inc = np.zeros(shape = (m + 1, n))
 inc[1:] = np.transpose(np.random.normal(loc = 0, scale = vol,size = (n,m)))
 St = np.zeros(shape = (m + 1, n))
 St = S0 * np.exp(np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
 St1 = S0 * np.exp(-np.cumsum(inc,axis=0) + (drift * t[0:m + 1])[:,None])
-plt.figure(figsize=(9,6))
-plt.plot(t,St[:,1])
-"""
 
+fig = go.Figure()
+fig.add_trace(
+    go.Scatter(
+        x=t,
+        y=St[:,1],
+        mode="lines",
+        hovertemplate="t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>",  #
+    )
+)
 
+fig.update_layout(
+    showlegend=False,
+    xaxis_title="Time",
+    yaxis_title="Simulated Stock Price",
+    template="plotly_white",
+    height=300,
+)
+
+fig.show()
 
 ```
 The plot below is the distribution of the simulated stock price at $T$.
 ```{python}
-"""
-plt.figure(figsize=(9,6))
-a=plt.hist(St[m,:], bins=100)
-"""
+#| label: fig-gbm-hist
+#| fig-cap: "Distribution of terminal stock prices for 10,000 paths"
+import numpy as np
+import plotly.graph_objects as go
+
+fig = go.Figure(data=[go.Histogram(x=St[m,:])])
+fig.update_layout(
+    showlegend=False,
+    xaxis_title="$S_T$",
+    template="plotly_white",
+    height=300,
+)
+fig.show()
+
 ```
 
 
