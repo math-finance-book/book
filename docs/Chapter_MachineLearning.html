@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>24&nbsp; Machine Learning – Pricing and Hedging Derivative Securities: Theory and Methods</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./Chapter_FixedIncome.html" rel="next">
+<link href="./Chapter_Fourier.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-933f24a0c1e0be8a62c2179459603458.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-217607b4065b1a3128a07792af3f8e33.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+<style>
+div.callout-WritingToDo.callout {
+  border-left-color: #a7f2d8;
+}
+div.callout-WritingToDo.callout-style-default > .callout-header {
+  background-color: rgba(167, 242, 216, 0.13);
+}
+div.callout-WritingToDo .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-WritingToDo.callout-style-default .callout-icon::before, div.callout-WritingToDo.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-CodeToDo.callout {
+  border-left-color: #eb4034;
+}
+div.callout-CodeToDo.callout-style-default > .callout-header {
+  background-color: rgba(235, 64, 52, 0.13);
+}
+div.callout-CodeToDo .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-CodeToDo.callout-style-default .callout-icon::before, div.callout-CodeToDo.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-InProgress.callout {
+  border-left-color: #eaacf2;
+}
+div.callout-InProgress.callout-style-default > .callout-header {
+  background-color: rgba(234, 172, 242, 0.13);
+}
+div.callout-InProgress .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-InProgress.callout-style-default .callout-icon::before, div.callout-InProgress.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Exercise.callout {
+  border-left-color: #ede29d;
+}
+div.callout-Exercise.callout-style-default > .callout-header {
+  background-color: rgba(237, 226, 157, 0.13);
+}
+div.callout-Exercise .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Exercise.callout-style-default .callout-icon::before, div.callout-Exercise.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Rule.callout {
+  border-left-color: #a1bced;
+}
+div.callout-Rule.callout-style-default > .callout-header {
+  background-color: rgba(161, 188, 237, 0.13);
+}
+div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Extra.callout {
+  border-left-color: #d5deed;
+}
+div.callout-Extra.callout-style-default > .callout-header {
+  background-color: rgba(213, 222, 237, 0.13);
+}
+div.callout-Extra .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Principle.callout {
+  border-left-color: #e3aab2;
+}
+div.callout-Principle.callout-style-default > .callout-header {
+  background-color: rgba(227, 170, 178, 0.13);
+}
+div.callout-Principle .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Principle.callout-style-default .callout-icon::before, div.callout-Principle.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Example.callout {
+  border-left-color: #e8cc97;
+}
+div.callout-Example.callout-style-default > .callout-header {
+  background-color: rgba(232, 204, 151, 0.13);
+}
+div.callout-Example .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Example.callout-style-default .callout-icon::before, div.callout-Example.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Done.callout {
+  border-left-color: #e8cc97;
+}
+div.callout-Done.callout-style-default > .callout-header {
+  background-color: rgba(232, 204, 151, 0.13);
+}
+div.callout-Done .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Done.callout-style-default .callout-icon::before, div.callout-Done.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+</style>
+
+
+</head>
+
+<body class="nav-sidebar floating fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_MonteCarlo.html">Part VI: Numerical Methods</a></li><li class="breadcrumb-item"><a href="./Chapter_MachineLearning.html"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Machine Learning</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Pricing and Hedging Derivative Securities: Theory and Methods</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/math-finance-book/book-code.git" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I: Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Options.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Options</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Futures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Futures and Swaps</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II: Mathematical Tools</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Intro_Binomial_Tree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Brownian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Brownian Motion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Ito.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Ito Processes and Ito’s Formula</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_GBM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III: Arbitrage Pricing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Arbitrage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Deltas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Delta Hedges, Replication, and PDEs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_DigitalsMeasures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Digitals and Measures</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV: Black-Scholes and Extensions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_BlackScholes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Americans.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">American Options</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">FX and Quantos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Merton.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Merton, Black, and Margrabe</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Asians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Asians, Baskets, and Spreads</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Exotics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Other Exotics</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part V: Alternative Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_GARCH.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">GARCH Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_StochasticVol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Stochastic Volatility</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Jumps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Jumps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_VarianceSwaps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Variance Swaps</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VI: Numerical Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_MonteCarlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Monte Carlo Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Binomial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Binomial and Trinomial Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_PDEs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">PDE Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Fourier.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Fourier Transforms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_MachineLearning.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VII: Fixed Income</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FixedIncome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Fixed-Income Concepts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FixedIncomeDerivatives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Fixed-Income Derivatives</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Vasicek.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Vasicek and Extensions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Term Structure Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendix</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./AppendixA.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Miscellaneous Facts about Continuous-Time Models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_MonteCarlo.html">Part VI: Numerical Methods</a></li><li class="breadcrumb-item"><a href="./Chapter_MachineLearning.html"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Machine Learning</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-c:machinelearning" class="quarto-section-identifier"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="a343fe76" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+        <script type="text/javascript">
+        window.PlotlyConfig = {MathJaxConfig: 'local'};
+        if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+        </script>
+        <script type="module">import "https://cdn.plot.ly/plotly-3.0.0.min"</script>
+        
+</div>
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
+<section id="latex" class="level2" data-number="24.1">
+<h2 data-number="24.1" class="anchored" data-anchor-id="latex"><span class="header-section-number">24.1</span> Latex</h2>
+<p>Trying to get latex to work. Still works test commit 2/25 ~Austin</p>
+<div id="a7c6e423" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+        <script type="text/javascript">
+        window.PlotlyConfig = {MathJaxConfig: 'local'};
+        if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+        </script>
+        <script type="module">import "https://cdn.plot.ly/plotly-3.0.0.min"</script>
+        
+</div>
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
+<div id="ec902dd0" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Brownian path</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span>   </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t<span class="op">/</span>n</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>dB <span class="op">=</span> np.random.normal(scale <span class="op">=</span> np.sqrt(dt), size<span class="op">=</span>n)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>B[<span class="dv">1</span>:] <span class="op">=</span> np.cumsum(dB)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Brownian path with discrete steps</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>n_discrete <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>Delta_t <span class="op">=</span> t<span class="op">/</span>n_discrete</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>B_discrete <span class="op">=</span> B[::<span class="bu">int</span>(n<span class="op">/</span>n_discrete)]</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>DeltaB <span class="op">=</span> np.diff(B_discrete)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># X in discrete-time </span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.ones(n_discrete<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n_discrete<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    X1[i] <span class="op">=</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> mu <span class="op">*</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> Delta_t <span class="op">+</span> sigma <span class="op">*</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> DeltaB[i<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Continuous-time</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.exp((mu <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> np.arange(<span class="dv">0</span>, t<span class="op">+</span>dt, dt) <span class="op">+</span> sigma <span class="op">*</span> B)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    go.Scatter(</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>np.arange(<span class="dv">0</span>, t<span class="op">+</span>Delta_t, Delta_t), </span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>X1, </span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'lines+markers'</span>, </span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        line<span class="op">=</span>{<span class="st">'shape'</span>: <span class="st">'spline'</span>, <span class="st">'smoothing'</span>: <span class="dv">0</span>},</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="vs">r'$X_</span><span class="sc">{ti}</span><span class="vs">-X_{ti-1}$'</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        hovertemplate<span class="op">=</span><span class="st">'t = %</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B = %</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    go.Scatter(</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>np.arange(<span class="dv">0</span>, t<span class="op">+</span>dt, dt), </span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>X2, </span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'lines'</span>, </span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="vs">r'$dX_t$'</span>,</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>        hovertemplate<span class="op">=</span><span class="st">'t = %</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B = %</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Time'</span>,</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'plotly_white'</span>,</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">300</span>,</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="dv">450</span>,</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>        xanchor<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>        yanchor<span class="op">=</span><span class="st">"top"</span>,</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.0.min.js"></script>                <div id="5c82dae0-8988-43a7-ace0-cf97e9c7102f" class="plotly-graph-div" style="height:300px; width:450px;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("5c82dae0-8988-43a7-ace0-cf97e9c7102f")) {                    Plotly.newPlot(                        "5c82dae0-8988-43a7-ace0-cf97e9c7102f",                        [{"hovertemplate":"t = %{x:.2f}\u003cbr\u003eB = %{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"shape":"spline","smoothing":0},"mode":"lines+markers","name":"$X_{ti}-X_{ti-1}$","x":{"dtype":"f8","bdata":"AAAAAAAAAACamZmZmZm5P5qZmZmZmck\u002fNDMzMzMz0z+amZmZmZnZPwAAAAAAAOA\u002fNDMzMzMz4z9nZmZmZmbmP5qZmZmZmek\u002fzczMzMzM7D8AAAAAAADwPw=="},"y":{"dtype":"f8","bdata":"AAAAAAAA8D92l22euZHuPyaEGXfpYfA\u002fPGgC7Ov2+D8uSvK5Ni32PyZr0coA9vk\u002fWByLAVLZ\u002fD\u002fG4r0b1h7+P+n1EyCC7wRA9YjOmX6GBkC9z\u002fRPPXYAQA=="},"type":"scatter"},{"hovertemplate":"t = %{x:.2f}\u003cbr\u003eB = %{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","mode":"lines","name":"$dX_t$","x":{"dtype":"f8","bdata":"AAAAAAAAAAD8qfHSTWJQP\u002fyp8dJNYmA\u002f+n5qvHSTaD\u002f8qfHSTWJwP3sUrkfhenQ\u002f+n5qvHSTeD956SYxCKx8P\u002fyp8dJNYoA\u002fPN9PjZdugj97FK5H4XqEP7pJDAIrh4Y\u002f+n5qvHSTiD86tMh2vp+KP3npJjEIrIw\u002fuB6F61G4jj\u002f8qfHSTWKQP5zEILByaJE\u002fPN9PjZdukj\u002fb+X5qvHSTP3sUrkfhepQ\u002fGy\u002fdJAaBlT+6SQwCK4eWP1pkO99PjZc\u002f+n5qvHSTmD+amZmZmZmZPzq0yHa+n5o\u002f2c73U+Olmz956SYxCKycPxkEVg4tsp0\u002fuB6F61G4nj9YObTIdr6fP\u002fyp8dJNYqA\u002fTDeJQWDloD+cxCCwcmihP+xRuB6F66E\u002fPN9PjZduoj+LbOf7qfGiP9v5fmq8dKM\u002fK4cW2c73oz97FK5H4XqkP8uhRbbz\u002faQ\u002fGy\u002fdJAaBpT9rvHSTGASmP7pJDAIrh6Y\u002fCtejcD0Kpz9aZDvfT42nP6rx0k1iEKg\u002f+n5qvHSTqD9KDAIrhxapP5qZmZmZmak\u002f6iYxCKwcqj86tMh2vp+qP4lBYOXQIqs\u002f2c73U+Olqz8pXI\u002fC9SisP3npJjEIrKw\u002fyXa+nxovrT8ZBFYOLbKtP2mR7Xw\u002fNa4\u002fuB6F61G4rj8IrBxaZDuvP1g5tMh2vq8\u002fVOOlm8QgsD\u002f8qfHSTWKwP6RwPQrXo7A\u002fTDeJQWDlsD\u002f0\u002fdR46SaxP5zEILByaLE\u002fRIts5\u002fupsT\u002fsUbgeheuxP5QYBFYOLbI\u002fPN9PjZdusj\u002fjpZvEILCyP4ts5\u002fup8bI\u002fMzMzMzMzsz\u002fb+X5qvHSzP4PAyqFFtrM\u002fK4cW2c73sz\u002fTTWIQWDm0P3sUrkfherQ\u002fI9v5fmq8tD\u002fLoUW28\u002f20P3Noke18P7U\u002fGy\u002fdJAaBtT\u002fD9Shcj8K1P2u8dJMYBLY\u002fE4PAyqFFtj+6SQwCK4e2P2IQWDm0yLY\u002fCtejcD0Ktz+yne+nxku3P1pkO99Pjbc\u002fAiuHFtnOtz+q8dJNYhC4P1K4HoXrUbg\u002f+n5qvHSTuD+iRbbz\u002fdS4P0oMAiuHFrk\u002f8tJNYhBYuT+amZmZmZm5P0Jg5dAi27k\u002f6iYxCKwcuj+S7Xw\u002fNV66Pzq0yHa+n7o\u002f4XoUrkfhuj+JQWDl0CK7PzEIrBxaZLs\u002f2c73U+Oluz+BlUOLbOe7Pylcj8L1KLw\u002f0SLb+X5qvD956SYxCKy8PyGwcmiR7bw\u002fyXa+nxovvT9xPQrXo3C9PxkEVg4tsr0\u002fwcqhRbbzvT9pke18PzW+PxFYObTIdr4\u002fuB6F61G4vj9g5dAi2\u002fm+PwisHFpkO78\u002fsHJoke18vz9YObTIdr6\u002fPwAAAAAAAMA\u002fVOOlm8QgwD+oxks3iUHAP\u002fyp8dJNYsA\u002fUI2XbhKDwD+kcD0K16PAP\u002fhT46WbxMA\u002fTDeJQWDlwD+gGi\u002fdJAbBP\u002fT91HjpJsE\u002fSOF6FK5HwT+cxCCwcmjBP\u002fCnxks3icE\u002fRIts5\u002fupwT+YbhKDwMrBP+xRuB6F68E\u002fQDVeukkMwj+UGARWDi3CP+j7qfHSTcI\u002fPN9PjZduwj+PwvUoXI\u002fCP+Olm8QgsMI\u002fN4lBYOXQwj+LbOf7qfHCP99PjZduEsM\u002fMzMzMzMzwz+HFtnO91PDP9v5fmq8dMM\u002fL90kBoGVwz+DwMqhRbbDP9ejcD0K18M\u002fK4cW2c73wz9\u002farx0kxjEP9NNYhBYOcQ\u002fJzEIrBxaxD97FK5H4XrEP8\u002f3U+Olm8Q\u002fI9v5fmq8xD93vp8aL93EP8uhRbbz\u002fcQ\u002fH4XrUbgexT9zaJHtfD\u002fFP8dLN4lBYMU\u002fGy\u002fdJAaBxT9vEoPAyqHFP8P1KFyPwsU\u002fF9nO91PjxT9rvHSTGATGP7+fGi\u002fdJMY\u002fE4PAyqFFxj9nZmZmZmbGP7pJDAIrh8Y\u002fDi2yne+nxj9iEFg5tMjGP7bz\u002fdR46cY\u002fCtejcD0Kxz9eukkMAivHP7Kd76fGS8c\u002fBoGVQ4tsxz9aZDvfT43HP65H4XoUrsc\u002fAiuHFtnOxz9WDi2yne\u002fHP6rx0k1iEMg\u002f\u002ftR46SYxyD9SuB6F61HIP6abxCCwcsg\u002f+n5qvHSTyD9OYhBYObTIP6JFtvP91Mg\u002f9ihcj8L1yD9KDAIrhxbJP57vp8ZLN8k\u002f8tJNYhBYyT9GtvP91HjJP5qZmZmZmck\u002f7nw\u002fNV66yT9CYOXQItvJP5ZDi2zn+8k\u002f6iYxCKwcyj8+CtejcD3KP5LtfD81Xso\u002f5tAi2\u002fl+yj86tMh2vp\u002fKP42XbhKDwMo\u002f4XoUrkfhyj81XrpJDALLP4lBYOXQIss\u002f3SQGgZVDyz8xCKwcWmTLP4XrUbgehcs\u002f2c73U+Olyz8tsp3vp8bLP4GVQ4ts58s\u002f1XjpJjEIzD8pXI\u002fC9SjMP30\u002fNV66Scw\u002f0SLb+X5qzD8lBoGVQ4vMP3npJjEIrMw\u002fzczMzMzMzD8hsHJoke3MP3WTGARWDs0\u002fyXa+nxovzT8dWmQ730\u002fNP3E9CtejcM0\u002fxSCwcmiRzT8ZBFYOLbLNP23n+6nx0s0\u002fwcqhRbbzzT8VrkfhehTOP2mR7Xw\u002fNc4\u002fvXSTGARWzj8RWDm0yHbOP2U730+Nl84\u002fuB6F61G4zj8MAiuHFtnOP2Dl0CLb+c4\u002ftMh2vp8azz8IrBxaZDvPP1yPwvUoXM8\u002fsHJoke18zz8EVg4tsp3PP1g5tMh2vs8\u002frBxaZDvfzz8AAAAAAADQP6rx0k1iENA\u002fVOOlm8Qg0D\u002f+1HjpJjHQP6jGSzeJQdA\u002fUrgehetR0D\u002f8qfHSTWLQP6abxCCwctA\u002fUI2XbhKD0D\u002f6fmq8dJPQP6RwPQrXo9A\u002fTmIQWDm00D\u002f4U+Olm8TQP6JFtvP91NA\u002fTDeJQWDl0D\u002f2KFyPwvXQP6AaL90kBtE\u002fSgwCK4cW0T\u002f0\u002fdR46SbRP57vp8ZLN9E\u002fSOF6FK5H0T\u002fy0k1iEFjRP5zEILByaNE\u002fRrbz\u002fdR40T\u002fwp8ZLN4nRP5qZmZmZmdE\u002fRIts5\u002fup0T\u002fufD81XrrRP5huEoPAytE\u002fQmDl0CLb0T\u002fsUbgehevRP5ZDi2zn+9E\u002fQDVeukkM0j\u002fqJjEIrBzSP5QYBFYOLdI\u002fPgrXo3A90j\u002fo+6nx0k3SP5LtfD81XtI\u002fPN9PjZdu0j\u002fl0CLb+X7SP4\u002fC9Shcj9I\u002fObTIdr6f0j\u002fjpZvEILDSP42XbhKDwNI\u002fN4lBYOXQ0j\u002fhehSuR+HSP4ts5\u002fup8dI\u002fNV66SQwC0z\u002ffT42XbhLTP4lBYOXQItM\u002fMzMzMzMz0z\u002fdJAaBlUPTP4cW2c73U9M\u002fMQisHFpk0z\u002fb+X5qvHTTP4XrUbgehdM\u002fL90kBoGV0z\u002fZzvdT46XTP4PAyqFFttM\u002fLbKd76fG0z\u002fXo3A9CtfTP4GVQ4ts59M\u002fK4cW2c730z\u002fVeOkmMQjUP39qvHSTGNQ\u002fKVyPwvUo1D\u002fTTWIQWDnUP30\u002fNV66SdQ\u002fJzEIrBxa1D\u002fRItv5fmrUP3sUrkfhetQ\u002fJQaBlUOL1D\u002fP91PjpZvUP3npJjEIrNQ\u002fI9v5fmq81D\u002fNzMzMzMzUP3e+nxov3dQ\u002fIbByaJHt1D\u002fLoUW28\u002f3UP3WTGARWDtU\u002fH4XrUbge1T\u002fJdr6fGi\u002fVP3Noke18P9U\u002fHVpkO99P1T\u002fHSzeJQWDVP3E9CtejcNU\u002fGy\u002fdJAaB1T\u002fFILByaJHVP28Sg8DKodU\u002fGQRWDi2y1T\u002fD9Shcj8LVP23n+6nx0tU\u002fF9nO91Pj1T\u002fByqFFtvPVP2u8dJMYBNY\u002fFa5H4XoU1j+\u002fnxov3STWP2mR7Xw\u002fNdY\u002fE4PAyqFF1j+9dJMYBFbWP2dmZmZmZtY\u002fEVg5tMh21j+6SQwCK4fWP2Q730+Nl9Y\u002fDi2yne+n1j+4HoXrUbjWP2IQWDm0yNY\u002fDAIrhxbZ1j+28\u002f3UeOnWP2Dl0CLb+dY\u002fCtejcD0K1z+0yHa+nxrXP166SQwCK9c\u002fCKwcWmQ71z+yne+nxkvXP1yPwvUoXNc\u002fBoGVQ4ts1z+wcmiR7XzXP1pkO99Pjdc\u002fBFYOLbKd1z+uR+F6FK7XP1g5tMh2vtc\u002fAiuHFtnO1z+sHFpkO9\u002fXP1YOLbKd79c\u002fAAAAAAAA2D+q8dJNYhDYP1TjpZvEINg\u002f\u002ftR46SYx2D+oxks3iUHYP1K4HoXrUdg\u002f\u002fKnx0k1i2D+mm8QgsHLYP1CNl24Sg9g\u002f+n5qvHST2D+kcD0K16PYP05iEFg5tNg\u002f+FPjpZvE2D+iRbbz\u002fdTYP0w3iUFg5dg\u002f9ihcj8L12D+gGi\u002fdJAbZP0oMAiuHFtk\u002f9P3UeOkm2T+e76fGSzfZP0jhehSuR9k\u002f8tJNYhBY2T+cxCCwcmjZP0a28\u002f3UeNk\u002f8KfGSzeJ2T+amZmZmZnZP0SLbOf7qdk\u002f7nw\u002fNV662T+YbhKDwMrZP0Jg5dAi29k\u002f7FG4HoXr2T+WQ4ts5\u002fvZP0A1XrpJDNo\u002f6iYxCKwc2j+UGARWDi3aPz4K16NwPdo\u002f6Pup8dJN2j+S7Xw\u002fNV7aPzzfT42Xbto\u002f5tAi2\u002fl+2j+QwvUoXI\u002faPzq0yHa+n9o\u002f46WbxCCw2j+Nl24Sg8DaPzeJQWDl0No\u002f4XoUrkfh2j+LbOf7qfHaPzVeukkMAts\u002f30+Nl24S2z+JQWDl0CLbPzMzMzMzM9s\u002f3SQGgZVD2z+HFtnO91PbPzEIrBxaZNs\u002f2\u002fl+arx02z+F61G4HoXbPy\u002fdJAaBlds\u002f2c73U+Ol2z+DwMqhRbbbPy2yne+nxts\u002f16NwPQrX2z+BlUOLbOfbPyuHFtnO99s\u002f1XjpJjEI3D9\u002farx0kxjcPylcj8L1KNw\u002f001iEFg53D99PzVeukncPycxCKwcWtw\u002f0SLb+X5q3D97FK5H4XrcPyUGgZVDi9w\u002fz\u002fdT46Wb3D956SYxCKzcPyPb+X5qvNw\u002fzczMzMzM3D93vp8aL93cPyGwcmiR7dw\u002fy6FFtvP93D91kxgEVg7dPx+F61G4Ht0\u002fyXa+nxov3T9zaJHtfD\u002fdPx1aZDvfT90\u002fx0s3iUFg3T9xPQrXo3DdPxsv3SQGgd0\u002fxSCwcmiR3T9vEoPAyqHdPxkEVg4tst0\u002fw\u002fUoXI\u002fC3T9t5\u002fup8dLdPxfZzvdT490\u002fwcqhRbbz3T9rvHSTGATePxWuR+F6FN4\u002fv58aL90k3j9pke18PzXePxODwMqhRd4\u002fvXSTGARW3j9nZmZmZmbePxFYObTIdt4\u002fu0kMAiuH3j9lO99PjZfePw8tsp3vp94\u002fuB6F61G43j9iEFg5tMjePwwCK4cW2d4\u002ftvP91Hjp3j9g5dAi2\u002fnePwrXo3A9Ct8\u002ftMh2vp8a3z9eukkMAivfPwisHFpkO98\u002fsp3vp8ZL3z9cj8L1KFzfPwaBlUOLbN8\u002fsHJoke183z9aZDvfT43fPwRWDi2ynd8\u002frkfhehSu3z9YObTIdr7fPwIrhxbZzt8\u002frBxaZDvf3z9WDi2yne\u002ffPwAAAAAAAOA\u002f1XjpJjEI4D+q8dJNYhDgP39qvHSTGOA\u002fVOOlm8Qg4D8pXI\u002fC9SjgP\u002f7UeOkmMeA\u002f001iEFg54D+oxks3iUHgP30\u002fNV66SeA\u002fUrgehetR4D8nMQisHFrgP\u002fyp8dJNYuA\u002f0SLb+X5q4D+mm8QgsHLgP3sUrkfheuA\u002fUI2XbhKD4D8lBoGVQ4vgP\u002fp+arx0k+A\u002fz\u002fdT46Wb4D+kcD0K16PgP3npJjEIrOA\u002fTmIQWDm04D8j2\u002fl+arzgP\u002fhT46WbxOA\u002fzczMzMzM4D+iRbbz\u002fdTgP3e+nxov3eA\u002fTDeJQWDl4D8hsHJoke3gP\u002fYoXI\u002fC9eA\u002fy6FFtvP94D+gGi\u002fdJAbhP3WTGARWDuE\u002fSgwCK4cW4T8fhetRuB7hP\u002fT91HjpJuE\u002fyXa+nxov4T+e76fGSzfhP3Noke18P+E\u002fSOF6FK5H4T8dWmQ730\u002fhP\u002fLSTWIQWOE\u002fx0s3iUFg4T+cxCCwcmjhP3E9CtejcOE\u002fRrbz\u002fdR44T8bL90kBoHhP\u002fCnxks3ieE\u002fxSCwcmiR4T+amZmZmZnhP28Sg8DKoeE\u002fRIts5\u002fup4T8ZBFYOLbLhP+58PzVeuuE\u002fw\u002fUoXI\u002fC4T+YbhKDwMrhP23n+6nx0uE\u002fQmDl0CLb4T8X2c73U+PhP+xRuB6F6+E\u002fwcqhRbbz4T+WQ4ts5\u002fvhP2u8dJMYBOI\u002fQDVeukkM4j8VrkfhehTiP+omMQisHOI\u002fv58aL90k4j+UGARWDi3iP2mR7Xw\u002fNeI\u002fPgrXo3A94j8Tg8DKoUXiP+j7qfHSTeI\u002fvXSTGARW4j+S7Xw\u002fNV7iP2dmZmZmZuI\u002fPN9PjZdu4j8QWDm0yHbiP+XQItv5fuI\u002fukkMAiuH4j+PwvUoXI\u002fiP2Q730+Nl+I\u002fObTIdr6f4j8OLbKd76fiP+Olm8QgsOI\u002fuB6F61G44j+Nl24Sg8DiP2IQWDm0yOI\u002fN4lBYOXQ4j8MAiuHFtniP+F6FK5H4eI\u002ftvP91Hjp4j+LbOf7qfHiP2Dl0CLb+eI\u002fNV66SQwC4z8K16NwPQrjP99PjZduEuM\u002ftMh2vp8a4z+JQWDl0CLjP166SQwCK+M\u002fMzMzMzMz4z8IrBxaZDvjP90kBoGVQ+M\u002fsp3vp8ZL4z+HFtnO91PjP1yPwvUoXOM\u002fMQisHFpk4z8GgZVDi2zjP9v5fmq8dOM\u002fsHJoke184z+F61G4HoXjP1pkO99PjeM\u002fL90kBoGV4z8EVg4tsp3jP9nO91PjpeM\u002frkfhehSu4z+DwMqhRbbjP1g5tMh2vuM\u002fLbKd76fG4z8CK4cW2c7jP9ejcD0K1+M\u002frBxaZDvf4z+BlUOLbOfjP1YOLbKd7+M\u002fK4cW2c734z8AAAAAAADkP9V46SYxCOQ\u002fqvHSTWIQ5D9\u002farx0kxjkP1TjpZvEIOQ\u002fKVyPwvUo5D\u002f+1HjpJjHkP9NNYhBYOeQ\u002fqMZLN4lB5D99PzVeuknkP1K4HoXrUeQ\u002fJzEIrBxa5D\u002f8qfHSTWLkP9Ei2\u002fl+auQ\u002fppvEILBy5D97FK5H4XrkP1CNl24Sg+Q\u002fJQaBlUOL5D\u002f6fmq8dJPkP8\u002f3U+Olm+Q\u002fpHA9Ctej5D956SYxCKzkP05iEFg5tOQ\u002fI9v5fmq85D\u002f4U+Olm8TkP83MzMzMzOQ\u002fokW28\u002f3U5D93vp8aL93kP0w3iUFg5eQ\u002fIbByaJHt5D\u002f2KFyPwvXkP8uhRbbz\u002feQ\u002foBov3SQG5T91kxgEVg7lP0oMAiuHFuU\u002fH4XrUbge5T\u002f0\u002fdR46SblP8l2vp8aL+U\u002fnu+nxks35T9zaJHtfD\u002flP0jhehSuR+U\u002fHVpkO99P5T\u002fy0k1iEFjlP8dLN4lBYOU\u002fnMQgsHJo5T9xPQrXo3DlP0a28\u002f3UeOU\u002fGy\u002fdJAaB5T\u002fwp8ZLN4nlP8UgsHJokeU\u002fmpmZmZmZ5T9vEoPAyqHlP0SLbOf7qeU\u002fGQRWDi2y5T\u002fufD81XrrlP8P1KFyPwuU\u002fmG4Sg8DK5T9t5\u002fup8dLlP0Jg5dAi2+U\u002fF9nO91Pj5T\u002fsUbgehevlP8HKoUW28+U\u002flkOLbOf75T9rvHSTGATmP0A1XrpJDOY\u002fFa5H4XoU5j\u002fqJjEIrBzmP7+fGi\u002fdJOY\u002flBgEVg4t5j9pke18PzXmPz4K16NwPeY\u002fE4PAyqFF5j\u002fo+6nx0k3mP710kxgEVuY\u002fku18PzVe5j9nZmZmZmbmPzzfT42XbuY\u002fEVg5tMh25j\u002fm0CLb+X7mP7pJDAIrh+Y\u002fj8L1KFyP5j9kO99PjZfmPzm0yHa+n+Y\u002fDi2yne+n5j\u002fjpZvEILDmP7gehetRuOY\u002fjZduEoPA5j9iEFg5tMjmPzeJQWDl0OY\u002fDAIrhxbZ5j\u002fhehSuR+HmP7bz\u002fdR46eY\u002fi2zn+6nx5j9g5dAi2\u002fnmPzVeukkMAuc\u002fCtejcD0K5z\u002ffT42XbhLnP7TIdr6fGuc\u002fiUFg5dAi5z9eukkMAivnPzMzMzMzM+c\u002fCKwcWmQ75z\u002fdJAaBlUPnP7Kd76fGS+c\u002fhxbZzvdT5z9cj8L1KFznPzEIrBxaZOc\u002fBoGVQ4ts5z\u002fb+X5qvHTnP7ByaJHtfOc\u002fhetRuB6F5z9aZDvfT43nPy\u002fdJAaBlec\u002fBFYOLbKd5z\u002fZzvdT46XnP65H4XoUruc\u002fg8DKoUW25z9YObTIdr7nPy2yne+nxuc\u002fAiuHFtnO5z\u002fXo3A9CtfnP6wcWmQ73+c\u002fgZVDi2zn5z9WDi2yne\u002fnPyuHFtnO9+c\u002fAAAAAAAA6D\u002fVeOkmMQjoP6rx0k1iEOg\u002ff2q8dJMY6D9U46WbxCDoPylcj8L1KOg\u002f\u002ftR46SYx6D\u002fTTWIQWDnoP6jGSzeJQeg\u002ffT81XrpJ6D9SuB6F61HoPycxCKwcWug\u002f\u002fKnx0k1i6D\u002fRItv5fmroP6abxCCwcug\u002fexSuR+F66D9QjZduEoPoPyUGgZVDi+g\u002f+n5qvHST6D\u002fP91PjpZvoP6RwPQrXo+g\u002feekmMQis6D9OYhBYObToPyPb+X5qvOg\u002f+FPjpZvE6D\u002fNzMzMzMzoP6JFtvP91Og\u002fd76fGi\u002fd6D9MN4lBYOXoPyGwcmiR7eg\u002f9ihcj8L16D\u002fLoUW28\u002f3oP6AaL90kBuk\u002fdZMYBFYO6T9KDAIrhxbpPx+F61G4Huk\u002f9P3UeOkm6T\u002fJdr6fGi\u002fpP57vp8ZLN+k\u002fc2iR7Xw\u002f6T9I4XoUrkfpPx1aZDvfT+k\u002f8tJNYhBY6T\u002fHSzeJQWDpP5zEILByaOk\u002fcT0K16Nw6T9GtvP91HjpPxsv3SQGgek\u002f8KfGSzeJ6T\u002fFILByaJHpP5qZmZmZmek\u002fbxKDwMqh6T9Ei2zn+6npPxkEVg4tsuk\u002f7nw\u002fNV666T\u002fD9Shcj8LpP5huEoPAyuk\u002fbef7qfHS6T9CYOXQItvpPxfZzvdT4+k\u002f7FG4HoXr6T\u002fByqFFtvPpP5ZDi2zn++k\u002fa7x0kxgE6j9ANV66SQzqPxWuR+F6FOo\u002f6iYxCKwc6j+\u002fnxov3STqP5QYBFYOLeo\u002faZHtfD816j8+CtejcD3qPxODwMqhReo\u002f6Pup8dJN6j+9dJMYBFbqP5LtfD81Xuo\u002fZ2ZmZmZm6j8830+Nl27qPxFYObTIduo\u002f5tAi2\u002fl+6j+7SQwCK4fqP5DC9Shcj+o\u002fZTvfT42X6j86tMh2vp\u002fqPw4tsp3vp+o\u002f46WbxCCw6j+4HoXrUbjqP42XbhKDwOo\u002fYhBYObTI6j83iUFg5dDqPwwCK4cW2eo\u002f4XoUrkfh6j+28\u002f3UeOnqP4ts5\u002fup8eo\u002fYOXQItv56j81XrpJDALrPwrXo3A9Cus\u002f30+Nl24S6z+0yHa+nxrrP4lBYOXQIus\u002fXrpJDAIr6z8zMzMzMzPrPwisHFpkO+s\u002f3SQGgZVD6z+yne+nxkvrP4cW2c73U+s\u002fXI\u002fC9Shc6z8xCKwcWmTrPwaBlUOLbOs\u002f2\u002fl+arx06z+wcmiR7XzrP4XrUbgehes\u002fWmQ730+N6z8v3SQGgZXrPwRWDi2ynes\u002f2c73U+Ol6z+uR+F6FK7rP4PAyqFFtus\u002fWDm0yHa+6z8tsp3vp8brPwIrhxbZzus\u002f16NwPQrX6z+sHFpkO9\u002frP4GVQ4ts5+s\u002fVg4tsp3v6z8rhxbZzvfrPwAAAAAAAOw\u002f1XjpJjEI7D+q8dJNYhDsP39qvHSTGOw\u002fVOOlm8Qg7D8pXI\u002fC9SjsP\u002f7UeOkmMew\u002f001iEFg57D+oxks3iUHsP30\u002fNV66Sew\u002fUrgehetR7D8nMQisHFrsP\u002fyp8dJNYuw\u002f0SLb+X5q7D+mm8QgsHLsP3sUrkfheuw\u002fUI2XbhKD7D8lBoGVQ4vsP\u002fp+arx0k+w\u002fz\u002fdT46Wb7D+kcD0K16PsP3npJjEIrOw\u002fTmIQWDm07D8j2\u002fl+arzsP\u002fhT46WbxOw\u002fzczMzMzM7D+iRbbz\u002fdTsP3e+nxov3ew\u002fTDeJQWDl7D8hsHJoke3sP\u002fYoXI\u002fC9ew\u002fy6FFtvP97D+gGi\u002fdJAbtP3WTGARWDu0\u002fSgwCK4cW7T8fhetRuB7tP\u002fT91HjpJu0\u002fyXa+nxov7T+e76fGSzftP3Noke18P+0\u002fSOF6FK5H7T8dWmQ730\u002ftP\u002fLSTWIQWO0\u002fx0s3iUFg7T+cxCCwcmjtP3E9CtejcO0\u002fRrbz\u002fdR47T8bL90kBoHtP\u002fCnxks3ie0\u002fxSCwcmiR7T+amZmZmZntP28Sg8DKoe0\u002fRIts5\u002fup7T8ZBFYOLbLtP+58PzVeuu0\u002fw\u002fUoXI\u002fC7T+YbhKDwMrtP23n+6nx0u0\u002fQmDl0CLb7T8X2c73U+PtP+xRuB6F6+0\u002fwcqhRbbz7T+WQ4ts5\u002fvtP2u8dJMYBO4\u002fQDVeukkM7j8VrkfhehTuP+omMQisHO4\u002fv58aL90k7j+UGARWDi3uP2mR7Xw\u002fNe4\u002fPgrXo3A97j8Tg8DKoUXuP+j7qfHSTe4\u002fvXSTGARW7j+S7Xw\u002fNV7uP2dmZmZmZu4\u002fPN9PjZdu7j8RWDm0yHbuP+bQItv5fu4\u002fu0kMAiuH7j+QwvUoXI\u002fuP2U730+Nl+4\u002fOrTIdr6f7j8PLbKd76fuP+Slm8QgsO4\u002fuB6F61G47j+Nl24Sg8DuP2IQWDm0yO4\u002fN4lBYOXQ7j8MAiuHFtnuP+F6FK5H4e4\u002ftvP91Hjp7j+LbOf7qfHuP2Dl0CLb+e4\u002fNV66SQwC7z8K16NwPQrvP99PjZduEu8\u002ftMh2vp8a7z+JQWDl0CLvP166SQwCK+8\u002fMzMzMzMz7z8IrBxaZDvvP90kBoGVQ+8\u002fsp3vp8ZL7z+HFtnO91PvP1yPwvUoXO8\u002fMQisHFpk7z8GgZVDi2zvP9v5fmq8dO8\u002fsHJoke187z+F61G4HoXvP1pkO99Pje8\u002fL90kBoGV7z8EVg4tsp3vP9nO91Pjpe8\u002frkfhehSu7z+DwMqhRbbvP1g5tMh2vu8\u002fLbKd76fG7z8CK4cW2c7vP9ejcD0K1+8\u002frBxaZDvf7z+BlUOLbOfvP1YOLbKd7+8\u002fK4cW2c737z8AAAAAAADwPw=="},"y":{"dtype":"f8","bdata":"AAAAAAAA8D+Z6Kjp1+vtP5PBhhGw7u4\u002fj95zhEQy7T8X+aoT\u002fXnvP6orA57b1e8\u002fJrNJ5Gvy7z972PXaqKLwPxA1jQnY0u4\u002fAcDQp+av7T9a2IytrnvtP+9IIPf7JO4\u002fvpKtTjgv7z+hjA5YuAjwP2CiDx0ieO4\u002ffH\u002f5TdTS7T8iHckEiertP4gAf12j2ew\u002f35z8eQDe7D\u002faQnopYHrtP+MP\u002fVOoC+w\u002f+jo3wPRX7D8Dgf6XrLbrP8CB5IidU+s\u002fbexeUftZ6z\u002fVInirOrzqP0mQp781\u002fuo\u002fFmJHb7L26j\u002fdZgZmz0TtPwygVkKo2e0\u002flbByENZe7T8Lwxw+KdjsP\u002fL1H3CY6+w\u002fj7Pvo5XY7j8qD6ebS9LtP9ZFS+ubce0\u002fBCZh4Ozc7T\u002f130sxDRzvP0iIkS8uGe8\u002f9GnSJa7h7j8LXXI2T3rvP6Fw7BJ35e4\u002f8yhmFXPs7z8kkFY3XULwP+ITf6cqDO8\u002fDqqll5mG7z+AEyOy8wHwP3e\u002fl0N6a+8\u002fMAvoKl0L8D9UZaRiWCDwP7NSsSCRFO8\u002fUACUFXTS7T\u002fKr1Ay+\u002fXtP\u002fboKWw0X+8\u002fLq6rzG8s8D9npPpIRgXxPwgCmZT9XvA\u002fu4laL+HX8D\u002fKxjuHvZrwP1BXf8RUAvE\u002fRpGZJ22f8D\u002fiZOXR3BjwP8wB5HX18O4\u002fAxUAStoM8D+dqf\u002f1wN3tP1lmgmc+7e0\u002fyN6SxGy67D+tvGpXbwnuP\u002fzOEZD1RO4\u002fFDF116oh7j+35PuJJnLtPxGDh\u002fBkCu0\u002fCaO7I7817T\u002f9XTy9EGXrPzB05zYnLuw\u002f0+HjWwst7D9ydxNYSl\u002frPzTl5pM64us\u002fQ8naUmiG6j\u002f3kBk5QhPrPx7oaWwtWus\u002fOlU2e1077D+ErQqkhvHrP7S+csTPEes\u002fImLWoZ\u002fH6z\u002fWavhJtKXrPx\u002fAtd9mD+w\u002fpo7R9me17D\u002fxFRnuQBzsP2wiDgVgoOs\u002flv+WCrWN6j+ehCBBV6\u002frP7op1gKA8uo\u002fnxX4O9FN6z9AVhEicjfrP6efwll0L+w\u002fNMAmRGwd7D+fwuPAeUbsP6ucFG4A\u002fOw\u002fKY2yuvkH7j\u002fS6YbvuxvtPyTOL+1\u002fwOw\u002fiy\u002f2Rg\u002f87T\u002frrMq1MbvvPxqEPLp\u002f6e8\u002fIZd2\u002f5eG7j\u002fz640LLATvP10WuZ\u002fDSe8\u002f3KEVNgJW7z8rSwgm\u002fd\u002fvP967mR+gke4\u002feB6IXe+g7j9njPkkne3tP8SHuUTz2u4\u002f5ENkzLIE7j+lYIPQUAztP4qndDb3Ku4\u002fq2Vkz+6v7T9bG\u002fCas0HtP1bZWcwTnO8\u002f3lw53wpA7z\u002fKMJyhLVvvPwG7Dew9Uu0\u002f5mWPEEby7D\u002fH41fsTL7sP3MmTpiEh+w\u002fVqs3kboy7T95d2ubTETtP\u002fZIBQTcYew\u002fXKEYQpOx7D9DNUd83+bsP0Ca3ecWwew\u002fHexBjdqG7D8KDyjqN23sP3nn+9on3e0\u002fXqvCNDJu7j\u002fQM0L+4jbvP9qkFGJjRe4\u002fU6r2HrkI7z+D4MQgGMvtP74iH6kio+0\u002fH7ZNZP+n7T\u002fPo05hjbTuPzoiwrnMBO4\u002fUVdXXVXQ7j8VTRm\u002ft6XuP7zE+ex44O4\u002fqYMq1EHy7j+gGrwNkcXuP5W\u002fJ7kG3e4\u002fDj0wnc167T+QNFZpc7fvPwN9I\u002f8gxO4\u002f39Hh7tHk7j8Rj6Gm9LHtP\u002fcUdTvKAe0\u002flrkSGhyV7D8jtIMsFdHsPwtAp+uYQ+w\u002fOKJZyCeu6j\u002fdQ5kXJ8jqP2130hzpQus\u002ftA4VsqTG6j\u002fRao0\u002fK1jrP1Py6bMENOo\u002f+tqkDg5X6j+Xi63bSdPpP2O0xBB9ueo\u002fCBPPqgDa6j9QfQ+eEfLrP4PkThki+Oo\u002fTIFSvpNk6z+klrysYcnqP2NPthGJlek\u002fpn7UP5+D6T9LCTOJtoXpP6YXb+aIpOk\u002fOqw6Aynj6z\u002fqohpwbJ\u002frP7dtkaYrcOo\u002fmU7PhPhQ6j+\u002f8V8vKEDsP2LuK6uKiuw\u002fkdZRsC7H7D9Dq9NqsbDtPyi4C95j+uw\u002fE++cduPs7D9RS00THljuPzpJ2I7N++0\u002f0l14S6Yw7T\u002fht3Z7ZiTsP3YwKdBwous\u002f+wcFPQw67T8Qr3EVvkHtPz4s\u002fLDZC+w\u002f8oM9cjFC7D8gWmjc3F\u002fsP8CvKNPDLO0\u002feH2TUs1A7j+JluGvshnuP\u002f2KhPMrwO0\u002fp1PbbW7h6z\u002fW+KB4XEzqP0V49jmMNuo\u002fxOa8y+rX6j\u002fQLyF4DNPqP1pQkVqQNes\u002fcnfbef526z88U1VTuMfqP15rn9uVSus\u002fK50NtWDf6z9z+wyuJbXuP4x88Jm2q+0\u002fuv2z0d\u002ff7T\u002fAfIb5cwrvP8HSJiyFme4\u002foIO5LGW37T+R1WW8+V7uP4jmnce03u4\u002fqcpds7D67T+z+cLzqizvP50shgX7\u002f+w\u002fdjv64Ju+7j8q7MYQEBHwP1iJkvHKQfA\u002fa96lozF28T838SUqKMzwP6chvxr47\u002fA\u002fn6rR5a+g8T+ims6KCqryP4dbELMQBPI\u002foeCxYrAk8j8HjDbxTwPzPxE2At6R2\u002fI\u002fAwXV+wai8z97Cg8DhhHzP34IK4bBu\u002fI\u002fG7mRMVb58j+7rnS0hRnzPw6t1w6IhfM\u002fCMvSRbta9D8XblEqpmH0P2ki724bQvQ\u002fBROnQgDA8z93D7VmqPnyP1X43oomSfI\u002fN3vwWRTD8j+rHfTt9nbzP\u002f+wEuFZlvM\u002fusI5U+Jd8z9C1VG4LJvzPw1am8M\u002fRvM\u002fJisErdYY8z82\u002fPFGvQz0P6lhQhF0K\u002fU\u002for2JxERq9T9q0wqvbBX0P56XXqcqGfQ\u002fzIULtXi39D9kkzZb1Jj0P1pPXrTB2fM\u002fk6br7yb78j8E\u002fIBzL0\u002f0P0eCQIpZyfQ\u002fdwZhSRl59D+Hx60cIkf1Pz5dyt43iPU\u002fwyeBS8wv9T8aFAnxpJX1P+8atzYRA\u002fY\u002f\u002f6SZa2ac9T8dNi5i6h72P0x93rNN7vY\u002f7Q99O1\u002fK9z86qSDC+Xf4PyXf6EQ\u002fiPg\u002fhHs8velS+D\u002fLwP+pwob4P3KH+PJcePc\u002fHnF86Sd09j\u002fFUZvxJSv3PymOhyq6zfc\u002fQQ6XEG0z+T9bTA0pzCf6P\u002ffpwagl4vk\u002fu9S7Zptt+T9ZaGg\u002frK75P8LSqlDv9vk\u002f04zc1tPq+T\u002fVENZZDkH5P32k7WpeUfg\u002f2qBN60Br+D\u002fFPksx1mX3P+C83GaEy\u002fc\u002folY41Fuw+D9lyUuLkjD4PxabbqCEmPg\u002fJDrn6Wwx+D9R7vZcN7H4P4+SVv\u002fP\u002fvc\u002fHW7iznXk9z+FCPODOzL4P8YsCihs4fY\u002f20BwBJs9+D8WGn6Xzdr5P+f\u002f\u002fXR63\u002fk\u002flihApaxg+T+0NC2Tk4P5P5Tp4GToV\u002fk\u002fbrOHGzXx+T97uvccDjT7P3bmAI22f\u002fo\u002flqIGJ++i+D8S0lJhfar4P2xw\u002fELflvg\u002fL4DeCsbi+D+8R8mEGqr4P1C+7mfh\u002f\u002fk\u002fRVIXeaMb+z\u002fOncr33j37P124imUQGvs\u002f0xXlPYuC+j8t1pbxGcX6P4cHibIUbfo\u002fB2fKmcf4+T9y0bvH\u002fAX7P9DV0gJm3\u002fs\u002fI9ZY2tNN+j8s6Of6bzn5PwhknLic0\u002fg\u002fikzQgYJD+j+Y75Mp5OX4PzXKFOqHSfk\u002fsxdiM2GX+T\u002fu9Ssu\u002ffr6P2l\u002fjYEljPs\u002frZCrpmbf+T+XbEbp6yX4P2GYrmVqYPk\u002f2kaQ2Dec+D+N1Jo1wSv3PyZGKj72jfY\u002ftVruveLv9j+3ruJ1Lkz2PweqNTz20vQ\u002fWcM1EOTO9D8xuYTDeYn0P6D+ZWBvjfQ\u002fCgQxXDLy9D8o0WFYzCT3P5ddgC0mgfY\u002fMsMW5eqD9z\u002fPW3NCM\u002ff3PyqkM7N6y\u002fc\u002f4QTJODkX+D83iuzykDn4P+SeEpHrJ\u002fk\u002fC6\u002flcGwd+j8i87meOCv7P82A2CMFwfs\u002f3pmkHiY7\u002fD9p9OKNGx\u002f8P\u002fU3w4tGOfw\u002fxKc6TbOd+z+qvr7uTt77P\u002fMaI4hSovo\u002f3J4q+ZZa+T\u002fY\u002fCYjYQf6PyDr\u002fcUJzPk\u002f92i6qLbC+T\u002f0PXG0Cp74P\u002fLTX4fuMfk\u002fRihIh2ek+T+8QN2CBuf4P2UyqlxdU\u002fc\u002fvwgqs+Ka9z8YHlnylAb2P1rpjHFBX\u002fY\u002fZqOU4f6d9j9SMefWxJj2P9BAIgRSSPc\u002fSP+VhcpM9z8DcIW7F\u002fH3P3mcZInXKPg\u002fWjJ2hgCq9z9EL+40udL3P5Rot49\u002f+PY\u002f99aCzUOo9j8HdiTNpu31P84scTC8kPY\u002fVauSVppR9j+q7oqIqHj2P7UQN9QnDfY\u002fwJA0okHL9T\u002fcXJlx34n1P2\u002f5VNuXAvU\u002frCnPrK1x9T+7iJI+qTb1P9HQGQHRq\u002fU\u002fCab1KNyg9D8Lpa4XYVP0P1WACZ3DlvQ\u002frNXycY249D\u002f+l6XAjDj1P4KB5Aqd9fQ\u002f2er4GAB59T+7zOjla2P2PydtXzg+gvY\u002fBOE6mSs59j8q8mvytjz2P3+T4g02aPU\u002fqwAMxbQH9j\u002fgMxSaAQj2Pykvb+gQL\u002fY\u002fM7wiPejQ9T\u002ftjox+uf30P4+zI1xL2PQ\u002f2wzgrVZY9T\u002f48ibrVOf0P872a7z7zfQ\u002flqmTW9uC9T84wi9SF+32P8ZKAvsZRvY\u002frsaCcMOr9j\u002faPRHssQX4P7VhN8tL7Pc\u002f3pl4y6pm9z9ojBnjFLb3P91ZgvewLPg\u002fUjADkurW9z9LS5Se68L4P2eY2xene\u002fk\u002fwHjkaEDG+T\u002fN3TloY5n6P+nXC8BFtvg\u002fZjhuODSx+D9IWn82yef4PwXm1IXT3Pk\u002fiBWLb2uP+D8wFWgpecH5P6S6lsTzWvk\u002fiak1jnTl+j++CUB1Z1T7PwGo7gPXmfs\u002fbwqlVyqZ+z9ZEMPznFT8P7aLoA6ATf0\u002fupk7Zuxa\u002fD8weEDB6Ff8P+owv6EXYvo\u002fm9tfyg66+j+QGXeIoxD8P4O\u002fkAzThvo\u002fgl5nE7Zp+z\u002fSRuWu1s75PxcdqGmqLfs\u002fCN+zaA2u+z\u002fohZBzt\u002ff7P21c\u002fl0Cwfo\u002f2Wb\u002fTIxo+z+dA43Qkez6Pz9nKHWWefo\u002fUEY8wCES+j+TX8nQ8Hz5P5YXPYdm9\u002fg\u002fWCB66dZQ+T+r1hEu\u002fQP6P9OYw4Kievk\u002fKzJYynga+j9lSApELY35P9u8iPdXYPo\u002fdJZxi0HA+z+GnDF2pVH8P4Jf+y6EcP0\u002foQ9yZM7w\u002fD+2wfoZImf8P44agZkSGfw\u002fahgIzetQ+z+pHAOP2Xj6P+VcggXxffo\u002fw0JrLH3o+T\u002fWS8YEAR36P2LydAHup\u002fk\u002f6uFduXIU+T\u002fkwmY9scz3P2fEflhKV\u002fc\u002fTeAgz7xQ9j9W4olQu1n4P+\u002fQ29roLfk\u002fmKIlb5P0+D8qs2+5jY74P2aduLAzyfc\u002fMuIycJUf+D\u002fq8pkC6NH4P2m5R3+r6Pk\u002fQWAIZDOR+D\u002fZAEu6Pi74P0xZ\u002fka9kPc\u002f8\u002fw5y+1C9z8ufoIUi2P3P6Zv54uU7vY\u002fBmhKGHnS9z\u002fW5ojApwH5P1SFE3HJgPg\u002f1zC10Dsy+D8FkSQVGiP5P+cifk331vg\u002fFV+Y+9ln+D+wEShopPb3P92rYLrC4fc\u002fFLEhReQb+D9DHivSGrn3P1DT7JxPYPg\u002fDQ1JSZwF+T9vfCy3y6X5PwqMsLRE6Pk\u002fw0AvhUNa+T94kUjzT4D7P2GFOVx4pPo\u002fiXnGTg\u002fF+T8NX2x3kHn6P\u002fGYIJocM\u002fo\u002f2dJnBRmQ+T8kaYKucCP4P0JId3firfc\u002f1k20vk0C+T\u002fo8qePjin5P2ecG7zzfvk\u002fexAPl6N9+D+JgqmsHIr4P2t80miyHPk\u002f7xUuAyi2+T\u002f4Kl2\u002fatr5P4aE6h2zMPs\u002f\u002fQHm10A++z88YbzXMUP6P+IAP6LuNvk\u002fI49TNxVp+D+Bvu8gcLP3P2bZfjFhSfc\u002fzFW3lXj59z8MxKNX3jX4P5ovWrbx8fg\u002fkS4FYu2m+T9Ixp6\u002fLVz4Px8FPRAVWfk\u002fpUwodTWT+D8o3tJLWAb5PyNi8tSy3\u002fo\u002fShxlqzNl+j\u002fme+MM7cL6P8dm6G2sPPo\u002fNZr+j7UJ+j8UOUS9c9L6PzSbUm2\u002fXfs\u002f507CjfuM\u002fD83FtKS3Wn7P3u2ow8hEP0\u002fyOqnwnN3\u002fD\u002f+endEWej8P84AckR1Tv0\u002fmQMXycfR\u002fD+IYPc51X\u002f8P7qjVHmKdfs\u002f7N0LPtAk+j8UBHV1Dcb6P3I4DUKduvs\u002f6cdK+H\u002ft+j81hmwCVqH6P0vc2XFqEPo\u002fGBdpl5CG+j9Ocb2jCvD5PzJl3mVpFPk\u002fPgXBBtAu+T9+JsJ3AGb4P4SKN4RTDvk\u002f4\u002fOIo0f6+T9\u002f66EFD375P+bQdcG1Tvo\u002fzDSh76Q5+j87pYOMSS36P7FL7JKMQ\u002fs\u002fnbJWytPz+j99p\u002fyFFn36P3r8PRDH7fo\u002ftam+LTPO+D\u002fvqYTqHxr5P7KHAw9h8vg\u002fd3cHXCXn9z+Ra8AZRW\u002f3P+IzmbF+Pfc\u002f4nIDbwLD9z+sEqsGwvz3P4iKddP8Zvc\u002f9AcKwkA\u002f+D+BONgwhX74P6lPS5kOw\u002fg\u002fI5F86Kyp+D\u002fm3tyrfab3PwAHykn38Pc\u002fiJJwlFhh+D\u002f2IdNT5wf4P6\u002f0KHupD\u002fc\u002fGPG2y+tF9j\u002fhceQ94OX2P3gBX0ng+fc\u002f38bBmE7A9z+vu3oRVwT4P3a4NrFWfPc\u002fpJnz76UQ9z97160\u002fWlr3P+6S99HfRPc\u002fJX+5gEun9z96B5l+N773P3qv73cuhfg\u002fyd49okjs9z9IRa95Npj4PwhzKyA6aPk\u002fDo68q5XK+D92vn0JlK74P\u002fvUW1TqP\u002fo\u002fLAZuJsDZ+T\u002f8CeLbDgj5PxC\u002f2LBhn\u002fk\u002ftp0rJEjL+T+SrnNa45H4P1tzjrHmTPc\u002f149Ju4WU9z8mvgCInBr4P7rt6lfxYvc\u002fuOjJ6ZMS+D8b7UwA9\u002fD3P2CGpF3ar\u002fg\u002fDeYh7TKr+D+uxOrBTkj5P\u002fFGXSa\u002fbvk\u002fynbjEyiQ+T+yD8ZzkOP4P7xPZu4Zavc\u002feFZGwc5G+D9NOJpiNQX4Pz5j2F5o+\u002fY\u002fHZhNKtzy9z8CKZfPhRH3PzFjuSfdN\u002fc\u002ftkFzUM969z\u002fYUtX\u002fCmb2P3kJDSIq5vQ\u002fIq5XXhGv9D9HfDGEUn71P6ibb\u002fNtXfY\u002fR+BkhSrc9j\u002fY95q5HAP3P88yQ7uiGPg\u002f7mnqpUoe+D8zKiqF5hD5P9yCYDskKPk\u002fi98KXXOI+D+t+r7JV5\u002f4P53l8esedvg\u002fS8RKRcKP+T8zotO9Off4P+\u002fTQB3k+\u002fg\u002fQb309eP5+D8woeurj4D4Py5TqQft\u002fvk\u002fVSp5Xao2+j9u4I04+gH5P9bzkd4DdPg\u002fqlq9CjsJ+T8pHG\u002f\u002fxHf4P2g4nNCaBPg\u002fVXvhk+OF+D+uLD7aGsn3PzkWe\u002fb6Lvg\u002fZcSc2QkR+T8Am5lfPyr5PyIoznJnfvg\u002fj2M9kjhm+D8ueg8I0DP4P3UnLCnIGvc\u002fKXtvTok09j9L0bbce6D2P5UnLfk6xfY\u002fsl6BFAZM9z9k4COUgEX3P7OsYcekEfg\u002fac1D+fjn9z82qrRSz9r3P4+b1L9kc\u002fc\u002fSEue7hoX+D\u002fttmf4A974P7e6EeVLbfk\u002fwA80qT1N+T\u002ftURZ+zRD5P2maQuZPKvk\u002fzedVuQQx+T92fsXPWn75P4Xsi23Ocfg\u002fdE2FG9nS+D\u002ffXXhsezz4P2g2UUVh9Pg\u002f5Xtr3Ffk+D\u002fIQL9becf5P7QUntzcXvo\u002f5a\u002f1p\u002fLI+j8f\u002fcCwUej7P\u002fd3nQiUJPs\u002fPT3\u002fMJca\u002fD8eDhIjSIH6P2vEA3224vk\u002fh5BhGDx8+T9+AHfhxuD4P3xZkovkJPk\u002fuMNVvdtw+z9x5Cbyn6b6PxJPcdI6Wvo\u002fHVOOjTSG+T+C+caDsvf5P6PvF3aNvvg\u002f1MzPgExr+T9bLmHamQT5P6+7bfUcJvo\u002fkiYGt5vF+j+QmEaaH+T7PzhMrorF6f0\u002fOkxzvcS7\u002fT9IMP4qECj9P72ql2HqZ\u002f0\u002foa+NCA7u+z+FOr+xUAD8P9QTy0Xjjvo\u002faiemwBLW\u002fD9rtjMPqw\u002f9P1yTzLJYfvw\u002fHLNA1TKS\u002fD9CkAEjR579PwZb+GxMQvw\u002fkEynG6qa+z\u002fnupxfsHn8PwnX2d3gBPs\u002fUJ7CXrIm+z966jy\u002fUA76PzOZxZqwfvk\u002fp6TbQEJX+T\u002fGDmgQZAj5P9ufjwKkEvg\u002f2hdhtIUZ+D9hAHeq7G34P+4ZgrEmgPg\u002fs9MwPz27+D\u002fnhYzOuBP5PzUEgJgvq\u002fk\u002flWxtTmFq+T+0Aas9khX5Py16vYtwUvg\u002fWRipaeND+T+Ob53Ckvr4P4RiIZ9wYfk\u002fG8W7Ct0B9z8fDhtlPOD3PyjTyiehFfg\u002fnHH42n8H+D\u002fkq\u002fi2WPH4P172Illw2fg\u002fjaNhTZOI+j8u03P6vCT7PzF\u002frpSlIfw\u002fj\u002fOtdgil\u002fT+KtE3Sb0j9P+lqq17Z7f8\u002fcg1xMHES\u002fz+afO7Gs\u002fn+P5OTAi1WOP8\u002fHVUclHZz\u002fz8wnWBwsyUAQBkEvyanRgBAWO1Dpi1r\u002fj+TmuplJtr+PwpTmGIDWv4\u002fXP25n1UN\u002fz8RlcsG5Hr\u002fP+Tlo1zCy\u002f8\u002fqzOm+Eap\u002fz9Gy30batb+P1Cxp90Wov4\u002fFlPkueu0\u002fT\u002fLEuyi5lv9PzXcc+IoVf4\u002f4a82his0\u002fz8bsNlBDSb\u002fP0rAyEvzCP4\u002f8smIopd4\u002fj\u002f9fF0JcRH\u002fP6be3+wmNv8\u002fsiqPAywLAEAR5bIT3uT+P80eWvE1Uv8\u002fHGUEJjGHAEBOnnkAbvAAQJoAkYEGBwFAJKyNz9\u002fzAEDdaJWkqFkBQKbfZ15VcgFAPNoGp1flAUBadYzRaTgCQPk6PeUAJAJAYfAa03ioAUCde\u002f+UAQMBQJsGncVLbgFAbHQqNuwkAUAyprLCa2cBQCBBvwYG4gBAvj1MdHVfAECt6eMlP0IAQDghgVP4UQBAbNQG1kj\u002fAECVNYl9xoMAQPbAhxYeBv8\u002fd0A8E5Wu\u002fz\u002faLou5UzT+P9PpM0eKVv8\u002fT9jaw3Z7\u002fj+7vH7ZGkoAQO1xbgp\u002f9\u002f8\u002f70pVRkzjAEBEQZcjDRYBQEZBxZf1VAFAYNvMrHAYAkArRmJp\u002fXMBQAPhV8O3kwFAcunzxavLAEAeVGeJ6kUBQBTwmwsPNQJAtb49yb8hA0CyNAs9bqMBQLrj553s9gFA6RKEhXmdAkAjw\u002f0D+SYDQKy4u6ATlwRA8+Qq1BNPBEBN0RZvAbMEQHJivFOEOQRAvpSquX8wBUB1WRHHueMEQPt3L7IYBgRAz\u002fgU0o1UBEC+uL1Yw7IDQLqYv9GH8QJAKI4Flm3RAkBYnjrAfMECQBvGlEKVAANAxezxVT1SA0Cry0fZUYcCQBA\u002fjAMFZgJA7PXHJL+bAkDGiCIzjusCQDtsQnzqvgJA2FHUrxqHAkAi2c2+BzQCQKvIV38RcgJAjUTDALUqBEBa1xXcOxMDQEW4tN+naQNAN89It\u002fAjA0CeTJNLaVUDQDFyONPvNAJAP76ZTujnAUBY1ZNNmScCQE\u002f4FoaNXgJAkOGTRadgAUBC\u002f5uBAmoBQCxH8VicFgFA4zvp0nkUAUBUbGEEGioAQEBYkgs7eQBAtm0mw07n\u002fz8uW6wKzgf\u002fP9raaYI4ov4\u002fE14PY8NA\u002fj8RSDNvGHn\u002fPzH4nEiEXv8\u002fyFgjo+ki\u002fz8wR+Ode8b+P+zM88HKpf8\u002fX4J1SbzA\u002fz8+LxTxB8cAQFZ0FahmnwBA8kDwCkq6AEAOH52RdDABQPkRFZVDewFAzA+d+GXDAEDn1UZ+ESsBQEjdMzEIQwBAJh5OIYu0AUA4tE\u002fmUvoAQJHciJVUNQFAtqJt4uEIAUAzxhHLuxgBQPZgYCg5cAFAFKs2w5B5AUBn4P89VjoCQB+lIfU2sAFAIKa814qFAkB3vnO8rAkDQItXMzN6yAJAbL3I\u002fqzAAkDySKemrToDQCNdrQNjyQNAD46oZ2dxA0DgM6eCFjECQL8SYubvzAFAF\u002f1rGCrfAkDeGlec\u002fO4CQMa35nUmdAJAYdJZhpLpAkCdbLDWgk8DQMwuYqfUJQNA1D9jSIX9AkCaC8\u002f24OwCQKTss4AE\u002fwJAxrM+P2BHAkDXjtL7VU4DQAmgUNRhpANAhSq1K\u002fnhA0DRHyjDavYEQM1g84BLIwVAmdQ8hqcuBkAWpkE0rFsGQHljNAF\u002fbQdA84KLqdu7BkD28SM+IUUGQLGb3sa7RQdAspEBVqNDBkCV6kWnN3kFQA+6n6c5hQRAjbcWdvjBA0B5gMS6JEEDQC6Yo9OfPQNA8oeSaoCKAkArK0cyS3kBQC0H6dWVCQFAdW09\u002fzmeAEDBGpCoA34AQK5OjUIt9\u002f8\u002frO77\u002fLHJ\u002fj8PUqIAngIAQLcQWiOWAAFA2dcV2kyyAUA13Q4ckWUBQEkWJl2wvwFAS1b3ru7vAUCGpsdPY\u002f0BQElIh5khcAFApgvBQmXzAEBCHfCmzBEAQIzi5soTiv8\u002fEReoOtscAECPJz4tI3cAQLtR8bShr\u002f0\u002fUQdEX2jM\u002fD\u002fqL9iIOWX9PxvDYWzMUP4\u002fs0XILMUz\u002fj8hPDBfEBv+PwlNdsASuvw\u002f8ncdWy1g\u002fT9n+yalpMz9P3jZDRRRR\u002f4\u002fwnW7HDY1\u002fz8qbvcILc\u002f\u002fP1ctjzdI7\u002f4\u002fOdoK5vzk\u002fT98tpkt8OD7P8BUCOvSbPw\u002f7xBaxSIY\u002fT9\u002fBjzL2xb9PxBye9ZFafw\u002f5rPUITmM\u002fD8yEwcDzBn9P+GHUdrSyvw\u002fH0ICou6y\u002fD9\u002f91R66aj8P1fLTCKZ8vs\u002f2NaSeiFD+z\u002f8enF\u002fUzf8PwC+yhRRsfw\u002f3bwBzbvY+z+9tcNVdbP7PwGQMjzJAfw\u002fmlUv3ybs+j+RnzRRhiT8P3TYR5t\u002f0Ps\u002fTp8MaB89+z\u002fQDtLq2Q77P1CLPLW9x\u002fk\u002f2LjR3pCC+D\u002fALI0WYEj5P\u002f\u002fo4Q11j\u002fk\u002fhg4gYWNQ+j+tOpoQP2b5Pw=="},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"legend":{"x":0.1,"y":1,"xanchor":"left","yanchor":"top"},"showlegend":true,"xaxis":{"title":{"text":"Time"}},"yaxis":{"title":{"text":""}},"height":300,"width":450},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('5c82dae0-8988-43a7-ace0-cf97e9c7102f');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+</div>
+<p><img src="under_construction.jpg" class="img-fluid"></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Chapter_Fourier.html" class="pagination-link" aria-label="Fourier Transforms">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Fourier Transforms</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./Chapter_FixedIncome.html" class="pagination-link" aria-label="Fixed-Income Concepts">
+        <span class="nav-page-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Fixed-Income Concepts</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-code.git/blob/main/Chapter_MachineLearning.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

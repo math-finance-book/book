@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>16&nbsp; GARCH Models – Pricing and Hedging Derivative Securities: Theory and Methods</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./Chapter_StochasticVol.html" rel="next">
+<link href="./Chapter_Exotics.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-933f24a0c1e0be8a62c2179459603458.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-217607b4065b1a3128a07792af3f8e33.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+<script type="text/javascript">
+
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+
+if (typeof require !== 'undefined') {
+
+require.undef("plotly");
+
+requirejs.config({
+
+    paths: {
+
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+
+    }
+
+});
+
+require(['plotly'], function(Plotly) {
+
+    window._Plotly = Plotly;
+
+});
+
+}
+
+</script>
+
+
+
+<style>
+div.callout-Extra.callout {
+  border-left-color: #d5deed;
+}
+div.callout-Extra.callout-style-default > .callout-header {
+  background-color: rgba(213, 222, 237, 0.13);
+}
+div.callout-Extra .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Example.callout {
+  border-left-color: #e8cc97;
+}
+div.callout-Example.callout-style-default > .callout-header {
+  background-color: rgba(232, 204, 151, 0.13);
+}
+div.callout-Example .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Example.callout-style-default .callout-icon::before, div.callout-Example.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Rule.callout {
+  border-left-color: #a1bced;
+}
+div.callout-Rule.callout-style-default > .callout-header {
+  background-color: rgba(161, 188, 237, 0.13);
+}
+div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Exercise.callout {
+  border-left-color: #ede29d;
+}
+div.callout-Exercise.callout-style-default > .callout-header {
+  background-color: rgba(237, 226, 157, 0.13);
+}
+div.callout-Exercise .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Exercise.callout-style-default .callout-icon::before, div.callout-Exercise.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Done.callout {
+  border-left-color: #e8cc97;
+}
+div.callout-Done.callout-style-default > .callout-header {
+  background-color: rgba(232, 204, 151, 0.13);
+}
+div.callout-Done .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Done.callout-style-default .callout-icon::before, div.callout-Done.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-InProgress.callout {
+  border-left-color: #eaacf2;
+}
+div.callout-InProgress.callout-style-default > .callout-header {
+  background-color: rgba(234, 172, 242, 0.13);
+}
+div.callout-InProgress .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-InProgress.callout-style-default .callout-icon::before, div.callout-InProgress.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-WritingToDo.callout {
+  border-left-color: #a7f2d8;
+}
+div.callout-WritingToDo.callout-style-default > .callout-header {
+  background-color: rgba(167, 242, 216, 0.13);
+}
+div.callout-WritingToDo .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-WritingToDo.callout-style-default .callout-icon::before, div.callout-WritingToDo.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Principle.callout {
+  border-left-color: #e3aab2;
+}
+div.callout-Principle.callout-style-default > .callout-header {
+  background-color: rgba(227, 170, 178, 0.13);
+}
+div.callout-Principle .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Principle.callout-style-default .callout-icon::before, div.callout-Principle.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-CodeToDo.callout {
+  border-left-color: #eb4034;
+}
+div.callout-CodeToDo.callout-style-default > .callout-header {
+  background-color: rgba(235, 64, 52, 0.13);
+}
+div.callout-CodeToDo .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-CodeToDo.callout-style-default .callout-icon::before, div.callout-CodeToDo.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_GARCH.html">Part V: Alternative Models</a></li><li class="breadcrumb-item"><a href="./Chapter_GARCH.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">GARCH Models</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Pricing and Hedging Derivative Securities: Theory and Methods</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/math-finance-book/book-code.git" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I: Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Options.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Options</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Futures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Futures and Swaps</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II: Mathematical Tools</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Intro_Binomial_Tree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Brownian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Brownian Motion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Ito.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Ito Processes and Ito’s Formula</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_GBM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III: Arbitrage Pricing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Arbitrage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Deltas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Delta Hedges, Replication, and PDEs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_DigitalsMeasures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Digitals and Measures</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV: Black-Scholes and Extensions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_BlackScholes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Americans.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">American Options</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">FX and Quantos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Merton.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Merton, Black, and Margrabe</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Asians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Asians, Baskets, and Spreads</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Exotics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Other Exotics</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part V: Alternative Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_GARCH.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">GARCH Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_StochasticVol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Stochastic Volatility</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Jumps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Jumps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_VarianceSwaps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Variance Swaps</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VI: Numerical Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_MonteCarlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Monte Carlo Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Binomial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Binomial and Trinomial Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_PDEs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">PDE Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Fourier.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Fourier Transforms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_MachineLearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VII: Fixed Income</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FixedIncome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Fixed-Income Concepts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FixedIncomeDerivatives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Fixed-Income Derivatives</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Vasicek.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Vasicek and Extensions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Term Structure Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendix</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./AppendixA.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Miscellaneous Facts about Continuous-Time Models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_GARCH.html">Part V: Alternative Models</a></li><li class="breadcrumb-item"><a href="./Chapter_GARCH.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">GARCH Models</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-c:garch" class="quarto-section-identifier"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">GARCH Models</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="95373c9f" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
+<p>Thus far, we have assumed that the volatility of the underlying asset is constant or varying in a non-random way during the lifetime of the derivative. In this chapter we will look at models that relax this assumption and allow the volatility to change randomly. This is very important, because there is plenty of evidence that volatilities do change over time in a random way.</p>
+<p>In the first three sections, we will consider the problem of estimating the volatility. The discussion of estimation methods leads naturally into the discussion of modeling a changing volatility.</p>
+<section id="sec-s:statistics" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="sec-s:statistics"><span class="header-section-number">16.1</span> Statistics Review</h2>
+<p>We begin with a brief review of basic statistics. Given a random sample <span class="math inline">\(\{x_1,\ldots,x_N\}\)</span> of size <span class="math inline">\(N\)</span> from a population with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, the best estimate of <span class="math inline">\(\mu\)</span> is of course the sample mean <span class="math display">\[\bar{x} = \frac{1}{N}\sum_{i=1}^{N}x_i\; .\]</span> The variance is the expected value of <span class="math inline">\((x-\mu)^2\)</span>, so an obvious estimate of the variance is the sample average of <span class="math inline">\((x_i-\mu)^2\)</span>, replacing <span class="math inline">\(\mu\)</span> with its estimate <span class="math inline">\(\bar{x}\)</span>. This would be <span class="math display">\[\frac{1}{N}\sum_{i=1}^{N} (x_i-\bar{x})^2\]</span> However, because <span class="math inline">\(\bar{x}\)</span> is computed from the <span class="math inline">\(x_i\)</span>, the <span class="math inline">\(x_i\)</span> will deviate less on average from <span class="math inline">\(\bar{x}\)</span> than they do from the true mean <span class="math inline">\(\mu\)</span>. Hence the estimate proposed above will on average be less than <span class="math inline">\(\sigma^2\)</span>. To eliminate this bias, it suffices just to scale the estimate up by a factor of <span class="math inline">\(N/(N-1)\)</span>. This leads to the estimate <span class="math display">\[s^2=\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2\; ,\]</span> and the best estimate of <span class="math inline">\(\sigma\)</span> is the square root <span class="math display">\[s=\sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2}\; .\]</span> To calculate <span class="math inline">\(s^2\)</span>, notice that <span class="math display">\[\begin{align*}
+\sum_{i=1}^{N} (x_i-\bar{x})^2 &amp;= \sum_{i=1}^{N} (x_i^2-2x_i\bar{x}+\bar{x}^2)\\
+&amp;=\sum_{i=1}^{N} x_i^2 -2\bar{x}\sum_{i=1}^{N} x_i + \sum_{i=1}^N \bar{x}^2\\
+&amp;=\sum_{i=1}^{N} x_i^2 -2\bar{x}(N\bar{x})+N\bar{x}^2\\
+&amp;=\sum_{i=1}^{N} x_i^2 -N\bar{x}^2\;.
+\end{align*}\]</span> Therefore <span class="math display">\[s=\sqrt{\frac{1}{N-1}\left(\sum_{i=1}^{N} x_i^2-N\bar{x}^2\right)}\; .\]</span></p>
+<p>It is important to know how much variation there would be in <span class="math inline">\(\bar{x}\)</span> if one had access to multiple random samples. More variation means that an <span class="math inline">\(\bar{x}\)</span> computed from a single sample will be a less reliable estimate of <span class="math inline">\(\mu\)</span>. The variance of <span class="math inline">\(\bar{x}\)</span> in repeated samples is <span class="math inline">\(\sigma^2/N\)</span>,<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and our best estimate of this variance is <span class="math inline">\(s^2/N\)</span>. The standard deviation of <span class="math inline">\(\bar{x}\)</span> in repeated samples, which is called the standard error of <span class="math inline">\(\bar{x}\)</span>, is <span class="math inline">\(\sigma/\sqrt{N}\)</span>, and we estimate this by <span class="math inline">\(s/\sqrt{N}\)</span>, which equals <span class="math display">\[\sqrt{\frac{1}{N(N-1)}\left(\sum_{i=1}^{N} x_i^2-N\bar{x}^2\right)}\; .\]</span> If the population from which <span class="math inline">\(x\)</span> is sampled has a normal distribution, then a 95% confidence interval for <span class="math inline">\(\mu\)</span> will be <span class="math inline">\(\bar{x}\)</span> plus or minus 1.96 standard errors. Even if <span class="math inline">\(x\)</span> does not have a normal distribution, by the Central Limit Theorem, <span class="math inline">\(\bar{x}/\sqrt{N}\)</span> will be approximately normally distributed if the sample size <span class="math inline">\(N\)</span> is large enough, and plus or minus 1.96 standard errors will still be approximately a 95% confidence interval for <span class="math inline">\(\mu\)</span>. </p>
+</section>
+<section id="sec-s:estimatingvolatility" class="level2" data-number="16.2">
+<h2 data-number="16.2" class="anchored" data-anchor-id="sec-s:estimatingvolatility"><span class="header-section-number">16.2</span> Estimating a Constant Volatility and Mean</h2>
+<p>Consider an asset price that is a geometric Brownian motion under the actual probability measure: <span class="math display">\[\frac{\,\mathrm{d}S}{S} = \mu\,\mathrm{d}t + \sigma\,\mathrm{d}B\; ,\]</span> where <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> are unknown constants and <span class="math inline">\(B\)</span> is a Brownian motion. We can as usual write this in log form as <span class="math display">\[\,\mathrm{d}\log S = \left(\mu-\frac{1}{2}\sigma^2\right)\,\mathrm{d}t + \sigma\,\mathrm{d}B\; .\]</span> Over a discrete time period of length <span class="math inline">\(\Delta t\)</span>, this implies <span id="eq-dlogs"><span class="math display">\[
+\Delta \log S = \left(\mu-\frac{1}{2}\sigma^2\right)\Delta t + \sigma \Delta B\;.
+\qquad(16.1)\]</span></span></p>
+<p>Suppose we have observed the asset price <span class="math inline">\(S\)</span> at dates <span class="math inline">\(0=t_0&lt;t_1&lt;\cdots&lt; t_N=T\)</span>, where <span class="math inline">\(t_i-t_{i-1}=\Delta t\)</span>. If the asset pays dividends, we will take <span class="math inline">\(S\)</span> to be the value of the portfolio in which the dividends are reinvested in new shares. Thus, in general, <span class="math inline">\(S_{t_i}/S_{t_{i-1}}\)</span> denotes the gross return (one plus the rate of return) between dates <span class="math inline">\(t_{i-1}\)</span> and <span class="math inline">\(t_i\)</span>. This return is measured on a non-compounded and non-annualized basis. The annualized continuously-compounded rate of return is the rate <span class="math inline">\(r_i\)</span> defined by <span class="math display">\[\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; .\]</span> This implies that <span id="eq-contcompreturn"><span class="math display">\[
+r_i = \frac{\log S_{t_i}-\log S_{t_{i-1}}}{\Delta t} = \mu-\frac{1}{2}\sigma^2 + \sigma \frac{B_{t_i}-B_{t_{i-1}}}{\Delta t}\;.
+\qquad(16.2)\]</span></span></p>
+<p>Because <span class="math inline">\(B_{t_i}-B_{t_{i-1}}\)</span> is normally distributed with mean zero and variance <span class="math inline">\(\Delta t\)</span>, the sample <span class="math inline">\(\{r_1,\ldots,r_N\}\)</span> is a sample of independent random variables each of which is normally distributed with mean <span class="math inline">\(\mu-\sigma^2/2\)</span> and variance <span class="math inline">\(\sigma^2/\Delta t\)</span>. We are focused on estimating <span class="math inline">\(\sigma^2\)</span>, so it will simplify things to define <span id="eq-volyi"><span class="math display">\[
+y_i = r_i\sqrt{\Delta t} = \frac{\log S_{t_i}-\log S_{t_{i-1}}}{\sqrt{\Delta t}}\;.
+\qquad(16.3)\]</span></span></p>
+<p>The sample <span class="math inline">\(\{y_1,\ldots,y_N\}\)</span> is a sample of independent random variables each of which is normally distributed with mean <span class="math inline">\((\mu-\sigma^2/2)\sqrt{\Delta t}\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. As was discussed in the previous section, the best estimate of the mean of <span class="math inline">\(y\)</span> is the sample mean <span class="math display">\[\bar{y} = \frac{1}{N}\sum_{i=1}^{N}y_i\; ,\]</span> and the best estimate of <span class="math inline">\(\sigma^2\)</span> is <span class="math display">\[\hat{\sigma}^2 = \frac{1}{N-1}\sum_{i=1}^{N} (y_i-\bar{y})^2\; .\]</span> This means that we estimate <span class="math inline">\(\mu\)</span> as <span class="math display">\[\hat{\mu} = \frac{\bar{y}}{\sqrt{\Delta t}} + \frac{1}{2}\hat{\sigma}^2 = \bar{r}+ \frac{1}{2}\hat{\sigma}^2\; .\]</span></p>
+<p>Let us digress for a moment to discuss the reliability of <span class="math inline">\(\hat{\mu}\)</span> as an estimate of <span class="math inline">\(\mu\)</span>. Notice that</p>
+<p><span class="math display">\[
+\bar{r}
+= \frac{\sum_{i=1}^N \log S_{t_i}-\log S_{t_{i-1}}}{N\Delta t}
+\]</span> <span class="math display">\[
+=   \frac{\log S_T-\log S_0}{N\Delta t}
+\]</span> <span id="eq-volrbar"><span class="math display">\[
+= \frac{\log S_T-\log S_0}{T}\;.
+\qquad(16.4)\]</span></span></p>
+<p>Therefore the first component <span class="math inline">\(\bar{r}\)</span> of the estimate of <span class="math inline">\(\mu\)</span> depends only on the total change in <span class="math inline">\(S\)</span> over the time period. Hence, the reliability of this component cannot depend on how frequently we observe <span class="math inline">\(S\)</span> within the time period <span class="math inline">\([0,T]\)</span>. The standard deviation of <span class="math inline">\(\bar{r}\)</span> in repeated samples is the standard deviation of <span class="math inline">\([\log S_T-\log S_0]/T\)</span>, which is <span class="math inline">\(\sigma/\sqrt{T}\)</span>. This is likely to be quite large. For example, with <span class="math inline">\(\sigma =0.3\)</span> and ten years of data (<span class="math inline">\(T=10\)</span>), the standard deviation of <span class="math inline">\(\bar{r}\)</span> is 9.5%, which means that a 95% confidence interval will be a band of roughly 38%. Given that <span class="math inline">\(\mu\)</span> itself should be of the order of magnitude of 10%, such a wide confidence interval is useless for all practical purposes.</p>
+<p>Fortunately, it is easier to estimate <span class="math inline">\(\sigma\)</span>. We observed in the previous section that the <span class="math inline">\(\hat{\sigma}^2\)</span> defined above can be calculated as <span id="eq-estimator_sig2"><span class="math display">\[
+\frac{1}{N-1}\sum_{i=1}^N y_i^2 - \frac{N\bar{y}^2}{N-1}\;.
+\qquad(16.5)\]</span></span></p>
+<p>From <a href="#eq-volyi" class="quarto-xref">Equation&nbsp;<span>16.3</span></a> of <span class="math inline">\(y_i\)</span> and <a href="#eq-volrbar" class="quarto-xref">Equation&nbsp;<span>16.4</span></a>, we have <span class="math display">\[\bar{y} =  \frac{\sqrt{\Delta t}}{T}[\log S_T-\log S_0]\; .\]</span> Hence, the second term in <a href="#eq-estimator_sig2" class="quarto-xref">Equation&nbsp;<span>16.5</span></a> is <span class="math display">\[ \frac{N}{N-1}\left(\frac{\Delta t}{T^2}\right)[\log S_T-\log S_0]^2\; .\]</span> If we observe the stock price sufficiently frequently, so that <span class="math inline">\(\Delta t\)</span> is very small, this term will be negligible. In this circumstance, <span class="math inline">\(\hat{\sigma}^2\)</span> is approximately</p>
+<p><span class="math display">\[
+\frac{1}{N-1}\sum_{i=1}^N y_i^2 = \frac{1}{N-1}\sum_{i=1}^N \frac{[\log S_{t_i}-\log S_{t_{i-1}}]^2}{\Delta t}
+\]</span> <span id="eq-estimator_sig2_3"><span class="math display">\[
+= \frac{N}{N-1}\times \frac{1}{T}\times \sum_{i=1}^N [\log S_{t_i}-\log S_{t_{i-1}}]^2 \;.
+\qquad(16.6)\]</span></span></p>
+<p>If we observe <span class="math inline">\(S\)</span> more and more frequently, letting <span class="math inline">\(\Delta t \rightarrow 0\)</span> and <span class="math inline">\(N \rightarrow \infty\)</span>, the sum <span class="math display">\[\sum_{i=1}^N [\log S_{t_i}-\log S_{t_{i-1}}]^2\]</span> will converge with probability one to <span class="math inline">\(\sigma^2T\)</span>, as explained in <a href="Chapter_Brownian.html#sec-s:quadraticvariation" class="quarto-xref"><span>Section 4.3</span></a>. This implies that <span class="math inline">\(\hat{\sigma}^2\)</span> will converge to <span class="math inline">\(\sigma^2\)</span>. Thus, in theory, we can estimate <span class="math inline">\(\sigma^2\)</span> with any desired degree of precision by simply observing <span class="math inline">\(S\)</span> sufficiently frequently. This is true no matter how short the overall time period <span class="math inline">\([0,T]\)</span> may be.</p>
+<p>In practice, this doesn’t work out quite so well. If we observe minute-by-minute data, or we observe each transaction, much of the variation in the price <span class="math inline">\(S\)</span> will be due to bouncing back and forth between the bid price and the ask price. This is not really what we want to estimate, and this source of variation will be much less important if we look at weekly or even daily data. So, there are practical limits to how frequently we should observe <span class="math inline">\(S\)</span>. Nevertheless, it is still true that, if <span class="math inline">\(\sigma^2\)</span> were truly constant, we could estimate it with a very high degree of precision. In fact, we can estimate the volatility of a stock with enough precision to determine that it really isn’t constant! The real problem that we face is to estimate and model a changing volatility.</p>
+</section>
+<section id="estimating-a-changing-volatility" class="level2" data-number="16.3">
+<h2 data-number="16.3" class="anchored" data-anchor-id="estimating-a-changing-volatility"><span class="header-section-number">16.3</span> Estimating a Changing Volatility</h2>
+<p>Without attempting yet to model how the volatility may change, we can say a few things about how we might estimate a changing volatility. In this and following sections, we will take the observation interval <span class="math inline">\(\Delta t\)</span> to be fixed. We assume it is small (say, a day or a week) and focus on the estimate <a href="#eq-estimator_sig2_3" class="quarto-xref">Equation&nbsp;<span>16.6</span></a>. Recall from <a href="#sec-s:statistics" class="quarto-xref"><span>Section 16.1</span></a> that the reason we are dividing by <span class="math inline">\(N-1\)</span> rather than <span class="math inline">\(N\)</span> is that the sample standard deviation usually underestimates the actual standard deviation, because it uses the sample mean, which will be closer to the points <span class="math inline">\(x_i\)</span> than will be the true mean. However, <a href="#eq-estimator_sig2_3" class="quarto-xref">Equation&nbsp;<span>16.6</span></a> does not employ the sample mean (it replaces it with zero), so there is no reason to make this correction. So, we take as our point of departure the estimate <span class="math display">\[\frac{1}{T} \sum_{i=1}^N [\log S_{t_i}-\log S_{t_{i-1}}]^2 = \frac{1}{N}\sum_{i=1}^N y_i^2 \; .\]</span> An obvious response to the volatility changing over time is simply to avoid using data from the distant past. Such data is not likely to be informative about the current value of the volatility. What distant should mean in this context is not entirely clear, but, for example, we might want to use only the last 60 observations. If we are using daily data, this would mean that at the end of each day we would add that day’s observation and drop the observation from 61 days past. This leads to a somewhat abruptly varying estimate. For example, a very large movement in the price on a particular day increases the volatility estimate for the next 60 days. On the 61st day, this observation would drop from the sample, leading to an abrupt drop in the estimate (presuming that there is not an equally large change in <span class="math inline">\(S\)</span> on the 61st day). This seems unreasonable. An estimate in which the impact of each observation decays smoothly over time is more attractive.</p>
+<p>We can construct such an estimate as <span id="eq-sig_estimator4"><span class="math display">\[
+\hat{\sigma}^2_{i+1} = (1-\lambda) y_{i}^2 + \lambda\hat{\sigma}^2_{i}
+\qquad(16.7)\]</span></span></p>
+<p>for any constant <span class="math inline">\(0&lt;\lambda&lt;1\)</span>. Here, <span class="math inline">\(\hat{\sigma}^2_{i+1}\)</span> denotes the estimate of the volatility from date <span class="math inline">\(t_{i}\)</span> to date <span class="math inline">\(t_{i+1}\)</span>. The estimate <a href="#eq-sig_estimator4" class="quarto-xref">Equation&nbsp;<span>16.7</span></a> is a weighted average of the estimate <span class="math inline">\(\hat{\sigma}^2_{i}\)</span> for the previous time period and the most recently observed squared change <span class="math inline">\(y_{i}^2\)</span>. Following the same procedure, the next estimate will be <span class="math display">\[\begin{align*}
+\hat{\sigma}^2_{i+2}&amp; = (1-\lambda) y_{i+1}^2 + \lambda\hat{\sigma}^2_{i+1}\\
+&amp;= (1-\lambda) y_{i+1}^2 + \lambda(1-\lambda)  y_{i}^2 + \lambda^2\hat{\sigma}^2_{i}\;.
+\end{align*}\]</span> Likewise, the estimate at the following date will be <span class="math display">\[\hat{\sigma}^2_{i+3} = (1-\lambda) y_{i+2}^2 +\lambda(1-\lambda) y_{i+1}^2 + \lambda^2(1-\lambda)^2  y_{i}^2 +\lambda^{3}\hat{\sigma}^2_{i}\; .\]</span> This demonstrates the declining importance of the squared deviation <span class="math inline">\(y_{i}^2\)</span> for future estimates. At each date, <span class="math inline">\(y_{i}^2\)</span> enters with a weight that is lower by a factor of <span class="math inline">\(\lambda\)</span>, compared to the previous date. If <span class="math inline">\(\lambda\)</span> is small, the decay in the importance of each squared deviation will be fast. In fact, <a href="#eq-sig_estimator4" class="quarto-xref">Equation&nbsp;<span>16.7</span></a> shows that, if <span class="math inline">\(\lambda\)</span> is close to zero, the estimate <span class="math inline">\(\hat{\sigma}_{i+1}^2\)</span> is approximately equal to the squared deviation <span class="math inline">\(y_i^2\)</span>—previous squared deviations are relatively unimportant. On the other hand, if <span class="math inline">\(\lambda\)</span> is close to one, the decay will be slow; i.e., the importance of <span class="math inline">\(y_i^2\)</span> for the estimate <span class="math inline">\(\hat{\sigma}^2_{i+2}\)</span> will be nearly the same as for <span class="math inline">\(\hat{\sigma}^2_{i+1}\)</span>, and nearly the same for <span class="math inline">\(\hat{\sigma}^2_{i+3}\)</span> as for <span class="math inline">\(\hat{\sigma}^2_{i+2}\)</span>, etc. This will lead to a smooth (slowly varying) volatility estimate. The slowly varying nature of the estimate in this case is also clear from <a href="#eq-sig_estimator4" class="quarto-xref">Equation&nbsp;<span>16.7</span></a>, because it shows that if <span class="math inline">\(\lambda\)</span> is close to one, then <span class="math inline">\(\hat{\sigma}^2_{i+1}\)</span> will be approximately the same as <span class="math inline">\(\hat{\sigma}^2_{i}\)</span>.</p>
+<p>This method can also be used to estimate covariances, simply by replacing the squared deviations <span class="math inline">\(y_i^2\)</span> by the product of deviations for two different assets. And, of course, given covariance and variance estimates, we can construct estimates of correlations. To ensure that an estimated correlation is between <span class="math inline">\(-1\)</span> and <span class="math inline">\(+1\)</span>, we will need to use the same <span class="math inline">\(\lambda\)</span> to estimate each of the variances and the covariance. This is the method used by RiskMetrics.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. </p>
+</section>
+<section id="sec-s:garch" class="level2" data-number="16.4">
+<h2 data-number="16.4" class="anchored" data-anchor-id="sec-s:garch"><span class="header-section-number">16.4</span> GARCH Models</h2>
+<p>We are going to adopt a subtle but important change of perspective now. Instead of considering <a href="#eq-sig_estimator4" class="quarto-xref">Equation&nbsp;<span>16.7</span></a> as simply an estimation procedure, we are going to assume that the actual volatility evolves according to <a href="#eq-sig_estimator4" class="quarto-xref">Equation&nbsp;<span>16.7</span></a>, or a generalization thereof. We are also going to reintroduce the expected change in <span class="math inline">\(\log S\)</span>, which we dropped in going from <a href="#eq-estimator_sig2" class="quarto-xref">Equation&nbsp;<span>16.5</span></a> to <a href="#eq-estimator_sig2_3" class="quarto-xref">Equation&nbsp;<span>16.6</span></a>. Specifically, we return to <a href="#eq-dlogs" class="quarto-xref">Equation&nbsp;<span>16.1</span></a>, but we operate under the risk-neutral probability, so <span class="math inline">\(\mu=r-q\)</span>, and we have <span id="eq-dlogs2"><span class="math display">\[
+\log S(t_{i+1}) - \log S_{t_i} = \left(r-q-\frac{1}{2}\sigma_{i+1}^2\right)\Delta t + \sigma_{i+1} \Delta B\;.
+\qquad(16.8)\]</span></span></p>
+<p>We assume the volatility <span class="math inline">\(\sigma_{i+1}\)</span> between dates <span class="math inline">\(t_i\)</span> and <span class="math inline">\(t_{i+1}\)</span> is given by <span id="eq-garch"><span class="math display">\[
+\sigma_{i+1}^2 = a + b y_{i}^2 + c \sigma_i^2\;,
+\qquad(16.9)\]</span></span></p>
+<p>for some constants <span class="math inline">\(a &gt; 0\)</span>, <span class="math inline">\(b\geq 0\)</span> and <span class="math inline">\(c\geq 0\)</span>, with <span class="math inline">\(y_i\)</span> now defined by <span class="math display">\[y_i = \frac{\log S_{t_i}-\log S_{t_{i-1}}-\left(r-q-\frac{1}{2}\sigma_i^2\right)\Delta t}{\sqrt{\Delta t}}\; .\]</span> From <a href="#eq-dlogs2" class="quarto-xref">Equation&nbsp;<span>16.8</span></a>, applied to the period from <span class="math inline">\(t_{i-1}\)</span> to <span class="math inline">\(t_i\)</span>, this implies that <span class="math inline">\(y_i\)</span> is normally distributed with mean zero and variance <span class="math inline">\(\sigma_i^2\)</span>, and of course <span class="math inline">\(y_{i+1}\)</span> has variance <span class="math inline">\(\sigma_{i+1}^2\)</span>, etc.<br>
+Under these assumptions, the random process <span class="math inline">\(\log S\)</span> is called a GARCH(1,1) process.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> There are many varieties of GARCH processes that have been proposed in the literature, but we will only consider GARCH(1,1), which is the simplest.</p>
+<p>We assume <span class="math inline">\(b+c&lt;1\)</span>, in which case we can write the variance equation as a generalization of <a href="#eq-sig_estimator4" class="quarto-xref">Equation&nbsp;<span>16.7</span></a>. Namely, %<span class="math display">\[\sigma_{i+1}^2 = (1-\phi)d + \phi\left[(1-\lambda) y_{i}^2 + \lambda \sigma^2_{i}\right]\; ,\]</span> <span id="eq-garch10"><span class="math display">\[
+\sigma_{i+1}^2 = \kappa\theta + (1-\kappa)\left[  (1-\lambda) y_{i}^2 + \lambda\sigma^2_{i}\right]\;,
+\qquad(16.10)\]</span></span></p>
+<p>where <span class="math inline">\(\lambda=c/(b+c)\)</span>, %<span class="math inline">\(\phi=b+c\)</span>, and <span class="math inline">\(d=a/(1-b-c)\)</span>.<br>
+<span class="math inline">\(\kappa = 1-b-c\)</span>, and <span class="math inline">\(\theta=a/(1-b-c)\)</span>. Hence, <span class="math inline">\(\sigma_{i+1}^2\)</span> is a weighted average with weights <span class="math inline">\(\kappa\)</span> and <span class="math inline">\(1-\kappa\)</span>, of two parts, one being the constant <span class="math inline">\(\theta\)</span> and the other being itself a weighted average of <span class="math inline">\(y_{i}^2\)</span> and <span class="math inline">\(\sigma^2_{i}\)</span>. Whatever the variance might be at time <span class="math inline">\(t_i\)</span>, the variance of <span class="math inline">\(y_j\)</span> at any date <span class="math inline">\(t_j\)</span> far into the future, computed without knowing the intervening <span class="math inline">\(y_{i+1}, y_{i+2},\ldots\)</span>, will be approximately the constant <span class="math inline">\(\theta\)</span>. The constant <span class="math inline">\(\theta\)</span> is called the unconditional variance, whereas <span class="math inline">\(\sigma_{i}^2\)</span> is the conditional variance of <span class="math inline">\(y_i\)</span>. </p>
+<p>To understand the unconditional variance, it is useful to consider the variance forecasting equation. Specifically, we can calculate <span class="math inline">\(\\E_{t_i} \left[\sigma_{i+n}^2\right]\)</span>, which is the estimate made at date <span class="math inline">\(t_i\)</span> of the variance of <span class="math inline">\(y_{i+n}\)</span>; i.e, we estimate the variance without having observed <span class="math inline">\(y_{i+1},\ldots,y_{i+n-1}\)</span>. Note that by definition <span class="math inline">\(\\E_{t_{i}}[y_{i+1}^2]=\sigma_{i+1}^2\)</span>, so <a href="#eq-garch10" class="quarto-xref">Equation&nbsp;<span>16.10</span></a> implies <span class="math display">\[\begin{align*}
+\\E_{t_{i}}\left[\sigma_{i+2}^2\right] &amp;= \kappa\theta + (1-\kappa)\left[  (1-\lambda) \\E_{t_{i}}[y_{i+1}^2] + \lambda\sigma^2_{i+1}\right] \\
+&amp;= \kappa\theta + (1-\kappa)\sigma^2_{i+1}\; .
+\end{align*}\]</span> Likewise, <span class="math display">\[\\E_{t_{i+1}}\left[\sigma_{i+3}^2\right] = \kappa\theta + (1-\kappa)\sigma^2_{i+2}\; ,\]</span> and taking the expectation at date <span class="math inline">\(t_i\)</span> of both sides of this yields <span class="math display">\[\begin{align*}
+\\E_{t_{i}}\left[\sigma_{i+3}^2\right] = \\E_{t_{i}}\left[\\E_{t_{i+1}}\left[\sigma_{i+3}^2\right]\right] &amp;=\kappa\theta + (1-\kappa)\\E_{t_{i}}\left[\sigma_{i+2}^2\right]\\
+&amp;=\kappa\theta + (1-\kappa)\left[\kappa\theta + (1-\kappa)\sigma^2_{i+1}\right]\\
+&amp;=\kappa\theta[1+(1-\kappa)] + (1-\kappa)^2\sigma^2_{i+1}\;.
+\end{align*}\]</span> This generalizes to <span class="math display">\[\\E_{t_{i}}\left[\sigma_{i+n}^2\right] = \kappa\theta\left[1+(1-\kappa)+ \cdots (1-\kappa)^{n-2}\right] + (1-\kappa)^{n-1}\sigma^2_{i+1}\; .\]</span> Thus, there is decay at rate <span class="math inline">\(\kappa\)</span> in the importance of the current volatility <span class="math inline">\(\sigma^2_{i+1}\)</span> for forecasting the future volatility. Furthermore, as <span class="math inline">\(n\rightarrow \infty\)</span>, the geometric series <span class="math display">\[1+(1-\kappa)+ \cdots (1-\kappa)^{n-2}\]</span> converges to <span class="math inline">\(1/\kappa\)</span>, so, as <span class="math inline">\(n \rightarrow \infty\)</span> we obtain <span class="math display">\[\\E_{t_{i}}\left[\sigma_{i+n}^2\right] \rightarrow \theta\; .\]</span> This means that our best estimate of the conditional variance, at some date far in the future, is approximately the unconditional variance <span class="math inline">\(\theta\)</span>.</p>
+<p>The most interesting feature of the volatility equation is that large returns (in absolute value) lead to an increase in the variance and hence are likely to be followed by more large returns (whether positive or negative). This is the phenomenon of volatility clustering, which is quite observable in actual markets. This feature also implies that the distribution of returns will be fat tailed (more technically, leptokurtic). This means that the probability of extreme returns is higher than under a normal distribution with the same standard deviation.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> It is well documented that daily and weekly returns in most markets have this fat-tailed property.</p>
+<p>We can simulate a path of an asset price that follows a GARCH process and the path of its volatility as follows. The following python code produces three columns of data (with headings), the first column being time, the second the asset price, and the third the volatility.</p>
+<div id="f178024d" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = initial volatility</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    dt = length of each time period (Delta t)</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    N = number of time periods</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    theta = theta parameter for GARCH</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    kappa = kappa parameter for GARCH</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    lambd = lambda parameter for GARCH</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    LogS <span class="op">=</span> np.log(S)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    Sqrdt <span class="op">=</span> np.sqrt(dt)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> kappa <span class="op">*</span> theta</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> kappa) <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> lambd)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> kappa) <span class="op">*</span> lambd</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    time <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    stock_price <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> np.zeros(N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    stock_price[<span class="dv">0</span>] <span class="op">=</span> S</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    volatility[<span class="dv">0</span>] <span class="op">=</span> sigma    </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        time[i] <span class="op">=</span> i <span class="op">*</span> dt</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> sigma <span class="op">*</span> np.random.randn()</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        LogS <span class="op">=</span> LogS <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">*</span> sigma) <span class="op">*</span> dt <span class="op">+</span> Sqrdt <span class="op">*</span> y</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> np.exp(LogS)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        stock_price[i] <span class="op">=</span> S</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        sigma <span class="op">=</span> np.sqrt(a <span class="op">+</span> b <span class="op">*</span> y <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> c <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        volatility[i] <span class="op">=</span> sigma</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    df_garch <span class="op">=</span> pd.DataFrame({<span class="st">'Time'</span>: time, <span class="st">'Stock Price'</span>: stock_price, <span class="st">'Volatility'</span>: volatility})</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    df_garch.to_csv(<span class="st">'garch_simulation.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_garch</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage:</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span>       <span class="co"># Initial stock price</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span>   <span class="co"># Initial volatility</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span>      <span class="co"># Risk-free rate</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span>      <span class="co"># Dividend yield</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">252</span>    <span class="co"># Length of each time period (daily)</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">252</span>       <span class="co"># Number of time periods (one year)</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="fl">0.1</span>   <span class="co"># Theta parameter for GARCH</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">0.1</span>   <span class="co"># Kappa parameter for GARCH</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>lambd <span class="op">=</span> <span class="fl">0.9</span>   <span class="co"># Lambda parameter for GARCH</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>df_garch <span class="op">=</span> simulating_garch(S, sigma, r, q, dt, N, theta, kappa, lambd)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_garch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Time  Stock Price  Volatility
+0    0.000000   100.000000    0.200000
+1    0.003968   100.199762    0.206123
+2    0.007937    98.087022    0.233983
+3    0.011905    95.742260    0.260066
+4    0.015873    94.016594    0.268839
+..        ...          ...         ...
+248  0.984127   110.281290    0.293693
+249  0.988095   109.411780    0.285078
+250  0.992063   108.299371    0.279602
+251  0.996032   106.029937    0.288896
+252  1.000000   107.266285    0.284035
+
+[253 rows x 3 columns]</code></pre>
+</div>
+</div>
+<p>To price European options, we need to compute the usual probabilities <span class="math inline">\(\text{prob}^S(S_T&gt;K)\)</span> and <span class="math inline">\(\text{prob}^R(S_T &gt;K)\)</span>. Heston and Nandi <span class="citation" data-cites="HN">(<a href="#ref-HN" role="doc-biblioref">Heston and Nandi 2000</a>)</span> provide a fast method for computing these probabilities in a GARCH (1,1) model.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> Rather than developing this approach, we will show in <span class="quarto-unresolved-ref">?sec-c:introcomputation</span> how to apply Monte-Carlo methods.</p>
+</section>
+<section id="hedging-and-market-completeness" class="level2" data-number="16.5">
+<h2 data-number="16.5" class="anchored" data-anchor-id="hedging-and-market-completeness"><span class="header-section-number">16.5</span> Hedging and Market Completeness</h2>
+<p>The GARCH model is inherently a discrete-time model. If returns have a GARCH structure at one frequency (e.g., monthly), they will not have a GARCH structure at a different frequency (e.g., weekly). Hence, the return period (monthly, weekly, ) is part of the specification of the model. One interpretation of the model is that the dates <span class="math inline">\(t_i\)</span> at which the variance changes are the only dates at which investors can trade. Under this interpretation, it is impossible to perfectly hedge an option: the gross return <span class="math inline">\(S_{t_i}/S_{t_{i-1}}\)</span> over the interval <span class="math inline">\((t_{i-1},t_i)\)</span> is lognormally distributed, so no portfolio of the stock and riskless asset formed at <span class="math inline">\(t_{i-1}\)</span> and held over the interval <span class="math inline">\((t_{i-1},t_i)\)</span> can perfectly replicate the return of an option over the interval. As discussed in <span class="quarto-unresolved-ref">?sec-s:incomplete</span>, we call a market in which some derivatives cannot be perfectly hedged an incomplete market. Thus, the GARCH model is an example of an incomplete market, if investors can only trade at the frequency at which returns have a GARCH structure. However, it is unreasonable to assume that investors can only trade weekly or monthly or even daily.</p>
+<p>Another interpretation of the GARCH model is that investors can trade continuously and the asset has a constant volatility within each period <span class="math inline">\((t_{i-1},t_i)\)</span>. Under this interpretation, the market is complete and options can be delta-hedged. The completeness is a result of the fact that the change <span class="math inline">\(\sigma_{i+1}-\sigma_i\)</span> in the volatility at date <span class="math inline">\(t_i\)</span> (recall that <span class="math inline">\(\sigma_i\)</span> is the volatility over the period <span class="math inline">\((t_{i-1},t_i)\)</span> and <span class="math inline">\(\sigma_{i+1}\)</span> is the volatility over the period <span class="math inline">\((t_{i},t_{i+1})\)</span>) depends only on <span class="math inline">\(\log S_{t_i}\)</span>. Thus, the only random factor in the model that needs to be hedged is, as usual, the underlying asset price. However, this interpretation of the model is also a bit strange. Suppose for example that monthly returns are assumed to have a GARCH structure. Then the model states that the volatility in February will be higher if there is an unusually large return (in absolute value) in January. Suppose there is an unusually large return in the first half of January. Then, intuitively, one would expect the change in the volatility to occur in the second half of January rather than being delayed until February. However, the model specifies that the volatility is constant during each month, hence constant during January in this example.</p>
+</section>
+<section id="section" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="section"></h2>
+<div id="exr-e_mixture" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 16.1</strong></span> The purpose of this exercise is to generate a fat-tailed distribution from a model that is simpler than the GARCH and stochastic volatility models but has somewhat the same flavor. The distribution will be a mixture of normals. Create a python program in which the user can input <span class="math inline">\(S\)</span>, <span class="math inline">\(r\)</span>, <span class="math inline">\(q\)</span>, <span class="math inline">\(T\)</span>, <span class="math inline">\(\sigma_1\)</span> and <span class="math inline">\(\sigma_2\)</span>. Use these inputs to produce a column of 500 simulated <span class="math inline">\(\log S_T\)</span>. In each simulation, define <span class="math inline">\(\log S_T\)</span> as <span class="math display">\[\log S_T = \log S_0 + \left(r-q-\frac{1}{2}\sigma^2\right)T + \sigma \sqrt{T}z\;,\]</span> where <span class="math inline">\(z\)</span> is a standard normal, <span class="math inline">\(\sigma = x\sigma_1 + (1-x)\sigma_2\)</span>, and <span class="math inline">\(x\)</span> is a random variable that equals zero or one with equal probabilities.</p>
+<p>Calculate the mean and standard deviation of the <span class="math inline">\(\log S_T\)</span> and calculate the fraction that lie more than two standard deviations below the mean. If the <span class="math inline">\(\log S_T\)</span> all came from a normal distribution with the same variance, then this fraction should equal <span class="math inline">\(\mathrm{N}(-2) =\)</span> 2.275%. If the fraction is higher, then the distribution is fat tailed. (Of course, the actual fraction would differ from 2.275% in any particular case due to the randomness of the simulation, even if all of the <span class="math inline">\(\log S_T\)</span> came from a normal distribution with the same variance).</p>
+</div>
+<div id="exr-e_GARCH1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 16.2</strong></span> Create a python program prompting the user to input the same inputs as in the <code>simulating_garch</code> function except for the initial volatility and <span class="math inline">\(\theta\)</span>. Simulate 500 paths of a GARCH process and output <span class="math inline">\(\log S_T\)</span> for each simulation (you don’t need to output the entire paths as in the <code>simulating_garch</code> function). Take the initial volatility to be 0.3 and <span class="math inline">\(\theta = 0.09\)</span>. Determine whether the distribution is fat-tailed by computing the fraction of the <span class="math inline">\(\log S_T\)</span> that lie two or more standard deviations below the mean, as in the previous exercise. For what values of <span class="math inline">\(\kappa\)</span> and <span class="math inline">\(\lambda\)</span> does the distribution appear to be especially fat-tailed?</p>
+</div>
+<div class="callout callout-style-default callout-Exercise no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Repeat <a href="Chapter_Jumps.html#exr-e_GARCH1" class="quarto-xref">Exercise&nbsp;<span>18.2</span></a> for the Heston stochastic volatility model, describing the values of <span class="math inline">\(\kappa\)</span>, <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\rho\)</span> that appear to generate especially fat-tailed distributions.</p>
+</div>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Bollerslev" class="csl-entry" role="listitem">
+Bollerslev, T. 1986. <span>“Generalized Autoregressive Conditional Heteroskedasticity.”</span> <em>Journal of Econometrics</em> 31: 307–27.
+</div>
+<div id="ref-HN" class="csl-entry" role="listitem">
+Heston, S., and S. Nandi. 2000. <span>“A Closed-Form GARCH Option Valuation Model.”</span> <em>Review of Financial Studies</em> 13: 585–625.
+</div>
+<div id="ref-MX" class="csl-entry" role="listitem">
+Mina, J., and J. Xiao. 2001. <em>Return to RiskMetrics</em>. The Evolution of a Standard.
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The variance of <span class="math inline">\(\bar{x} = (1/N)(x_1 + \cdots + x_N)\)</span> is, by independence of the <span class="math inline">\(x_i\)</span>, equal to <span class="math inline">\((1/N)^2(\mathrm{var}{x_1} + \cdots + \mathrm{var}{x_N})\)</span>, and, because the <span class="math inline">\(x_i\)</span> all have the same variance <span class="math inline">\(\sigma^2\)</span>, this is equal to <span class="math inline">\((1/N)^2 \times N\sigma^2 = \sigma^2/N\)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>See Mina and Xiao <span class="citation" data-cites="MX">(<a href="#ref-MX" role="doc-biblioref">Mina and Xiao 2001</a>)</span>, available online at www.riskmetrics.com<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>GARCH is the acronym for Generalized Autoregressive Conditional Heteroskedastic. GARCH(1,1) means that there is only one past <span class="math inline">\(y\)</span> (no <span class="math inline">\(y_{i-1}\)</span>, <span class="math inline">\(y_{i-2}\)</span>, etc.) and one past <span class="math inline">\(\sigma\)</span> (no <span class="math inline">\(\sigma_{i-1}\)</span>, <span class="math inline">\(\sigma_{i-2}\)</span>, etc.) in <a href="#eq-garch" class="quarto-xref">Equation&nbsp;<span>16.9</span></a>. See Bollerslev <span class="citation" data-cites="Bollerslev">(<a href="#ref-Bollerslev" role="doc-biblioref">Bollerslev 1986</a>)</span>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Conversely, the probability of returns very near the mean must also be higher than under a normal distribution with the same standard deviation—a fat-tailed distribution must also have a relatively narrow peak.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Actually, a slightly more general model is considered in <span class="citation" data-cites="HN">(<a href="#ref-HN" role="doc-biblioref">Heston and Nandi 2000</a>)</span>, in which large negative returns lead to a greater increase in volatility than do large positive returns. This accommodates the empirically observed negative correlation between stock returns and volatility.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Chapter_Exotics.html" class="pagination-link" aria-label="Other Exotics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Other Exotics</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./Chapter_StochasticVol.html" class="pagination-link" aria-label="Stochastic Volatility">
+        <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Stochastic Volatility</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-code.git/blob/main/Chapter_GARCH.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

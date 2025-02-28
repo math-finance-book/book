@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Ito Processes and Ito’s Formula – Pricing and Hedging Derivative Securities: Theory and Methods</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./Chapter_GBM.html" rel="next">
+<link href="./Chapter_Brownian.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-933f24a0c1e0be8a62c2179459603458.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-217607b4065b1a3128a07792af3f8e33.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+<script type="text/javascript">
+
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+
+if (typeof require !== 'undefined') {
+
+require.undef("plotly");
+
+requirejs.config({
+
+    paths: {
+
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+
+    }
+
+});
+
+require(['plotly'], function(Plotly) {
+
+    window._Plotly = Plotly;
+
+});
+
+}
+
+</script>
+
+
+
+<style>
+div.callout-Exercise.callout {
+  border-left-color: #ede29d;
+}
+div.callout-Exercise.callout-style-default > .callout-header {
+  background-color: rgba(237, 226, 157, 0.13);
+}
+div.callout-Exercise .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Exercise.callout-style-default .callout-icon::before, div.callout-Exercise.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Principle.callout {
+  border-left-color: #e3aab2;
+}
+div.callout-Principle.callout-style-default > .callout-header {
+  background-color: rgba(227, 170, 178, 0.13);
+}
+div.callout-Principle .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Principle.callout-style-default .callout-icon::before, div.callout-Principle.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-WritingToDo.callout {
+  border-left-color: #a7f2d8;
+}
+div.callout-WritingToDo.callout-style-default > .callout-header {
+  background-color: rgba(167, 242, 216, 0.13);
+}
+div.callout-WritingToDo .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-WritingToDo.callout-style-default .callout-icon::before, div.callout-WritingToDo.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-InProgress.callout {
+  border-left-color: #eaacf2;
+}
+div.callout-InProgress.callout-style-default > .callout-header {
+  background-color: rgba(234, 172, 242, 0.13);
+}
+div.callout-InProgress .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-InProgress.callout-style-default .callout-icon::before, div.callout-InProgress.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Done.callout {
+  border-left-color: #e8cc97;
+}
+div.callout-Done.callout-style-default > .callout-header {
+  background-color: rgba(232, 204, 151, 0.13);
+}
+div.callout-Done .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Done.callout-style-default .callout-icon::before, div.callout-Done.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Extra.callout {
+  border-left-color: #d5deed;
+}
+div.callout-Extra.callout-style-default > .callout-header {
+  background-color: rgba(213, 222, 237, 0.13);
+}
+div.callout-Extra .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-CodeToDo.callout {
+  border-left-color: #eb4034;
+}
+div.callout-CodeToDo.callout-style-default > .callout-header {
+  background-color: rgba(235, 64, 52, 0.13);
+}
+div.callout-CodeToDo .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-CodeToDo.callout-style-default .callout-icon::before, div.callout-CodeToDo.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Example.callout {
+  border-left-color: #e8cc97;
+}
+div.callout-Example.callout-style-default > .callout-header {
+  background-color: rgba(232, 204, 151, 0.13);
+}
+div.callout-Example .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Example.callout-style-default .callout-icon::before, div.callout-Example.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+div.callout-Rule.callout {
+  border-left-color: #a1bced;
+}
+div.callout-Rule.callout-style-default > .callout-header {
+  background-color: rgba(161, 188, 237, 0.13);
+}
+div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="nil" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>');
+}
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_Intro_Binomial_Tree.html">Part II: Mathematical Tools</a></li><li class="breadcrumb-item"><a href="./Chapter_Ito.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Ito Processes and Ito’s Formula</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Pricing and Hedging Derivative Securities: Theory and Methods</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/math-finance-book/book-code.git" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I: Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Options.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Options</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Futures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Futures and Swaps</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II: Mathematical Tools</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Intro_Binomial_Tree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Brownian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Brownian Motion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Ito.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Ito Processes and Ito’s Formula</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_GBM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III: Arbitrage Pricing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Arbitrage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Deltas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Delta Hedges, Replication, and PDEs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_DigitalsMeasures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Digitals and Measures</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV: Black-Scholes and Extensions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_BlackScholes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Black-Scholes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Americans.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">American Options</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">FX and Quantos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Merton.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Merton, Black, and Margrabe</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Asians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Asians, Baskets, and Spreads</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Exotics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Other Exotics</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part V: Alternative Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_GARCH.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">GARCH Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_StochasticVol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Stochastic Volatility</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Jumps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Jumps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_VarianceSwaps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Variance Swaps</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VI: Numerical Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_MonteCarlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Monte Carlo Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Binomial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Binomial and Trinomial Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_PDEs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">PDE Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Fourier.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Fourier Transforms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_MachineLearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VII: Fixed Income</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FixedIncome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Fixed-Income Concepts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_FixedIncomeDerivatives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Fixed-Income Derivatives</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Vasicek.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Vasicek and Extensions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chapter_Survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Term Structure Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendix</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./AppendixA.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Miscellaneous Facts about Continuous-Time Models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_Intro_Binomial_Tree.html">Part II: Mathematical Tools</a></li><li class="breadcrumb-item"><a href="./Chapter_Ito.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Ito Processes and Ito’s Formula</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-c:ito" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Ito Processes and Ito’s Formula</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>We use the changes of a Brownian motion to model randomness. We build other stochastic processes using those changes. The general idea is <span class="math display">\[\text{change} = \text{mean} + \text{std dev} \times \text{change in Brownian motion}\,.\]</span> The mathematical foundations for our construction were created by K. Ito. The key concepts are the Ito integral, Ito processes, and Ito’s formula (also called Ito’s lemma). Using these foundations, we can build quite general processes from changes in Brownian motions, including processes with non-normal distributions.</p>
+<section id="sec-s:discreteito" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="sec-s:discreteito"><span class="header-section-number">5.1</span> Examples</h2>
+<p>We begin with some simple examples. Consider a discrete partition of a time interval: <span class="math display">\[0=t_0 &lt; t_1&lt; \cdots &lt; t_{n-1} &lt; t_n=t\]</span> with equally spaced times. Let <span class="math inline">\(\Delta t\)</span> denote the difference between successive times.</p>
+<p>First, let’s drop the randomness entirely. Consider the equation <span id="eq-ito_discrete_1"><span class="math display">\[X_{t_i} -  X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t \qquad(5.1)\]</span></span> for a constant <span class="math inline">\(\mu\)</span>. Thus, we have “change <span class="math inline">\(\,=\,\)</span> mean,” where the mean is proportional to the previous value with proportionality factor <span class="math inline">\(\mu \Delta t\)</span>. <a href="#fig-discrete-interest" class="quarto-xref">Figure&nbsp;<span>5.1</span></a> presents a plot of <span class="math inline">\(X\)</span>, for particular values of <span class="math inline">\(X_0\)</span>, <span class="math inline">\(\mu\)</span>, and <span class="math inline">\(\Delta t\)</span>.</p>
+<p>If we increase <span class="math inline">\(n\)</span>, making <span class="math inline">\(\Delta t\)</span> smaller, then <span class="math inline">\(X\)</span> converges to the solution of the ordinary differential equation <span id="eq-ito_discrete_2"><span class="math display">\[\,\mathrm{d}X_t = \mu X_t\,\mathrm{d}t\,. \qquad(5.2)\]</span></span> <a href="#eq-ito_discrete_2" class="quarto-xref">Equation&nbsp;<span>5.2</span></a> has a known solution, which is <span id="eq-ito_discrete_3"><span class="math display">\[X_t = X_0 \mathrm{e}^{\mu t}\,. \qquad(5.3)\]</span></span> To verify this, we only need to differentiate <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a>: <span class="math display">\[\frac{\,\mathrm{d}X_t}{\,\mathrm{d}t} = \mu X_0 \mathrm{e}^{\mu t} = \mu X_t\,.\]</span> The function presented in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a> is also shown in <a href="#fig-discrete-interest" class="quarto-xref">Figure&nbsp;<span>5.1</span></a>.</p>
+<div class="callout callout-style-default callout-Extra no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Theory Extra
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>To see how one might guess that <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a> is the solution of <a href="#eq-ito_discrete_2" class="quarto-xref">Equation&nbsp;<span>5.2</span></a>, we can examine the logarithm of <span class="math inline">\(X\)</span>. A general rule gives us <span class="math inline">\(\,\mathrm{d}\log X = \,\mathrm{d}X / X\)</span>, so <span class="math inline">\(\,\mathrm{d}\log X = \mu \,\mathrm{d}t\)</span>. We can integrate both sides of this to obtain <span class="math inline">\(\log X_t - \log X_0 = \mu t\)</span>. Now, rearranging and exponentiating gives <span class="math inline">\(X_t = X_0\mathrm{e}^{\mu t}\)</span>. Later, we follow similar steps to see that <a href="#eq-ito_discrete_6" class="quarto-xref">Equation&nbsp;<span>5.6</span></a> is the solution of <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a>.</p>
+</div>
+</div>
+</div>
+<div id="cell-fig-discrete-interest" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span>   <span class="co"># number of subdivisions</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">1</span>     <span class="co"># last date</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Deltat <span class="op">=</span> t<span class="op">/</span>n</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.ones(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    X1[i] <span class="op">=</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> mu <span class="op">*</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> Deltat</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.exp(mu <span class="op">*</span> np.arange(<span class="dv">0</span>, t<span class="op">+</span>Deltat, Deltat))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    go.Scatter(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>np.arange(<span class="dv">0</span>, t<span class="op">+</span>Deltat, Deltat), </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>X1, </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'markers'</span>, </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">'Difference Eq.'</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        hovertemplate<span class="op">=</span><span class="st">'t = %</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B = %</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    go.Scatter(</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>np.arange(<span class="dv">0</span>, t<span class="op">+</span>Deltat, Deltat), </span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>X2, </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'lines'</span>, </span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">'Differential Eq.'</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        hovertemplate<span class="op">=</span><span class="st">'t = %</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B = %</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Time'</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'plotly_white'</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">300</span>,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        xanchor<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        yanchor<span class="op">=</span><span class="st">"top"</span>,</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-discrete-interest" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-discrete-interest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.1: The functions <span class="math inline">\(X\)</span> satisfying <a href="#eq-ito_discrete_1" class="quarto-xref">Equation&nbsp;<span>5.1</span></a> (difference equation) and <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a> (differential equation) for X0 = 1, mu = 1, and Delta t = 0.1.
+</figcaption>
+<div aria-describedby="fig-discrete-interest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>                            <div id="ceebbdc9-4026-446e-8a74-009e83763b4b" class="plotly-graph-div" style="height:300px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("ceebbdc9-4026-446e-8a74-009e83763b4b")) {                    Plotly.newPlot(                        "ceebbdc9-4026-446e-8a74-009e83763b4b",                        [{"hovertemplate":"t = %{x:.2f}\u003cbr\u003eB = %{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","mode":"markers","name":"Difference Eq.","x":[0.0,0.1,0.2,0.30000000000000004,0.4,0.5,0.6000000000000001,0.7000000000000001,0.8,0.9,1.0],"y":[1.0,1.1,1.2100000000000002,1.3310000000000002,1.4641000000000002,1.61051,1.7715610000000002,1.9487171,2.1435888100000002,2.357947691,2.5937424601],"type":"scatter"},{"hovertemplate":"t = %{x:.2f}\u003cbr\u003eB = %{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","mode":"lines","name":"Differential Eq.","x":[0.0,0.1,0.2,0.30000000000000004,0.4,0.5,0.6000000000000001,0.7000000000000001,0.8,0.9,1.0],"y":[1.0,1.1051709180756477,1.2214027581601699,1.3498588075760032,1.4918246976412703,1.6487212707001282,1.822118800390509,2.0137527074704766,2.225540928492468,2.45960311115695,2.718281828459045],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"legend":{"x":0.1,"y":1,"xanchor":"left","yanchor":"top"},"showlegend":true,"xaxis":{"title":{"text":"Time"}},"yaxis":{"title":{"text":""}},"height":300},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('ceebbdc9-4026-446e-8a74-009e83763b4b');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</figure>
+</div>
+</div>
+<p>Now, let’s include randomness. Let’s make the noise proportional to the value of <span class="math inline">\(X\)</span>, So, let <span class="math inline">\(B\)</span> be a standard Brownian motion and consider the equation <span id="eq-ito_discrete_4"><span class="math display">\[X_{t_i} - X_{t_{i-1}} = \mu X_{t_{i-1}}\Delta t + \sigma X_{t_{i-1}} \Delta B_{t_i} \qquad(5.4)\]</span></span> where <span class="math inline">\(\sigma\)</span> is another constant, and <span class="math inline">\(\Delta B_{t_i} = B_{t_i} - B_{t_{i-1}}\)</span>. A solution <span class="math inline">\(X\)</span> of this equation has random paths, due to the random noise <span class="math inline">\(\Delta B_{t_i}\)</span>. An example of a path is shown in <a href="#fig-discrete-random" class="quarto-xref">Figure&nbsp;<span>5.2</span></a>. Ito showed how we can take the limit of this equation as we make <span class="math inline">\(\Delta t\)</span> smaller and make sense of the equation <span id="eq-ito_discrete_5"><span class="math display">\[
+\,\mathrm{d}X_t = \mu X_t\,\mathrm{d}t + \sigma X_t \,\mathrm{d}B_t\,.
+\qquad(5.5)\]</span></span> The solution <span class="math inline">\(X\)</span> of <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a> is <span id="eq-ito_discrete_6"><span class="math display">\[X_t = \mathrm{e}^{(\mu  - \sigma^2/2)t + \sigma B_t}\,. \qquad(5.6)\]</span></span> An approximate path of this process <span class="math inline">\(X\)</span> is also shown in <a href="#fig-discrete-random" class="quarto-xref">Figure&nbsp;<span>5.2</span></a>. It is generated by taking <span class="math inline">\(\Delta t\)</span> very small, just as we generated approximate paths of Brownian motions in <a href="Chapter_Brownian.html" class="quarto-xref"><span>Chapter 4</span></a>. We can show that <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_6" class="quarto-xref">Equation&nbsp;<span>5.6</span></a> satisfies <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a> by differentiating, as we showed that <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a> satisfies <a href="#eq-ito_discrete_2" class="quarto-xref">Equation&nbsp;<span>5.2</span></a>. However, we first need to explain Ito’s formula, which is a formula for differentiating functions of Brownian motions and, more generally, functions of Ito processes.</p>
+<div id="cell-fig-discrete-random" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Brownian path</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span>   </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t<span class="op">/</span>n</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dB <span class="op">=</span> np.random.normal(scale <span class="op">=</span> np.sqrt(dt), size<span class="op">=</span>n)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.zeros(n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>B[<span class="dv">1</span>:] <span class="op">=</span> np.cumsum(dB)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Brownian path with discrete steps</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>n_discrete <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Deltat <span class="op">=</span> t<span class="op">/</span>n_discrete</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>B_discrete <span class="op">=</span> B[::<span class="bu">int</span>(n<span class="op">/</span>n_discrete)]</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>DeltaB <span class="op">=</span> np.diff(B_discrete)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># X in discrete-time </span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.ones(n_discrete<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n_discrete<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    X1[i] <span class="op">=</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> mu <span class="op">*</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> Deltat <span class="op">+</span> sigma <span class="op">*</span> X1[i<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> DeltaB[i<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Continuous-time</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.exp((mu <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> np.arange(<span class="dv">0</span>, t<span class="op">+</span>dt, dt) <span class="op">+</span> sigma <span class="op">*</span> B)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    go.Scatter(</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>np.arange(<span class="dv">0</span>, t<span class="op">+</span>Deltat, Deltat), </span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>X1, </span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'markers'</span>, </span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">'Difference Eq.'</span>,</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        hovertemplate<span class="op">=</span><span class="st">'t = %</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B = %</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    go.Scatter(</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>np.arange(<span class="dv">0</span>, t<span class="op">+</span>dt, dt), </span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>X2, </span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'lines'</span>, </span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">'Differential Eq.'</span>,</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        hovertemplate<span class="op">=</span><span class="st">'t = %</span><span class="sc">{x:.2f}</span><span class="st">&lt;br&gt;B = %</span><span class="sc">{y:.2f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>  <span class="co"># </span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Time'</span>,</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'plotly_white'</span>,</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">300</span>,</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        xanchor<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        yanchor<span class="op">=</span><span class="st">"top"</span>,</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-discrete-random" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-discrete-random-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.2: Paths of the processes satisfying <a href="#eq-ito_discrete_4" class="quarto-xref">Equation&nbsp;<span>5.4</span></a> (difference equation) and <a href="#eq-ito_discrete_6" class="quarto-xref">Equation&nbsp;<span>5.6</span></a> (differential equation) for X0 = 1, mu = 1, Delta t = 0.1, and sigma = 1.
+</figcaption>
+<div aria-describedby="fig-discrete-random-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>                            <div id="db12937d-7db5-4869-a6cf-61adacd23f75" class="plotly-graph-div" style="height:300px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("db12937d-7db5-4869-a6cf-61adacd23f75")) {                    Plotly.newPlot(                        "db12937d-7db5-4869-a6cf-61adacd23f75",                        [{"hovertemplate":"t = %{x:.2f}\u003cbr\u003eB = %{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","mode":"markers","name":"Difference Eq.","x":[0.0,0.1,0.2,0.30000000000000004,0.4,0.5,0.6000000000000001,0.7000000000000001,0.8,0.9,1.0],"y":[1.0,1.4820957224838254,1.093053728713758,1.1547379158460769,1.4174194944906073,1.7862715686231145,1.900289877092954,2.113832642798294,2.3967132461865406,1.6444189825674072,1.0816716371875992],"type":"scatter"},{"hovertemplate":"t = %{x:.2f}\u003cbr\u003eB = %{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","mode":"lines","name":"Differential Eq.","x":[0.0,0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009000000000000001,0.01,0.011,0.012,0.013000000000000001,0.014,0.015,0.016,0.017,0.018000000000000002,0.019,0.02,0.021,0.022,0.023,0.024,0.025,0.026000000000000002,0.027,0.028,0.029,0.03,0.031,0.032,0.033,0.034,0.035,0.036000000000000004,0.037,0.038,0.039,0.04,0.041,0.042,0.043000000000000003,0.044,0.045,0.046,0.047,0.048,0.049,0.05,0.051000000000000004,0.052000000000000005,0.053,0.054,0.055,0.056,0.057,0.058,0.059000000000000004,0.06,0.061,0.062,0.063,0.064,0.065,0.066,0.067,0.068,0.069,0.07,0.07100000000000001,0.07200000000000001,0.073,0.074,0.075,0.076,0.077,0.078,0.079,0.08,0.081,0.082,0.083,0.084,0.085,0.08600000000000001,0.08700000000000001,0.088,0.089,0.09,0.091,0.092,0.093,0.094,0.095,0.096,0.097,0.098,0.099,0.1,0.101,0.10200000000000001,0.10300000000000001,0.10400000000000001,0.105,0.106,0.107,0.108,0.109,0.11,0.111,0.112,0.113,0.114,0.115,0.116,0.117,0.11800000000000001,0.11900000000000001,0.12,0.121,0.122,0.123,0.124,0.125,0.126,0.127,0.128,0.129,0.13,0.131,0.132,0.133,0.134,0.135,0.136,0.137,0.138,0.139,0.14,0.14100000000000001,0.14200000000000002,0.14300000000000002,0.14400000000000002,0.145,0.146,0.147,0.148,0.149,0.15,0.151,0.152,0.153,0.154,0.155,0.156,0.157,0.158,0.159,0.16,0.161,0.162,0.163,0.164,0.165,0.166,0.167,0.168,0.169,0.17,0.171,0.17200000000000001,0.17300000000000001,0.17400000000000002,0.17500000000000002,0.176,0.177,0.178,0.179,0.18,0.181,0.182,0.183,0.184,0.185,0.186,0.187,0.188,0.189,0.19,0.191,0.192,0.193,0.194,0.195,0.196,0.197,0.198,0.199,0.2,0.201,0.202,0.203,0.20400000000000001,0.20500000000000002,0.20600000000000002,0.20700000000000002,0.20800000000000002,0.209,0.21,0.211,0.212,0.213,0.214,0.215,0.216,0.217,0.218,0.219,0.22,0.221,0.222,0.223,0.224,0.225,0.226,0.227,0.228,0.229,0.23,0.231,0.232,0.233,0.234,0.23500000000000001,0.23600000000000002,0.23700000000000002,0.23800000000000002,0.23900000000000002,0.24,0.241,0.242,0.243,0.244,0.245,0.246,0.247,0.248,0.249,0.25,0.251,0.252,0.253,0.254,0.255,0.256,0.257,0.258,0.259,0.26,0.261,0.262,0.263,0.264,0.265,0.266,0.267,0.268,0.269,0.27,0.271,0.272,0.273,0.274,0.275,0.276,0.277,0.278,0.279,0.28,0.281,0.28200000000000003,0.28300000000000003,0.28400000000000003,0.28500000000000003,0.28600000000000003,0.28700000000000003,0.28800000000000003,0.289,0.29,0.291,0.292,0.293,0.294,0.295,0.296,0.297,0.298,0.299,0.3,0.301,0.302,0.303,0.304,0.305,0.306,0.307,0.308,0.309,0.31,0.311,0.312,0.313,0.314,0.315,0.316,0.317,0.318,0.319,0.32,0.321,0.322,0.323,0.324,0.325,0.326,0.327,0.328,0.329,0.33,0.331,0.332,0.333,0.334,0.335,0.336,0.337,0.338,0.339,0.34,0.341,0.342,0.343,0.34400000000000003,0.34500000000000003,0.34600000000000003,0.34700000000000003,0.34800000000000003,0.34900000000000003,0.35000000000000003,0.35100000000000003,0.352,0.353,0.354,0.355,0.356,0.357,0.358,0.359,0.36,0.361,0.362,0.363,0.364,0.365,0.366,0.367,0.368,0.369,0.37,0.371,0.372,0.373,0.374,0.375,0.376,0.377,0.378,0.379,0.38,0.381,0.382,0.383,0.384,0.385,0.386,0.387,0.388,0.389,0.39,0.391,0.392,0.393,0.394,0.395,0.396,0.397,0.398,0.399,0.4,0.401,0.402,0.403,0.404,0.405,0.406,0.40700000000000003,0.40800000000000003,0.40900000000000003,0.41000000000000003,0.41100000000000003,0.41200000000000003,0.41300000000000003,0.41400000000000003,0.41500000000000004,0.41600000000000004,0.417,0.418,0.419,0.42,0.421,0.422,0.423,0.424,0.425,0.426,0.427,0.428,0.429,0.43,0.431,0.432,0.433,0.434,0.435,0.436,0.437,0.438,0.439,0.44,0.441,0.442,0.443,0.444,0.445,0.446,0.447,0.448,0.449,0.45,0.451,0.452,0.453,0.454,0.455,0.456,0.457,0.458,0.459,0.46,0.461,0.462,0.463,0.464,0.465,0.466,0.467,0.468,0.46900000000000003,0.47000000000000003,0.47100000000000003,0.47200000000000003,0.47300000000000003,0.47400000000000003,0.47500000000000003,0.47600000000000003,0.47700000000000004,0.47800000000000004,0.47900000000000004,0.48,0.481,0.482,0.483,0.484,0.485,0.486,0.487,0.488,0.489,0.49,0.491,0.492,0.493,0.494,0.495,0.496,0.497,0.498,0.499,0.5,0.501,0.502,0.503,0.504,0.505,0.506,0.507,0.508,0.509,0.51,0.511,0.512,0.513,0.514,0.515,0.516,0.517,0.518,0.519,0.52,0.521,0.522,0.523,0.524,0.525,0.526,0.527,0.528,0.529,0.53,0.531,0.532,0.533,0.534,0.535,0.536,0.537,0.538,0.539,0.54,0.541,0.542,0.543,0.544,0.545,0.546,0.547,0.548,0.549,0.55,0.551,0.552,0.553,0.554,0.555,0.556,0.557,0.558,0.559,0.56,0.561,0.562,0.5630000000000001,0.5640000000000001,0.5650000000000001,0.5660000000000001,0.5670000000000001,0.5680000000000001,0.5690000000000001,0.5700000000000001,0.5710000000000001,0.5720000000000001,0.5730000000000001,0.5740000000000001,0.5750000000000001,0.5760000000000001,0.577,0.578,0.579,0.58,0.581,0.582,0.583,0.584,0.585,0.586,0.587,0.588,0.589,0.59,0.591,0.592,0.593,0.594,0.595,0.596,0.597,0.598,0.599,0.6,0.601,0.602,0.603,0.604,0.605,0.606,0.607,0.608,0.609,0.61,0.611,0.612,0.613,0.614,0.615,0.616,0.617,0.618,0.619,0.62,0.621,0.622,0.623,0.624,0.625,0.626,0.627,0.628,0.629,0.63,0.631,0.632,0.633,0.634,0.635,0.636,0.637,0.638,0.639,0.64,0.641,0.642,0.643,0.644,0.645,0.646,0.647,0.648,0.649,0.65,0.651,0.652,0.653,0.654,0.655,0.656,0.657,0.658,0.659,0.66,0.661,0.662,0.663,0.664,0.665,0.666,0.667,0.668,0.669,0.67,0.671,0.672,0.673,0.674,0.675,0.676,0.677,0.678,0.679,0.68,0.681,0.682,0.683,0.684,0.685,0.686,0.687,0.6880000000000001,0.6890000000000001,0.6900000000000001,0.6910000000000001,0.6920000000000001,0.6930000000000001,0.6940000000000001,0.6950000000000001,0.6960000000000001,0.6970000000000001,0.6980000000000001,0.6990000000000001,0.7000000000000001,0.7010000000000001,0.7020000000000001,0.7030000000000001,0.704,0.705,0.706,0.707,0.708,0.709,0.71,0.711,0.712,0.713,0.714,0.715,0.716,0.717,0.718,0.719,0.72,0.721,0.722,0.723,0.724,0.725,0.726,0.727,0.728,0.729,0.73,0.731,0.732,0.733,0.734,0.735,0.736,0.737,0.738,0.739,0.74,0.741,0.742,0.743,0.744,0.745,0.746,0.747,0.748,0.749,0.75,0.751,0.752,0.753,0.754,0.755,0.756,0.757,0.758,0.759,0.76,0.761,0.762,0.763,0.764,0.765,0.766,0.767,0.768,0.769,0.77,0.771,0.772,0.773,0.774,0.775,0.776,0.777,0.778,0.779,0.78,0.781,0.782,0.783,0.784,0.785,0.786,0.787,0.788,0.789,0.79,0.791,0.792,0.793,0.794,0.795,0.796,0.797,0.798,0.799,0.8,0.801,0.802,0.803,0.804,0.805,0.806,0.807,0.808,0.809,0.81,0.811,0.812,0.8130000000000001,0.8140000000000001,0.8150000000000001,0.8160000000000001,0.8170000000000001,0.8180000000000001,0.8190000000000001,0.8200000000000001,0.8210000000000001,0.8220000000000001,0.8230000000000001,0.8240000000000001,0.8250000000000001,0.8260000000000001,0.8270000000000001,0.8280000000000001,0.8290000000000001,0.8300000000000001,0.8310000000000001,0.8320000000000001,0.833,0.834,0.835,0.836,0.837,0.838,0.839,0.84,0.841,0.842,0.843,0.844,0.845,0.846,0.847,0.848,0.849,0.85,0.851,0.852,0.853,0.854,0.855,0.856,0.857,0.858,0.859,0.86,0.861,0.862,0.863,0.864,0.865,0.866,0.867,0.868,0.869,0.87,0.871,0.872,0.873,0.874,0.875,0.876,0.877,0.878,0.879,0.88,0.881,0.882,0.883,0.884,0.885,0.886,0.887,0.888,0.889,0.89,0.891,0.892,0.893,0.894,0.895,0.896,0.897,0.898,0.899,0.9,0.901,0.902,0.903,0.904,0.905,0.906,0.907,0.908,0.909,0.91,0.911,0.912,0.913,0.914,0.915,0.916,0.917,0.918,0.919,0.92,0.921,0.922,0.923,0.924,0.925,0.926,0.927,0.928,0.929,0.93,0.931,0.932,0.933,0.934,0.935,0.936,0.937,0.9380000000000001,0.9390000000000001,0.9400000000000001,0.9410000000000001,0.9420000000000001,0.9430000000000001,0.9440000000000001,0.9450000000000001,0.9460000000000001,0.9470000000000001,0.9480000000000001,0.9490000000000001,0.9500000000000001,0.9510000000000001,0.9520000000000001,0.9530000000000001,0.9540000000000001,0.9550000000000001,0.9560000000000001,0.9570000000000001,0.9580000000000001,0.9590000000000001,0.96,0.961,0.962,0.963,0.964,0.965,0.966,0.967,0.968,0.969,0.97,0.971,0.972,0.973,0.974,0.975,0.976,0.977,0.978,0.979,0.98,0.981,0.982,0.983,0.984,0.985,0.986,0.987,0.988,0.989,0.99,0.991,0.992,0.993,0.994,0.995,0.996,0.997,0.998,0.999,1.0],"y":[1.0,1.007138696414498,1.0455234619858185,1.0661892790006022,1.060300028498329,1.003028188516923,0.9992082447511951,0.980088987166695,0.9895928294376084,1.0040138563068275,1.0259033215836386,1.0378092649673691,1.0579851038810848,1.1015610066731694,1.0527095339859467,1.0378432714018238,1.0692863454728376,1.101989659830437,1.063328337703407,1.042898514361523,0.9991198778235243,1.045378724284543,1.0653873418201905,1.0546388433255425,1.0223870645760145,0.9841438144192415,1.0363804399619072,1.0739972404951978,1.0658612479785157,1.1034091931994496,1.0978039139872944,1.104416670389994,1.1278223122598132,1.139064988958006,1.1221256644878794,1.129910893490977,1.1389785240976076,1.1636336429330234,1.179884885799686,1.2387934939180179,1.3183058836406256,1.35156427719615,1.3735587753895597,1.3848960542341446,1.388013699752252,1.3608832375372115,1.3215762646531628,1.3274662974814977,1.2888834517592718,1.324397720628048,1.3089082442363442,1.3017892603296646,1.27402362381911,1.2416706055095443,1.2175277181493687,1.1722055022679145,1.1502329946167436,1.193486905629636,1.1990794784842902,1.1885806578490514,1.2704535118265146,1.3095653997622834,1.391853929658948,1.4205839870804684,1.3684259452503198,1.3758942176535862,1.3329932919200922,1.3852725962528232,1.334233872776213,1.3524215433358726,1.3184381605693765,1.376994316513372,1.4016365037671876,1.4168754363522842,1.5003124446460607,1.5445770265538825,1.5934546976495212,1.5395244591630646,1.5017452879624063,1.4396457071562125,1.4299925577680426,1.4132161706637587,1.4454625194550956,1.4514594317512817,1.4347614015597212,1.4122524415523967,1.3544582398507123,1.382140400690355,1.418528908952182,1.4089797324643798,1.4047512411989118,1.440143393857806,1.442109781886281,1.4042409093885517,1.4275513271762603,1.3911470622855047,1.3720665452129148,1.4279505146969371,1.4765626580979976,1.5127688870860891,1.5404825669213853,1.4850589550879811,1.4285234807634728,1.3245223856307056,1.29403065290025,1.3045843184658306,1.33777469014275,1.3861082998310426,1.406701792141659,1.3981752265301877,1.3887767928527708,1.3357407357025772,1.2807746481977151,1.2828622205886375,1.2979515916678879,1.2716906701668844,1.3132180713004724,1.276397152262174,1.332343928706015,1.282168640717009,1.2859952229164198,1.273184083357574,1.2566689884858664,1.1962519533458893,1.2144787117256908,1.1697784154225124,1.1619406827250687,1.1684971335178334,1.187401771462007,1.1776770314029337,1.1929899144895535,1.1684277174659865,1.1365230552185361,1.1308414382866785,1.1588906776642818,1.1823727736430987,1.1571273360066123,1.1828711192647765,1.1729873322373585,1.1811105768104937,1.1056285540425563,1.1065438731516537,1.1135860967480828,1.085222610670215,1.1199856981697809,1.1702403193673065,1.2084477504733853,1.2349844178647393,1.2536332456965094,1.231539743717712,1.2776663926176355,1.3856182281608647,1.3653443569461172,1.2914085355354459,1.333317502887711,1.4022056643345642,1.3973674993897915,1.4273369870320907,1.448707444761145,1.4038096642945028,1.317275134747406,1.3476901927026717,1.3677417572170885,1.399231509296795,1.4513066596245212,1.3862812954306538,1.3908994889038162,1.3463523954018424,1.3406324906222928,1.3340214439983251,1.2892483129291479,1.3240125152465825,1.3982714229139805,1.422205840508116,1.4080318616469139,1.402991268775759,1.4025975648994473,1.4602917320752458,1.4081481690374942,1.412040465991415,1.3530217549011119,1.3548604913612152,1.3829800650024113,1.2995941776857238,1.2877082703921645,1.2715667701974946,1.3577072587411754,1.3468312778056106,1.314698931797796,1.2511326722585718,1.170822597309832,1.2467767243174712,1.2967363095121094,1.2083266728863602,1.1663998151941273,1.0935475498592784,1.0514424619105283,1.04661860383333,1.0664345488645905,1.10206761836287,1.127047307024883,1.1605046343324295,1.139417201933615,1.1620559993273571,1.1347687994317834,1.1610926934319503,1.1975792644739733,1.151184875229807,1.1596298939242407,1.1370261845252194,1.1503640994509994,1.1815383631002878,1.1741215049756033,1.2031180463665354,1.1586280473928074,1.120360789677778,1.0769154571863273,1.0993959244303602,1.0891513438980636,1.0995576359316253,1.1355024046480255,1.1838140512667188,1.2362787474895462,1.2215357337513426,1.2492181372327409,1.2181429632936986,1.1429910894135384,1.1184877517256007,1.1325327555523275,1.0765831480111023,1.0192726765073092,1.0523383833524436,1.0471885887838783,1.0377509884099387,1.0364706746652528,0.996687668071006,0.9923929593129106,1.022525152973407,1.0339204906541393,0.9540087927350164,0.9887591301583171,0.9920379943423261,0.9583255602669802,0.9610096131440145,0.9473922069421347,0.9231189296116278,0.8550727236343102,0.8280764092036762,0.8531859191745021,0.8500356402750168,0.8245132201927233,0.8655707534041619,0.8531556445022948,0.9122122489086613,0.9089258769942828,0.8777471099789932,0.8855382144677763,0.9352793022663932,0.8783660869492241,0.84654150255229,0.8641561018239022,0.8723381058538229,0.8523085787064328,0.8656515271031056,0.8484631693123768,0.8702743855337308,0.8795640465375191,0.9254557385134736,0.9592057898064974,0.9442781923677959,0.9399591172482111,0.9271357889161876,0.9321071979117859,0.9691136447125469,1.0121661066321677,1.0379074069464524,1.0727592198327927,1.0625670819979285,1.067675163910681,1.0351321149043367,1.0296069848556664,1.049381619375713,1.0421706274865596,1.0561480650868293,1.0781667683523086,1.0815672123100317,1.0373315407820307,1.0724902324176229,1.0848549433620265,1.0971071058407573,1.0953362413302143,1.1537733661386682,1.170464402620225,1.212061158181881,1.210324090443481,1.2612029533583087,1.2746665380966837,1.2510424212641373,1.1877719683230867,1.1324140580120234,1.134320854771618,1.1830000327588759,1.1104845717977938,1.0707837351168656,1.0694456539155097,1.106323338023733,1.1807626018947497,1.1579615141012425,1.1888124898110068,1.2374298846848177,1.249995074810446,1.235762553348922,1.2236670984530345,1.2190539502236628,1.1777739020702194,1.1541091500861989,1.147853123178292,1.1903342723911927,1.2298965625268883,1.2474394327422513,1.252011092138005,1.206899492784781,1.1415521170067775,1.1319131971460885,1.153378305342988,1.1311006979786158,1.0761713133174597,1.0979539591068876,1.1412936708433026,1.1240978027700357,1.096270750908711,1.0737455715989217,1.0950985133567648,1.1579580442658468,1.0816681755576436,1.0882432642588962,1.0540348631743348,1.0592255309946836,1.0346325303719184,1.0048010948835289,1.0470285310350262,1.0733462471916333,1.0671719746592883,1.118405685829959,1.1065133620577603,1.103051509033314,1.0854258168177804,1.0331005478796924,1.0256857580040837,1.0739312521754525,1.0247589414071996,0.9928822809155367,0.970137618826979,0.9422695633736952,1.0033764629848367,0.9967798066264536,0.9295195082953098,0.9162364739340273,0.9014259175704046,0.9545886884781168,0.9823706485312524,0.983628314019177,0.9461713117590805,0.9557147418916416,0.9587365652177444,0.920216579656101,0.9510714102624458,0.9587359136183451,0.9503222089541461,0.9826737764930777,0.9510301662115408,0.9777347771601379,0.9534580354512647,0.9387895066215663,0.8828082606019239,0.910838596442682,0.9224505273357444,0.9105540905275348,0.9304249166274758,0.9398614819508114,0.9676548506644187,1.0106317385842898,1.0709388905252952,1.1489716764443354,1.1883871982133105,1.1792922637805776,1.193097971140482,1.1736099371563276,1.121377413406684,1.247988757958602,1.262921615038868,1.2587020787864012,1.264466467168008,1.228852382240161,1.2649123407961165,1.303871504566341,1.3729559473347255,1.322185189746138,1.3617383216498011,1.3337038489864885,1.3546128076330808,1.332583718172716,1.335565103264443,1.3805750635206262,1.2712439615247786,1.2925637038757116,1.3233265561196823,1.3856108765969637,1.4932832655396215,1.4983402148335565,1.458175280591504,1.4737392263343583,1.4439255706801326,1.4560930133041077,1.4195668749181032,1.4514926498551821,1.4824055922260126,1.4234116123304283,1.430081547343065,1.4055369803222326,1.4496607483863444,1.3932086868091271,1.4523442139263683,1.482110148242059,1.5714896633798099,1.6003127466287628,1.614590630409869,1.648631372316691,1.6720856719672705,1.7494404916300987,1.6811925126421148,1.6409519520918059,1.7179952324238956,1.7144743761456689,1.724939892023216,1.7410934434267509,1.6893595132159631,1.6787934696711084,1.6738231270278545,1.8006829022331834,1.7438769438905941,1.6254948441949846,1.5688810164736757,1.5263886002537987,1.553244035094452,1.4579304588618167,1.3741720448943138,1.4298546318271057,1.5168734969831532,1.5782934441515541,1.5774895086918581,1.6432514619397252,1.6900940205216466,1.758606630529579,1.8068899331160266,1.836395006948847,1.9041430999780486,1.8465753056530454,1.8224424005878457,1.8429733470415517,1.8661411361606846,1.8466199680343207,1.7960341460862752,1.8998164046349795,1.9235390576011546,1.8944148166566683,1.881301165855696,1.8824097647050237,1.9188032632960748,2.027593892947692,2.05207692673413,2.0202447543713755,2.067754965719204,2.0970117539013695,1.9983744886726311,1.9786821572564712,1.9281810551951801,1.8986753885251682,1.8264199482314103,1.7660613126020797,1.7788310580249234,1.7873769501884134,1.7509695914691272,1.7832680567683843,1.6937392546792602,1.7506613034785348,1.7753002627346528,1.711487538511259,1.6740919562033032,1.6963036871722033,1.7119019187294007,1.617558141804779,1.631114193540309,1.6506161958600691,1.7140203864553,1.676014712645836,1.7000263460566163,1.6449959522200979,1.6624294455298,1.6721420691252353,1.671536971689358,1.773684153598688,1.7748582520642506,1.7702202601444137,1.7026417641868152,1.6820716150626704,1.6867375444016768,1.7100405314132774,1.7940416151436491,1.8350750830208036,1.9366800201333076,1.9672962364829025,1.9211083515928697,1.9333018055185864,1.85667485335089,1.858200163763877,1.9100727747764379,1.9476228615888558,1.8266933387784234,1.8087629577120043,1.7859964574097076,1.8534786235638387,1.8605557914345177,1.836217518669746,1.7783435085968484,1.8630759030246027,1.865664263167188,1.9575451123727023,1.9154013800089291,1.8275485158422504,1.801621059922208,1.7620888410620195,1.7791572824962187,1.712235325677983,1.707000229357504,1.752150890307684,1.7600442992235468,1.7950693348799454,1.9276119107904772,1.8493020430396205,1.8586241490561717,1.801712816678697,1.7971855494668325,1.8050880783264887,1.679824848155199,1.6753581066407963,1.6615417093469291,1.6306529412207593,1.682789907611297,1.7573832519981618,1.768904126512215,1.813509108584179,1.8476619539686894,1.8523701959094343,1.8407949187308832,1.9669284064842432,1.9671610323106328,2.020249635638951,2.1251761462059613,2.173542028394656,2.111217689583221,2.1818590401411977,2.0762132708585472,2.009436343541409,1.8908304730356518,1.8616498126294885,1.9570004313428373,2.0328674148183645,1.9691384287600573,2.0124177549790065,2.0119254826343034,1.9403124366574975,1.9371587873647282,1.9068220229921293,2.0350162977530974,2.0704713526611482,2.0022406788286045,1.9369097346161868,1.846809020678702,1.8984360387227799,1.9687135262382573,1.9174663953952065,1.9007646968210365,1.858507480042307,1.9393762232971,1.9745552910930917,1.9143124166578294,1.887963371299347,1.9692032422787211,1.9136236530817567,1.91130322907009,1.8632938799162555,1.9472384962381926,1.8188706460162685,1.7688728217841043,1.8174395222380926,1.826722527041292,1.8456305320738224,1.8530926896957522,1.7281928219921723,1.694815487839893,1.7457381688770912,1.7708929999598861,1.8702741115008943,1.923638829907094,1.915775971460557,1.9701295060420996,2.0090494442575406,1.9765903414029953,1.942659917528083,2.0291440845405964,2.0691760062158577,1.918157874742462,2.0257032283963317,2.0113108324908837,2.09528781444462,2.08884824570693,1.9696616366524897,1.901070538189257,1.9548723259954157,1.878925559189879,1.9088810483782022,1.864881741301306,1.6774246081332467,1.723825679607157,1.6830386103677224,1.684240008000011,1.7480958307198844,1.755806145357159,1.6491304910189195,1.62945225197811,1.5832722173917488,1.5772080145507945,1.6324257956935182,1.7711097852074662,1.6313924737950278,1.6119665473332947,1.65378225119657,1.611991569207416,1.6079487828438639,1.6986461155135293,1.7424885153715004,1.687607633745397,1.7313615567008969,1.6732644189865722,1.6840875178958283,1.6529371549777292,1.6228567791192128,1.6643409415366524,1.7588085283114305,1.815178559760799,1.795482496017488,1.8404218681705626,1.8740110242132253,1.974665198043189,2.078185356083858,2.1022318840071614,2.2090203217942666,2.1604397118705556,2.19258024643514,2.09582467737028,2.149441839091885,2.185898370937123,2.182297784705648,2.0834543951141047,2.0141891224797908,1.9067445548599333,1.8611697860192888,1.9095138463262027,1.960102419432206,2.0390762680592913,2.0679621984651595,2.206301785263936,2.246590580970272,2.2805006776802044,2.302995025011746,2.351398921490229,2.289124620673165,2.271289725945031,2.191902258261477,2.2582870450922488,2.2333792728537,2.1107649866696527,2.1161898507540338,2.048346293762673,2.081158984648847,2.0155789991520536,1.9297176146755548,1.9308373569905128,1.953900290595802,1.9299526475326183,1.926574361014773,1.9518852537779767,1.8118429327956842,1.692165996025143,1.717131153987845,1.8145557777264607,1.8617795730367757,1.809386980395106,1.8495587755003433,1.803894002481878,1.8991986411792376,1.8939581064236908,1.8532216679767088,1.8388597739092438,1.8691439278587791,1.841216255700916,1.8718181510675764,1.8934413833770882,1.9032867277418193,1.9813562300422738,1.9640892923797888,1.94125993597616,1.9617071361725291,1.9697659851852396,1.9575554789754568,2.0244011354940525,1.9625332047668549,1.861220630437806,1.8276367174612485,1.7813570648428534,1.8372001047481314,1.736927125959056,1.6898806702001252,1.6698686211468068,1.5576674335697072,1.544964224687737,1.5571443469213324,1.6438753012425678,1.6005157587631105,1.5425786905710013,1.5661906259847427,1.5673326411201849,1.5041867176197727,1.43938277449507,1.5467020637733517,1.5938954520270165,1.6346349107788796,1.6479735575670993,1.597864775328458,1.5717672269860372,1.5949795371858633,1.552307626330832,1.6122651624575906,1.5625231688955954,1.6516990313965436,1.645147404523043,1.6500520790853122,1.576600902161275,1.5639829476874647,1.5057437288330777,1.4905739806884315,1.5587967761577866,1.5752548174495586,1.601587931653115,1.6057627246468293,1.629369432340956,1.6641651666208752,1.6179528509816656,1.6653700207990327,1.6619790765649403,1.6365517329830614,1.6903898475532406,1.7501381943048442,1.8160366817402431,1.8410051877870068,1.9114678445671707,1.8802586286194316,1.9282298216605662,1.823712745238836,1.8938893815232152,1.866326686016797,1.8944663184720367,1.7766009538306822,1.7429973562931267,1.742535407824695,1.7447757904603667,1.7345528487366477,1.6799916067401315,1.7756416735499116,1.7880891315287102,1.7560848763977213,1.7503419386571888,1.7255079855397808,1.7122017954930604,1.73597152994364,1.7873017821991806,1.8243599552376792,1.867471109066993,1.8224730934648972,1.759155929412147,1.7593214464730298,1.7120423507223879,1.699982059392953,1.763101942479097,1.7240174192544746,1.7733331540869246,1.770484932624056,1.7994227398255365,1.9715544066593529,1.961621093830575,1.98336830045365,1.8976382952313817,1.8681551153575593,1.892469549317949,1.7867502576526233,1.86834835021938,1.876835220627932,1.9265386358431216,1.9529247482956391,1.976316507044171,2.023677976928284,1.976220238102343,1.8996571903126422,1.9952008720532528,1.9598478181898285,1.921669855331912,1.921577246879061,1.8607941233297205,1.8657996862551425,1.8970667083613832,1.8799487973138558,1.9037537002075957,1.9241016256030128,1.8692881240303658,1.7942864542621006,1.8419588147164694,1.8952697878422355,1.9348738903742313,1.8424441902978608,1.7869922644096172,1.7782577451077937,1.7962126182520286,1.7691430536981962,1.7548764786749431,1.8074147404888454,1.8033336474583201,1.8554040516551704,1.8948748980662382,1.8165722938960984,1.9344424929892023,1.9729596736994715,2.0061880269885273,1.9433021804360886,1.875566082149006,1.9023125600929671,1.864840621795495,1.817530524413159,1.7533127228804022,1.8064412776573793,1.7571471075184615,1.7144003331603108,1.6367594285844602,1.738088117827468,1.7563779855274035,1.664018248004356,1.6497912945992719,1.6685945232496309,1.676660037432156,1.6099077478552992,1.6310850580536262,1.6443849329066855,1.5851548429891542,1.5468818603943641,1.551158691707018,1.5683630123696626,1.433341569625954,1.4471656338287848,1.4152379667095545,1.4792490224531532,1.5141039449263771,1.5577616376813939,1.6916626231326914,1.5822893938643623,1.5920678105340977,1.6139796061917113,1.5902588444569004,1.499815893117333,1.508170753894076,1.4170388801633877,1.4004375295914848,1.3326369550033221,1.3455083230454097,1.367594530598677,1.4006981315537685,1.4122372189559225,1.5216080032665016,1.57503408067951,1.5417077918305289,1.5570470780596155,1.5603411035583474,1.5454537459789306,1.5410278709293581,1.5419402318101059,1.4755362077766891,1.4128683577810686,1.4149228509095209,1.4149882110684653,1.4124237377078592,1.3374171293421138,1.3632688968423408,1.3200112460285702,1.3384293826067948,1.3506625829692376,1.3292712597735257,1.4044748082562795,1.420924933955307,1.3925974444392644,1.3853139181258316,1.3848695357445575,1.3969296778658329,1.441992870040568,1.4537888655260858,1.4716320916163488,1.4645983748615556,1.4190667407488118,1.5273341571782684,1.5138155420917492,1.4384251547912477,1.4348983817654106,1.4412865405274002,1.4654882137638505,1.454568072287486,1.4883573694962486,1.6211393040825577,1.6139381549177763,1.5603923140953182,1.5820737088764556,1.5467666811873757,1.4939608973688514,1.440817746485289,1.3768462043432839,1.2901736373322223,1.2898069412405295,1.3277383366668334,1.3820475875387552,1.3711074354577921,1.4179623364399405,1.4884063513136252,1.5194919816288923,1.4409809986602025,1.3577943465796538,1.381032408885832,1.3508505000768782,1.3602454355530182,1.317072155651386,1.2851688231936451,1.3048900955020057,1.2702773650711527,1.2872338750816006,1.2812083572602428,1.2239596493480758,1.3118858165140812,1.2699458833843857,1.3133342704227697,1.2805527137535646,1.2855894742228393,1.3577524528112264,1.4190533800828187,1.4391697915664654,1.484888238168043,1.6130630424893408,1.5650134075362196,1.5070518707566025,1.5387847283576253,1.529060330804071,1.472376076812881,1.4505087321035675,1.4006785711725984,1.4055627735472187,1.382806153287902,1.275197638435316,1.2974564527476264,1.30284408597081,1.2213927091389962,1.2165159671008987,1.1395408104815465,1.1524574908315257,1.1523119279005292,1.148173541775154,1.112767446530665,1.047401824315291,1.0706038827490574,1.0228530658742552,1.022001745042768,1.0141626015334348,1.025284515065035,1.0905074720564627,1.1038926814337162,1.101648449764872,1.0618756221722212,1.0454566586028293,1.0081047154320806,1.0233239257873548,1.0605253154709036,1.03130949861624,1.0359180023479084,0.9841119030381775,0.9930538481105148,0.9083547266449377,0.9209669705759137],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"legend":{"x":0.1,"y":1,"xanchor":"left","yanchor":"top"},"showlegend":true,"xaxis":{"title":{"text":"Time"}},"yaxis":{"title":{"text":""}},"height":300},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('db12937d-7db5-4869-a6cf-61adacd23f75');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</figure>
+</div>
+</div>
+<p>The functions and processes <span class="math inline">\(X\)</span> defined in this section have important interpretations. <a href="#eq-ito_discrete_1" class="quarto-xref">Equation&nbsp;<span>5.1</span></a> can be rewritten to say that the percent change in <span class="math inline">\(X\)</span> is <span class="math inline">\(\mu \Delta t\)</span>. This could represent the value of a savings account that earns interest of <span class="math inline">\(\mu \Delta t\)</span> in each period of length <span class="math inline">\(\Delta t\)</span>. This is the common way of calculating, for example, monthly interest, where <span class="math inline">\(\mu\)</span> is called the annual rate of interest and <span class="math inline">\(\Delta t\)</span> would be <span class="math inline">\(1/12\)</span>. The limiting <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a> is called continuous compounding of interest.</p>
+<p>Similarly, <a href="#eq-ito_discrete_4" class="quarto-xref">Equation&nbsp;<span>5.4</span></a> can be rewritten to say that the percent change in <span class="math inline">\(X\)</span> is <span class="math inline">\(\mu \Delta t + \sigma \Delta B\)</span>. This represents a random rate of return – for example, the return of a stock. The expected rate of return in this case is <span class="math inline">\(\mu \Delta t\)</span>, and the variance of the rate of return is <span class="math inline">\(\sigma^2 \Delta t\)</span>. The limiting <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a> is called continuous compounding of returns.</p>
+</section>
+<section id="sec-s:itoprocesses" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-s:itoprocesses"><span class="header-section-number">5.2</span> Ito Processes</h2>
+<p>The meaning of <a href="#eq-ito_discrete_2" class="quarto-xref">Equation&nbsp;<span>5.2</span></a> is that, for all <span class="math inline">\(t  &gt; 0\)</span>, <span class="math display">\[X_t = X_0 +  \int_0^t \mu X_s \,\mathrm{d}s\,.\]</span> We assume the reader is familiar with integrals, so we do not explain this further. The function of time <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_3" class="quarto-xref">Equation&nbsp;<span>5.3</span></a> satisfies this equation. Similarly, the meaning of <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a> is that, for all <span class="math inline">\(t &gt; 0\)</span>, <span class="math display">\[X_t = X_0 +  \int_0^t \mu X_s \,\mathrm{d}s + \int_0^t \sigma X_s \,\mathrm{d}B_s\,.\]</span> The first integral in this formula is an ordinary integral. The second is an Ito integral, which is to be explained. The sum of an ordinary integral and an Ito integral is called an Ito process. An Ito process always has continuous paths.</p>
+<p>Let’s depart from the example of the previous section and consider a process <span class="math inline">\(X\)</span> satisfying, for all <span class="math inline">\(t&gt;0\)</span>, <span id="eq-ito1"><span class="math display">\[X_t = \int_0^t \alpha_s\,\mathrm{d}s + \int_0^t \theta_s \,\mathrm{d}B_s\,. \qquad(5.7)\]</span></span> where <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\theta\)</span> can be stochastic processes. The example of the previous section fits this form, because we could take <span class="math inline">\(\alpha_s = \mu X_s\)</span> and <span class="math inline">\(\theta_s = \sigma X_s\)</span>. The definition of the Ito integral <span class="math display">\[\int_0^t \theta_s \,\mathrm{d}B_s\]</span> is relatively complicated. It is enough for our purposes to know that it can be approximated by a discrete sum <span class="math display">\[\sum_{i=1}^n \theta_{t_{i-1}}(B_{t_i} - B_{t_{i-1}})\,,\]</span> given a partition <span class="math display">\[ 0 = t_0 &lt; \cdots &lt; t_n = t\,,\]</span> when <span class="math inline">\(n\)</span> is large and the time between successive dates is small. The Ito integral exists provided <span class="math inline">\(\theta\)</span> does not anticipate the future (so <span class="math inline">\(\theta_{t_{i-1}}\)</span> is independent of the increment <span class="math inline">\(B_{t_i}- B_{t_{i-1}}\)</span>) and provided <span class="math inline">\(\theta\)</span> does not explode to <span class="math inline">\(\pm \infty\)</span> in finite time, so <span class="math display">\[\int_0^t \theta_s^2 \,\mathrm{d}s &lt; \infty\]</span> for all <span class="math inline">\(t &gt; 0\)</span>, with probability one.</p>
+<p>We also write <a href="#eq-ito1" class="quarto-xref">Equation&nbsp;<span>5.7</span></a> as <span id="eq-ito2"><span class="math display">\[
+\,\mathrm{d}X_t = \alpha_t\,\mathrm{d}t + \theta_t \,\mathrm{d}B_t\,.
+\qquad(5.8)\]</span></span> We interpret this as “change <span class="math inline">\(=\)</span> mean <span class="math inline">\(+\)</span> noise” with <span class="math inline">\(\alpha_t \,\mathrm{d}t\)</span> being the mean and <span class="math inline">\(\theta_t\,\mathrm{d}B_t\)</span> being the mean-zero random noise. The quantity <span class="math inline">\(\alpha_t\)</span> is also called the drift of the process <span class="math inline">\(X\)</span> at time <span class="math inline">\(t\)</span>. The coefficient <span class="math inline">\(\sigma_t\)</span> is called the diffusion coefficient of <span class="math inline">\(X\)</span> at time <span class="math inline">\(t\)</span>. If <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\theta\)</span> are constant, it is standard to refer to an Ito process <span class="math inline">\(X\)</span> as a <span class="math inline">\((\alpha,\theta)\)</span>–Brownian motion. When they are constant, we obtain <span class="math display">\[X_t= X_0 + \alpha t + \theta B_t\,.\]</span></p>
+<p>An Ito process as in <a href="#eq-ito1" class="quarto-xref">Equation&nbsp;<span>5.7</span></a> can be a martingale only if <span class="math inline">\(\alpha=0\)</span>. This should seem sensible, because <span class="math inline">\(\alpha\,\mathrm{d}t\)</span> is the expected change in <span class="math inline">\(X\)</span>, and a process is a martingale only if its expected change is zero. This observation plays a fundamental role in deriving asset pricing formulas. Conversely, if <span class="math inline">\(\alpha=0\)</span> and <span id="eq-regularity1"><span class="math display">\[
+\mathbb{E}\left[\int_0^t \theta^2_s\,\mathrm{d}s\right] &lt; \infty
+\qquad(5.9)\]</span></span> for each <span class="math inline">\(t\)</span>, then the Ito process is a continuous martingale, and the variance of its date–<span class="math inline">\(t\)</span> value, calculated with the information available at date <span class="math inline">\(0\)</span>, is: <span class="math display">\[\mathrm{var}(X_t) = \mathbb{E}\left[\int_0^t \theta^2_t\,\mathrm{d}s\right]\; .\]</span></p>
+</section>
+<section id="quadratic-and-joint-variation-of-ito-processes" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="quadratic-and-joint-variation-of-ito-processes"><span class="header-section-number">5.3</span> Quadratic and Joint Variation of Ito Processes</h2>
+<p>The quadratic variation of the Ito process <span class="math inline">\(X\)</span> defined in <a href="#eq-ito2" class="quarto-xref">Equation&nbsp;<span>5.8</span></a> through each date <span class="math inline">\(t\)</span> is <span class="math display">\[
+\int_0^t \theta^2_s\,\mathrm{d}s
+\]</span> with probability one.</p>
+<p>To compute the quadratic variation of an Ito process, we use the following simple and important rules (for the sake of brevity, we drop the subscript <span class="math inline">\(t\)</span> from <span class="math inline">\(B_t\)</span> here and sometimes later). These rules should be regarded as mnemonic devices. The calculations we do with them lead to the correct results, but the objects have no real mathematical meaning.</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.4</span>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span id="eq-dtsquared"><span class="math display">\[
+(\,\mathrm{d}t)^2 = 0\;,
+\qquad(5.10)\]</span></span></p>
+<p><span id="eq-dB"><span class="math display">\[
+(\,\mathrm{d}t)(\,\mathrm{d}B) =0\;,
+\qquad(5.11)\]</span></span></p>
+<p><span id="eq-dBsquared"><span class="math display">\[
+(\,\mathrm{d}B)^2 =\,\mathrm{d}t\;.
+\qquad(5.12)\]</span></span></p>
+</div>
+</div>
+<p>We apply these rules to compute the quadratic variation of <span class="math inline">\(X\)</span> as follows:</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.5</span>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(\,\mathrm{d}X = \alpha\,\mathrm{d}t + \theta\,\mathrm{d}B\)</span> for a Brownian motion <span class="math inline">\(B\)</span>, then <span class="math display">\[\begin{align*}
+(\,\mathrm{d}X)^2 &amp;= (\alpha\,\mathrm{d}t+\theta\,\mathrm{d}B)^2\\
+&amp;= \alpha^2(\,\mathrm{d}t)^2 + 2\alpha\theta(\,\mathrm{d}t)(\,\mathrm{d}B) + \theta^2(\,\mathrm{d}B)^2\\
+&amp;= \theta^2\,\mathrm{d}t\;.
+\end{align*}\]</span></p>
+</div>
+</div>
+<p>We integrate <span class="math inline">\((\,\mathrm{d}X)^2\)</span> over a time interval to compute the quadratic variation of <span class="math inline">\(X\)</span> over that period as: <span id="eq-itoquadraticvariation2"><span class="math display">\[
+\int_0^t (\,\mathrm{d}X_s)^2 = \int_0^t \theta^2_s\,\mathrm{d}s\;.
+\qquad(5.13)\]</span></span> In a more formal mathematical presentation, one normally writes <span class="math inline">\(\,\mathrm{d}\langle X,X\rangle\)</span> for what we are writing here as <span class="math inline">\((\,\mathrm{d}X)^2\)</span>. This is the differential of the quadratic variation process, and the quadratic variation through date <span class="math inline">\(t\)</span> is <span class="math display">\[
+\langle X,X\rangle _t = \int_0^t \,\mathrm{d}\langle X,X\rangle_s = \int_0^t \sigma^2_s\,\mathrm{d}s\;.
+\]</span> Our mnenomic device of squaring differentials leads us to the correct formula.</p>
+<p>Now consider two Ito processes: <span id="eq-itoprocess110"><span class="math display">\[
+\,\mathrm{d}X_{1t} = \mu_{1t}\,\mathrm{d}t + \sigma_{1t}\,\mathrm{d}B_{1t}\;,
+\qquad(5.14)\]</span></span></p>
+<p><span id="eq-itoprocess111"><span class="math display">\[
+\,\mathrm{d}X_{2t} = \mu_{2t}\,\mathrm{d}t + \sigma_{2t}\,\mathrm{d}B_{2t}\;,
+\qquad(5.15)\]</span></span></p>
+<p>where <span class="math inline">\(B_1\)</span> and <span class="math inline">\(B_2\)</span> are standard Brownian motions. We calculate the product of differentials of Ito processes as follows.</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Calculation Rule
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are Ito processes as in <a href="#eq-itoprocess110" class="quarto-xref">Equation&nbsp;<span>5.14</span></a> and <a href="#eq-itoprocess111" class="quarto-xref">Equation&nbsp;<span>5.15</span></a>, then <span class="math display">\[(\,\mathrm{d}X_1)(\,\mathrm{d}X_2) = (\sigma_{1}\,\mathrm{d}B_{1})(\sigma_{2}\,\mathrm{d}B_{2})= \sigma_1\sigma_2\rho\,\mathrm{d}t\]</span> where <span class="math inline">\(\rho\)</span> is the correlation process of the two Brownian motions.</p>
+</div>
+</div>
+<p>The real meaning of this rule is that it is possible to calculate the joint variation (i.e., limit of sum of products of changes) of the two Ito processes from <span class="math inline">\(0\)</span> to <span class="math inline">\(t\)</span> as <span id="eq-itojointvariation"><span class="math display">\[\int_0^t (\,\mathrm{d}X_{1s})(\,\mathrm{d}X_{2s}) = \int_0^t (\sigma_{1s}\,\mathrm{d}B_{1s})(\sigma_{2s}\,\mathrm{d}B_{2s}) = \int_0^t \sigma_{1s}\sigma_{2s}\rho_s\,\mathrm{d}s\,.
+\qquad(5.16)\]</span></span> The last integral in this equation is the correct formula for the quadratic variation. As with squaring differentials, taking products of differentials is a mnemonic device to get us to the correct formula. A somewhat more precise definition than our previous description of the stochastic integral <span class="math inline">\(\int_0^t \sigma_{1,t} dB_{1t}\)</span> is when <a href="#eq-regularity1" class="quarto-xref">Equation&nbsp;<span>5.9</span></a> holds, the stochastic integral is the (unique) martingale with joint variation with any other Ito process given by <a href="#eq-itojointvariation" class="quarto-xref">Equation&nbsp;<span>5.16</span></a>.</p>
+</section>
+<section id="sec-s:itosformula" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="sec-s:itosformula"><span class="header-section-number">5.6</span> Introduction to Ito’s Formula</h2>
+<p>First we recall some facts of the ordinary calculus. If <span class="math inline">\(y=f(x)\)</span> and <span class="math inline">\(x_t = g(t)\)</span> with <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> being continuously differentiable functions, then <span class="math display">\[\frac{\,\mathrm{d}y}{\,\mathrm{d}t} = \frac{\,\mathrm{d}y}{\,\mathrm{d}x}\times \frac{\,\mathrm{d}x}{\,\mathrm{d}t} = f'(x_t)g'(t)\; .\]</span> This implies that, for each <span class="math inline">\(t&gt;0\)</span>, <span class="math display">\[y_t = f(x_t) = y_0 + \int_0^t \frac{\,\mathrm{d}y}{\,\mathrm{d}s}\,\mathrm{d}s = y_0 + \int_0^t f'(x_s)g'(s)\,\mathrm{d}s\; .\]</span> Substituting <span class="math inline">\(\,\mathrm{d}x_s = g'(s)\,\mathrm{d}s\)</span>, we can also write this as <span id="eq-ordinarycalculus"><span class="math display">\[
+y_t = f(x_t) = y_0 + \int_0^t f'(x_s)\,\mathrm{d}x_s\,,
+\qquad(5.17)\]</span></span> or, in differential form, <span id="eq-ordinarycalculus2"><span class="math display">\[
+dy_t = f'(x_t)\,\mathrm{d}x_t \,.
+\qquad(5.18)\]</span></span> What people frequently remember about integrals from their calculus courses is that there are a lot of tricky substitutions that can be made to simplify the calculation of various integrals. We won’t need those in this book. All we will use are equations of the form of <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>5.17</span></a>, which is a special case of the Fundamental Theorem of Calculus, which says that a function is the integral of its derivative. Intuitively, we can think of <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>5.17</span></a> as saying that the change in <span class="math inline">\(y\)</span> over a discrete interval (from <span class="math inline">\(0\)</span> to <span class="math inline">\(t\)</span>) is the continuous sum (integral) of its infinitesimal changes.</p>
+<p>Let’s contrast <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>5.17</span></a> with a special case of Ito’s formula for the calculus of Ito processes. If <span class="math inline">\(B\)</span> is a Brownian motion and <span class="math inline">\(Y = f(B)\)</span> for a twice-continuously differentiable function <span class="math inline">\(f\)</span>, then <span id="eq-ito0"><span class="math display">\[\,\mathrm{d}Y_t = f'(B_t)\,\mathrm{d}B_t + \frac{1}{2}f''(B_t)\,\mathrm{d}t  \,.
+\qquad(5.19)\]</span></span> Comparing <a href="#eq-ito0" class="quarto-xref">Equation&nbsp;<span>5.19</span></a> to <a href="#eq-ordinarycalculus2" class="quarto-xref">Equation&nbsp;<span>5.18</span></a>, we see that Ito’s formula has an extra term involving the second derivative <span class="math inline">\(f''\)</span>.</p>
+<p><a href="#eq-ito0" class="quarto-xref">Equation&nbsp;<span>5.19</span></a> implies that <span class="math inline">\(Y=f(B)\)</span> is an Ito process with drift <span class="math inline">\(f''(B_t)/2\)</span> and diffusion coefficient <span class="math inline">\(f'(B_t)\)</span>. The real meaning of <a href="#eq-ito0" class="quarto-xref">Equation&nbsp;<span>5.19</span></a> is the integrated form: <span id="eq-itonew1"><span class="math display">\[
+Y_t = f(B_t) = Y_0 + \int_0^t f'(B_s)\,\mathrm{d}B_s + \frac{1}{2}\int_0^t f''(B_s)\,\mathrm{d}s\;.
+\qquad(5.20)\]</span></span> Thus, the change in <span class="math inline">\(Y\)</span> over a discrete interval is again the continuous sum of its infinitesimal changes, but now the infinitesimal changes are given by <a href="#eq-ito0" class="quarto-xref">Equation&nbsp;<span>5.19</span></a>. Note that the first integral in <a href="#eq-itonew1" class="quarto-xref">Equation&nbsp;<span>5.20</span></a> is an Ito integral.</p>
+<p>To gain some intuition for the extra term in Ito’s formula, we return to the ordinary calculus. Given dates <span class="math inline">\(s&lt;t\)</span>, the derivative defines a linear approximation of the change in <span class="math inline">\(y\)</span> from <span class="math inline">\(s\)</span> to <span class="math inline">\(t\)</span>; that is, setting <span class="math inline">\(\Delta x = x_t-x_s\)</span> and <span class="math inline">\(\Delta y = y_t - y_s\)</span>, we have the approximation <span class="math display">\[\Delta y \approx f'(x_s) \,\Delta x\; .\]</span> A better approximation is given by the second-order Taylor series expansion <span class="math display">\[\Delta y \approx f'(x_s)\,\Delta x + \frac{1}{2} f''(x_s)\,(\Delta x)^2\; .\]</span> An interpretation of <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>5.17</span></a> is that the linear approximation works perfectly for infinitesimal time periods <span class="math inline">\(\,\mathrm{d}s\)</span>, because we can compute the change in <span class="math inline">\(y\)</span> over the time interval <span class="math inline">\([0,t]\)</span> by summing up the infinitesimal changes <span class="math inline">\(f'(x_s)\,\mathrm{d}x_s\)</span>. In other words, the second-order term <span class="math inline">\(\frac{1}{2} f''(x_s)\,(\Delta x)^2\)</span> vanishes when we consider very short time periods.</p>
+<p>The second-order Taylor series expansion in the case of <span class="math inline">\(Y=f(B)\)</span> is <span class="math display">\[\Delta Y \approx f'(B_s)\,\Delta B + \frac{1}{2} f''(B_s)\,(\Delta B)^2\; .\]</span> For example, given a partition <span class="math inline">\(0=t_0 &lt; t_1 &lt; \cdots &lt; t_n=t\)</span> of the time interval <span class="math inline">\([0,t]\)</span>, we have, with the same notation we have used earlier,</p>
+<p><span id="eq-itonew2"><span class="math display">\[
+Y_t = Y_0 + \sum_{i=1}^n \Delta Y_{t_i}  
+\approx Y_0 + \sum_{i=1}^n f'(B_{t_{i-1}})\,\Delta B_{t_i} + \frac{1}{2} \sum_{i=1}^n f''(B_{t_{i-1}})\,(\Delta B_{t_i})^2\;.
+\qquad(5.21)\]</span></span></p>
+<p>If we make the time intervals <span class="math inline">\(t_i-t_{i-1}\)</span> shorter, letting <span class="math inline">\(n \rightarrow \infty\)</span>, then we cannot expect that the extra term here will disappear, leading to the result of the ordinary calculus shown in <a href="#eq-ordinarycalculus" class="quarto-xref">Equation&nbsp;<span>5.17</span></a>, because we know that <span class="math display">\[\lim_{n \rightarrow \infty} \sum_{i=1}^n (\Delta B_{t_i})^2 = t\; ,\]</span> whereas for the continuously differentiable function <span class="math inline">\(x_t = g(t)\)</span>, the same limit is zero. In fact it seems sensible to interpret the limit of <span class="math inline">\((\Delta B)^2\)</span> as <span class="math inline">\((\,\mathrm{d}B)^2 =\,\mathrm{d}t\)</span>. This is perfectly consistent with Ito’s formula: if we take the limit in <a href="#eq-itonew2" class="quarto-xref">Equation&nbsp;<span>5.21</span></a>, replacing the limit of <span class="math inline">\((\Delta B_{t_i})^2\)</span> with <span class="math inline">\((\,\mathrm{d}B)^2 = \,\mathrm{d}t\)</span>, we obtain <a href="#eq-itonew1" class="quarto-xref">Equation&nbsp;<span>5.20</span></a>.</p>
+<p>To see the accuracy of Ito’s approximation over different time steps, as well as the impact of the second-derivative term <span class="math inline">\(\int_0^t (1/2)f''(B_s)\,\mathrm{d}s\)</span>, we encourage readers to interact with the plot below. It examines the function <span class="math inline">\(f(x)=\mathrm{e}^{x}\)</span> (for which we have <span class="math inline">\(f'(x)=\mathrm{e}^x\)</span> and <span class="math inline">\(f''(x) = \mathrm{e}^x\)</span>). It simulates an approximate path of a Brownian motion as we have done before. It then compares the true value of <span class="math inline">\(\mathrm{e}^{B_{t_i}}\)</span> to the Ito expansion <span class="math display">\[\mathrm{e}^{B_t}=1 + \int_0^t \mathrm{e}^{B_s} \,\mathrm{d}B_s + \frac{1}{2}\int_0^t \mathrm{e}^{B_s} \,\mathrm{d}s\]</span> using the discretization <span class="math display">\[\Delta \mathrm{e}^{B_{t_i}}= \mathrm{e}^{B_{t_{i-1}}} \Delta B_{t_i} + \frac{1}{2} \mathrm{e}^{B_{t_{i-1}}} \Delta t \,.\]</span> Notice that the discretization is just a second-order Taylor series expansion. The discretization approximates the true value better if we take <span class="math inline">\(n\)</span> larger and <span class="math inline">\(\Delta t\)</span> smaller. The important take-away from the figure is that the cumulative second-derivative terms in the discretization do not vanish as we take <span class="math inline">\(n\)</span> larger but instead continue to contribute significantly to the approximation.</p>
+<div id="fig-interactive_ito" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-interactive_ito-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.3: Accuracy of Ito Approximation
+</figcaption>
+<div aria-describedby="fig-interactive_ito-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<iframe width="780" height="1000" src="https://derivatives-book-26ac36570fb8.herokuapp.com/math_finance_book_plots/ito_approx_plot">
+</iframe>
+</div>
+</figure>
+</div>
+</section>
+<section id="univariate-itos-formula" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="univariate-itos-formula"><span class="header-section-number">5.7</span> Univariate Ito’s Formula</h2>
+<p>We extend the example in the previous section slightly. Consider a process <span class="math inline">\(Y\)</span> defined as <span class="math inline">\(Y_t = f(t, B_t)\)</span> for some function <span class="math inline">\(f\)</span>. The following rule states that <span class="math inline">\(Y\)</span> is an Ito process with drift equal to <span class="math display">\[\frac{\partial f}{\partial t} + \frac{1}{2} \frac{\partial^2 f}{\partial B^2}\]</span> and diffusion coefficient equal to <span class="math inline">\(\partial f/\partial B\)</span>. This is what we need to remember to make calculations. The real meaning of <span class="math inline">\((\,\mathrm{d}B)^2\)</span> is <span class="math inline">\(\,\mathrm{d}t\)</span>, so we can (and will) substitute that in the following rule, but it may be easier to remember <span class="math inline">\((\,\mathrm{d}B)^2\)</span>. This becomes more important when we consider more complex examples in the next sections.</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.8</span> Ito’s Formula 1
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(f(t, B)\)</span> is continuously differentiable in <span class="math inline">\(t\)</span> and twice continuously differentiable in <span class="math inline">\(B\)</span> and <span class="math inline">\(Y_t= f(t, B_t)\)</span> for a standard Brownian motion <span class="math inline">\(B\)</span>, then <span id="eq-ito-firstformula"><span class="math display">\[\,\mathrm{d}Y = \frac{\partial f(t, B)}{\partial t}\,\mathrm{d}t + \frac{\partial f(t, B)}{\partial B}\,\mathrm{d}B + \frac{1}{2} \frac{\partial^2 f(t, B)}{\partial B^2}(\,\mathrm{d}B)^2\,.
+\qquad(5.22)\]</span></span></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-Example no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We can apply Calculation Rule <span class="math inline">\(\ref{ruleito1}\)</span> to finish the discussion in <a href="#sec-s:discreteito" class="quarto-xref"><span>Section 5.1</span></a> regarding the process defined in <a href="#eq-ito_discrete_6" class="quarto-xref">Equation&nbsp;<span>5.6</span></a>. We want to show that it satisfies <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a>. We do that by differentiating and applying the above rule. For <span class="math inline">\(f(t, B) = \mathrm{e}^{(\mu - \sigma^2/2)t + \sigma B}\)</span>, we have <span class="math display">\[\frac{\partial f}{\partial t} = \left(\mu-\frac{1}{2}\sigma^2\right)f(t, B)\,,\quad \frac{\partial f}{\partial B} = \sigma f(t, B)\,, \quad \frac{\partial^2 f}{\partial B^2} = \sigma^2f(t, B)\,.\]</span> Therefore, <span class="math display">\[\,\mathrm{d}Y = \left(\mu-\frac{1}{2}\sigma^2\right)Y\,\mathrm{d}t + \sigma Y \,\mathrm{d}B + \frac{1}{2}\sigma^2 Y\,(\,\mathrm{d}B)^2 = \mu Y\,\mathrm{d}t + \sigma Y \,\mathrm{d}B\]</span> This verifies <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="extension-to-functions-of-ito-processes" class="level2" data-number="5.9">
+<h2 data-number="5.9" class="anchored" data-anchor-id="extension-to-functions-of-ito-processes"><span class="header-section-number">5.9</span> Extension to Functions of Ito Processes</h2>
+<p>Now consider the more general case <span class="math inline">\(Y_t = f(t, X_t)\)</span> where <span class="math inline">\(X\)</span> is an Ito process. As explained before, this means that <span id="eq-itoagain"><span class="math display">\[\,\mathrm{d}X_t = \alpha_t\,\mathrm{d}t + \theta_t \,\mathrm{d}B_t
+\qquad(5.23)\]</span></span> for some stochastic processes <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\theta\)</span>, where <span class="math inline">\(B\)</span> is a standard Brownian motion. Then, from our previous rules, <span class="math inline">\((\,\mathrm{d}X)^2 = \theta^2\,\mathrm{d}t\)</span>. Ito’s formula in this more general case takes the same form as Calculation Rule <span class="math inline">\(\ref{ruleito1}\)</span>, replacing the Brownian motion <span class="math inline">\(B\)</span> with the Ito process <span class="math inline">\(X\)</span>.</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.10</span> Ito’s Formula 2
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(f(t, X)\)</span> is continuously differentiable in <span class="math inline">\(t\)</span> and twice continuously differentiable in <span class="math inline">\(X\)</span> and <span class="math inline">\(Y_t= f(t, X_t)\)</span> where <span class="math inline">\(X\)</span> is an Ito process, then <span id="eq-ito-secondformula"><span class="math display">\[\,\mathrm{d}Y = \frac{\partial f(t, X)}{\partial t}\,\mathrm{d}t + \frac{\partial f(t, X)}{\partial X}\,\mathrm{d}X + \frac{1}{2} \frac{\partial^2 f(t, X)}{\partial X^2}(\,\mathrm{d}X)^2\,.
+\qquad(5.24)\]</span></span></p>
+</div>
+</div>
+<p>We can write <a href="#eq-ito-secondformula" class="quarto-xref">Equation&nbsp;<span>5.24</span></a> in terms of <span class="math inline">\(\,\mathrm{d}t\)</span> and <span class="math inline">\(\,\mathrm{d}B\)</span> terms by substituting from <a href="#eq-itoagain" class="quarto-xref">Equation&nbsp;<span>5.23</span></a> and using <span class="math inline">\((\,\mathrm{d}X)^2 = \theta^2\,\mathrm{d}t\)</span>. This produces <span class="math display">\[\,\mathrm{d}Y = \left(\frac{\partial f(t, X)}{\partial t} + \alpha\frac{\partial f(t, X)}{\partial X} + \frac{1}{2}\theta^2 \frac{\partial^2 f(t, X)}{\partial X^2}\right)\,\mathrm{d}t + \theta\frac{\partial f(t, X)}{\partial X}\,\mathrm{d}B\,.\]</span></p>
+<p>Here are some important examples of Ito’s formula.</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.11</span> Ito’s Formula for Powers
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(Y = X^\alpha\)</span> for a constant <span class="math inline">\(\alpha\)</span>, then <span class="math display">\[\,\mathrm{d}Y = \alpha X^{\alpha-1}\,\mathrm{d}X + \frac{1}{2}\alpha (\alpha - 1)X^{\alpha-2}(\,\mathrm{d}X)^2\,.\]</span> This is equivalent to <span class="math display">\[\frac{\,\mathrm{d}Y}{Y} = \alpha \frac{\,\mathrm{d}X}{X} + \frac{\alpha(\alpha-1)}{2}\left(\frac{\,\mathrm{d}X}{X}\right)^2\,.
+\]</span> {#ito-powerformula}</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.12</span> Ito’s Formula for Exponentials
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(Y=\mathrm{e}^X\)</span>, then <span id="eq-rule5"><span class="math display">\[\frac{\,\mathrm{d}Y}{Y}=\,\mathrm{d}X + \frac{(\,\mathrm{d}X)^2}{2}\;.
+\qquad(5.25)\]</span></span></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.13</span> Ito’s Formula for Logarithms
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(Y=\log X\)</span>, then <span id="eq-rule6"><span class="math display">\[
+\,\mathrm{d}Y=\frac{\,\mathrm{d}X}{X} - \frac{1}{2}\left(\frac{\,\mathrm{d}X}{X}\right)^2\;.
+\qquad(5.26)\]</span></span></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-Example no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We showed in Example <span class="math inline">\(\ref{example:ito1}\)</span> that <span class="math inline">\(X\)</span> defined in <a href="#eq-ito_discrete_6" class="quarto-xref">Equation&nbsp;<span>5.6</span></a> satisfies <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a>, but it is also useful to see how we can start from <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a> and deduce that <a href="#eq-ito_discrete_6" class="quarto-xref">Equation&nbsp;<span>5.6</span></a> is the solution. We can do that by taking logarithms, as we did in the non-random case in <a href="Chapter_Americans.html#sec-s:discrete" class="quarto-xref"><span>Section 11.3</span></a>. Set <span class="math inline">\(Y_t = \log X_t\)</span>. Then, using Calculation Rule <span class="math inline">\(\ref{rule:ito-log}\)</span> and substituting from <a href="#eq-ito_discrete_5" class="quarto-xref">Equation&nbsp;<span>5.5</span></a>, we have <span class="math display">\[\,\mathrm{d}\log X = \left(\mu - \frac{1}{2}\sigma^2\right)\,\mathrm{d}t + \sigma\,\mathrm{d}B\,.\]</span> There is no <span class="math inline">\(X\)</span> on the right-hand side of this, so we can simply integrate to compute <span class="math inline">\(\log X_t\)</span> as <span class="math display">\[\log X_t = \log X_0 + \left(\mu - \frac{1}{2}\sigma^2\right)t + \sigma B_t\,.\]</span> Exponentiating gives <a href="#eq-ito_discrete_6" class="quarto-xref">Equation&nbsp;<span>5.6</span></a>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="extension-to-functions-of-multiple-ito-processes" class="level2" data-number="5.14">
+<h2 data-number="5.14" class="anchored" data-anchor-id="extension-to-functions-of-multiple-ito-processes"><span class="header-section-number">5.14</span> Extension to Functions of Multiple Ito Processes</h2>
+<p>Using Calculation Rule <span class="math inline">\(\ref{rule:ito-product-diffs}\)</span> for products of differentials, we can state Ito’s formula for a function of time and two Ito processes as follows.</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.15</span> Ito’s Formula 3
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(Y_t = f(t, X_{1t}, X_{2t})\)</span> where <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are Ito processes and <span class="math inline">\(f\)</span> is continuously differentiable in <span class="math inline">\(t\)</span> and twice continuously differentiable in <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>, then <span id="eq-itogeneralnew2"><span class="math display">\[\begin{multline}
+\,\mathrm{d}Y =  \frac{\partial f}{\partial t}\,\mathrm{d}t + \frac{\partial f}{\partial X_1}\,\mathrm{d}X_1 +  \frac{\partial f}{\partial X_2}\,\mathrm{d}X_2 + \frac{1}{2} \frac{\partial^2 f}{\partial X_1^2}\,(\,\mathrm{d}X_1)^2 +  \frac{1}{2}  \frac{\partial^2 f}{\partial X_2^2}\,(\,\mathrm{d}X_2)^2 \\
++ \frac{\partial^2 f}{\partial X_1\partial X_2}\,(\,\mathrm{d}X_1)(\,\mathrm{d}X_2)\;.
+\end{multline} \qquad(5.27)\]</span></span></p>
+</div>
+</div>
+<p>This is analogous to a second-order Taylor series expansion in the variables <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. A similar formula applies to functions of more two Ito processes. We just need to include a term for each <span class="math inline">\(\,\mathrm{d}X_i\)</span>, each <span class="math inline">\((\,\mathrm{d}X_i)^2\)</span> and each <span class="math inline">\((\,\mathrm{d}X_i)(\,\mathrm{d}X_j)\)</span>.</p>
+<p>Here are some important examples. We switch notation from <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> to <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> and from <span class="math inline">\(Y\)</span> to <span class="math inline">\(Z\)</span> so we can drop the subscripts. These formulas follow from Calculation Rule <span class="math inline">\(\ref{rule-itoformula3}\)</span> by taking <span class="math inline">\(f(x,y)=xy\)</span> or <span class="math inline">\(f(x,y)=y/x\)</span>.</p>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.16</span> Ito’s Formula for Products
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(Z=XY\)</span>, then <span class="math inline">\(\,\mathrm{d}Z=X\,\mathrm{d}Y+Y\,\mathrm{d}X + (\,\mathrm{d}X)(\,\mathrm{d}Y)\)</span>. We can write this as <span id="eq-rule2"><span class="math display">\[
+\frac{\,\mathrm{d}Z}{Z}=\frac{\,\mathrm{d}X}{X} + \frac{\,\mathrm{d}Y}{Y} + \left(\frac{\,\mathrm{d}X}{X}\right)\left(\frac{\,\mathrm{d}Y}{Y}\right)\;.
+\qquad(5.28)\]</span></span></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.17</span> Ito’s Formula for Ratios
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <span class="math inline">\(Z=Y/X\)</span>, then <span id="eq-rule4"><span class="math display">\[\frac{\,\mathrm{d}Z}{Z} = \frac{\,\mathrm{d}Y}{Y} -\frac{\,\mathrm{d}X}{X} - \left(\frac{\,\mathrm{d}Y}{Y}\right)\left(\frac{\,\mathrm{d}X}{X}\right) + \left(\frac{\,\mathrm{d}X}{X}\right)^2\;.
+\qquad(5.29)\]</span></span></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-Rule no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="header-section-number">5.18</span> Ito’s Formula for Compounding and Discounting
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let<br>
+<span class="math display">\[Y_t =\exp\left(\int_0^t q_s\,\mathrm{d}s\right)\]</span> for some (possibly random) process <span class="math inline">\(q\)</span> and define <span class="math inline">\(Z=XY\)</span> for any Ito process <span class="math inline">\(X\)</span>. Calculation Rule <span class="math inline">\(\ref{rule:ito-product}\)</span> gives us <span id="eq-compdisc1"><span class="math display">\[
+\frac{\,\mathrm{d}Z}{Z}=q\,\mathrm{d}t + \frac{\,\mathrm{d}X}{X}\;.
+\qquad(5.30)\]</span></span> This is the same as in the usual calculus.</p>
+</div>
+</div>
+</section>
+<section id="section-2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="section-2"></h2>
+<div class="callout callout-style-default callout-Exercise no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Ito’s Lemma can be used in different ways to get the same answer. For example, let <span class="math inline">\(X_t = a t + b B_t\)</span> and use Ito’s lemma on the function <span class="math inline">\(e^{X_t}\)</span>. Alternatively, let <span class="math inline">\(f(t, B_t) = e^{a t + bB_t}\)</span>. Use Ito’s lemma on <span class="math inline">\(f(,)\)</span>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-Exercise no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\,\mathrm{d}X_t = \mu X_t \,\mathrm{d}t + \sigma X_t \,\mathrm{d}B_t\)</span>. Use Ito’s lemma to find <span class="math inline">\(\log(X_t)\)</span> . What is the expected value and variance of <span class="math inline">\(\log(X_t)\)</span> ?</p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Chapter_Brownian.html" class="pagination-link" aria-label="Brownian Motion">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Brownian Motion</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./Chapter_GBM.html" class="pagination-link" aria-label="Geometric Brownian Motion">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-code.git/blob/main/Chapter_Ito.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
