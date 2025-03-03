@@ -2,8 +2,6 @@ import os
 import json
 import subprocess
 
-finished = ["Brownian", "Ito"]
-finished = ["Chapter_" + f + ".qmd" for f in finished]
 
 nocode = ["Arbitrage"]
 nocode = ["Chapter_" + f + ".qmd" for f in nocode]
@@ -38,9 +36,6 @@ for chapter, notebook_in, notebook_out in zip(chapters, notebooks_in, notebooks_
         for cell in js['cells']:
             cell['source'] = [line for line in cell['source'] if not line.strip().startswith('#|')]
         
-        if chapter not in finished:
-            js['cells'].insert(0, construction_cell)
-
         new_cell = {
         "cell_type": "markdown",
         "metadata": {},
@@ -62,11 +57,11 @@ for chapter, notebook_in, notebook_out in zip(chapters, notebooks_in, notebooks_
         ]
         }
         js['cells'].insert(0, new_cell)
-        with open("../book-code/" + notebook_out, 'w') as f:
+        with open("../book-published-code/" + notebook_out, 'w') as f:
             json.dump(js, f, indent=2)    
         subprocess.run("del " + notebook_in, shell=True, check=True)
 
-subprocess.run("git -C ../book-code pull origin main", shell=True, check=True)
-subprocess.run("git -C ../book-code add .", shell=True, check=True)
-subprocess.run('git -C ../book-code commit -m "update notebooks"', shell=True, check=True)
-subprocess.run("git -C ../book-code push origin main", shell=True, check=True)
+subprocess.run("git -C ../book-published-code pull origin main", shell=True, check=True)
+subprocess.run("git -C ../book-published-code add .", shell=True, check=True)
+subprocess.run('git -C ../book-published-code commit -m "update notebooks"', shell=True, check=True)
+subprocess.run("git -C ../book-published-code push origin main", shell=True, check=True)
