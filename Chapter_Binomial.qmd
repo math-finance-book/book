@@ -212,7 +212,7 @@ print('The Value of the European Call is=',Call)
 
 Early exercise \index{early exercise} features are very simple to handle in a binomial framework.  One only has to use the backward induction approach and check the optimality of early exercise at each node.  Exercise is optimal when the intrinsic value of the option exceeds the discounted expected value of the option contingent on not exercising.  When we back up in the tree, we check whether exercise is optimal, and, when it is, we replace the discounted expected value with the intrinsic value.  
 
-Early exercise is more important for puts than for calls (as discussed in @sec-s:fundamentalconcepts, an American call on a dividend-reinvested stock should not be exercised early) so we will change our symbol for the option value from $C$ to $P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
+Early exercise is more important for puts than for calls (an American call on a dividend-reinvested asset should not be exercised early) so we will change our symbol for the option value from $C$ to $P$.  For a put option, we would calculate the value at each node at the end of the tree as described in the previous section: 
 $$
 P(i) = \max\left(0,K-u^{i}d^{N-i}S\right)\;,
 $$ {#eq-binomial003}
@@ -449,7 +449,7 @@ Hence, the derivative price calculated at the middle node will be the price we a
 
 ### Trinomial Valuation of American Options
 
-The trinomial model is a special case of an explicit finite difference method for solving partial differnetial equations studied in @sec-c:pde; however, it requires no knowledge of partial differential equations.  It is similar to a binomial model in that it is a tree. As the name suggests, the trinomial model has three branches up, down, and middle.  The middle branch eliminates the up down behavior and can lead to smoother exercise boundaries.  We will use the following parameterization:  at each node the stock price grows by a factor $u=e^{\sigma \sqrt{3 \Delta t}}$, stays the same, or declines by a factor of $d=1/u$.  In this sense, it inherits some of the tractabilty of the Cox, Ross, and Rubenstein model in the sense that the stock price at all nodes can be expressed as the initial stock price times $u$ to a power.  The probabilities are given by   
+The trinomial model is a special case of an explicit finite difference method for solving partial differnetial equations; however, it requires no knowledge of partial differential equations.  It is similar to a binomial model in that it is a tree. As the name suggests, the trinomial model has three branches up, down, and middle.  The middle branch eliminates the up down behavior and can lead to smoother exercise boundaries.  We will use the following parameterization:  at each node the stock price grows by a factor $u=e^{\sigma \sqrt{3 \Delta t}}$, stays the same, or declines by a factor of $d=1/u$.  In this sense, it inherits some of the tractabilty of the Cox, Ross, and Rubenstein model in the sense that the stock price at all nodes can be expressed as the initial stock price times $u$ to a power.  The probabilities are given by   
 
 $$
 p_u = \frac{1}{6} + \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2}{2}\right)~~~p_m =2/3~~p_d= \frac{1}{6} - \sqrt{\frac{\Delta t}{12 \sigma^2}} \left(r - \frac{\sigma^2}{2}\right)
@@ -766,7 +766,7 @@ else:
 
 Consider two stocks with constant dividend yields $q_i$ and constant volatilities $\sigma_i$.  Suppose the two Brownian motions driving the two stocks have a constant correlation coefficient $\rho$.  We will denote the price of stock $i$ ($i=1,2$) in the up state in each period by $u_iS_i$ and the price in the down state by $d_iS_i$, where $S_i$ is the price at the beginning of the period, and $u_i$ and $d_i$ are parameters to be specified.  In each period, there are four possible combinations of returns on the two stocks:  up for both stocks, up for stock 1 and down for stock~2, down for stock 1 and up for stock 2, and down for both stocks.  Denote the probabilities of these four combinations by $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$ respectively.  Thus, there are eight parameters in the binomial model: the number $N$ of periods (which defines the length of each period as $\Delta t=T/N$ where $T$ is the option maturity), the up and down parameters $u_i$ and $d_i$ for each stock, and three probabilities (the fourth probability being determined by the condition that the probabilities sum to one).
 
-Given the period length $\Delta t$, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns $\Delta S_i/S_i$ or the continuously-compounded returns $\Delta \log S_i$.  There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters.  As in @sec-c:introcomputation, it is convenient to take $d_i = 1/u_i$, leaving five restrictions and five free parameters.
+Given the period length $\Delta t$, we want to choose the up and down parameters and the probabilities to match (or approximately match in an appropriate sense) the means, variances and covariances of the returns $\Delta S_i/S_i$ or the continuously-compounded returns $\Delta \log S_i$.  There are two means, two variances and one covariance, so there are five restrictions to be satisfied and seven parameters.  It is convenient to take $d_i = 1/u_i$, leaving five restrictions and five free parameters.
 
 As discussed in @sec-s:binomialparameters, there are multiple ways to define the binomial model so that it converges to the continuous-time model as the number of periods is increased.  As an example, we will describe here the suggestion of Trigeorgis [@Trigeorgis], \index{Trigeorgis model}which matches the means, variances and covariance of the continuously-compounded returns.
 Letting $p_i$ denote the probability of the up state for stock $i$,  matching the means and variances implies, as in @sec-s:binomialparameters,
@@ -802,37 +802,26 @@ $$ {#eq-prob3}
 
 
 
-We can solve the system @eq-prob1 - @eq-prob3, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a  Python function for valuing an American spread call option are given later.  This function operates much like the binomial valuation of American options described in @sec-c:introcomputation.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
+We can solve the system @eq-prob1 - @eq-prob3, together with the condition that the probabilities sum to one, to obtain the probabilities $p_{uu}$, $p_{ud}$, $p_{du}$, and $p_{dd}$.  This solution and a  Python function for valuing an American spread call option are given later.  This function operates much like the binomial valuation of American options described earlier.  The primary difference is that the value of the option at maturity depends on both stock prices, so we have to consider each possible combination of stock prices.  In an $N$--period model, there are $N+1$ nodes at the final date for each of the two stocks, and hence $(N+1)^2$ possible combinations of nodes.  In fact, at each date $n$ ($n=0,\ldots,N$) there are $(n+1)^2$ combinations of nodes to be considered.  
 The computation time required for a spread call option is therefore roughly the square of the time required for a standard call.  
 
 Likewise, in an $N$--period model for a basket option written on three assets, there are $(n+1)^3$ combinations of nodes to be considered at date $n$; if there are five assets, there are $(n+1)^5$ combinations, etc.  Thus, the computation time required increases exponentially with the number of assets.  This can be a serious problem.  For example, with five assets and $N=99$, we would have $100^5$ (10 billion) combinations.  As this suggests, problems with multiple assets quickly become intractable in a binomial framework.  This is called the curse of dimensionality. \index{curse of dimensionality}  
 
+## Exercises
 
-
-
-
-
-
-
-
-
-
-
-## {.unnumbered}
-
-::: Exercise
+::: {#exr-binomial1}
  Consider an at-the-money European call option on a dividend-reinvested stock with six months to maturity.  Take the initial stock price to be \$50, the interest rate to be 5\% and $\sigma=$30\%.  Compute the value in a binomial model with $N=10, 11, \ldots, 20$ and plot the values against $N$. Plot your results. Is convergence monotone?
 :::
-::: Exercise
+::: {#exr-binomial2}
  Consider the same option as in the previous problem.  Roughly what value of $N$ is needed to get penny accuracy?  (To evaluate the accuracy, compare the price to the price given by the Black-Scholes formula.)
 :::
-::: Exercise
+::: {#exr-binomial3}
  Repeat the two previous problems only instead of the Cox, Ross Rubenstein model, use the Jarrow Rudd model.
 :::
-::: Exercise
+::: {#exr-binomial4}
   The early exercise premium \index{early exercise premium} is the difference between the value of an American option and the value of a European option with the same parameters.  Compute the early exercise premium for an American put and various values for the interest rate, exercise price, and stock parameters.  Under what circumstances is the early exercise premium relatively large?
 :::
-::: Exercise
+::: {#exr-binomial5}
  A shout option is an option where the holder is entitled to shout at any time before the expiration of the option.  Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at the money option with the same expiration as the original option.  The payoff to this option if the holder shouts at time $\tau$ is thus given as $\max(0, S(\tau)-K, S_T-K )$ where $K$ is the original strike price.  
  1) Show that it is better to shout at some time where $S(\tau)>K$ than to never shout at all.
  2) Modify the code for an American put to find the optimal exercise boundary for a shout option.  Hint:  The payoffs on the last nodes of the tree are simply $(S_T - K)^+$. Then work backwards. The `immediate exercise value' which is the present value of $S_t-K$, ($e^{-r(T-t)} (S_t -K)$) plus the Black Scholes value (use a python function) of an at the money option with expiration $T-t$.  Choose the maximum of these values at each node.  For each time store the highest price at which you exersize. The first node (time 0) then gives the price.  Plot the exercise boundary.

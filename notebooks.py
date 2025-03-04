@@ -16,7 +16,10 @@ construction_cell = {
 }
 
 with open("_quarto.yml", "r") as f:
-    lines = [line for line in f.readlines()  if line.strip().startswith("- Chapter")]
+    lines = [
+        line for line in f.readlines()  
+        if line.strip().startswith("- Chapter")
+        ]
 chapters = [line.strip()[2:] for line in lines]
 
 numbers = [f"0{n}" for n in range(1, 10)] + [str(n) for n in range(10, len(chapters) + 1)]

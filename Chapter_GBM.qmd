@@ -1,7 +1,7 @@
 {{< include macros.qmd >}}
 
 
-## Geometric Brownian Motion {#sec-s:geometricbrownianmotion}
+## Geometric Brownian Motion {#sec-c:geometricbrownianmotion}
 
 
 ```{python}
@@ -37,7 +37,7 @@ $$
 S_t=S_0\exp\left(\mu t- \sigma^2 t/2 + \sigma B_t\right)
 $$ {#eq-exponential1}
 
-for constants $\mu$ and $\sigma$, where $B$ is a Brownian motion.  Note that for each time $t$, the random variable $S_t$ in @eq-exponential is a lognormal random variable. Using the product rule and the rule for exponentials, we obtain
+for constants $\mu$ and $\sigma$, where $B$ is a Brownian motion.  Note that for each time $t$, the random variable $S_t$ in @eq-exponential1 is a lognormal random variable. Using the product rule and the rule for exponentials, we obtain
 $$
 \frac{\d  S}{S} = \mu\d   t+\sigma\d   B\;.
 $$ {#eq-Y}
@@ -86,7 +86,7 @@ $$\frac{S_{t_i}}{S_{t_{i-1}}} = \mathrm{e}^{r_i\Delta t}\; ,$$
 which is equivalent to @eq-exponential10.
 Thus, the geometric Brownian motion model (@eq-Y)implies that the continuously compounded annualized rate of return over a period of length $\Delta t$ is given by
 $$r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .$$
-This means that $r_i$ is normally distributed with mean $\mu-\sigma^2/2$ and variance $\sigma^2/\Delta t$.  Given historical data on the rates of return, the parameters $\mu$ and $\sigma$ can be estimated by standard methods (see @sec-c:stochasticvolatility).
+This means that $r_i$ is normally distributed with mean $\mu-\sigma^2/2$ and variance $\sigma^2/\Delta t$.  Given historical data on the rates of return, the parameters $\mu$ and $\sigma$ can be estimated by standard methods.
 
 We can simulate a path of $S$ by simulating the changes $\Delta \log S$.  The random variable $\sigma \Delta B$  in  @eq-exponential11 has a normal distribution with zero mean and variance equal to $\sigma^2\Delta t$.  We simulate it as $\sigma\sqrt{\Delta t}$ multiplied by a standard normal.  The code below simulates $n=10000$ paths with $m=1000$ time steps. There are some features of the simulation which will prove useful later.  The drift $\mu$ is labelled the interest rate $r=0.1$.  Other parameters are $\sigma = 0.2$, and $T=0.5$.  The drift of the log stock price is labelled $drift=r-\frac{\sigma^2}{2}$.  The plot output is one of the simulated sample paths.  In practice, if we are only interested in the terminal value of the stock price we would use many fewer subdivisions, $n=1$.  Given a simulated mean zero normal random variable, $z$, changing the sign to $-z$ is also a simulated normal random variable with zero mean and the same standard deviation.  As a result, we have two simulations for the stock price labelled $St$ and $St1$, but we only plot one sample path for $St$. 
 
@@ -160,7 +160,7 @@ fig.show()
 
 Frequently, we will assume that the asset underlying a derivative security pays a constant dividend yield, \index{dividend yield} which we will denote by $q$.  This means, for an asset with price $S_t$, that the dividend in an instant $\d  t$ is $q S_t\d   t$.  If the dividends are reinvested in new shares, the number of shares will grow exponentially at rate $q$.  To see this, consider the portfolio starting with a single share of the asset and reinvesting dividends until some date $T$.  Let $X_t$ denote the number of shares resulting from this strategy at any time $t\leq T$.  Then the dividend received at date $t$ is $q S_tX_t\d   t$, which can be used to purchase $q X_t\d   t$ new shares.  This implies that $\d  X_t=q X_t\d   t$, or $\d  X_t/\d  t = q X_t$, and it is easy to check (and very well known) that this equation is solved by $X_t=\mathrm{e}^{q t}X_0$.  In our case, with $X_0=1$, we have $X_t=\mathrm{e}^{q t}$.
 
-The dollar value of the trading strategy just described will be $X_tS_t = \mathrm{e}^{q t}S_t$.  Denote this by $V_t$.  This is the value of a dividend-reinvested portfolio, because all dividends are reinvested.  From the Compounding/Discounting example in @sec-s:examples, we know that
+The dollar value of the trading strategy just described will be $X_tS_t = \mathrm{e}^{q t}S_t$.  Denote this by $V_t$.  This is the value of a dividend-reinvested portfolio, because all dividends are reinvested.  From Ito's Formula for compounding and discounting, we know that
 $$ 
 \frac{\d  V}{V} = q\d   t + \frac{\d  S}{S}\;.
 $$ {#eq-reinvestingdividends}
@@ -251,7 +251,7 @@ where $d$ is defined in @eq-tailprob3.
 
 ## Products and Ratios of Geometric Brownian Motions {#sec-s:volatilities}
 
-As mentioned in @sec-s:geometricbrownianmotion, when we encounter an equation of the form 
+As mentioned in @sec-c:geometricbrownianmotion, when we encounter an equation of the form 
 $$\frac{\d  S}{S} = \mu\d   t + \sigma\d   B$$
 where $B$ is a Brownian motion, we will say  $\sigma$ is the volatility of $S$.   We will occasionally need to compute the volatilities of products or ratios of random processes.  These computations follow directly from Ito's formula.
 
@@ -340,17 +340,17 @@ where $\mu$ and $\sigma$ can also be modelled as Ito processes.  The explicit so
 $$ S(t)= S(0) \exp\left(\int_0^t \left(\mu_s - \frac{\sigma_s}{2} \right) \d s + \int_0^t \sigma_s \d B_s \right). $$
 Importantly, this solution is nonnegative if $S(0)>0$.  More importantly, the prouct and ratio rules remain valid even when the coefficients are stochastic, although some regularity is required to ensure various integrals are defined.
 
-## {.unnumbered}
+## Exercises
 
 
-::: Exercise
+::: {#exr-gbm1}
 Use Ito's Lemma to derive the stochastic differential equation for $S_t^2$.  Argue that $S(t)^2$ is geometric Brownian motion if $\mu$ and $\sigma$ are constants and find $\E[S(t)^2]$.
 ::: 
 
-::: Exercise 
+::: {#exr-gbm2} 
 Use the facts $e^{x+y}=e^x \times e^y$ and $\frac{e^x}{e^y} = e^{x-y}$ to deduce the drift and volatility of the product and ratio of two geometric Brownian motions.
 ::: 
-::: Exercise
+::: {#exr-gbm3}
  Consider a discrete partition $0=t_0 < t_1 < \cdots t_N=T$ of the time interval $[0,T]$ with $t_i - t_{i-1} = \Delta t = T/N$ for each $i$.  Consider a geometric Brownian motion
 $$\frac{\d  Z}{Z} = \mu\d   t + \sigma\d   B\; .$$
 An approximate path $\tilde{Z}_t$ of the geometric Brownian motion can be simulated as
