@@ -75,10 +75,10 @@ $$
 $$ {#eq-Y}
 When we see an equation of the form @eq-Y, we should recognize @eq-exponential1 as the solution. 
 
-The process $S$ is called a geometric Brownian motion.  In keeping with the discussion of @sec-s:itoprocesses, we interpret @eq-Y as stating that $\mu\d   t$ is the expected rate of change of $S$ and $\sigma^2\d   t$ is the variance of the rate of change in an instant $\d  t$.  We call $\mu$ the drift and $\sigma$ the volatility.  The geometric Brownian motion grows at the average rate of $\mu$, in the sense that $\E[S_t] = \mathrm{e}^{\mu t}S_0$.  This can be verified with the aid of @eq-lognormal.
+The process $S$ is called a geometric Brownian motion.  We interpret @eq-Y as stating that $\mu\d   t$ is the expected rate of change of $S$ and $\sigma^2\d   t$ is the variance of the rate of change in an instant $\d  t$.  We call $\mu$ the **drift** and $\sigma$ the **volatility**.  The geometric Brownian motion grows at the average rate of $\mu$, in the sense that $\E[S_t] = \mathrm{e}^{\mu t}S_0$.  This can be verified with the aid of @eq-lognormal.
 
-If $\mu=0$, then $\E[S_t] = S_0$.  In fact, a geometric Brownian motion $S$ as in @eq-exponential1 and @eq-Y is a martingale when $\mu=0$.  It is an example of what is called an exponential martingale.  An exponential is always positive, so an exponential martingale is always positive.
- 
+If $\mu=0$, then $\E[S_t] = S_0$.  In fact, a geometric Brownian motion $S$ as in @eq-exponential1 and @eq-Y is a martingale when $\mu=0$.  It is an example of what is called an **exponential martingale**.  An exponential is always positive, so an exponential martingale is always positive.
+
 Taking the natural logarithm of @eq-exponential1 gives an equivalent form of the solution:
 $$
 \log S_t= \log S_0+\left(\mu -\frac{1}{2}\sigma^2\right)t + \sigma B_t\;.
@@ -119,7 +119,7 @@ steps = np.random.normal(
 )
 logS = np.empty(n+1)
 logS[0] = np.log(S0)
-logS[1:] = np.cumsum(steps)
+logS[1:] = logS[0] + np.cumsum(steps)
 S = np.exp(logS)
 
 fig = go.Figure(
@@ -127,14 +127,14 @@ fig = go.Figure(
         x=np.arange(0, T+dt, dt),
         y=S,
         mode="lines",
-        hovertemplate="t = %{x:.2f}<br>B = %{y:.2f}<extra></extra>", #
+        hovertemplate="t = %{x:.2f}<br>S = %{y:.2f}<extra></extra>", #
     )
 )
 
 fig.update_layout(
     showlegend=False,
     xaxis_title="Time",
-    yaxis_title="Simulated Geometric Brownian Motion",
+    yaxis_title="Simulated GBM",
     template="plotly_white",
     height=300,
 )
@@ -144,22 +144,21 @@ fig.show()
 
 ## Continuously Compounded Returns
 
-Given a rate of return $r$ over a time period of $\Delta t$ years, the annualized continuously compounded return is defined to be the number $x$ such that $\e^{x\Delta t} = 1+r$; equivalently, $x = \log(1+r) / \Delta t$.  
-We frequently take "annualized" for granted and just say "continuously compounded return."  As an example, if you earn 1\% in a month, then the continuously compounded return is $\log (1.01) / (1/12) = 0.1194$.  The reason for the name "continuously compounded" is that compounding a monthly rate of interest of $0.1194/12$ $n$ times during a month produces a total return over the month of 
+Given a rate of return $r$ over a time period of $\Delta t$ years, the annualized continuously compounded return is defined to be the number $x$ such that $\e^{x\Delta t} = 1+r$; equivalently, $x = \log(1+r) / \Delta t$.  We frequently take "annualized" for granted and just say "continuously compounded return."  As an example, if you earn 1\% in a month, then the continuously compounded return is $\log (1.01) / (1/12) = 0.1194$.  
+
+The reason for the name "continuously compounded" is that compounding a monthly rate of interest of $0.1194/12$ for a total of $n$ times during a month produces a total return over the month of 
 $$\left(1 + \frac{0.1194/12}{n}\right)^ n - 1\,,$$
 which converges to $0.01$ as $n \rightarrow \infty$.  Thus, compounding an infinite number of times during a month at an annual rate of $0.1194$ (equal to a monthly rate of $0.1194/12$) is equivalent to the actual 1\% return.^[ The reason for considering this concept is that compound returns like $(1+r_1)(1+r_2)$ are simpler to analyze in some contexts as $\e^{x_1+x_2}$.]
 
 Given a dividend-reinvested asset price $S$, the rate of return from date $t_1$ to $t_2$ is $S_{t_2}/S_{t_1} - 1$.  Denote this rate of return by $r$ and defined the corresponding continuously compounded return
-$$x = \log(1+r) = \log\left(\frac{S_{t_2}}{S_{t_1}}) = \log S_{t_2} - \log S_{t_1}\,.$$
-Using @eq-exponential3, we see that the continuously compounded return is 
+$$x = \log(1+r) = \log\left(\frac{S_{t_2}}{S_{t_1}}\right) = \log S_{t_2} - \log S_{t_1}\,.$$
+Using @eq-exponential2, we see that the continuously compounded return is 
 $$
-x = \left(\mu -\frac{1}{2}\sigma^2\right)(t_2-t_1)+ \sigma\,(B_{t_2} - B_{t_1})\;.
+x = \log S_{t_2} - \log S_{t_1} = \left(\mu -\frac{1}{2}\sigma^2\right)(t_2-t_1)+ \sigma\,(B_{t_2} - B_{t_1})\;.
 $$ {#eq-exponential11}
 Thus, from the vantage point of date $t_1$, the continuously compounded return is normally distributed with mean
-$$\left(\mu -\frac{1}{2}\sigma^2\right)$$
-and variance $\sigma^2 \Delta t$, where we define $\Delta t = t_2-t_1$. 
-$$r_i = \mu -\frac{1}{2}\sigma^2+ \frac{\sigma\Delta B}{\Delta t}\; .$$
-Given historical data on the rates of return, the parameters $\mu$ and $\sigma$ can be estimated by standard methods.
+$$\left(\mu -\frac{1}{2}\sigma^2\right)\Delta t$$
+and variance $\sigma^2 \Delta t$, where we define $\Delta t = t_2-t_1$.  Given historical data on rates of return, the parameters $\mu$ and $\sigma$ can be estimated by standard methods.
 
 
 ## Tail Probabilities of Geometric Brownian Motions {#sec-tailprobs}
@@ -239,10 +238,13 @@ Let
 \begin{align*}
 \frac{\d S_1}{S_1} &= \mu_1\d t + \sigma_1 \d B_1\\
 \frac{\d S_2}{S_2} &= \mu_1\d t + \sigma_2 \d B_2
-where the $\mu_i$ and $\sigma_i$ are constants and $B_1$ and $B_2$ are Brownian motions with correlation $\rho$.  
+\end{align*}
+where the $\mu_i$ and $\sigma_i$ are constants and $B_1$ and $B_2$ are Brownian motions with constant correlation $\rho$.  
+
 1. Define $Y=S_1S_2$.  Show that $Y$ is a geometric Brownian motion and calculate its drift and volatility.
 2. Repeat for $Y=S_1/S_2$.  
-Hint: use the facts $\e^{x+y}=\e^x \times \e^y$ and $\frac{\e^x}{\e^y} = \e^{x-y}$.
+
+Hint: use the facts $\e^{x+y}=\e^x \times \e^y$ and $\e^x/\e^y = \e^{x-y}$.
 ::: 
 :
 
