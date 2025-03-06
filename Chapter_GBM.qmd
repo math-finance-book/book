@@ -98,7 +98,7 @@ $$\d  \log S = \left(\mu -\frac{1}{2}\sigma^2\right)\d   t+ \sigma\d   B\; .$$
 The solution of both equations is @eq-exponential1 or the equivalent @eq-exponential2.
 :::
 
-We can simulate a path of a geometric Brownian motion $S$ by first simulating $\log S$ and then computing the exponential.  We simulate the changes $\Delta \log S$ as normally distributed random variables with zero mean and variance equal to $\sigma^2\Delta t$.  We could also simulate the changes $\Delta \log S$ using a binomial model as in @sec-s:brownian_binomial.
+We can simulate a path of a geometric Brownian motion $S$ by first simulating $\log S$ and then computing the exponential.  We simulate the changes $\Delta \log S$ as normally distributed random variables with mean equal to $(\mu-\sigma^2/2)\Delta t$ and variance equal to $\sigma^2\Delta t$.  We could also simulate the changes $\Delta \log S$ using a binomial model as in @sec-s:brownian_binomial.
 
 ```{python}
 #| label: fig-gbm-sim
@@ -108,12 +108,12 @@ import plotly.graph_objects as go
 
 n = 1000     # number of divisions
 mu = 0.1    # drift
-sigma = 0.3 # Volatility
+sigma = 0.3 # volatility
 S0 =  100   # initial value
 T = 1       # length of simulation
 dt = T / n  # Delta t
 steps = np.random.normal(
-    loc = 0, 
+    loc = mu-0.5*sigma**2, 
     scale = sigma*np.sqrt(dt),
     size = n
 )
