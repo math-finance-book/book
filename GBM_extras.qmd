@@ -30,3 +30,100 @@ $$X_t = \exp\left(-\frac{\kappa^2}{2} + \kappa B_t\right)$$
 satisfies $\E[X_t]=1$ and $\E[X_t|X_s]=X_s$ and is an important example of a strictly positive martingale.  Again, these facts can be verified using the formula for the expected value of a lognormal random variable.  Notice that we can write
 $$\d   X_t= \kappa X_t \d   B_t\;,$$
 which agrees with the martingale characterization of $\int_0^t \sigma(X_t,t) \d   B_t$.
+
+## Products and Ratios of Geometric Brownian Motions {#sec-s:volatilities}
+
+As mentioned before, when we encounter an equation of the form 
+$$\frac{\d  S}{S} = \mu\d   t + \sigma\d   B$$
+where $B$ is a Brownian motion, we say that  $\sigma$ is the volatility of $S$.   We will occasionally need to compute the volatilities of products or ratios of random processes.  These computations follow directly from Ito's formula.
+
+Suppose 
+$$\frac{\d  X}{X} = \mu_x\d   t + \sigma_x\d   B_x \qquad \text{and} \qquad 
+\frac{\d  Y}{Y} = \mu_y\d   t + \sigma_y\d   B_y\; ,$$
+where $B_x$ and $B_y$ are Brownian motions with correlation $\rho$, and $\mu_x$, $\mu_y$, $\sigma_x$, $\sigma_y$, and $\rho$ may be quite general random processes.  
+
+### Products
+If $Z=XY$, then @eq-rule2 gives us
+$$
+\frac{\d  Z}{Z} = (\mu_x+\mu_y+\rho\sigma_x\sigma_y)\d   t + \sigma_x\d   B_x + \sigma_y\d   B_y\;.
+$$ {#eq-volproduct1}
+
+The instantaneous variance of $\d  Z/Z$ is calculated, using the rules for products of differentials, as
+\begin{align*}
+\left(\frac{\d  Z}{Z}\right)^2 &= (\sigma_x\d   B_x + \sigma_y\d   B_y)^2\\
+&= (\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y)\d   t\;.
+\end{align*}
+As will be explained below, the volatility is the square root of the instantaneous variance (dropping the $\d  t$).  This implies:
+
+::: Rule
+## 
+The volatility of $XY$ is
+$$
+\sqrt{\sigma_x^2 + \sigma_y^2 + 2\rho\sigma_x\sigma_y}\;.
+$$ {#eq-volatilityproduct}
+
+:::
+
+
+### Ratios
+If $Z=Y/X$, then @eq-rule4 gives us
+$$
+\frac{\d  Z}{Z} = (\mu_y-\mu_x-\rho\sigma_x\sigma_y+\sigma_x^2)\d   t + \sigma_y\d   B_y - \sigma_x\d   B_x\;.
+$$ {#eq-ratioproduct1}
+
+The instantaneous variance of $\d  Z/Z$ is therefore
+\begin{align*}
+\left(\frac{\d  Z}{Z}\right)^2 &= (\sigma_y\d   B_y - \sigma_x\d   B_x)^2\\
+&= (\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y)\d   t\;.
+\end{align*}
+This implies:
+
+::: Rule
+## 
+The volatility of $Y/X$ is  
+$$
+\sqrt{\sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y}\;.
+$$ {#eq-volatilityratio}
+
+:::
+
+
+
+
+::: Extra
+To understand why taking the square root of $(\d  Z/Z)^2$ (dropping the $\d  t$) gives the volatility, consider for example the product case $Z=XY$.  Define a random process $B$ by $B_0=0$ and 
+$$
+\d  B = \frac{\sigma_x}{\sigma}\d   B_x + \frac{\sigma_y}{\sigma}\d   B_y\;,
+$$ {#eq-foreign\d   B}
+
+where $\sigma$ is the volatility defined in @eq-volatilityproduct.
+Then we can write  @eq-volproduct1 as
+$$
+\frac{\d  Z}{Z} = \left(\mu_x +\mu_y+ \rho\sigma_x\sigma_y\right)\d   t + \sigma\d   B\;.$$ {#eq-volproduct2}
+
+From the discussion in @sec-s:itoprocesses, we know that $B$ is a continuous martingale.  We can compute its quadratic variation from
+\begin{align*}
+(\d  B)^2 &= \left(\frac{\sigma_x\d   B_x + \sigma_s\d   B_s}{\sigma}\right)^2\\
+&= \frac{(\sigma_x^2 + \sigma_s^2 + 2\rho\sigma_x\sigma_s)\d   t}{\sigma^2}\; ,\\
+&= \d  t\;.
+\end{align*}
+By Levy's theorem (see @sec-s:quadraticvariation), any continuous martingale with this quadratic variation is necessarily a Brownian motion.  Therefore,  @eq-volproduct2 shows that $\sigma$ is the volatility of $Z$ as defined at the beginning of the section.
+:::
+
+
+:: {#exr-gbm3}
+ Consider a discrete partition $0=t_0 < t_1 < \cdots t_N=T$ of the time interval $[0,T]$ with $t_i - t_{i-1} = \Delta t = T/N$ for each $i$.  Consider a geometric Brownian motion
+$$\frac{\d  Z}{Z} = \mu\d   t + \sigma\d   B\; .$$
+An approximate path $\tilde{Z}_t$ of the geometric Brownian motion can be simulated as
+$$
+\Delta \tilde{Z}_{t_i} = \tilde{Z}_{t_{i-1}} \big[ \mu\,\Delta t + \sigma\,\Delta B\big]\;.
+$$ {#eq-exponential111}
+Modify the code to generate both a path $Z_t$ and an approximate path $\tilde{Z}_t$ according to @eq-exponential111, using the same $\Delta B$  for both paths and taking $\tilde{Z}_0 = Z_0$.  Plot both paths in the same figure.  How well does the approximation work for large $N$?   Warning:  
+For $N$ larger than about $100 T$, the approximation will look perfect---you won't be able to tell that there are two plots in the figure.  One reason this is true is an exact formula is 
+$$
+ Z_{t_i} = Z_{t_{i-1}} \exp\left[ \left(\mu -\frac{\sigma^2}{2}\right)\,\Delta t + \sigma\,\Delta B\right]\;.
+$$ {#eq-exponential112}
+and using Taylor's Theorem for small $\Delta t$, $e^{\left(\mu-\frac{\sigma^2}{2}\right) \Delta t} \approx 1+ \left(\mu-\frac{\sigma^2}{2}\right) \Delta t$ and $e^{\sigma \Delta B_t} \approx 1+ \sigma \Delta B_t +\frac{1}{2}\sigma^2 (\Delta B_t)^2$ and $(\d   B_t)^2=\Delta t$.
+:::
+
+
