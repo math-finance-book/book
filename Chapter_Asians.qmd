@@ -23,7 +23,7 @@ This chapter addresses some "non-vanilla" options that are very important for he
 
 ## Asian Options
 
-An Asian option is an option the value of which depends on the average underlying asset price during the lifetime of the option.  Average-price calls and puts are defined like standard calls and puts but with the final asset price replaced by the average price.  Average-strike calls and puts are defined like standard calls and puts but with the exercise price replaced by the average asset price.   A firm that must purchase an input at frequent intervals or will sell a product in a foreign currency at frequent intervals can use an average price option as an alternative to buying multiple options with different maturity dates.  The average-price option will generally be both less expensive and a better hedge than purchasing multiple options.
+An Asian option is an option whose value depends on the average underlying asset price during the lifetime of the option.  Average-price calls and puts are defined like standard calls and puts but with the final asset price replaced by the average price.  Average-strike calls and puts are defined like standard calls and puts but with the exercise price replaced by the average asset price.   A firm that must purchase an input at frequent intervals or will sell a product in a foreign currency at frequent intervals can use an average price option as an alternative to buying multiple options with different maturity dates.  The average-price option will generally be both less expensive and a better hedge than purchasing multiple options.
 
 In practice, the average price is computed by averaging over the prices sampled at a finite number of discrete dates.  First, we consider the case of continuous sampling.  With continuous sampling, the average price at date $T$ for an option written at date $0$ will be denoted by $A_T$ and is defined as
 $$
@@ -226,7 +226,28 @@ The following code computes the price of a geometric-average-price call.
 
 #| code-fold: true
 #| label: Geometric_Average_Price_Calls
-"""
+import numpy as np
+from scipy.stats import norm
+
+def black_scholes_call(S, K, r, sigma, q, T):
+    """
+    Inputs:
+    S = initial stock price
+    K = strike price
+    r = risk-free rate
+    sigma = volatility
+    q = dividend yield
+    T = time to maturity
+    """
+    if sigma <= 0 or T <= 0:
+        return max(0, np.exp(-q * T) * S - np.exp(-r * T) * K)
+    
+    d1 = (np.log(S / K) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    N1 = norm.cdf(d1)
+    N2 = norm.cdf(d2)
+    return np.exp(-q * T) * S * N1 - np.exp(-r * T) * K * N2
+
 def discrete_geom_average_price_call(S, K, r, sigma, q, T, N):
     dt = T / N
     nu = r - q - 0.5 * sigma ** 2
@@ -235,8 +256,16 @@ def discrete_geom_average_price_call(S, K, r, sigma, q, T, N):
     sigavg = sigma * np.sqrt(a) / (N ** 1.5)
     return black_scholes_call(V, K, r, sigavg, q, T)
 
+S=60
+K=50
+r=0.05
+sigma=0.2
+q=0
+T=1
+N=100
+
 print("Discrete Geometric Average Price Call:", discrete_geom_average_price_call(S, K, r, sigma, q, T, N))
-"""
+
 ```
 
 
