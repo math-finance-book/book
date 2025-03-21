@@ -48,13 +48,14 @@ The down-and-out call will pay $\max(0,S_T-K)$ if $z > L$ and 0 otherwise,
 at its maturity T.  
 Let
 $$
-x = \begin{cases} 1 & \text{if $S_T>K$ and $z > L$\;,}\\
-0 & \text{otherwise\;.} \end{cases}
+x = \begin{cases} 1 & \text{if $S_T>K$ and $z > L$;,}\\
+0 & \text{otherwise;.} \end{cases}
 $$
 Then the value of the down-and-out call at maturity is
 $$
 xS_T - xK\; .
 $$
+
 ### Numeraires
 As in other cases, the value at date $0$ can be written as
 $$
@@ -111,8 +112,8 @@ $$ {#eq-casea41}
 
 
 2. Suppose $K \leq L$.  Then the condition $S_T>K$ in the definition of the event $x=1$ is redundant: if $z > L \geq K$, then it is necessarily true that $S_T>K$.  Therefore, the probability (under either numeraire) of the event $x=1$ is the probability that $z > L$.  Define
-$$y = \begin{cases} 1 & \text{if $S_T>L$ and $z \leq L$\;,}\\
-0 & \text{otherwise\;.} \end{cases}
+$$y = \begin{cases} 1 & \text{if $S_T>L$ and $z \leq L$;,}\\
+0 & \text{otherwise;.} \end{cases}
 $$
 
 The event $S_T>L$ is the union of the disjoint events $x=1$ and $y=1$.  Therefore, as in the previous case (but now with $K$ replaced by $L$),
@@ -171,7 +172,8 @@ The following code computes the price of a down and out call option.
 #| code-fold: true
 #| label: Down-And_Out_Call
 
-"""
+import numpy as np
+from scipy.stats import norm
 
 def down_and_out_call(S, K, r, sigma, q, T, Barrier):
     if K > Barrier:
@@ -195,8 +197,15 @@ def down_and_out_call(S, K, r, sigma, q, T, Barrier):
     q2 = N2 - (Barrier / S) ** y * N2prime
 
     return np.exp(-q * T) * S * q1 - np.exp(-r * T) * K * q2
+
+S=100
+K=120
+r=0.05
+sigma=0.2
+q=0
+T=1
 print("Down and Out Call:", down_and_out_call(S, K, r, sigma, q, T, 80))
-"""
+
 ```
 
 
@@ -242,7 +251,7 @@ Using the fact that $[1-\mathrm{N}(-d_1)]\mathrm{e}^{-qT}S_0=\mathrm{e}^{-qT}S_0
 ### Floating-Strike Lookback Call Pricing Formula
 
 ::: Rule
-## 
+
 The value at date $0$ of a continuously-sampled floating-strike lookback call, given that the minimum price during the lifetime of the contract through date $0$ is $S_{\text{min}}$ and the remaining time to maturity is $T$, is
 
 $$
@@ -261,6 +270,9 @@ The following program calculates the price of a floating strike lookback option.
 
 #| code-fold: true
 #| label: Floating_Strike_Lookback
+
+import numpy as np
+from scipy.stats import norm
 
 def floating_strike_call(S, r, sigma, q, T, SMin):
     d1 = (np.log(S / SMin) + (r - q + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
@@ -281,7 +293,7 @@ q = 0.02
 T=1
 
 
-# print("Floating Strike Call:", floating_strike_call(S, r, sigma, q, T, 90))
+print("Floating Strike Call:", floating_strike_call(S, r, sigma, q, T, 90))
 
 ```
 
@@ -307,14 +319,16 @@ S_T > S^* \quad\text{and}\quad S_{T'}>K'\;.
 $$ {#eq-compound1}
 
 Let
+$$
 \begin{align*}
-x&= \begin{cases} 1 &\text{if $S_T>S^*$\;,}\\
-                               0 & \text{otherwise\;,}
+x&= \begin{cases} 1 &\text{if $S_T>S^*$;,}\\
+                               0 & \text{otherwise;,}
         \end{cases}\\
-y&= \begin{cases} 1 &\text{if $S_T>S^*$ and $S_{T'}>K'$\;,}\\
-                               0 & \text{otherwise\;.}
+y&= \begin{cases} 1 &\text{if $S_T>S^*$ and $S_{T'}>K'$;,}\\
+                               0 & \text{otherwise;.}
         \end{cases} 
 \end{align*} 
+$$
 The cash flows of the compound option are $-xK$ at date $T$ and $yS_{T'}-yK'$ at date $T'$.  We can value the compound option at date $0$ by valuing these separate cash flows.
 
 The cash flow $-xK$ is the cash flow from being short $K$ digital options on the underlying asset with strike price $S^*$ and maturity $T$.  Therefore the value at date $0$ of this cash flow is $-\mathrm{e}^{-rT}K\mathrm{N}(d_2)$, where
@@ -388,7 +402,7 @@ We conclude:
 
 
 ::: Rule
-## 
+
 The value of a call on a call is
 
 $$
@@ -431,7 +445,7 @@ We leave it as an exercise to confirm the following.
 
 
 ::: Rule
-## 
+
 The value of a call on a put is
 
 $$
@@ -602,28 +616,31 @@ Tu = 1
 
 We will consider here an option written on the maximum or minimum of two asset prices; for example, a call on the maximum pays
 $$
-\max(0,\max(S_1_T, S_2_T)-K) = \max(0,S_1_T-K,S_2_T-K)
+\max(0,\max(S_1(T), S_2(T))-K) = \max(0,S_1(T)-K,S_2(T)-K)
 $$
-at maturity $T$.  There are also call options on $\min(S_1_T, S_2_T)$ and put options on the maximum and minimum of two (or more) asset prices.  Pricing formulas for these options are due to Stulz [@Stulz], who also discusses applications.  We will assume the two assets have constant dividend yields $q_i$, constant volatilities $\sigma_i$, and a constant correlation $\rho$.
+at maturity $T$.  There are also call options on $\min(S_1(T), S_2(T))$ and put options on the maximum and minimum of two (or more) asset prices.  Pricing formulas for these options are due to Stulz [@Stulz], who also discusses applications.  We will assume the two assets have constant dividend yields $q_i$, constant volatilities $\sigma_i$, and a constant correlation $\rho$.
 
 \vfil\eject
 ### Call-on-the-Max Payoff
 To value the above option, define the random variables:
 \begin{align*}
-x&= \begin{cases} 1 & \text{if $S_1_T>S_2_T$ and $S_1_T>K$}\; ,\\
+x&= \begin{cases} 1 & \text{if $S_1(T)>S_2(T)$ and $S_1(T)>K$}\; ,\\
 0 & \text{otherwise}\;, \end{cases}\\
-y&= \begin{cases} 1 & \text{if $S_2_T> S_1_T$ and $S_2_T>K$}\; ,\\
+y&= \begin{cases} 1 & \text{if $S_2(T)> S_1(T)$ and $S_2(T)>K$}\; ,\\
 0 & \text{otherwise}\;, \end{cases}\\
-z&= \begin{cases} 1 & \text{if $S_1_T > K$ or $S_2_T> K$}\; ,\\
+z&= \begin{cases} 1 & \text{if $S_1(T) > K$ or $S_2(T)> K$}\; ,\\
 0 & \text{otherwise}\;. \end{cases}
 \end{align*}
 Then the value of the option at maturity is
-$$xS_1_T + yS_2_T - zK\; .$$
+$$
+xS_1(T) + yS_2(T) - zK\; .
+$$
+
 ### Numeraires
-Consider numeraires  $V_1_t = \mathrm{e}^{q_1t}S_1_t$,  $V_2_t=\mathrm{e}^{q_2t}S_2_t$, and $R_t=\mathrm{e}^{rt}$.
+Consider numeraires  $V_1(t) = \mathrm{e}^{q_1t}S_1(T)$,  $V_2(t)=\mathrm{e}^{q_2t}S_2(T)$, and $R_t=\mathrm{e}^{rt}$.
 By familiar arguments, the value of the option at date $0$ is
 \begin{multline*}
-\mathrm{e}^{-q_1T}S_1_0\times\text{prob}^{V_1}(x=1) + \mathrm{e}^{-q_2T}S_2_0\times\text{prob}^{V_2}(y=1) \\- \mathrm{e}^{-rT}K\times\text{prob}^R(z=1)\; .
+\mathrm{e}^{-q_1T}S_1(0)\times\text{prob}^{V_1}(x=1) + \mathrm{e}^{-q_2T}S_2(0)\times\text{prob}^{V_2}(y=1) \\- \mathrm{e}^{-rT}K\times\text{prob}^R(z=1)\; .
 \end{multline*}
 
 ### Calculating Probabilities
@@ -637,19 +654,21 @@ We will begin by calculating $\text{prob}^{V_1}(x=1)$.  From the second and thir
 \end{align*}
 where $B^*_{1}$ and $B^*_{2}$ are Brownian motions when we use $V_1$ as the numeraire.
 Thus,
+$$
 \begin{align*}
-\log S_1_T &= \log S_1_0 + \left(r-q_1+\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}_T\; ,\\
-\log S_2_T &= \log S_2_0 + \left(r-q_2+\rho\sigma_1\sigma_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}_T\;.
+\log S_1(T) &= \log S_1(0) + \left(r-q_1+\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}(T)\; ,\\
+\log S_2(T) &= \log S_2(0) + \left(r-q_2+\rho\sigma_1\sigma_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}(T)\;.
 \end{align*}
-The condition $\log S_1_T > \log K$ is therefore equivalent to 
+$$
+The condition $\log S_1(T) > \log K$ is therefore equivalent to 
 
 $$
-  -\frac{1}{\sqrt{T}}B^*_{1}_T < d_{11}\;,
+  -\frac{1}{\sqrt{T}}B^*_{1}(T) < d_{11}\;,
 $$ {#eq-max1}
 
-and the condition $\log S_1_T>\log S_2_T$ is equivalent to
+and the condition $\log S_1(T)>\log S_2(T)$ is equivalent to
 $$
-\frac{\sigma_2B^*_{2}_T-\sigma_1B^*_{1}_T}{\sigma\sqrt{T}} < d_1\;,
+\frac{\sigma_2B^*_{2}(T)-\sigma_1B^*_{1}(T)}{\sigma\sqrt{T}} < d_1\;,
 $$ {#eq-max2}
 
 
@@ -661,11 +680,11 @@ $$ {#eq-max2a}
 and
 
 $$
-d_1 = \frac{\log\left(\frac{S_1_0}{S_2_0}\right)+\left(q_2-q_1+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
+d_1 = \frac{\log\left(\frac{S_1(0)}{S_2(0)}\right)+\left(q_2-q_1+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\;, \qquad d_2 = d_1 - \sigma\sqrt{T}\;,
 $$ {#eq-max4}
 
 $$
-d_{11}=\frac{\log\left(\frac{S_1_0}{K}\right)+\left(r-q_1+\frac{1}{2}\sigma_1^2\right)T}{\sigma_1\sqrt{T}}\;, \qquad d_{12} = d_{11} - \sigma_1\sqrt{T}\;.
+d_{11}=\frac{\log\left(\frac{S_1(0)}{K}\right)+\left(r-q_1+\frac{1}{2}\sigma_1^2\right)T}{\sigma_1\sqrt{T}}\;, \qquad d_{12} = d_{11} - \sigma_1\sqrt{T}\;.
 $$ {#eq-max3}
 
 
@@ -681,7 +700,7 @@ where $\mathrm{M}$ again denotes the bivariate normal distribution function.
 
 2. The probability $\text{prob}^{V_2}(y=1)$ is exactly symmetric to $\text{prob}^{V_1}(x=1)$, with the roles of $S_1$ and $S_2$ interchanged. Note that the mirror image of $d_1$ defined in @eq-max4 is
 $$
-\frac{\log\left(\frac{S_2_0}{S_1_0}\right)+\left(q_1-q_2+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,
+\frac{\log\left(\frac{S_2(0)}{S_1(0)}\right)+\left(q_1-q_2+\frac{1}{2}\sigma^2\right)T}{\sigma\sqrt{T}}\; ,
 $$
 which equals $-d_2$.
 Therefore,
@@ -690,7 +709,7 @@ Therefore,
 \end{equation*}
 where
 $$
-d_{21}=\frac{\log\left(\frac{S_2_0}{K}\right)+\left(r-q_2+\frac{1}{2}\sigma_2^2\right)T}{\sigma_2\sqrt{T}},\qquad d_{22} = d_{21}-\sigma_2\sqrt{T}\;,
+d_{21}=\frac{\log\left(\frac{S_2(0)}{K}\right)+\left(r-q_2+\frac{1}{2}\sigma_2^2\right)T}{\sigma_2\sqrt{T}},\qquad d_{22} = d_{21}-\sigma_2\sqrt{T}\;,
 $$ {#eq-max31}
 
 and
@@ -698,23 +717,27 @@ $$
 \rho_2 = \frac{\sigma_2-\rho\sigma_1}{\sigma}\; .
 $$
 3. As usual, we have
+
+$$
 \begin{align*}
-\log S_1_T &= \log S_1_0 + \left(r-q_1-\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}_T\; ,\\
-\log S_2_T &= \log S_2_0 + \left(r-q_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}_T\;,
+\log S_1(T) &= \log S_1(0) + \left(r-q_1-\frac{1}{2}\sigma_1^2\right)T +\sigma_1B^*_{1}(T)\; ,\\
+\log S_2(T) &= \log S_2(0) + \left(r-q_2-\frac{1}{2}\sigma_2^2\right)T +\sigma_2B^*_{2}(T)\;,
 \end{align*}
+$$
+
 where $B^*_{1}$ and $B^*_{2}$ now denote Brownian motions under the risk-neutral probability.  The event $z=1$ is the complement of the event
 $$
-S_1_T\leq K \quad \text{and} \quad S_2_T\leq K\; ,
+S_1(T)\leq K \quad \text{and} \quad S_2(T)\leq K\; ,
 $$
 which is equivalent to 
 
 $$
-\frac{1}{\sqrt{T}}B^*_{1}_T < -d_{12}\;,
+\frac{1}{\sqrt{T}}B^*_{1}(T) < -d_{12}\;,
 $$ {#eq-max32}
 
 and
 $$
-\frac{1}{\sqrt{T}}B^*_{2}_T < -d_{22}\;.
+\frac{1}{\sqrt{T}}B^*_{2}(T) < -d_{22}\;.
 $$ {#eq-max42}
 
 
@@ -731,13 +754,12 @@ Therefore,
 
 
 ::: Rule
-## 
 
 The value of a call option on the maximum of two risky asset prices with volatilities $\sigma_1$ and $\sigma_2$ and correlation $\rho$ is
 
 $$
 \begin{multline}
-\mathrm{e}^{-q_1T}S_1_0\mathrm{M}\!\left(d_{11},d_1,\frac{\sigma_1-\rho\sigma_2}{\sigma}\right) + \mathrm{e}^{-q_2T}S_2_0\mathrm{M}\!\left(d_{21},-d_2,\frac{\sigma_2-\rho\sigma_1}{\sigma}\right)\\+ \mathrm{e}^{-rT}K\mathrm{M}(-d_{12},-d_{22},\rho) - \mathrm{e}^{-rT}K\;,
+\mathrm{e}^{-q_1T}S_1(0)\mathrm{M}\!\left(d_{11},d_1,\frac{\sigma_1-\rho\sigma_2}{\sigma}\right) + \mathrm{e}^{-q_2T}S_2(0)\mathrm{M}\!\left(d_{21},-d_2,\frac{\sigma_2-\rho\sigma_1}{\sigma}\right)\\+ \mathrm{e}^{-rT}K\mathrm{M}(-d_{12},-d_{22},\rho) - \mathrm{e}^{-rT}K\;,
 \end{multline}
 $$ {#eq-callonmaxformula}
 
@@ -791,12 +813,15 @@ A forward-start option \index{forward-start option} is an option for which the s
 A forward-start call is defined by its maturity date $T'$ and the date $T<T'$ at which the strike price is set.  The value of a forward-start call at maturity is
 $$\max(0,S_{T'}-S_T)\; .$$
 Let
-$$x= \begin{cases} 1 &\text{if $S_{T'}>S_T$\;,}\\
-                               0 & \text{otherwise\;.}
+$$x= \begin{cases} 1 &\text{if $S_{T'}>S_T$;,}\\
+                               0 & \text{otherwise;.}
         \end{cases}
 $$
 Then, the value of the call at maturity can be written as 
-$$xS_{T'}-xS_T\; .$$
+$$
+xS_{T'}-xS_T\; .
+$$
+
 ### Numeraires
 
 
@@ -866,7 +891,7 @@ $$ {#eq-forwardstart_d2}
 Combining these results, we have:
 
 ::: Rule
-## 
+
 The value of a forward-start call at date $0$ is
 $$
 \mathrm{e}^{-qT'}S_0\mathrm{N}(d_1) - \mathrm{e}^{-qT-r(T'-T)}S_0\mathrm{N}(d_2)\;,
@@ -886,7 +911,7 @@ $$
 The amount of cash is the amount that will accumulate to the exercise price at maturity; i.e., it is $\mathrm{e}^{-rT'}K$.  For forward-start calls and puts, the effective exercise price is $S_T$, which is not known at date $0$.  However, the portfolio used as numeraire to value the second part of the payoff will be worth $\mathrm{e}^{r(T'-T)}S_T$ at date $T'$, and by following the same strategy but starting with $\mathrm{e}^{-r(T'-T)-qT}$ instead of $\mathrm{e}^{-qT}$ shares, we will have $S_T$ dollars at date $T'$.  The date--0 value of this portfolio should replace Cash in the above.  Thus:
 
 ::: Rule
-## 
+
 Put-call parity for forward-start calls and puts is
 $$
 \text{Call Price} \;+\; \mathrm{e}^{-r(T'-T)-qT}S_0 = \text{Put Price} \;+\; \mathrm{e}^{-qT'}S_0\;.
@@ -1003,14 +1028,16 @@ $$
 S_T<S^* \quad \text{and}\quad S(T_p)<K_p\;.
 $$
 Let 
+$$
 \begin{align*}
-x&= \begin{cases} 1 &\text{if $S_T>S^* $ and $S(T_c)>K_c$\;,}\\
-                               0 & \text{otherwise\;.}
+x&= \begin{cases} 1 &\text{if $S_T>S^* $ and $S(T_c)>K_c$;,}\\
+                               0 & \text{otherwise;.}
         \end{cases}\\
-y&= \begin{cases} 1 &\text{if $S_T<S^*$ and $S(T_p)<K_p$\;,}\\
-                               0 & \text{otherwise\;.}
+y&= \begin{cases} 1 &\text{if $S_T<S^*$ and $S(T_p)<K_p$;,}\\
+                               0 & \text{otherwise;.}
         \end{cases} 
 \end{align*}
+$$
 Then the payoff of the chooser is $xS(T_c)-xK_c$ at date $T_c$ and $yK_p-yS(T_p)$ at date $T_p$.
 
 ### Numeraires
@@ -1030,7 +1057,7 @@ where we use $V_t=\mathrm{e}^{qt}S_t$ and $R_t=\mathrm{e}^{rt}$ as numeraires.
 
 
 ::: Rule
-## 
+
 The value of a chooser option is 
 
 $$
@@ -1189,7 +1216,7 @@ Allow the user to input $S$, $r$, $\sigma$ and $q$.  Assume all of the options a
  Using the result of the preceding exercise and Margrabe's formula, verify that calls and puts (having the same strike $K$ and maturity $T$) on the maximum of two risky asset prices satisfy the following put-call parity relation:
 \begin{multline*}
 \mathrm{e}^{-rT}K + \text{Value of call on max} \\
-= \mathrm{e}^{-q_2T}S_2_0 + \text{Value of option to exchange asset 2 for asset 1} \\+ \text{Value of put on max}\;.
+= \mathrm{e}^{-q_2T}S_2(0) + \text{Value of option to exchange asset 2 for asset 1} \\+ \text{Value of put on max}\;.
 \end{multline*}
 :::
 
