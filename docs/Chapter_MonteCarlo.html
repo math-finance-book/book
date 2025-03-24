@@ -194,18 +194,6 @@ div.callout-Example.callout-style-default .callout-icon::before, div.callout-Exa
   content: '\f185';
   background-image: none;
 }
-div.callout-Rule.callout {
-  border-left-color: #12801f;
-}
-div.callout-Rule.callout-style-default > .callout-header {
-  background-color: rgba(18, 128, 31, 0.13);
-}
-div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
-div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
-  font-family: 'Font Awesome 6 Free';
-  content: '\f164';
-  background-image: none;
-}
 div.callout-Principle.callout {
   border-left-color: #eb4034;
 }
@@ -216,6 +204,18 @@ div.callout-Principle .callout-toggle::before {  background-image: url('data:ima
 div.callout-Principle.callout-style-default .callout-icon::before, div.callout-Principle.callout-titled .callout-icon::before {
   font-family: 'Font Awesome 6 Free';
   content: '\f06a';
+  background-image: none;
+}
+div.callout-Rule.callout {
+  border-left-color: #12801f;
+}
+div.callout-Rule.callout-style-default > .callout-header {
+  background-color: rgba(18, 128, 31, 0.13);
+}
+div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
+  font-family: 'Font Awesome 6 Free';
+  content: '\f164';
   background-image: none;
 }
 </style>
@@ -509,58 +509,59 @@ window.Quarto = {
 <div id="c7367fea" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10000</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk-neutral probability)</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#Strike Price</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">40</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend Yield</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>q<span class="op">=</span><span class="fl">0.0</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>m</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift (nu)</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>drift <span class="op">=</span> (r<span class="op">-</span>q<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> sig <span class="op">*</span> np.sqrt(dt)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>,m <span class="op">+</span> <span class="dv">1</span>,<span class="dv">1</span>)) <span class="op">*</span> dt</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span> <span class="dv">2020</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="c7367fea"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="c7367fea-1"><a href="#c7367fea-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
+<span id="c7367fea-2"><a href="#c7367fea-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="c7367fea-3"><a href="#c7367fea-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="c7367fea-4"><a href="#c7367fea-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c7367fea-5"><a href="#c7367fea-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="c7367fea-6"><a href="#c7367fea-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="c7367fea-7"><a href="#c7367fea-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of divisions</span></span>
+<span id="c7367fea-8"><a href="#c7367fea-8" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1</span></span>
+<span id="c7367fea-9"><a href="#c7367fea-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk-neutral probability)</span></span>
+<span id="c7367fea-10"><a href="#c7367fea-10" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="c7367fea-11"><a href="#c7367fea-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="c7367fea-12"><a href="#c7367fea-12" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="c7367fea-13"><a href="#c7367fea-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="c7367fea-14"><a href="#c7367fea-14" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="c7367fea-15"><a href="#c7367fea-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="c7367fea-16"><a href="#c7367fea-16" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="c7367fea-17"><a href="#c7367fea-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="c7367fea-18"><a href="#c7367fea-18" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">40</span></span>
+<span id="c7367fea-19"><a href="#c7367fea-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend Yield</span></span>
+<span id="c7367fea-20"><a href="#c7367fea-20" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="c7367fea-21"><a href="#c7367fea-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="c7367fea-22"><a href="#c7367fea-22" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> m</span>
+<span id="c7367fea-23"><a href="#c7367fea-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift (nu)</span></span>
+<span id="c7367fea-24"><a href="#c7367fea-24" aria-hidden="true" tabindex="-1"></a>drift <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sig<span class="op">**</span><span class="dv">2</span></span>
+<span id="c7367fea-25"><a href="#c7367fea-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="c7367fea-26"><a href="#c7367fea-26" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> sig <span class="op">*</span> np.sqrt(dt)</span>
+<span id="c7367fea-27"><a href="#c7367fea-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c7367fea-28"><a href="#c7367fea-28" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>, m <span class="op">+</span> <span class="dv">1</span>, <span class="dv">1</span>)) <span class="op">*</span> dt</span>
+<span id="c7367fea-29"><a href="#c7367fea-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="c7367fea-30"><a href="#c7367fea-30" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="c7367fea-31"><a href="#c7367fea-31" aria-hidden="true" tabindex="-1"></a>seed <span class="op">=</span> <span class="dv">2020</span></span>
+<span id="c7367fea-32"><a href="#c7367fea-32" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="c7367fea-33"><a href="#c7367fea-33" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
+<span id="c7367fea-34"><a href="#c7367fea-34" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="c7367fea-35"><a href="#c7367fea-35" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>vol, size<span class="op">=</span>(n, m)))</span>
+<span id="c7367fea-36"><a href="#c7367fea-36" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="c7367fea-37"><a href="#c7367fea-37" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span>
+<span id="c7367fea-38"><a href="#c7367fea-38" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>As before, this code generates two samples <span class="math inline">\(St\)</span>, which adds the simulated standard (zero mean) normal random variable, and <span class="math inline">\(St1\)</span> which subtracts the simulated (zero mean) standard normal random variable. Each sample produces and estimate for the Black-Scholes European call option.</p>
 <div id="9355950d" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cc<span class="op">=</span>np.maximum(St[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cp <span class="op">=</span> np.mean(cc) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cc1<span class="op">=</span>np.maximum(St1[m,:]<span class="op">-</span>K,<span class="dv">0</span>)<span class="op">*</span>np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>cp1<span class="op">=</span> np.mean(np.maximum(St1[m,:]<span class="op">-</span>K,<span class="dv">0</span>)) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first sample gives an estimated call price='</span>,cp)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second sample gives an estimated call price='</span>,cp1)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>bsc <span class="op">=</span> (cp<span class="op">+</span>cp1)<span class="op">/</span><span class="dv">2</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the two estimates='</span>,bsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="9355950d"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="9355950d-1"><a href="#9355950d-1" aria-hidden="true" tabindex="-1"></a>cc <span class="op">=</span> np.maximum(St[m, :] <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="9355950d-2"><a href="#9355950d-2" aria-hidden="true" tabindex="-1"></a>cp <span class="op">=</span> np.mean(cc) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="9355950d-3"><a href="#9355950d-3" aria-hidden="true" tabindex="-1"></a>cc1 <span class="op">=</span> np.maximum(St1[m, :] <span class="op">-</span> K, <span class="dv">0</span>) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="9355950d-4"><a href="#9355950d-4" aria-hidden="true" tabindex="-1"></a>cp1 <span class="op">=</span> np.mean(np.maximum(St1[m, :] <span class="op">-</span> K, <span class="dv">0</span>)) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="9355950d-5"><a href="#9355950d-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="9355950d-6"><a href="#9355950d-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The first sample gives an estimated call price="</span>, cp)</span>
+<span id="9355950d-7"><a href="#9355950d-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The second sample gives an estimated call price="</span>, cp1)</span>
+<span id="9355950d-8"><a href="#9355950d-8" aria-hidden="true" tabindex="-1"></a>bsc <span class="op">=</span> (cp <span class="op">+</span> cp1) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="9355950d-9"><a href="#9355950d-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average of the two estimates="</span>, bsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The first sample gives an estimated call price= 4.791646287615179
@@ -572,34 +573,40 @@ The average of the two estimates= 4.739635467026771</code></pre>
 <div id="0344d20e" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize, minimize_scalar</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> blackscholes(S0, K, r, q, sig, T, call <span class="op">=</span> <span class="va">True</span>):</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Calculate option price using B-S formula.</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">        S0 (num): initial price of underlying asset.</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">        K (num): strick price.</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">        r (num): risk free rate</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">        q (num): dividend yield</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">        sig (num): Black-Scholes volatility.</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">        T (num): maturity.</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">        call (bool): True returns call price, False returns put price.</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">        </span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">        num</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S0<span class="op">/</span>K) <span class="op">+</span> (r <span class="op">-</span>q <span class="op">+</span> sig<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span> T)<span class="op">/</span>(sig<span class="op">*</span>np.sqrt(T))</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sig<span class="op">*</span>np.sqrt(T)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> call:</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span> q <span class="op">*</span>T) <span class="op">*</span> S0 <span class="op">*</span> norm.cdf(d1,<span class="dv">0</span>,<span class="dv">1</span>) <span class="op">-</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(d2,<span class="dv">0</span>, <span class="dv">1</span>) </span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S0 <span class="op">*</span> norm.cdf(<span class="op">-</span>d1,<span class="dv">0</span>,<span class="dv">1</span>) <span class="op">+</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(<span class="op">-</span>d2,<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>truebsc<span class="op">=</span>blackscholes(S0, K, r, q, sig, T, call <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The black scholes fromula='</span>,truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="0344d20e"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="0344d20e-1"><a href="#0344d20e-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="0344d20e-2"><a href="#0344d20e-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="0344d20e-3"><a href="#0344d20e-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize, minimize_scalar</span>
+<span id="0344d20e-4"><a href="#0344d20e-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="0344d20e-5"><a href="#0344d20e-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="0344d20e-6"><a href="#0344d20e-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> blackscholes(S0, K, r, q, sig, T, call<span class="op">=</span><span class="va">True</span>):</span>
+<span id="0344d20e-7"><a href="#0344d20e-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Calculate option price using B-S formula.</span></span>
+<span id="0344d20e-8"><a href="#0344d20e-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="0344d20e-9"><a href="#0344d20e-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="0344d20e-10"><a href="#0344d20e-10" aria-hidden="true" tabindex="-1"></a><span class="co">        S0 (num): initial price of underlying asset.</span></span>
+<span id="0344d20e-11"><a href="#0344d20e-11" aria-hidden="true" tabindex="-1"></a><span class="co">        K (num): strick price.</span></span>
+<span id="0344d20e-12"><a href="#0344d20e-12" aria-hidden="true" tabindex="-1"></a><span class="co">        r (num): risk free rate</span></span>
+<span id="0344d20e-13"><a href="#0344d20e-13" aria-hidden="true" tabindex="-1"></a><span class="co">        q (num): dividend yield</span></span>
+<span id="0344d20e-14"><a href="#0344d20e-14" aria-hidden="true" tabindex="-1"></a><span class="co">        sig (num): Black-Scholes volatility.</span></span>
+<span id="0344d20e-15"><a href="#0344d20e-15" aria-hidden="true" tabindex="-1"></a><span class="co">        T (num): maturity.</span></span>
+<span id="0344d20e-16"><a href="#0344d20e-16" aria-hidden="true" tabindex="-1"></a><span class="co">        call (bool): True returns call price, False returns put price.</span></span>
+<span id="0344d20e-17"><a href="#0344d20e-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="0344d20e-18"><a href="#0344d20e-18" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="0344d20e-19"><a href="#0344d20e-19" aria-hidden="true" tabindex="-1"></a><span class="co">        num</span></span>
+<span id="0344d20e-20"><a href="#0344d20e-20" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="0344d20e-21"><a href="#0344d20e-21" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S0 <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> sig<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sig <span class="op">*</span> np.sqrt(T))</span>
+<span id="0344d20e-22"><a href="#0344d20e-22" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sig <span class="op">*</span> np.sqrt(T)</span>
+<span id="0344d20e-23"><a href="#0344d20e-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> call:</span>
+<span id="0344d20e-24"><a href="#0344d20e-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S0 <span class="op">*</span> norm.cdf(d1, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">-</span> K <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> norm.cdf(</span>
+<span id="0344d20e-25"><a href="#0344d20e-25" aria-hidden="true" tabindex="-1"></a>            d2, <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="0344d20e-26"><a href="#0344d20e-26" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="0344d20e-27"><a href="#0344d20e-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="0344d20e-28"><a href="#0344d20e-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S0 <span class="op">*</span> norm.cdf(<span class="op">-</span>d1, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">+</span> K <span class="op">*</span> np.exp(</span>
+<span id="0344d20e-29"><a href="#0344d20e-29" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span>r <span class="op">*</span> T</span>
+<span id="0344d20e-30"><a href="#0344d20e-30" aria-hidden="true" tabindex="-1"></a>        ) <span class="op">*</span> norm.cdf(<span class="op">-</span>d2, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="0344d20e-31"><a href="#0344d20e-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="0344d20e-32"><a href="#0344d20e-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="0344d20e-33"><a href="#0344d20e-33" aria-hidden="true" tabindex="-1"></a>truebsc <span class="op">=</span> blackscholes(S0, K, r, q, sig, T, call<span class="op">=</span><span class="va">True</span>)</span>
+<span id="0344d20e-34"><a href="#0344d20e-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The black scholes fromula="</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The black scholes fromula= 4.759422392871532</code></pre>
@@ -629,10 +636,10 @@ The average of the two estimates= 4.739635467026771</code></pre>
 <div id="cb1be49f" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>SS<span class="op">=</span>np.mean(St[m,:])<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The Estimated Stock Price for the first sample is ='</span>, SS)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The actual stock price should be='</span>, S0)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The error is ='</span>, S0<span class="op">-</span>SS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1be49f"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1be49f-1"><a href="#cb1be49f-1" aria-hidden="true" tabindex="-1"></a>SS <span class="op">=</span> np.mean(St[m, :]) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="cb1be49f-2"><a href="#cb1be49f-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The Estimated Stock Price for the first sample is ="</span>, SS)</span>
+<span id="cb1be49f-3"><a href="#cb1be49f-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The actual stock price should be="</span>, S0)</span>
+<span id="cb1be49f-4"><a href="#cb1be49f-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The error is ="</span>, S0 <span class="op">-</span> SS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The Estimated Stock Price for the first sample is = 42.05899999577932
@@ -644,18 +651,18 @@ The error is = -0.058999995779316805</code></pre>
 <div id="25d1efed" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hatbeta<span class="op">=</span> np.cov(St[m,:],cc)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(St[m,],cc)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>hatbeta1<span class="op">=</span>np.cov(St1[m,:],cc1)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(St1[m,],cc1)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>correction <span class="op">=</span>hatbeta<span class="op">*</span>(S0<span class="op">-</span>SS)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>update<span class="op">=</span>cp <span class="op">+</span> correction</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'hatbeta='</span>,hatbeta)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The original estimate for the call price from the first sample='</span>,cp)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The original estimate for the call price from the second sample='</span>,cp1)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The updated estimate from the first sample is='</span>,update)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>SS1<span class="op">=</span>np.mean(St1[m,:])<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>update1<span class="op">=</span>cp1<span class="op">+</span>hatbeta1<span class="op">*</span>(S0<span class="op">-</span>SS1)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The updated estimate from the second sample is='</span>,update1)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the updated estimates ='</span>,(update<span class="op">+</span>update1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="25d1efed"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="25d1efed-1"><a href="#25d1efed-1" aria-hidden="true" tabindex="-1"></a>hatbeta <span class="op">=</span> np.cov(St[m, :], cc)[<span class="dv">0</span>, <span class="dv">1</span>] <span class="op">/</span> np.cov(St[m,], cc)[<span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="25d1efed-2"><a href="#25d1efed-2" aria-hidden="true" tabindex="-1"></a>hatbeta1 <span class="op">=</span> np.cov(St1[m, :], cc1)[<span class="dv">0</span>, <span class="dv">1</span>] <span class="op">/</span> np.cov(St1[m,], cc1)[<span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="25d1efed-3"><a href="#25d1efed-3" aria-hidden="true" tabindex="-1"></a>correction <span class="op">=</span> hatbeta <span class="op">*</span> (S0 <span class="op">-</span> SS)</span>
+<span id="25d1efed-4"><a href="#25d1efed-4" aria-hidden="true" tabindex="-1"></a>update <span class="op">=</span> cp <span class="op">+</span> correction</span>
+<span id="25d1efed-5"><a href="#25d1efed-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"hatbeta="</span>, hatbeta)</span>
+<span id="25d1efed-6"><a href="#25d1efed-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The original estimate for the call price from the first sample="</span>, cp)</span>
+<span id="25d1efed-7"><a href="#25d1efed-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The original estimate for the call price from the second sample="</span>, cp1)</span>
+<span id="25d1efed-8"><a href="#25d1efed-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The updated estimate from the first sample is="</span>, update)</span>
+<span id="25d1efed-9"><a href="#25d1efed-9" aria-hidden="true" tabindex="-1"></a>SS1 <span class="op">=</span> np.mean(St1[m, :]) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="25d1efed-10"><a href="#25d1efed-10" aria-hidden="true" tabindex="-1"></a>update1 <span class="op">=</span> cp1 <span class="op">+</span> hatbeta1 <span class="op">*</span> (S0 <span class="op">-</span> SS1)</span>
+<span id="25d1efed-11"><a href="#25d1efed-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The updated estimate from the second sample is="</span>, update1)</span>
+<span id="25d1efed-12"><a href="#25d1efed-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average of the updated estimates ="</span>, (update <span class="op">+</span> update1) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>hatbeta= 1.1541186403411752
@@ -670,7 +677,7 @@ The average of the updated estimates = 4.751969152451551</code></pre>
 <div id="25c412b3" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The exact Black Scholes Price is='</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="25c412b3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="25c412b3-1"><a href="#25c412b3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The exact Black Scholes Price is="</span>, truebsc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The exact Black Scholes Price is= 4.759422392871532</code></pre>
@@ -782,74 +789,81 @@ z &amp;=  \begin{cases} 1 &amp; \text{if} S_u(T)&gt;K&gt;S_d(T)\; ,\\
 <div id="bedf9bd1" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk-neutral probability)</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend yield</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>q<span class="op">=</span><span class="fl">0.0</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#Strike Price</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">40</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>m</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>drift <span class="op">=</span> (r<span class="op">-</span>q<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> sig <span class="op">*</span> np.sqrt(dt)</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>,m <span class="op">+</span> <span class="dv">1</span>,<span class="dv">1</span>)) <span class="op">*</span> dt</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span> <span class="dv">2024</span></span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="bedf9bd1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="bedf9bd1-1"><a href="#bedf9bd1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Geometric Brownian Motion</span></span>
+<span id="bedf9bd1-2"><a href="#bedf9bd1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="bedf9bd1-3"><a href="#bedf9bd1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="bedf9bd1-4"><a href="#bedf9bd1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="bedf9bd1-5"><a href="#bedf9bd1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="bedf9bd1-6"><a href="#bedf9bd1-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="bedf9bd1-7"><a href="#bedf9bd1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of divisions</span></span>
+<span id="bedf9bd1-8"><a href="#bedf9bd1-8" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="bedf9bd1-9"><a href="#bedf9bd1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk-neutral probability)</span></span>
+<span id="bedf9bd1-10"><a href="#bedf9bd1-10" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="bedf9bd1-11"><a href="#bedf9bd1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend yield</span></span>
+<span id="bedf9bd1-12"><a href="#bedf9bd1-12" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="bedf9bd1-13"><a href="#bedf9bd1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="bedf9bd1-14"><a href="#bedf9bd1-14" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="bedf9bd1-15"><a href="#bedf9bd1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="bedf9bd1-16"><a href="#bedf9bd1-16" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="bedf9bd1-17"><a href="#bedf9bd1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="bedf9bd1-18"><a href="#bedf9bd1-18" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="bedf9bd1-19"><a href="#bedf9bd1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="bedf9bd1-20"><a href="#bedf9bd1-20" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">40</span></span>
+<span id="bedf9bd1-21"><a href="#bedf9bd1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="bedf9bd1-22"><a href="#bedf9bd1-22" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> m</span>
+<span id="bedf9bd1-23"><a href="#bedf9bd1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
+<span id="bedf9bd1-24"><a href="#bedf9bd1-24" aria-hidden="true" tabindex="-1"></a>drift <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sig<span class="op">**</span><span class="dv">2</span></span>
+<span id="bedf9bd1-25"><a href="#bedf9bd1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="bedf9bd1-26"><a href="#bedf9bd1-26" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> sig <span class="op">*</span> np.sqrt(dt)</span>
+<span id="bedf9bd1-27"><a href="#bedf9bd1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="bedf9bd1-28"><a href="#bedf9bd1-28" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>, m <span class="op">+</span> <span class="dv">1</span>, <span class="dv">1</span>)) <span class="op">*</span> dt</span>
+<span id="bedf9bd1-29"><a href="#bedf9bd1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="bedf9bd1-30"><a href="#bedf9bd1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="bedf9bd1-31"><a href="#bedf9bd1-31" aria-hidden="true" tabindex="-1"></a>seed <span class="op">=</span> <span class="dv">2024</span></span>
+<span id="bedf9bd1-32"><a href="#bedf9bd1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="bedf9bd1-33"><a href="#bedf9bd1-33" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
+<span id="bedf9bd1-34"><a href="#bedf9bd1-34" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="bedf9bd1-35"><a href="#bedf9bd1-35" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>vol, size<span class="op">=</span>(n, m)))</span>
+<span id="bedf9bd1-36"><a href="#bedf9bd1-36" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="bedf9bd1-37"><a href="#bedf9bd1-37" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span>
+<span id="bedf9bd1-38"><a href="#bedf9bd1-38" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>As before this code generates two samples the original and the antithetic. The output is an array of <span class="math inline">\(n\)</span> sample paths with <span class="math inline">\(m\)</span> time steps. The sample can also be used to find the value of a floating strike lookback call.</p>
 <div id="2829c41c" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> floating_strike_call(S, r, sigma, q, T, SMin):</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> SMin) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    d2prime <span class="op">=</span> (np.log(SMin <span class="op">/</span> S) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    N1 <span class="op">=</span> norm.cdf(d1)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(d2)</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    N2prime <span class="op">=</span> norm.cdf(d2prime)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (r <span class="op">-</span> q) <span class="op">/</span> (sigma <span class="op">**</span> <span class="dv">2</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> SMin <span class="op">*</span> N2 <span class="op">+</span> (<span class="dv">1</span> <span class="op">/</span> x) <span class="op">*</span> (SMin <span class="op">/</span> S) <span class="op">**</span> x <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> SMin <span class="op">*</span> N2prime <span class="op">-</span> (<span class="dv">1</span> <span class="op">/</span> x) <span class="op">*</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> N1)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>T<span class="op">=</span><span class="dv">1</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>Stmin<span class="op">=</span>St[m:]<span class="op">-</span>np.minimum(np.<span class="bu">min</span>(St,axis<span class="op">=</span><span class="dv">0</span>),S0)</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>St1min<span class="op">=</span>St1[m:]<span class="op">-</span>np.minimum(np.<span class="bu">min</span>(St1,axis<span class="op">=</span><span class="dv">0</span>),S0)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>floatlkbk<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(Stmin)</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>floatlkbk1<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(St1min)</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is='</span>,floatlkbk)</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is='</span>,floatlkbk1)</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average estimate is='</span>,(floatlkbk<span class="op">+</span>floatlkbk1)<span class="op">/</span><span class="dv">2</span>)</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The exact formula is='</span>,floating_strike_call(S0, r, sigma, <span class="dv">0</span>, T, S0))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="2829c41c"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="2829c41c-1"><a href="#2829c41c-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> floating_strike_call(S, r, sigma, q, T, SMin):</span>
+<span id="2829c41c-2"><a href="#2829c41c-2" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">=</span> (np.log(S <span class="op">/</span> SMin) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="2829c41c-3"><a href="#2829c41c-3" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="2829c41c-4"><a href="#2829c41c-4" aria-hidden="true" tabindex="-1"></a>    d2prime <span class="op">=</span> (np.log(SMin <span class="op">/</span> S) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="2829c41c-5"><a href="#2829c41c-5" aria-hidden="true" tabindex="-1"></a>    N1 <span class="op">=</span> norm.cdf(d1)</span>
+<span id="2829c41c-6"><a href="#2829c41c-6" aria-hidden="true" tabindex="-1"></a>    N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="2829c41c-7"><a href="#2829c41c-7" aria-hidden="true" tabindex="-1"></a>    N2prime <span class="op">=</span> norm.cdf(d2prime)</span>
+<span id="2829c41c-8"><a href="#2829c41c-8" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (r <span class="op">-</span> q) <span class="op">/</span> (sigma<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="2829c41c-9"><a href="#2829c41c-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="2829c41c-10"><a href="#2829c41c-10" aria-hidden="true" tabindex="-1"></a>        np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1</span>
+<span id="2829c41c-11"><a href="#2829c41c-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> SMin <span class="op">*</span> N2</span>
+<span id="2829c41c-12"><a href="#2829c41c-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> (<span class="dv">1</span> <span class="op">/</span> x) <span class="op">*</span> (SMin <span class="op">/</span> S) <span class="op">**</span> x <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> SMin <span class="op">*</span> N2prime</span>
+<span id="2829c41c-13"><a href="#2829c41c-13" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> (<span class="dv">1</span> <span class="op">/</span> x) <span class="op">*</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> N1)</span>
+<span id="2829c41c-14"><a href="#2829c41c-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="2829c41c-15"><a href="#2829c41c-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="2829c41c-16"><a href="#2829c41c-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="2829c41c-17"><a href="#2829c41c-17" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> <span class="dv">100</span></span>
+<span id="2829c41c-18"><a href="#2829c41c-18" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="2829c41c-19"><a href="#2829c41c-19" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="2829c41c-20"><a href="#2829c41c-20" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.02</span></span>
+<span id="2829c41c-21"><a href="#2829c41c-21" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span></span>
+<span id="2829c41c-22"><a href="#2829c41c-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="2829c41c-23"><a href="#2829c41c-23" aria-hidden="true" tabindex="-1"></a>Stmin <span class="op">=</span> St[m:] <span class="op">-</span> np.minimum(np.<span class="bu">min</span>(St, axis<span class="op">=</span><span class="dv">0</span>), S0)</span>
+<span id="2829c41c-24"><a href="#2829c41c-24" aria-hidden="true" tabindex="-1"></a>St1min <span class="op">=</span> St1[m:] <span class="op">-</span> np.minimum(np.<span class="bu">min</span>(St1, axis<span class="op">=</span><span class="dv">0</span>), S0)</span>
+<span id="2829c41c-25"><a href="#2829c41c-25" aria-hidden="true" tabindex="-1"></a>floatlkbk <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(Stmin)</span>
+<span id="2829c41c-26"><a href="#2829c41c-26" aria-hidden="true" tabindex="-1"></a>floatlkbk1 <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(St1min)</span>
+<span id="2829c41c-27"><a href="#2829c41c-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="2829c41c-28"><a href="#2829c41c-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The first estimate is="</span>, floatlkbk)</span>
+<span id="2829c41c-29"><a href="#2829c41c-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The second estimate is="</span>, floatlkbk1)</span>
+<span id="2829c41c-30"><a href="#2829c41c-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average estimate is="</span>, (floatlkbk <span class="op">+</span> floatlkbk1) <span class="op">/</span> <span class="dv">2</span>)</span>
+<span id="2829c41c-31"><a href="#2829c41c-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The exact formula is="</span>, floating_strike_call(S0, r, sigma, <span class="dv">0</span>, T, S0))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The first estimate is= 5.45244209168367
@@ -862,13 +876,13 @@ The exact formula is= 7.231056939691567</code></pre>
 <div id="b5a7166a" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Stmax<span class="op">=</span>np.maximum(np.<span class="bu">max</span>(St,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>St1max<span class="op">=</span>np.maximum(np.<span class="bu">max</span>(St1,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>lookbck <span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T) <span class="op">*</span>np.mean(Stmax)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>lookbck1<span class="op">=</span>np.exp(<span class="op">-</span>r <span class="op">*</span> T)<span class="op">*</span>np.mean(St1max)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is='</span>,lookbck)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is='</span>,lookbck1)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average estimate is='</span>, (lookbck <span class="op">+</span> lookbck1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="b5a7166a"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="b5a7166a-1"><a href="#b5a7166a-1" aria-hidden="true" tabindex="-1"></a>Stmax <span class="op">=</span> np.maximum(np.<span class="bu">max</span>(St, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="b5a7166a-2"><a href="#b5a7166a-2" aria-hidden="true" tabindex="-1"></a>St1max <span class="op">=</span> np.maximum(np.<span class="bu">max</span>(St1, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="b5a7166a-3"><a href="#b5a7166a-3" aria-hidden="true" tabindex="-1"></a>lookbck <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(Stmax)</span>
+<span id="b5a7166a-4"><a href="#b5a7166a-4" aria-hidden="true" tabindex="-1"></a>lookbck1 <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(St1max)</span>
+<span id="b5a7166a-5"><a href="#b5a7166a-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The first estimate is="</span>, lookbck)</span>
+<span id="b5a7166a-6"><a href="#b5a7166a-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The second estimate is="</span>, lookbck1)</span>
+<span id="b5a7166a-7"><a href="#b5a7166a-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average estimate is="</span>, (lookbck <span class="op">+</span> lookbck1) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The first estimate is= 7.716467940991822
@@ -895,13 +909,13 @@ y =\mathrm{e}^{-rT}\max \left(\mathrm{e}^{\sum_{i=1}^N \log S_{t_i}/N} - K^*,0\r
 <div id="b02eb289" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>average <span class="op">=</span> np.mean(St,axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>average1 <span class="op">=</span> np.mean(St1,axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>dpayoff<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(np.maximum(average<span class="op">-</span>K,<span class="dv">0</span>))</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>dpayoff1<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(np.maximum(average1<span class="op">-</span>K,<span class="dv">0</span>))</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is='</span>,dpayoff)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is='</span>,dpayoff1)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the estimates='</span>,(dpayoff<span class="op">+</span>dpayoff1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="b02eb289"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="b02eb289-1"><a href="#b02eb289-1" aria-hidden="true" tabindex="-1"></a>average <span class="op">=</span> np.mean(St, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="b02eb289-2"><a href="#b02eb289-2" aria-hidden="true" tabindex="-1"></a>average1 <span class="op">=</span> np.mean(St1, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="b02eb289-3"><a href="#b02eb289-3" aria-hidden="true" tabindex="-1"></a>dpayoff <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(np.maximum(average <span class="op">-</span> K, <span class="dv">0</span>))</span>
+<span id="b02eb289-4"><a href="#b02eb289-4" aria-hidden="true" tabindex="-1"></a>dpayoff1 <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(np.maximum(average1 <span class="op">-</span> K, <span class="dv">0</span>))</span>
+<span id="b02eb289-5"><a href="#b02eb289-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The first estimate is="</span>, dpayoff)</span>
+<span id="b02eb289-6"><a href="#b02eb289-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The second estimate is="</span>, dpayoff1)</span>
+<span id="b02eb289-7"><a href="#b02eb289-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average of the estimates="</span>, (dpayoff <span class="op">+</span> dpayoff1) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The first estimate is= 3.231154315344899
@@ -913,48 +927,50 @@ The average of the estimates= 3.2640153062378374</code></pre>
 <div id="03f2c372" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call(S, K, r, sigma, q, T):</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sigma <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K)</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>        d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        N1 <span class="op">=</span> norm.cdf(d1)</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>        N2 <span class="op">=</span> norm.cdf(d2)</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> N2</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> discrete_geom_average_price_call(S, K, r, sigma, q, T, N):</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma <span class="op">**</span> <span class="dv">2</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> N <span class="op">*</span> (N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> N <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">6</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> np.exp(((N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> nu <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> sigma <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> a <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> N <span class="op">**</span> <span class="dv">2</span>)) <span class="op">*</span> dt)</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    sigavg <span class="op">=</span> sigma <span class="op">*</span> np.sqrt(a) <span class="op">/</span> (N <span class="op">**</span> <span class="fl">1.5</span>)</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> black_scholes_call(V, K, r, sigavg, q, T)</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>geom<span class="op">=</span>np.exp((np.mean(np.log(St),axis<span class="op">=</span><span class="dv">0</span>)))</span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>geom1<span class="op">=</span>np.exp((np.mean(np.log(St1),axis<span class="op">=</span><span class="dv">0</span>)))</span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>geomavgpo<span class="op">=</span>np.maximum(geom<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>geomavg1po<span class="op">=</span>np.maximum(geom1<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>value<span class="op">=</span>np.mean(geomavgpo)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>value1<span class="op">=</span>np.mean(geomavg1po)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>tga<span class="op">=</span>discrete_geom_average_price_call(S0, K, r, sigma, q, T, m)</span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>error <span class="op">=</span>tga<span class="op">-</span>value</span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>error1<span class="op">=</span>tga<span class="op">-</span>value1</span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The estimate from the first sample='</span>,value)</span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The estimate from the second sample='</span>,value1)</span>
-<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the two estimates is='</span>,(value<span class="op">+</span>value1)<span class="op">/</span><span class="dv">2</span>)</span>
-<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The value from the exact formula='</span>,tga)</span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The error in the first estimate='</span>,error)</span>
-<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The error in the second estimate='</span>,error1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="03f2c372"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="03f2c372-1"><a href="#03f2c372-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> black_scholes_call(S, K, r, sigma, q, T):</span>
+<span id="03f2c372-2"><a href="#03f2c372-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="03f2c372-3"><a href="#03f2c372-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="03f2c372-4"><a href="#03f2c372-4" aria-hidden="true" tabindex="-1"></a><span class="co">    S = initial stock price</span></span>
+<span id="03f2c372-5"><a href="#03f2c372-5" aria-hidden="true" tabindex="-1"></a><span class="co">    K = strike price</span></span>
+<span id="03f2c372-6"><a href="#03f2c372-6" aria-hidden="true" tabindex="-1"></a><span class="co">    r = risk-free rate</span></span>
+<span id="03f2c372-7"><a href="#03f2c372-7" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma = volatility</span></span>
+<span id="03f2c372-8"><a href="#03f2c372-8" aria-hidden="true" tabindex="-1"></a><span class="co">    q = dividend yield</span></span>
+<span id="03f2c372-9"><a href="#03f2c372-9" aria-hidden="true" tabindex="-1"></a><span class="co">    T = time to maturity</span></span>
+<span id="03f2c372-10"><a href="#03f2c372-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="03f2c372-11"><a href="#03f2c372-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sigma <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="03f2c372-12"><a href="#03f2c372-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K)</span>
+<span id="03f2c372-13"><a href="#03f2c372-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="03f2c372-14"><a href="#03f2c372-14" aria-hidden="true" tabindex="-1"></a>        d1 <span class="op">=</span> (np.log(S <span class="op">/</span> K) <span class="op">+</span> (r <span class="op">-</span> q <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> T) <span class="op">/</span> (sigma <span class="op">*</span> np.sqrt(T))</span>
+<span id="03f2c372-15"><a href="#03f2c372-15" aria-hidden="true" tabindex="-1"></a>        d2 <span class="op">=</span> d1 <span class="op">-</span> sigma <span class="op">*</span> np.sqrt(T)</span>
+<span id="03f2c372-16"><a href="#03f2c372-16" aria-hidden="true" tabindex="-1"></a>        N1 <span class="op">=</span> norm.cdf(d1)</span>
+<span id="03f2c372-17"><a href="#03f2c372-17" aria-hidden="true" tabindex="-1"></a>        N2 <span class="op">=</span> norm.cdf(d2)</span>
+<span id="03f2c372-18"><a href="#03f2c372-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.exp(<span class="op">-</span>q <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> N1 <span class="op">-</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> K <span class="op">*</span> N2</span>
+<span id="03f2c372-19"><a href="#03f2c372-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="03f2c372-20"><a href="#03f2c372-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="03f2c372-21"><a href="#03f2c372-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> discrete_geom_average_price_call(S, K, r, sigma, q, T, N):</span>
+<span id="03f2c372-22"><a href="#03f2c372-22" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="03f2c372-23"><a href="#03f2c372-23" aria-hidden="true" tabindex="-1"></a>    nu <span class="op">=</span> r <span class="op">-</span> q <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span></span>
+<span id="03f2c372-24"><a href="#03f2c372-24" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> N <span class="op">*</span> (N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> N <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">6</span></span>
+<span id="03f2c372-25"><a href="#03f2c372-25" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> S <span class="op">*</span> np.exp(((N <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> nu <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> sigma<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> a <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> N<span class="op">**</span><span class="dv">2</span>)) <span class="op">*</span> dt)</span>
+<span id="03f2c372-26"><a href="#03f2c372-26" aria-hidden="true" tabindex="-1"></a>    sigavg <span class="op">=</span> sigma <span class="op">*</span> np.sqrt(a) <span class="op">/</span> (N<span class="op">**</span><span class="fl">1.5</span>)</span>
+<span id="03f2c372-27"><a href="#03f2c372-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> black_scholes_call(V, K, r, sigavg, q, T)</span>
+<span id="03f2c372-28"><a href="#03f2c372-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="03f2c372-29"><a href="#03f2c372-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="03f2c372-30"><a href="#03f2c372-30" aria-hidden="true" tabindex="-1"></a>geom <span class="op">=</span> np.exp((np.mean(np.log(St), axis<span class="op">=</span><span class="dv">0</span>)))</span>
+<span id="03f2c372-31"><a href="#03f2c372-31" aria-hidden="true" tabindex="-1"></a>geom1 <span class="op">=</span> np.exp((np.mean(np.log(St1), axis<span class="op">=</span><span class="dv">0</span>)))</span>
+<span id="03f2c372-32"><a href="#03f2c372-32" aria-hidden="true" tabindex="-1"></a>geomavgpo <span class="op">=</span> np.maximum(geom <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="03f2c372-33"><a href="#03f2c372-33" aria-hidden="true" tabindex="-1"></a>geomavg1po <span class="op">=</span> np.maximum(geom1 <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="03f2c372-34"><a href="#03f2c372-34" aria-hidden="true" tabindex="-1"></a>value <span class="op">=</span> np.mean(geomavgpo) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="03f2c372-35"><a href="#03f2c372-35" aria-hidden="true" tabindex="-1"></a>value1 <span class="op">=</span> np.mean(geomavg1po) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="03f2c372-36"><a href="#03f2c372-36" aria-hidden="true" tabindex="-1"></a>tga <span class="op">=</span> discrete_geom_average_price_call(S0, K, r, sigma, q, T, m)</span>
+<span id="03f2c372-37"><a href="#03f2c372-37" aria-hidden="true" tabindex="-1"></a>error <span class="op">=</span> tga <span class="op">-</span> value</span>
+<span id="03f2c372-38"><a href="#03f2c372-38" aria-hidden="true" tabindex="-1"></a>error1 <span class="op">=</span> tga <span class="op">-</span> value1</span>
+<span id="03f2c372-39"><a href="#03f2c372-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The estimate from the first sample="</span>, value)</span>
+<span id="03f2c372-40"><a href="#03f2c372-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The estimate from the second sample="</span>, value1)</span>
+<span id="03f2c372-41"><a href="#03f2c372-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average of the two estimates is="</span>, (value <span class="op">+</span> value1) <span class="op">/</span> <span class="dv">2</span>)</span>
+<span id="03f2c372-42"><a href="#03f2c372-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The value from the exact formula="</span>, tga)</span>
+<span id="03f2c372-43"><a href="#03f2c372-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The error in the first estimate="</span>, error)</span>
+<span id="03f2c372-44"><a href="#03f2c372-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The error in the second estimate="</span>, error1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The estimate from the first sample= 3.1720760499976968
@@ -971,29 +987,29 @@ The error in the second estimate= -0.5530078187436303</code></pre>
 <div id="a8e6f3c4" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>incpre <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>incpre[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>Stpre <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>St1pre<span class="op">=</span>np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>Stpre <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>St1pre <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>amean<span class="op">=</span>np.mean(Stpre,axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>amean1<span class="op">=</span>np.mean(St1pre,axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>apo <span class="op">=</span> np.maximum(amean<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>a1po<span class="op">=</span>np.maximum(amean1<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>gmean<span class="op">=</span>np.exp(np.mean(np.log(St),axis<span class="op">=</span><span class="dv">0</span>))</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>g1mean<span class="op">=</span>np.exp(np.mean(np.log(St1),axis<span class="op">=</span><span class="dv">0</span>))</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>gpo<span class="op">=</span>np.maximum(gmean<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>g1po<span class="op">=</span>np.maximum(g1mean<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>beta<span class="op">=</span>np.cov(gpo,apo)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(gpo,apo)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>beta1<span class="op">=</span>np.cov(g1po,a1po)[<span class="dv">0</span>,<span class="dv">1</span>]<span class="op">/</span>np.cov(g1po,a1po)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>update<span class="op">=</span>dpayoff <span class="op">+</span>beta<span class="op">*</span>error</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>update1<span class="op">=</span>dpayoff1<span class="op">+</span>beta1<span class="op">*</span>error1</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The updated estimate for the first sample='</span>,update)</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The updated value for the second sample='</span>,update1)</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the updated values is='</span>,(update <span class="op">+</span>update1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="a8e6f3c4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="a8e6f3c4-1"><a href="#a8e6f3c4-1" aria-hidden="true" tabindex="-1"></a>incpre <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="a8e6f3c4-2"><a href="#a8e6f3c4-2" aria-hidden="true" tabindex="-1"></a>incpre[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>vol, size<span class="op">=</span>(n, m)))</span>
+<span id="a8e6f3c4-3"><a href="#a8e6f3c4-3" aria-hidden="true" tabindex="-1"></a>Stpre <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="a8e6f3c4-4"><a href="#a8e6f3c4-4" aria-hidden="true" tabindex="-1"></a>St1pre <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="a8e6f3c4-5"><a href="#a8e6f3c4-5" aria-hidden="true" tabindex="-1"></a>Stpre <span class="op">=</span> S0 <span class="op">*</span> np.exp(np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span>
+<span id="a8e6f3c4-6"><a href="#a8e6f3c4-6" aria-hidden="true" tabindex="-1"></a>St1pre <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span>
+<span id="a8e6f3c4-7"><a href="#a8e6f3c4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="a8e6f3c4-8"><a href="#a8e6f3c4-8" aria-hidden="true" tabindex="-1"></a>amean <span class="op">=</span> np.mean(Stpre, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="a8e6f3c4-9"><a href="#a8e6f3c4-9" aria-hidden="true" tabindex="-1"></a>amean1 <span class="op">=</span> np.mean(St1pre, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="a8e6f3c4-10"><a href="#a8e6f3c4-10" aria-hidden="true" tabindex="-1"></a>apo <span class="op">=</span> np.maximum(amean <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="a8e6f3c4-11"><a href="#a8e6f3c4-11" aria-hidden="true" tabindex="-1"></a>a1po <span class="op">=</span> np.maximum(amean1 <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="a8e6f3c4-12"><a href="#a8e6f3c4-12" aria-hidden="true" tabindex="-1"></a>gmean <span class="op">=</span> np.exp(np.mean(np.log(St), axis<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="a8e6f3c4-13"><a href="#a8e6f3c4-13" aria-hidden="true" tabindex="-1"></a>g1mean <span class="op">=</span> np.exp(np.mean(np.log(St1), axis<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="a8e6f3c4-14"><a href="#a8e6f3c4-14" aria-hidden="true" tabindex="-1"></a>gpo <span class="op">=</span> np.maximum(gmean <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="a8e6f3c4-15"><a href="#a8e6f3c4-15" aria-hidden="true" tabindex="-1"></a>g1po <span class="op">=</span> np.maximum(g1mean <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="a8e6f3c4-16"><a href="#a8e6f3c4-16" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> np.cov(gpo, apo)[<span class="dv">0</span>, <span class="dv">1</span>] <span class="op">/</span> np.cov(gpo, apo)[<span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="a8e6f3c4-17"><a href="#a8e6f3c4-17" aria-hidden="true" tabindex="-1"></a>beta1 <span class="op">=</span> np.cov(g1po, a1po)[<span class="dv">0</span>, <span class="dv">1</span>] <span class="op">/</span> np.cov(g1po, a1po)[<span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="a8e6f3c4-18"><a href="#a8e6f3c4-18" aria-hidden="true" tabindex="-1"></a>update <span class="op">=</span> dpayoff <span class="op">+</span> beta <span class="op">*</span> error</span>
+<span id="a8e6f3c4-19"><a href="#a8e6f3c4-19" aria-hidden="true" tabindex="-1"></a>update1 <span class="op">=</span> dpayoff1 <span class="op">+</span> beta1 <span class="op">*</span> error1</span>
+<span id="a8e6f3c4-20"><a href="#a8e6f3c4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="a8e6f3c4-21"><a href="#a8e6f3c4-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The updated estimate for the first sample="</span>, update)</span>
+<span id="a8e6f3c4-22"><a href="#a8e6f3c4-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The updated value for the second sample="</span>, update1)</span>
+<span id="a8e6f3c4-23"><a href="#a8e6f3c4-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average of the updated values is="</span>, (update <span class="op">+</span> update1) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The updated estimate for the first sample= 2.7518403446698487
@@ -1015,49 +1031,50 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 <div id="3dfdd99e" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate 2 Geometric Brownian Motions</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co">#number of divisions</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk-neutral probability)</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend yield</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>q1<span class="op">=</span><span class="fl">0.0</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>q2<span class="op">=</span><span class="dv">0</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>sig1 <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>sig2<span class="op">=</span><span class="fl">.3</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>rho<span class="op">=</span><span class="fl">0.5</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="dv">50</span></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T<span class="op">/</span>m</span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>drift1 <span class="op">=</span> (r<span class="op">-</span>q1<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig1<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>drift2 <span class="op">=</span> (r<span class="op">-</span>q2<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>sig2<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> np.sqrt(dt)</span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>,m <span class="op">+</span> <span class="dv">1</span>,<span class="dv">1</span>)) <span class="op">*</span> dt</span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span> <span class="dv">2024</span></span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
-<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
-<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>inc1 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>inc1[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> vol,size <span class="op">=</span> (n,m)))</span>
-<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> rho<span class="op">*</span>inc <span class="op">+</span> np.sqrt(<span class="dv">1</span><span class="op">-</span>rho<span class="op">**</span><span class="dv">2</span>)<span class="op">*</span>inc1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="3dfdd99e"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="3dfdd99e-1"><a href="#3dfdd99e-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate 2 Geometric Brownian Motions</span></span>
+<span id="3dfdd99e-2"><a href="#3dfdd99e-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="3dfdd99e-3"><a href="#3dfdd99e-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="3dfdd99e-4"><a href="#3dfdd99e-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3dfdd99e-5"><a href="#3dfdd99e-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="3dfdd99e-6"><a href="#3dfdd99e-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="3dfdd99e-7"><a href="#3dfdd99e-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of divisions</span></span>
+<span id="3dfdd99e-8"><a href="#3dfdd99e-8" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="3dfdd99e-9"><a href="#3dfdd99e-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest rate (We set the drift equal to the interest rate for the risk-neutral probability)</span></span>
+<span id="3dfdd99e-10"><a href="#3dfdd99e-10" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="3dfdd99e-11"><a href="#3dfdd99e-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Dividend yield</span></span>
+<span id="3dfdd99e-12"><a href="#3dfdd99e-12" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="3dfdd99e-13"><a href="#3dfdd99e-13" aria-hidden="true" tabindex="-1"></a>q2 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="3dfdd99e-14"><a href="#3dfdd99e-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="3dfdd99e-15"><a href="#3dfdd99e-15" aria-hidden="true" tabindex="-1"></a>sig1 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="3dfdd99e-16"><a href="#3dfdd99e-16" aria-hidden="true" tabindex="-1"></a>sig2 <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="3dfdd99e-17"><a href="#3dfdd99e-17" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation</span></span>
+<span id="3dfdd99e-18"><a href="#3dfdd99e-18" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="3dfdd99e-19"><a href="#3dfdd99e-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial Stock Price</span></span>
+<span id="3dfdd99e-20"><a href="#3dfdd99e-20" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">42</span></span>
+<span id="3dfdd99e-21"><a href="#3dfdd99e-21" aria-hidden="true" tabindex="-1"></a>V0 <span class="op">=</span> <span class="dv">50</span></span>
+<span id="3dfdd99e-22"><a href="#3dfdd99e-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="3dfdd99e-23"><a href="#3dfdd99e-23" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="3dfdd99e-24"><a href="#3dfdd99e-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3dfdd99e-25"><a href="#3dfdd99e-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta t</span></span>
+<span id="3dfdd99e-26"><a href="#3dfdd99e-26" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> m</span>
+<span id="3dfdd99e-27"><a href="#3dfdd99e-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Drift</span></span>
+<span id="3dfdd99e-28"><a href="#3dfdd99e-28" aria-hidden="true" tabindex="-1"></a>drift1 <span class="op">=</span> r <span class="op">-</span> q1 <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sig1<span class="op">**</span><span class="dv">2</span></span>
+<span id="3dfdd99e-29"><a href="#3dfdd99e-29" aria-hidden="true" tabindex="-1"></a>drift2 <span class="op">=</span> r <span class="op">-</span> q2 <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sig2<span class="op">**</span><span class="dv">2</span></span>
+<span id="3dfdd99e-30"><a href="#3dfdd99e-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Volatility</span></span>
+<span id="3dfdd99e-31"><a href="#3dfdd99e-31" aria-hidden="true" tabindex="-1"></a>vol <span class="op">=</span> np.sqrt(dt)</span>
+<span id="3dfdd99e-32"><a href="#3dfdd99e-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3dfdd99e-33"><a href="#3dfdd99e-33" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">0</span>, m <span class="op">+</span> <span class="dv">1</span>, <span class="dv">1</span>)) <span class="op">*</span> dt</span>
+<span id="3dfdd99e-34"><a href="#3dfdd99e-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3dfdd99e-35"><a href="#3dfdd99e-35" aria-hidden="true" tabindex="-1"></a><span class="co"># seed for random generator</span></span>
+<span id="3dfdd99e-36"><a href="#3dfdd99e-36" aria-hidden="true" tabindex="-1"></a>seed <span class="op">=</span> <span class="dv">2024</span></span>
+<span id="3dfdd99e-37"><a href="#3dfdd99e-37" aria-hidden="true" tabindex="-1"></a><span class="co"># define a random generator</span></span>
+<span id="3dfdd99e-38"><a href="#3dfdd99e-38" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
+<span id="3dfdd99e-39"><a href="#3dfdd99e-39" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="3dfdd99e-40"><a href="#3dfdd99e-40" aria-hidden="true" tabindex="-1"></a>inc[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>vol, size<span class="op">=</span>(n, m)))</span>
+<span id="3dfdd99e-41"><a href="#3dfdd99e-41" aria-hidden="true" tabindex="-1"></a>inc1 <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="3dfdd99e-42"><a href="#3dfdd99e-42" aria-hidden="true" tabindex="-1"></a>inc1[<span class="dv">1</span>:] <span class="op">=</span> np.transpose(np.random.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>vol, size<span class="op">=</span>(n, m)))</span>
+<span id="3dfdd99e-43"><a href="#3dfdd99e-43" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="3dfdd99e-44"><a href="#3dfdd99e-44" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> rho <span class="op">*</span> inc <span class="op">+</span> np.sqrt(<span class="dv">1</span> <span class="op">-</span> rho<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> inc1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Thus, we can simulate the changes in the logarithms of two correlated asset prices as <span class="math display">\[\begin{align*}
@@ -1067,34 +1084,34 @@ Z = \rho Z_1 + \sqrt{1-\rho^2}\,Z_2\;.
 <div id="c6d5f256" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>St2 <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(sig1<span class="op">*</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift1 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>St2 <span class="op">=</span> V0 <span class="op">*</span> np.exp(sig2<span class="op">*</span>np.cumsum(incr,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift2 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="c6d5f256"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="c6d5f256-1"><a href="#c6d5f256-1" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="c6d5f256-2"><a href="#c6d5f256-2" aria-hidden="true" tabindex="-1"></a>St2 <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="c6d5f256-3"><a href="#c6d5f256-3" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(sig1 <span class="op">*</span> np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift1 <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span>
+<span id="c6d5f256-4"><a href="#c6d5f256-4" aria-hidden="true" tabindex="-1"></a>St2 <span class="op">=</span> V0 <span class="op">*</span> np.exp(sig2 <span class="op">*</span> np.cumsum(incr, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift2 <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We can also construct antithetic variables.</p>
 <div id="5351eecb" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>St2a <span class="op">=</span> np.zeros(shape <span class="op">=</span> (m <span class="op">+</span> <span class="dv">1</span>, n))</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>sig1<span class="op">*</span>np.cumsum(inc,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift1 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>St2a <span class="op">=</span> V0 <span class="op">*</span> np.exp(<span class="op">-</span>sig2<span class="op">*</span>np.cumsum(incr,axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift2 <span class="op">*</span> t[<span class="dv">0</span>:m <span class="op">+</span> <span class="dv">1</span>])[:,<span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="5351eecb"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="5351eecb-1"><a href="#5351eecb-1" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="5351eecb-2"><a href="#5351eecb-2" aria-hidden="true" tabindex="-1"></a>St2a <span class="op">=</span> np.zeros(shape<span class="op">=</span>(m <span class="op">+</span> <span class="dv">1</span>, n))</span>
+<span id="5351eecb-3"><a href="#5351eecb-3" aria-hidden="true" tabindex="-1"></a>St1a <span class="op">=</span> S0 <span class="op">*</span> np.exp(<span class="op">-</span>sig1 <span class="op">*</span> np.cumsum(inc, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift1 <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span>
+<span id="5351eecb-4"><a href="#5351eecb-4" aria-hidden="true" tabindex="-1"></a>St2a <span class="op">=</span> V0 <span class="op">*</span> np.exp(<span class="op">-</span>sig2 <span class="op">*</span> np.cumsum(incr, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> (drift2 <span class="op">*</span> t[<span class="dv">0</span> : m <span class="op">+</span> <span class="dv">1</span>])[:, <span class="va">None</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Given this sample, we can estimate the value of a best of 2 option with payoff <span class="math inline">\(\max(S_{1T},S_{2T})\)</span>.</p>
 <div id="7c487e8b" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(St1[m,:],St2[m,:])</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>payoffa <span class="op">=</span> np.maximum(St1a[m,:],St2a[m,:])</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>value<span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(payoff)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>valuea<span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(payoffa)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estmate is ='</span>,value)</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is ='</span>,valuea)</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The avergae of the estimates is='</span>,(value<span class="op">+</span>valuea)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="7c487e8b"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="7c487e8b-1"><a href="#7c487e8b-1" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(St1[m, :], St2[m, :])</span>
+<span id="7c487e8b-2"><a href="#7c487e8b-2" aria-hidden="true" tabindex="-1"></a>payoffa <span class="op">=</span> np.maximum(St1a[m, :], St2a[m, :])</span>
+<span id="7c487e8b-3"><a href="#7c487e8b-3" aria-hidden="true" tabindex="-1"></a>value <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(payoff)</span>
+<span id="7c487e8b-4"><a href="#7c487e8b-4" aria-hidden="true" tabindex="-1"></a>valuea <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(payoffa)</span>
+<span id="7c487e8b-5"><a href="#7c487e8b-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="7c487e8b-6"><a href="#7c487e8b-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The first estmate is ="</span>, value)</span>
+<span id="7c487e8b-7"><a href="#7c487e8b-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The second estimate is ="</span>, valuea)</span>
+<span id="7c487e8b-8"><a href="#7c487e8b-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The avergae of the estimates is="</span>, (value <span class="op">+</span> valuea) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The first estmate is = 50.11374784508302
@@ -1141,15 +1158,15 @@ AA^\top = \text{covariance matrix}
 <div id="48eddc4f" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>w<span class="op">=</span><span class="fl">0.5</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">45</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>basketpo<span class="op">=</span>np.maximum(w<span class="op">*</span>St1[m,:]<span class="op">+</span>(<span class="dv">1</span><span class="op">-</span>w)<span class="op">*</span>St2[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>basketpoa<span class="op">=</span>np.maximum(w<span class="op">*</span>St1a[m,:]<span class="op">+</span>(<span class="dv">1</span><span class="op">-</span>w)<span class="op">*</span>St2a[m,:]<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>estimate<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(basketpo)</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>estimatea<span class="op">=</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(basketpoa)</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first estimate is ='</span>,estimate)</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second estimate is ='</span>,estimatea)</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average of the estimates='</span>,(estimate<span class="op">+</span>estimatea)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="48eddc4f"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="48eddc4f-1"><a href="#48eddc4f-1" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="48eddc4f-2"><a href="#48eddc4f-2" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">45</span></span>
+<span id="48eddc4f-3"><a href="#48eddc4f-3" aria-hidden="true" tabindex="-1"></a>basketpo <span class="op">=</span> np.maximum(w <span class="op">*</span> St1[m, :] <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> w) <span class="op">*</span> St2[m, :] <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="48eddc4f-4"><a href="#48eddc4f-4" aria-hidden="true" tabindex="-1"></a>basketpoa <span class="op">=</span> np.maximum(w <span class="op">*</span> St1a[m, :] <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> w) <span class="op">*</span> St2a[m, :] <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="48eddc4f-5"><a href="#48eddc4f-5" aria-hidden="true" tabindex="-1"></a>estimate <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(basketpo)</span>
+<span id="48eddc4f-6"><a href="#48eddc4f-6" aria-hidden="true" tabindex="-1"></a>estimatea <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(basketpoa)</span>
+<span id="48eddc4f-7"><a href="#48eddc4f-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The first estimate is ="</span>, estimate)</span>
+<span id="48eddc4f-8"><a href="#48eddc4f-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The second estimate is ="</span>, estimatea)</span>
+<span id="48eddc4f-9"><a href="#48eddc4f-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average of the estimates="</span>, (estimate <span class="op">+</span> estimatea) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The first estimate is = 4.4030641748675095
@@ -1161,87 +1178,86 @@ The average of the estimates= 4.674364753984721</code></pre>
 <div id="22ca9ec3" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#risk free rate</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>r<span class="op">=</span><span class="fl">0.1</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of assets</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>k<span class="op">=</span><span class="dv">3</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>n<span class="op">=</span><span class="dv">100000</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Horizon</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>T<span class="op">=</span><span class="fl">0.5</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial price</span></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>S0<span class="op">=</span>[<span class="dv">42</span>,<span class="dv">50</span>,<span class="dv">45</span>]</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Basket Weights</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>w<span class="op">=</span>[<span class="fl">.25</span>,<span class="fl">.5</span>,<span class="fl">.25</span>]</span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="co">#Strike Price</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">45</span></span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="co">#  put in volatilities</span></span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>sig1<span class="op">=</span><span class="fl">.2</span></span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>sig2<span class="op">=</span><span class="fl">.3</span></span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>sig3<span class="op">=</span><span class="fl">.4</span></span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a><span class="co">#create diagonal</span></span>
-<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>sig<span class="op">=</span>[sig1,sig2,sig3]</span>
-<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a>S<span class="op">=</span>np.diag(sig)</span>
-<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a><span class="co"># drift of log returns</span></span>
-<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a>drift<span class="op">=</span> r<span class="op">*</span>np.ones(k) <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>np.dot(S<span class="op">@</span>S,np.ones(k))</span>
-<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation matrix</span></span>
-<span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-40"><a href="#cb30-40" aria-hidden="true" tabindex="-1"></a>rho<span class="op">=</span>np.array([[<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>],</span>
-<span id="cb30-41"><a href="#cb30-41" aria-hidden="true" tabindex="-1"></a>                  [<span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">0.2</span>],</span>
-<span id="cb30-42"><a href="#cb30-42" aria-hidden="true" tabindex="-1"></a>                  [<span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">1.0</span>]])</span>
-<span id="cb30-43"><a href="#cb30-43" aria-hidden="true" tabindex="-1"></a><span class="co"># covariance matrix</span></span>
-<span id="cb30-44"><a href="#cb30-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-45"><a href="#cb30-45" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> S<span class="op">@</span>rho<span class="op">@</span>S</span>
-<span id="cb30-46"><a href="#cb30-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-47"><a href="#cb30-47" aria-hidden="true" tabindex="-1"></a><span class="co"># generate uniform n*k normal uncorrelated random variables</span></span>
-<span id="cb30-48"><a href="#cb30-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-49"><a href="#cb30-49" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span><span class="dv">2024</span></span>
-<span id="cb30-50"><a href="#cb30-50" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
-<span id="cb30-51"><a href="#cb30-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-52"><a href="#cb30-52" aria-hidden="true" tabindex="-1"></a>inc1<span class="op">=</span>np.transpose(np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> np.sqrt(T),size <span class="op">=</span> (n,k)))</span>
-<span id="cb30-53"><a href="#cb30-53" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb30-54"><a href="#cb30-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-55"><a href="#cb30-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-56"><a href="#cb30-56" aria-hidden="true" tabindex="-1"></a><span class="co"># create correlated random variables</span></span>
-<span id="cb30-57"><a href="#cb30-57" aria-hidden="true" tabindex="-1"></a>Z<span class="op">=</span>np.linalg.cholesky(V)</span>
-<span id="cb30-58"><a href="#cb30-58" aria-hidden="true" tabindex="-1"></a>incr<span class="op">=</span>np.dot(Z,inc1)</span>
-<span id="cb30-59"><a href="#cb30-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-60"><a href="#cb30-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The sample correlation matrix ='</span>,np.corrcoef(incr))</span>
-<span id="cb30-61"><a href="#cb30-61" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The input correlation matrix ='</span>,rho)</span>
-<span id="cb30-62"><a href="#cb30-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-63"><a href="#cb30-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-64"><a href="#cb30-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-65"><a href="#cb30-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-66"><a href="#cb30-66" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(drift <span class="op">*</span>T <span class="op">+</span> np.transpose(incr))</span>
-<span id="cb30-67"><a href="#cb30-67" aria-hidden="true" tabindex="-1"></a><span class="co">#antithetic sample</span></span>
-<span id="cb30-68"><a href="#cb30-68" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp( drift <span class="op">*</span> T <span class="op">-</span> np.transpose(incr))</span>
-<span id="cb30-69"><a href="#cb30-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-70"><a href="#cb30-70" aria-hidden="true" tabindex="-1"></a>estimate<span class="op">=</span>np.mean(St,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb30-71"><a href="#cb30-71" aria-hidden="true" tabindex="-1"></a>estimate1<span class="op">=</span>np.mean(St1,axis<span class="op">=</span><span class="dv">0</span>)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb30-72"><a href="#cb30-72" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average discounted stock price averaged over both samples='</span>,(estimate<span class="op">+</span>estimate1)<span class="op">/</span><span class="dv">2</span>)</span>
-<span id="cb30-73"><a href="#cb30-73" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The initial Srock Price input ='</span>,S0)</span>
-<span id="cb30-74"><a href="#cb30-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-75"><a href="#cb30-75" aria-hidden="true" tabindex="-1"></a>basketpo<span class="op">=</span>np.maximum(w<span class="op">@</span>np.transpose(St)<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb30-76"><a href="#cb30-76" aria-hidden="true" tabindex="-1"></a>basketpo1<span class="op">=</span>np.maximum(w<span class="op">@</span>np.transpose(St1)<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb30-77"><a href="#cb30-77" aria-hidden="true" tabindex="-1"></a>value<span class="op">=</span>np.mean(basketpo)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb30-78"><a href="#cb30-78" aria-hidden="true" tabindex="-1"></a>value1<span class="op">=</span>np.mean(basketpo1)<span class="op">*</span>np.exp(<span class="op">-</span>r<span class="op">*</span>T)</span>
-<span id="cb30-79"><a href="#cb30-79" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first sample estimate of the basket option value='</span>,value)</span>
-<span id="cb30-80"><a href="#cb30-80" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The second sample estimate of the basket option value='</span>,value1)</span>
-<span id="cb30-81"><a href="#cb30-81" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average estimate of the basket option value='</span>,(value<span class="op">+</span>value1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="22ca9ec3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="22ca9ec3-1"><a href="#22ca9ec3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="22ca9ec3-2"><a href="#22ca9ec3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-3"><a href="#22ca9ec3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># risk free rate</span></span>
+<span id="22ca9ec3-4"><a href="#22ca9ec3-4" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="22ca9ec3-5"><a href="#22ca9ec3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of assets</span></span>
+<span id="22ca9ec3-6"><a href="#22ca9ec3-6" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">3</span></span>
+<span id="22ca9ec3-7"><a href="#22ca9ec3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-8"><a href="#22ca9ec3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># number of paths</span></span>
+<span id="22ca9ec3-9"><a href="#22ca9ec3-9" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100000</span></span>
+<span id="22ca9ec3-10"><a href="#22ca9ec3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Horizon</span></span>
+<span id="22ca9ec3-11"><a href="#22ca9ec3-11" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="22ca9ec3-12"><a href="#22ca9ec3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-13"><a href="#22ca9ec3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial price</span></span>
+<span id="22ca9ec3-14"><a href="#22ca9ec3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-15"><a href="#22ca9ec3-15" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> [<span class="dv">42</span>, <span class="dv">50</span>, <span class="dv">45</span>]</span>
+<span id="22ca9ec3-16"><a href="#22ca9ec3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-17"><a href="#22ca9ec3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Basket Weights</span></span>
+<span id="22ca9ec3-18"><a href="#22ca9ec3-18" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> [<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.25</span>]</span>
+<span id="22ca9ec3-19"><a href="#22ca9ec3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-20"><a href="#22ca9ec3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="22ca9ec3-21"><a href="#22ca9ec3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-22"><a href="#22ca9ec3-22" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">45</span></span>
+<span id="22ca9ec3-23"><a href="#22ca9ec3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-24"><a href="#22ca9ec3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#  put in volatilities</span></span>
+<span id="22ca9ec3-25"><a href="#22ca9ec3-25" aria-hidden="true" tabindex="-1"></a>sig1 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="22ca9ec3-26"><a href="#22ca9ec3-26" aria-hidden="true" tabindex="-1"></a>sig2 <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="22ca9ec3-27"><a href="#22ca9ec3-27" aria-hidden="true" tabindex="-1"></a>sig3 <span class="op">=</span> <span class="fl">0.4</span></span>
+<span id="22ca9ec3-28"><a href="#22ca9ec3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-29"><a href="#22ca9ec3-29" aria-hidden="true" tabindex="-1"></a><span class="co"># create diagonal</span></span>
+<span id="22ca9ec3-30"><a href="#22ca9ec3-30" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> [sig1, sig2, sig3]</span>
+<span id="22ca9ec3-31"><a href="#22ca9ec3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-32"><a href="#22ca9ec3-32" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.diag(sig)</span>
+<span id="22ca9ec3-33"><a href="#22ca9ec3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-34"><a href="#22ca9ec3-34" aria-hidden="true" tabindex="-1"></a><span class="co"># drift of log returns</span></span>
+<span id="22ca9ec3-35"><a href="#22ca9ec3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-36"><a href="#22ca9ec3-36" aria-hidden="true" tabindex="-1"></a>drift <span class="op">=</span> r <span class="op">*</span> np.ones(k) <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> np.dot(S <span class="op">@</span> S, np.ones(k))</span>
+<span id="22ca9ec3-37"><a href="#22ca9ec3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-38"><a href="#22ca9ec3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-39"><a href="#22ca9ec3-39" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation matrix</span></span>
+<span id="22ca9ec3-40"><a href="#22ca9ec3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-41"><a href="#22ca9ec3-41" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> np.array([[<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>], [<span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">0.2</span>], [<span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">1.0</span>]])</span>
+<span id="22ca9ec3-42"><a href="#22ca9ec3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># covariance matrix</span></span>
+<span id="22ca9ec3-43"><a href="#22ca9ec3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-44"><a href="#22ca9ec3-44" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> S <span class="op">@</span> rho <span class="op">@</span> S</span>
+<span id="22ca9ec3-45"><a href="#22ca9ec3-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-46"><a href="#22ca9ec3-46" aria-hidden="true" tabindex="-1"></a><span class="co"># generate uniform n*k normal uncorrelated random variables</span></span>
+<span id="22ca9ec3-47"><a href="#22ca9ec3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-48"><a href="#22ca9ec3-48" aria-hidden="true" tabindex="-1"></a>seed <span class="op">=</span> <span class="dv">2024</span></span>
+<span id="22ca9ec3-49"><a href="#22ca9ec3-49" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
+<span id="22ca9ec3-50"><a href="#22ca9ec3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-51"><a href="#22ca9ec3-51" aria-hidden="true" tabindex="-1"></a>inc1 <span class="op">=</span> np.transpose(np.random.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>np.sqrt(T), size<span class="op">=</span>(n, k)))</span>
+<span id="22ca9ec3-52"><a href="#22ca9ec3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-53"><a href="#22ca9ec3-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-54"><a href="#22ca9ec3-54" aria-hidden="true" tabindex="-1"></a><span class="co"># create correlated random variables</span></span>
+<span id="22ca9ec3-55"><a href="#22ca9ec3-55" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> np.linalg.cholesky(V)</span>
+<span id="22ca9ec3-56"><a href="#22ca9ec3-56" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> np.dot(Z, inc1)</span>
+<span id="22ca9ec3-57"><a href="#22ca9ec3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-58"><a href="#22ca9ec3-58" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The sample correlation matrix ="</span>, np.corrcoef(incr))</span>
+<span id="22ca9ec3-59"><a href="#22ca9ec3-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The input correlation matrix ="</span>, rho)</span>
+<span id="22ca9ec3-60"><a href="#22ca9ec3-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-61"><a href="#22ca9ec3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-62"><a href="#22ca9ec3-62" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> S0 <span class="op">*</span> np.exp(drift <span class="op">*</span> T <span class="op">+</span> np.transpose(incr))</span>
+<span id="22ca9ec3-63"><a href="#22ca9ec3-63" aria-hidden="true" tabindex="-1"></a><span class="co"># antithetic sample</span></span>
+<span id="22ca9ec3-64"><a href="#22ca9ec3-64" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> S0 <span class="op">*</span> np.exp(drift <span class="op">*</span> T <span class="op">-</span> np.transpose(incr))</span>
+<span id="22ca9ec3-65"><a href="#22ca9ec3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-66"><a href="#22ca9ec3-66" aria-hidden="true" tabindex="-1"></a>estimate <span class="op">=</span> np.mean(St, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="22ca9ec3-67"><a href="#22ca9ec3-67" aria-hidden="true" tabindex="-1"></a>estimate1 <span class="op">=</span> np.mean(St1, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="22ca9ec3-68"><a href="#22ca9ec3-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
+<span id="22ca9ec3-69"><a href="#22ca9ec3-69" aria-hidden="true" tabindex="-1"></a>    <span class="st">"The average discounted stock price averaged over both samples="</span>,</span>
+<span id="22ca9ec3-70"><a href="#22ca9ec3-70" aria-hidden="true" tabindex="-1"></a>    (estimate <span class="op">+</span> estimate1) <span class="op">/</span> <span class="dv">2</span>,</span>
+<span id="22ca9ec3-71"><a href="#22ca9ec3-71" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="22ca9ec3-72"><a href="#22ca9ec3-72" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The initial Srock Price input ="</span>, S0)</span>
+<span id="22ca9ec3-73"><a href="#22ca9ec3-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22ca9ec3-74"><a href="#22ca9ec3-74" aria-hidden="true" tabindex="-1"></a>basketpo <span class="op">=</span> np.maximum(w <span class="op">@</span> np.transpose(St) <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="22ca9ec3-75"><a href="#22ca9ec3-75" aria-hidden="true" tabindex="-1"></a>basketpo1 <span class="op">=</span> np.maximum(w <span class="op">@</span> np.transpose(St1) <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="22ca9ec3-76"><a href="#22ca9ec3-76" aria-hidden="true" tabindex="-1"></a>value <span class="op">=</span> np.mean(basketpo) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="22ca9ec3-77"><a href="#22ca9ec3-77" aria-hidden="true" tabindex="-1"></a>value1 <span class="op">=</span> np.mean(basketpo1) <span class="op">*</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T)</span>
+<span id="22ca9ec3-78"><a href="#22ca9ec3-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The first sample estimate of the basket option value="</span>, value)</span>
+<span id="22ca9ec3-79"><a href="#22ca9ec3-79" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The second sample estimate of the basket option value="</span>, value1)</span>
+<span id="22ca9ec3-80"><a href="#22ca9ec3-80" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average estimate of the basket option value="</span>, (value <span class="op">+</span> value1) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The sample correlation matrix = [[1.         0.50356746 0.30497838]
@@ -1261,106 +1277,119 @@ The average estimate of the basket option value= 5.312623607991936</code></pre>
 <div id="5c53d185" class="cell" data-execution_count="20">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#number of time steps</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>m<span class="op">=</span><span class="dv">2</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># number of assets</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>k<span class="op">=</span><span class="dv">3</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co"># number of sample paths</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>n<span class="op">=</span><span class="dv">100000</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="co">#risk free rate</span></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>r<span class="op">=</span><span class="fl">0.1</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Horizon</span></span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>T<span class="op">=</span><span class="fl">0.5</span></span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="co"># delta t</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>dt<span class="op">=</span>T<span class="op">/</span>m</span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial price</span></span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>S0<span class="op">=</span>[<span class="dv">42</span>,<span class="dv">50</span>,<span class="dv">45</span>]</span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a><span class="co">#Strike Price</span></span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>K<span class="op">=</span><span class="dv">45</span></span>
-<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a><span class="co">#  put in volatilities</span></span>
-<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>sig1<span class="op">=</span><span class="fl">.2</span></span>
-<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>sig2<span class="op">=</span><span class="fl">.3</span></span>
-<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>sig3<span class="op">=</span><span class="fl">.4</span></span>
-<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a><span class="co">#create diagonal</span></span>
-<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>sig<span class="op">=</span>[sig1,sig2,sig3]</span>
-<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>S<span class="op">=</span>np.diag(sig)</span>
-<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation matrix</span></span>
-<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>rho<span class="op">=</span>np.array([[<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>],</span>
-<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>                  [<span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">0.2</span>],</span>
-<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>                  [<span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">1.0</span>]])</span>
-<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a><span class="co"># covariance matrix</span></span>
-<span id="cb32-44"><a href="#cb32-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-45"><a href="#cb32-45" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> S<span class="op">@</span>rho<span class="op">@</span>S</span>
-<span id="cb32-46"><a href="#cb32-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-47"><a href="#cb32-47" aria-hidden="true" tabindex="-1"></a><span class="co"># drift of log returns</span></span>
-<span id="cb32-48"><a href="#cb32-48" aria-hidden="true" tabindex="-1"></a>drift<span class="op">=</span> np.array(r<span class="op">*</span>np.ones(k) <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>np.dot(S<span class="op">@</span>S,np.ones(k)))<span class="op">*</span>dt</span>
-<span id="cb32-49"><a href="#cb32-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-50"><a href="#cb32-50" aria-hidden="true" tabindex="-1"></a><span class="co"># times vector</span></span>
-<span id="cb32-51"><a href="#cb32-51" aria-hidden="true" tabindex="-1"></a>t<span class="op">=</span>np.array(<span class="bu">range</span>(<span class="dv">1</span>,m <span class="op">+</span> <span class="dv">1</span>,<span class="dv">1</span>))</span>
-<span id="cb32-52"><a href="#cb32-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-53"><a href="#cb32-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-54"><a href="#cb32-54" aria-hidden="true" tabindex="-1"></a>driftv <span class="op">=</span> np.transpose(np.kron(drift,t).reshape(<span class="dv">3</span>,m))</span>
-<span id="cb32-55"><a href="#cb32-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-56"><a href="#cb32-56" aria-hidden="true" tabindex="-1"></a><span class="co"># generate uniform n(paths)*k(assets)*m(time steps) normal uncorrelated random variables</span></span>
-<span id="cb32-57"><a href="#cb32-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-58"><a href="#cb32-58" aria-hidden="true" tabindex="-1"></a>seed<span class="op">=</span><span class="dv">2024</span></span>
-<span id="cb32-59"><a href="#cb32-59" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
-<span id="cb32-60"><a href="#cb32-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-61"><a href="#cb32-61" aria-hidden="true" tabindex="-1"></a>inc<span class="op">=</span>np.random.normal(loc <span class="op">=</span> <span class="dv">0</span>, scale <span class="op">=</span> np.sqrt(dt),size <span class="op">=</span> (n,k,m))</span>
-<span id="cb32-62"><a href="#cb32-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-63"><a href="#cb32-63" aria-hidden="true" tabindex="-1"></a><span class="co">#create correlated random increments</span></span>
-<span id="cb32-64"><a href="#cb32-64" aria-hidden="true" tabindex="-1"></a>Z<span class="op">=</span>np.linalg.cholesky(V)</span>
-<span id="cb32-65"><a href="#cb32-65" aria-hidden="true" tabindex="-1"></a><span class="co"># numpy matmul assumes last two define matrix multiplication</span></span>
-<span id="cb32-66"><a href="#cb32-66" aria-hidden="true" tabindex="-1"></a>incr<span class="op">=</span>np.matmul(Z,inc)</span>
-<span id="cb32-67"><a href="#cb32-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-68"><a href="#cb32-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-69"><a href="#cb32-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-70"><a href="#cb32-70" aria-hidden="true" tabindex="-1"></a>SSt<span class="op">=</span>S0<span class="op">*</span>np.exp(driftv)</span>
-<span id="cb32-71"><a href="#cb32-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-72"><a href="#cb32-72" aria-hidden="true" tabindex="-1"></a><span class="co"># generate returns along path and antithetic path</span></span>
-<span id="cb32-73"><a href="#cb32-73" aria-hidden="true" tabindex="-1"></a><span class="co"># first e^{cumsum(increments)} gives e^sigma B_t for different t</span></span>
-<span id="cb32-74"><a href="#cb32-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-75"><a href="#cb32-75" aria-hidden="true" tabindex="-1"></a>Stb <span class="op">=</span> np.exp(np.cumsum(incr[:,:,],axis<span class="op">=</span><span class="dv">2</span>))</span>
-<span id="cb32-76"><a href="#cb32-76" aria-hidden="true" tabindex="-1"></a>Stb1 <span class="op">=</span> np.exp(<span class="op">-</span>np.cumsum(incr[:,:,],axis<span class="op">=</span><span class="dv">2</span>))</span>
-<span id="cb32-77"><a href="#cb32-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-78"><a href="#cb32-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-79"><a href="#cb32-79" aria-hidden="true" tabindex="-1"></a><span class="co">#Multiply by S0 e^drift for each t</span></span>
-<span id="cb32-80"><a href="#cb32-80" aria-hidden="true" tabindex="-1"></a>St<span class="op">=</span>np.multiply(Stb,np.transpose(SSt))</span>
-<span id="cb32-81"><a href="#cb32-81" aria-hidden="true" tabindex="-1"></a>St1<span class="op">=</span>np.multiply(Stb1,np.transpose(SSt))</span>
-<span id="cb32-82"><a href="#cb32-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-83"><a href="#cb32-83" aria-hidden="true" tabindex="-1"></a><span class="co">#Last date returns</span></span>
-<span id="cb32-84"><a href="#cb32-84" aria-hidden="true" tabindex="-1"></a>Stm<span class="op">=</span>St[:,:,m<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb32-85"><a href="#cb32-85" aria-hidden="true" tabindex="-1"></a>Stm1<span class="op">=</span>St1[:,:,m<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb32-86"><a href="#cb32-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-87"><a href="#cb32-87" aria-hidden="true" tabindex="-1"></a><span class="co">#define payoff</span></span>
-<span id="cb32-88"><a href="#cb32-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Basket Weights</span></span>
-<span id="cb32-89"><a href="#cb32-89" aria-hidden="true" tabindex="-1"></a>w<span class="op">=</span>[<span class="fl">.25</span>,<span class="fl">.5</span>,<span class="fl">.25</span>]</span>
-<span id="cb32-90"><a href="#cb32-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-91"><a href="#cb32-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-92"><a href="#cb32-92" aria-hidden="true" tabindex="-1"></a>payoff<span class="op">=</span> np.maximum(np.matmul(Stm,np.transpose(w))<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb32-93"><a href="#cb32-93" aria-hidden="true" tabindex="-1"></a>payoff1<span class="op">=</span> np.maximum(np.matmul(Stm1,np.transpose(w))<span class="op">-</span>K,<span class="dv">0</span>)</span>
-<span id="cb32-94"><a href="#cb32-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-95"><a href="#cb32-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-96"><a href="#cb32-96" aria-hidden="true" tabindex="-1"></a>value<span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(payoff)</span>
-<span id="cb32-97"><a href="#cb32-97" aria-hidden="true" tabindex="-1"></a>value1<span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">*</span>T)<span class="op">*</span>np.mean(payoff1)</span>
-<span id="cb32-98"><a href="#cb32-98" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The estimate for the first sample value='</span>,value)</span>
-<span id="cb32-99"><a href="#cb32-99" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The estimate for the second sample value='</span>,value1)</span>
-<span id="cb32-100"><a href="#cb32-100" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The average estimate for the value='</span>,(value<span class="op">+</span>value1)<span class="op">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="5c53d185"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="5c53d185-1"><a href="#5c53d185-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="5c53d185-2"><a href="#5c53d185-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-3"><a href="#5c53d185-3" aria-hidden="true" tabindex="-1"></a><span class="co"># number of time steps</span></span>
+<span id="5c53d185-4"><a href="#5c53d185-4" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">2</span></span>
+<span id="5c53d185-5"><a href="#5c53d185-5" aria-hidden="true" tabindex="-1"></a><span class="co"># number of assets</span></span>
+<span id="5c53d185-6"><a href="#5c53d185-6" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">3</span></span>
+<span id="5c53d185-7"><a href="#5c53d185-7" aria-hidden="true" tabindex="-1"></a><span class="co"># number of sample paths</span></span>
+<span id="5c53d185-8"><a href="#5c53d185-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100000</span></span>
+<span id="5c53d185-9"><a href="#5c53d185-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-10"><a href="#5c53d185-10" aria-hidden="true" tabindex="-1"></a><span class="co"># risk free rate</span></span>
+<span id="5c53d185-11"><a href="#5c53d185-11" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="5c53d185-12"><a href="#5c53d185-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-13"><a href="#5c53d185-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-14"><a href="#5c53d185-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Horizon</span></span>
+<span id="5c53d185-15"><a href="#5c53d185-15" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="5c53d185-16"><a href="#5c53d185-16" aria-hidden="true" tabindex="-1"></a><span class="co"># delta t</span></span>
+<span id="5c53d185-17"><a href="#5c53d185-17" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> m</span>
+<span id="5c53d185-18"><a href="#5c53d185-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial price</span></span>
+<span id="5c53d185-19"><a href="#5c53d185-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-20"><a href="#5c53d185-20" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> [<span class="dv">42</span>, <span class="dv">50</span>, <span class="dv">45</span>]</span>
+<span id="5c53d185-21"><a href="#5c53d185-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-22"><a href="#5c53d185-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Strike Price</span></span>
+<span id="5c53d185-23"><a href="#5c53d185-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-24"><a href="#5c53d185-24" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">45</span></span>
+<span id="5c53d185-25"><a href="#5c53d185-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-26"><a href="#5c53d185-26" aria-hidden="true" tabindex="-1"></a><span class="co">#  put in volatilities</span></span>
+<span id="5c53d185-27"><a href="#5c53d185-27" aria-hidden="true" tabindex="-1"></a>sig1 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="5c53d185-28"><a href="#5c53d185-28" aria-hidden="true" tabindex="-1"></a>sig2 <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="5c53d185-29"><a href="#5c53d185-29" aria-hidden="true" tabindex="-1"></a>sig3 <span class="op">=</span> <span class="fl">0.4</span></span>
+<span id="5c53d185-30"><a href="#5c53d185-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-31"><a href="#5c53d185-31" aria-hidden="true" tabindex="-1"></a><span class="co"># create diagonal</span></span>
+<span id="5c53d185-32"><a href="#5c53d185-32" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> [sig1, sig2, sig3]</span>
+<span id="5c53d185-33"><a href="#5c53d185-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-34"><a href="#5c53d185-34" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.diag(sig)</span>
+<span id="5c53d185-35"><a href="#5c53d185-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-36"><a href="#5c53d185-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-37"><a href="#5c53d185-37" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation matrix</span></span>
+<span id="5c53d185-38"><a href="#5c53d185-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-39"><a href="#5c53d185-39" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> np.array([[<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>], [<span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">0.2</span>], [<span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">1.0</span>]])</span>
+<span id="5c53d185-40"><a href="#5c53d185-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-41"><a href="#5c53d185-41" aria-hidden="true" tabindex="-1"></a><span class="co"># covariance matrix</span></span>
+<span id="5c53d185-42"><a href="#5c53d185-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-43"><a href="#5c53d185-43" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> S <span class="op">@</span> rho <span class="op">@</span> S</span>
+<span id="5c53d185-44"><a href="#5c53d185-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-45"><a href="#5c53d185-45" aria-hidden="true" tabindex="-1"></a><span class="co"># drift of log returns</span></span>
+<span id="5c53d185-46"><a href="#5c53d185-46" aria-hidden="true" tabindex="-1"></a>drift <span class="op">=</span> np.array(r <span class="op">*</span> np.ones(k) <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> np.dot(S <span class="op">@</span> S, np.ones(k))) <span class="op">*</span> dt</span>
+<span id="5c53d185-47"><a href="#5c53d185-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-48"><a href="#5c53d185-48" aria-hidden="true" tabindex="-1"></a><span class="co"># times vector</span></span>
+<span id="5c53d185-49"><a href="#5c53d185-49" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array(<span class="bu">range</span>(<span class="dv">1</span>, m <span class="op">+</span> <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="5c53d185-50"><a href="#5c53d185-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-51"><a href="#5c53d185-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-52"><a href="#5c53d185-52" aria-hidden="true" tabindex="-1"></a>driftv <span class="op">=</span> np.transpose(np.kron(drift, t).reshape(<span class="dv">3</span>, m))</span>
+<span id="5c53d185-53"><a href="#5c53d185-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-54"><a href="#5c53d185-54" aria-hidden="true" tabindex="-1"></a><span class="co"># generate uniform n(paths)*k(assets)*m(time steps) normal uncorrelated random variables</span></span>
+<span id="5c53d185-55"><a href="#5c53d185-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-56"><a href="#5c53d185-56" aria-hidden="true" tabindex="-1"></a>seed <span class="op">=</span> <span class="dv">2024</span></span>
+<span id="5c53d185-57"><a href="#5c53d185-57" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)</span>
+<span id="5c53d185-58"><a href="#5c53d185-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-59"><a href="#5c53d185-59" aria-hidden="true" tabindex="-1"></a>inc <span class="op">=</span> np.random.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>np.sqrt(dt), size<span class="op">=</span>(n, k, m))</span>
+<span id="5c53d185-60"><a href="#5c53d185-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-61"><a href="#5c53d185-61" aria-hidden="true" tabindex="-1"></a><span class="co"># create correlated random increments</span></span>
+<span id="5c53d185-62"><a href="#5c53d185-62" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> np.linalg.cholesky(V)</span>
+<span id="5c53d185-63"><a href="#5c53d185-63" aria-hidden="true" tabindex="-1"></a><span class="co"># numpy matmul assumes last two define matrix multiplication</span></span>
+<span id="5c53d185-64"><a href="#5c53d185-64" aria-hidden="true" tabindex="-1"></a>incr <span class="op">=</span> np.matmul(Z, inc)</span>
+<span id="5c53d185-65"><a href="#5c53d185-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-66"><a href="#5c53d185-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-67"><a href="#5c53d185-67" aria-hidden="true" tabindex="-1"></a>SSt <span class="op">=</span> S0 <span class="op">*</span> np.exp(driftv)</span>
+<span id="5c53d185-68"><a href="#5c53d185-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-69"><a href="#5c53d185-69" aria-hidden="true" tabindex="-1"></a><span class="co"># generate returns along path and antithetic path</span></span>
+<span id="5c53d185-70"><a href="#5c53d185-70" aria-hidden="true" tabindex="-1"></a><span class="co"># first e^{cumsum(increments)} gives e^sigma B_t for different t</span></span>
+<span id="5c53d185-71"><a href="#5c53d185-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-72"><a href="#5c53d185-72" aria-hidden="true" tabindex="-1"></a>Stb <span class="op">=</span> np.exp(</span>
+<span id="5c53d185-73"><a href="#5c53d185-73" aria-hidden="true" tabindex="-1"></a>    np.cumsum(</span>
+<span id="5c53d185-74"><a href="#5c53d185-74" aria-hidden="true" tabindex="-1"></a>        incr[</span>
+<span id="5c53d185-75"><a href="#5c53d185-75" aria-hidden="true" tabindex="-1"></a>            :,</span>
+<span id="5c53d185-76"><a href="#5c53d185-76" aria-hidden="true" tabindex="-1"></a>            :,</span>
+<span id="5c53d185-77"><a href="#5c53d185-77" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="5c53d185-78"><a href="#5c53d185-78" aria-hidden="true" tabindex="-1"></a>        axis<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="5c53d185-79"><a href="#5c53d185-79" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="5c53d185-80"><a href="#5c53d185-80" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="5c53d185-81"><a href="#5c53d185-81" aria-hidden="true" tabindex="-1"></a>Stb1 <span class="op">=</span> np.exp(</span>
+<span id="5c53d185-82"><a href="#5c53d185-82" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span>np.cumsum(</span>
+<span id="5c53d185-83"><a href="#5c53d185-83" aria-hidden="true" tabindex="-1"></a>        incr[</span>
+<span id="5c53d185-84"><a href="#5c53d185-84" aria-hidden="true" tabindex="-1"></a>            :,</span>
+<span id="5c53d185-85"><a href="#5c53d185-85" aria-hidden="true" tabindex="-1"></a>            :,</span>
+<span id="5c53d185-86"><a href="#5c53d185-86" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="5c53d185-87"><a href="#5c53d185-87" aria-hidden="true" tabindex="-1"></a>        axis<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="5c53d185-88"><a href="#5c53d185-88" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="5c53d185-89"><a href="#5c53d185-89" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="5c53d185-90"><a href="#5c53d185-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-91"><a href="#5c53d185-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-92"><a href="#5c53d185-92" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiply by S0 e^drift for each t</span></span>
+<span id="5c53d185-93"><a href="#5c53d185-93" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.multiply(Stb, np.transpose(SSt))</span>
+<span id="5c53d185-94"><a href="#5c53d185-94" aria-hidden="true" tabindex="-1"></a>St1 <span class="op">=</span> np.multiply(Stb1, np.transpose(SSt))</span>
+<span id="5c53d185-95"><a href="#5c53d185-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-96"><a href="#5c53d185-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Last date returns</span></span>
+<span id="5c53d185-97"><a href="#5c53d185-97" aria-hidden="true" tabindex="-1"></a>Stm <span class="op">=</span> St[:, :, m <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="5c53d185-98"><a href="#5c53d185-98" aria-hidden="true" tabindex="-1"></a>Stm1 <span class="op">=</span> St1[:, :, m <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="5c53d185-99"><a href="#5c53d185-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-100"><a href="#5c53d185-100" aria-hidden="true" tabindex="-1"></a><span class="co"># define payoff</span></span>
+<span id="5c53d185-101"><a href="#5c53d185-101" aria-hidden="true" tabindex="-1"></a><span class="co"># Basket Weights</span></span>
+<span id="5c53d185-102"><a href="#5c53d185-102" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> [<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.25</span>]</span>
+<span id="5c53d185-103"><a href="#5c53d185-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-104"><a href="#5c53d185-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-105"><a href="#5c53d185-105" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(np.matmul(Stm, np.transpose(w)) <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="5c53d185-106"><a href="#5c53d185-106" aria-hidden="true" tabindex="-1"></a>payoff1 <span class="op">=</span> np.maximum(np.matmul(Stm1, np.transpose(w)) <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="5c53d185-107"><a href="#5c53d185-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-108"><a href="#5c53d185-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5c53d185-109"><a href="#5c53d185-109" aria-hidden="true" tabindex="-1"></a>value <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(payoff)</span>
+<span id="5c53d185-110"><a href="#5c53d185-110" aria-hidden="true" tabindex="-1"></a>value1 <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> np.mean(payoff1)</span>
+<span id="5c53d185-111"><a href="#5c53d185-111" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The estimate for the first sample value="</span>, value)</span>
+<span id="5c53d185-112"><a href="#5c53d185-112" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The estimate for the second sample value="</span>, value1)</span>
+<span id="5c53d185-113"><a href="#5c53d185-113" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The average estimate for the value="</span>, (value <span class="op">+</span> value1) <span class="op">/</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The estimate for the first sample value= 5.310173600480473
