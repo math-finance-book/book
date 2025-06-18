@@ -12,8 +12,8 @@ In principle, once we know the state prices or stochastic discount factor we can
 In addition to the original Black Scholes derivation, another derivation of the Black Scholes formula is provided by Merton [@Merton].  He asked the question of whether, by trading the stock and the risk-free asset, the payoff to a European call option can be replicated.  
 
 For this chapter, we assume that the stock price follows 
-$$ \d S(t) = (\mu - q) S(t) \d t + \sigma S(t) \d B(t) $$
-where owning the stock entitles the owner to a flow of dividends $q S(t) \d t$.  
+$$ \mathrm{d} S(t) = (\mu - q) S(t) \mathrm{d} t + \sigma S(t) \mathrm{d} B(t) $$
+where owning the stock entitles the owner to a flow of dividends $q S(t) \mathrm{d} t$.  
 The additonal feature of dividends does not add much complexity to the model.  However, we have to be careful; for example, a European call option does not entitle the owner to the dividends paid prior to exercise of the option.
 
 Assuming a risk neutral measure, the total return on the stock should be the risk free rate.  Therefore the risk neutral dynamics are 
@@ -266,7 +266,7 @@ $$\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\De
 where $\Delta B$ is normally distributed with mean zero and variance $\Delta t$.  The random variables $\Delta B$ are simulated as standard normals multiplied by
 $\sqrt{\Delta t}$.  We begin with the portfolio that is short a call, long $\delta$ shares of the underlying, and short $\delta S-C$ in cash.  After the stock price changes, say from $S$ to $S'$, we compute the new delta $\delta'$.  The cash flow from adjusting the hedge is $(\delta-\delta')S'$.  Accumulation (or payment) of interest on the cash position is captured by the factor $e^{r\Delta t}$.  Continuous payment of dividends is modelled similarly: the dividends earned during the period $\Delta t$ is taken to be $\delta S\left(e^{q\Delta t}-1\right)$.  The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge.  At date $T$, the value of the portfolio is the cash position less the intrinsic value of the option.
 
- Suppose we set up a delta hedge at date $0$ for a call option that we have sold.  We sell the call at the Black-Scholes price $C(0, S_0)$.  We use the proceeds plus borrowed funds to buy $\delta_0 = \e^{-qT}\mathrm{N}(d_1)$ shares, where $d_1$ is the parameter at date 0 for the Black-Scholes call value and delta.   We rebalance the hedge at each date $t_1, \ldots, t_n$, holding the short call position until it matures at date $T$.  Rebalancing means that we trade to re-establish the delta hedge based on the Black-Scholes call delta at that date, buying shares when the delta has gone up and selling shares when the delta has fallen.  Let $\delta_t$ denote the Black-Scholes delta at each $t$ and let $C_t$ denote the Black-Scholes call value $C(t, S_t)$.  
+ Suppose we set up a delta hedge at date $0$ for a call option that we have sold.  We sell the call at the Black-Scholes price $C(0, S_0)$.  We use the proceeds plus borrowed funds to buy $\delta_0 = \mathrm{e}^{-qT}\mathrm{N}(d_1)$ shares, where $d_1$ is the parameter at date 0 for the Black-Scholes call value and delta.   We rebalance the hedge at each date $t_1, \ldots, t_n$, holding the short call position until it matures at date $T$.  Rebalancing means that we trade to re-establish the delta hedge based on the Black-Scholes call delta at that date, buying shares when the delta has gone up and selling shares when the delta has fallen.  Let $\delta_t$ denote the Black-Scholes delta at each $t$ and let $C_t$ denote the Black-Scholes call value $C(t, S_t)$.  
 
 Our cash position at date 0 is $-(\delta_0 S_0 - C_0)$.  The cash position changes at each subsequent date due to (i) interest earned/paid on the cash position during the period, (ii) dividends received during the period on the shares owned, and (iii) cash paid or received when buying or selling stock to re-establish the delta hedge.  Approximate the interest on cash in each time period as $r\cdot \Delta t$ per dollar of cash at the beginning of the period.  Approximate the dividends received in each time period as $q \cdot \Delta t$ per dollar value of stock at the beginning of the period.  
 
@@ -357,9 +357,9 @@ print(f"Delta Hedge Profit (95th percentile): {delta_hedge_profit}")
 
 ::: Extra
 The basic premise which underlies our analysis is that we can use traded assets to replicate payoffs in any state time contingency.  On the surface this would seem to be a stretch.  For example, it seems implausible that we could find the value of a security which pays off in the event Martians land on earth.  Fortuneately, we are only concerned with relevant events.  For example, suppose we model the stock price using two sources of uncwertainty governed by two independent Brownian motions $B_{1,t}$ and $B_{2,t}$ and write 
-$$ \d S(t) = \mu S(t) \d t + \sigma_1 S(t) \d B_{1,t} + \sigma_2 S(t) \d B_{2,t} . $$
+$$ \mathrm{d} S(t) = \mu S(t) \mathrm{d} t + \sigma_1 S(t) \mathrm{d} B_{1,t} + \sigma_2 S(t) \mathrm{d} B_{2,t} . $$
 Then defining $\sigma = \sqrt{\sigma_1^2 + \sigma_2^2}$ and $B_t = \frac{\sigma_1}{\sigma} B_{1,t} + \frac{\sigma_2}{\sigma} B_{2,t}$, $B_t$ is a Brownian motion by Levy's theorem and 
-$$ \d S(t) = \mu S(t) \d t + \sigma S(t) \d B_t .$$
+$$ \mathrm{d} S(t) = \mu S(t) \mathrm{d} t + \sigma S(t) \mathrm{d} B_t .$$
 We can value options on the stock.  However, we can not find state prices which depend on $B_{1,t}$ and $B_{2,t}$ by themselves; this would require more securities.  Later, we will study stochastic volatility models where $\sigma$ depends on a differnt Brownian motion.  In this setting, we need more assets to dynamically replicate pay offs.  However, we can overcome this difficulty by either trading another asset or choosing the risk neutral measure to match traded options prices.
 :::
 

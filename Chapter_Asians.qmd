@@ -27,26 +27,26 @@ An Asian option is an option whose value depends on the average underlying asset
 
 In practice, the average price is computed by averaging over the prices sampled at a finite number of discrete dates.  First, we consider the case of continuous sampling.  With continuous sampling, the average price at date $T$ for an option written at date $0$ will be denoted by $A_T$ and is defined as
 $$
-A_T = \frac{1}{T}\int_0^T S_t\d   t\; .
+A_T = \frac{1}{T}\int_0^T S_t\mathrm{d}   t\; .
 $$
 A sum of lognormally distributed variables is not itself lognormally distributed.  Likeise, the integral above, which is essentially a continuous sum of the prices at different dates, is not lognormally distributed.  
 
 An alternative contract would replace the average price with the geometric average.  This is defined as the exponential of the average logarithm.  We denote this by $A^g$.  The average logarithm is
 $$
-\frac{1}{T}\int_0^T \log S_t\d   t\; ,
+\frac{1}{T}\int_0^T \log S_t\mathrm{d}   t\; ,
 $$
 and the geometric average is
 $$
-A^g_T = \exp\left(\frac{1}{T}\int_0^T \log S_t\d   t\right)\; .
+A^g_T = \exp\left(\frac{1}{T}\int_0^T \log S_t\mathrm{d}   t\right)\; .
 $$
 The concavity of the logarithm function guarantees that
 $$
-\log \frac{1}{T}\int_0^T S_t > \frac{1}{T}\int_0^T \log S_t\d   t \; .
+\log \frac{1}{T}\int_0^T S_t > \frac{1}{T}\int_0^T \log S_t\mathrm{d}   t \; .
 $$
 Therefore,
 \begin{align*}
 A_T &= \exp\left(\log \frac{1}{T}\int_0^T S_t\right)\\
-&> \exp\left(\frac{1}{T}\int_0^T \log S_t\d   t\right) \\
+&> \exp\left(\frac{1}{T}\int_0^T \log S_t\mathrm{d}   t\right) \\
 &= A^g_T\; .
 \end{align*}
 Consequently, approximating the value of an average-price or average-strike option by substituting $A^g_T$ for $A_T$ produces a biased estimate of the value.  Nevertheless, the geometric average$A^g_T$ and the arithmetic average $A_T$ are highly correlated, so $A^g_T$ forms a very useful \text{control variate} for Monte-Carlo valuation of average-price and average-strike options, as will be discussed later.  To implement the idea, we need a valuation formula for options written on $A^g_T$.  We  derive this for an average-price call, in which $A^g_T$ substitutes for $A_T$.
@@ -58,7 +58,7 @@ This is a geometric-average-price call.  Let $V_t$ denote the value at date $t$ 
 
 The value $V_t$ can be calculated as
 $$
-V_t= \mathrm{e}^{-r(T-t)}\\E^R_t\big[A^g_T\big]\; .
+V_t= \mathrm{e}^{-r(T-t)}\\mathrm{E}^R_t\big[A^g_T\big]\; .
 $$
 Define
 $$
@@ -84,11 +84,11 @@ Second, the volatility comes from the factor
 $S_t^{(T-t)/T}$,
 and, by Ito's formula,
 $$
-\d  \log S_t^{(T-t)/T} = \text{something}\d    t + \left(\frac{T-t}{T}\right)\sigma\d   B\;.
+\mathrm{d}  \log S_t^{(T-t)/T} = \text{something}\mathrm{d}    t + \left(\frac{T-t}{T}\right)\sigma\mathrm{d}   B\;.
 $$
 We can compute the average volatility in the sense of
 $$
-\sigma_{\text{avg}} = \sqrt{\frac{1}{T}\int_0^T \left(\frac{T-t}{T}\right)^2\sigma^2\d   t}
+\sigma_{\text{avg}} = \sqrt{\frac{1}{T}\int_0^T \left(\frac{T-t}{T}\right)^2\sigma^2\mathrm{d}   t}
 =\frac{\sigma}{\sqrt{3}}\;.
 $$
 and insert that into the Black-Scholes formula as $\sigma$.^[We assumed a constant volatility when deriving the Black-Scholes formula, but it is easy to check that the same logic works when the volatility is non-randomly time-varying if we substitute this average volatility.]  This yields:
@@ -132,12 +132,12 @@ $$ {#eq-asianV02}
 
 Second, the volatility of $V_t$ comes from the factor $S_t^{(k+1)/N}$, and
 $$
-\frac{ \d  S^{\frac{k+1}{N}}}{S^{\frac{k+1}{N}}} = \text{something}\d    t + \left(\frac{k+1}{N}\right)\sigma\d   B\;.
+\frac{ \mathrm{d}  S^{\frac{k+1}{N}}}{S^{\frac{k+1}{N}}} = \text{something}\mathrm{d}    t + \left(\frac{k+1}{N}\right)\sigma\mathrm{d}   B\;.
 $$
 This implies that the average volatility, in the sense of @sec-s:timevaryingvolatility, is
 
 $$
-\sigma_{\text{avg}} = \sqrt{\frac{1}{N}\sum_{k=0}^{N-1} \left(\frac{k+1}{N}\right)^2\sigma^2\d   t}
+\sigma_{\text{avg}} = \sqrt{\frac{1}{N}\sum_{k=0}^{N-1} \left(\frac{k+1}{N}\right)^2\sigma^2\mathrm{d}   t}
 $$
 $$
 =\frac{\sigma}{N^{3/2}}\sqrt{\frac{N(N+1)(2N+1)}{6}}\;,
@@ -173,27 +173,27 @@ We will now derive @eq-geometricaveragev1 and @eq-geometricaveragev2.  We will b
 The random variable $A^g_T$  is normally distributed under the risk-neutral probability given information at time $t$.  To establish this, and to calculate the mean and variance of $A^g_T$, the key is to change the order of integration in the integral in the second line below to obtain the third line:
 \begin{align*}
 \int_t^T \log S_u\,du &= \int_t^T \left\{\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)(u-t) + \sigma [B(u)-B_t]\right\}\,du\\
-&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_t^u \d  B_s\,du\\
-&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_s^T du\d   B_s\\
-&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T (T-s)\d   B_s
+&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_t^u \mathrm{d}  B_s\,du\\
+&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T \int_s^T du\mathrm{d}   B_s\\
+&= (T-t)\log S_t + \left(r-q-\frac{1}{2}\sigma^2\right)\frac{(T-t)^2}{2} + \sigma\int_t^T (T-s)\mathrm{d}   B_s
 \end{align*}
-and then to note that $\int_t^T (T-s)\d   B_s$ is normally distributed with mean zero and variance equal to 
+and then to note that $\int_t^T (T-s)\mathrm{d}   B_s$ is normally distributed with mean zero and variance equal to 
 $$
 \int_t^T (T-s)^2\,ds =\frac{(T-t)^3}{3}\;.
 $$
-Therefore $\\E^R_t\left[A^g_T\right]$ is the expectation of the exponential of a normally distributed random variable.  Equation~@eq-geometricaveragev1 now follows from the fact that if $x$ is normally distributed with mean $\mu$ and variance $\sigma^2$ then $\\E\left[\mathrm{e}^x\right] = \mathrm{e}^{\mu+\sigma^2/2}$.  
+Therefore $\\mathrm{E}^R_t\left[A^g_T\right]$ is the expectation of the exponential of a normally distributed random variable.  Equation~@eq-geometricaveragev1 now follows from the fact that if $x$ is normally distributed with mean $\mu$ and variance $\sigma^2$ then $\\mathrm{E}\left[\mathrm{e}^x\right] = \mathrm{e}^{\mu+\sigma^2/2}$.  
 
 
 To establish @eq-geometricaveragev2, note that the discounted risk-neutral expectation of @eq-geometricaveragev0, conditional on having observed $S(t_1), \ldots, S(t_{N-k-1})$, is
 
 $$
-V_t = \mathrm{e}^{-r(T-t)}\\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log S_{t_i}\right)\right]
+V_t = \mathrm{e}^{-r(T-t)}\\mathrm{E}^R_t \left[\exp\left(\frac{1}{N} \sum_{i=1}^N \log S_{t_i}\right)\right]
 $$
 $$
-= \mathrm{e}^{-r(T-t)}\exp\left(\frac{1}{N}\sum_{i=1}^{N-k-1} \log S_{t_i}\right)\times \\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=N-k}^N \log S_{t_i}\right)\right]
+= \mathrm{e}^{-r(T-t)}\exp\left(\frac{1}{N}\sum_{i=1}^{N-k-1} \log S_{t_i}\right)\times \\mathrm{E}^R_t \left[\exp\left(\frac{1}{N} \sum_{i=N-k}^N \log S_{t_i}\right)\right]
 $$
 $$
-=\left(\prod_{i=1}^{N-k-1}S_{t_i}^{\frac{1}{N}}\right)\times \mathrm{e}^{-r(T-t)}\\E^R_t \left[\exp\left(\frac{1}{N} \sum_{i=N-k}^N \log S_{t_i}\right)\right]\;.
+=\left(\prod_{i=1}^{N-k-1}S_{t_i}^{\frac{1}{N}}\right)\times \mathrm{e}^{-r(T-t)}\\mathrm{E}^R_t \left[\exp\left(\frac{1}{N} \sum_{i=N-k}^N \log S_{t_i}\right)\right]\;.
 $$ {#eq-geometricaveragev3}
 
 
@@ -280,10 +280,10 @@ Letting $S_1$, \ldots, $S_n$ denote the asset prices and $w_1$, \ldots, $w_n$ th
 $$\max\left(0,\;\sum_{i=1}^n w_iS_{iT} - K\right)$$
 at maturity $T$.  A spread option is actually a special case of a basket option, with $n=2$, $w_1=1$, and $w_2=-1$.  The difficulty in valuing basket options is the same as that encountered in valuing spread options.  The volatility of the basket price $\sum_{i=1}^nw_iS_{it}$ will vary over time, depending on the relative volatilities of the assets and the price changes in the assets.  For example, consider the case $n=2$ and write $S_t$ for the basket price $w_1S_{1t}+w_2S_{2t}$.  Then
 \begin{align*}
-\frac{\d  S}{S} &= \frac{w_1\d   S_1}{S} + \frac{w_2\d   S_2}{S}\\
-&=\frac{w_1S_1}{S}\times \frac{\d  S_1}{S_1} + \frac{w_2S_2}{S}\times \frac{\d  S_2}{S_2}\;.
+\frac{\mathrm{d}  S}{S} &= \frac{w_1\mathrm{d}   S_1}{S} + \frac{w_2\mathrm{d}   S_2}{S}\\
+&=\frac{w_1S_1}{S}\times \frac{\mathrm{d}  S_1}{S_1} + \frac{w_2S_2}{S}\times \frac{\mathrm{d}  S_2}{S_2}\;.
 \end{align*}
-Let $x_{it}=w_iS_{it}/S_t$.  This is the fraction of the portfolio value that the $i$--th asset contributes.  It will vary randomly over time as the prices change.  Letting $\sigma_i$ denote the volatilities of the individual assets and $\rho$ their correlation, the formula just given for $\d  S/S$ shows that the instantaneous volatility of the basket price at any date $t$ is
+Let $x_{it}=w_iS_{it}/S_t$.  This is the fraction of the portfolio value that the $i$--th asset contributes.  It will vary randomly over time as the prices change.  Letting $\sigma_i$ denote the volatilities of the individual assets and $\rho$ their correlation, the formula just given for $\mathrm{d}  S/S$ shows that the instantaneous volatility of the basket price at any date $t$ is
 $$
 \sqrt{x_{t}^2\sigma_1^2 + 2x_{1t}x_{2t}\rho\sigma_1\sigma_2 + x_{2t}^2S_{2t}\sigma_2^2}\; .
 $$
