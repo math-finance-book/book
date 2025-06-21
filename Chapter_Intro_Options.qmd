@@ -1,0 +1,124 @@
+{{< include macros.qmd >}}
+
+# Options {#sec-c:options} 
+
+This chapter provides an introduction to the mechanics and motives for trading options.  Recall that a call option is the right to buy an underlying asset at a fixed price called the strike or strike price.  Symmetrically, a put option is the right to sell an underlying asset at the strike price.  The buyer of an option pays the seller upfront for the right to exercise the option later, at the buyer's discretion.
+
+Options have a finite lifetime.  The contract specifies the date at which the option expires (matures).  Most exchange-traded options can be exercised at any date prior to the option maturity.  However, there are some that can only be exercised at the maturity date (and not before).  The former are called American options and the latter are called European, though both types are traded on both continents.  
+
+We might buy an option to speculate on how the underlying asset price will move.  As opposed to trading the underlying asset directly, buying options gives higher leverage, meaning higher potential returns but also higher risk.  We also might buy an option to hedge a risk to which we are exposed.  It is useful to think of options as insurance contracts, as we will see.  Much of the language of insurance markets is also applied to options: the amount paid by the buyer to the seller is called the option premium, like an insurance policy premium, and the seller of an option is said to write it, like writing an insurance contract.   
+
+ The seller receives the premium and takes on the obligation to fulfill the contract if the buyer chooses to exercise.  We might sell an option that we bought earlier to recover some of the option premium we paid (or to lock in a gain on the option).  In fact, most options are not held to expiration; instead, traders often close their positions by making offsetting trades before maturity. This flexibility allows participants to manage risk, lock in profits, or limit losses as market conditions change.
+
+On the other hand, we might sell an option  without having previously bought it. This is known as "shorting" an option. The only motivation for shorting an option is to earn the option premium.  However, shorting an option creates an obligation: if the buyer chooses to exercise the option, the seller must fulfill the contract terms. In this sense, the seller of an option is in a similar position to an insurance company - receiving a premium upfront and facing a potential liability in the future.
+
+
+## Trading Options on Exchanges
+
+Options are actively traded on exchanges and are also arranged as private contracts (called over-the-counter or OTC).   @fig-options-market-data
+allows us to browse current market data for some exchange-traded options.  The columns of the table are:
+
+- Strike: the price at which the owner of a call (put) has the right to buy (sell) the underlying asset.
+- Bid price: the price at which an option can be sold on the exchange via a market order (which is an order to trade at the market price). The price at which an option trades is often called the option premium to distinguish it from the strike price of the option.
+- Ask price: the price at which an option can be bought on the exchange via a market order.
+- Last price: the last price (premium) at which the option traded.
+- Time of last trade: the day and time at which the option last traded.
+- Volume: the number of contracts traded during the day.  Each contract is for 100 shares of the underlying asset.
+- Open interest: The number of contracts for which there are currently outstanding positions.
+
+::: {#fig-options-market-data} 
+<iframe height="800" width ="720" src="https://options-market-data.koyeb.app/"></iframe>
+Market options data courtesy of Yahoo Finance. The left sidebar has user controls for ticker, call versus put, and maturity.  If it is not visible, use the  <i class="bi bi-chevron-right"></i> icon at the top of the figure to open it.
+:::
+
+The exchange determines the maturity dates and strike prices that can be traded.  As time passes and options mature, new maturity dates are introduced for trading.  As time passes and trading interest may increase, new strikes are introduced also.  New strikes are also introduced when the underlying asset price changes in order to keep the current price bracketed by traded strikes. The number of maturities and strikes traded varies by asset and depends on the exchange's assessment of trading interest.
+
+The bid price is the highest price at which other traders are willing to buy (it is what traders are bidding for the option, as in bidding in an option), so it is the price at which we can sell an option if we submit an order to sell at the market price (called a market order).
+
+The ask price is the lowest price at which others are willing to sell (it is the price traders are asking for the option).  Thus, it is the price at which we can buy with a market order.  The price we have to pay to buy (the ask) is always larger than the price at which we can sell (the bid), and  the difference between the ask price and the bid price is called the bid-ask spread.  
+
+An alternative to submitting a market order and trading at the bid or ask is to submit a limit order.  A limit order specifies a limit price: a buyer will not pay more than her specified limit price, and a seller will not receive less than her specified limit price.  If we submit a limit order to buy, then we join the queue of bidders.  Eventually, our bid may become the best bid and we are able to transact with a market sell order, trading at our bid price.  The advantage of this is that trading at our bid price is cheaper than paying the market ask, but the downside is that the limit order may never execute. 
+
+Options are unlike stocks in that there is no outstanding supply of ownership interests to trade.  When a maturity/strike is first introduced for trading, there are no outstanding positions in it; that is, open interest is zero.  If there is a trade for one contract, then open interest becomes equal to one.  In each trade, there is of course a buyer and a seller.  People can sell options that they bought previously, or they can sell options without owning any of the option.  The latter obviously must be the case for the first trade.  Someone who has bought an option is said to be long the option, and someone who has net sold the option is said to be short.  At any point in time, the number of long contracts is equal to the number of short contracts and is called open interest.
+
+When a trade is made on an exchange, the exchange clearinghouse becomes the counterparty to both sides.  For example, anyone who is long a call option has an option to buy the underlying asset at the strike *from the clearinghouse*.  Simlarly, anyone who is short a call option has an obligation to deliver the underlying asset *to the clearinghouse* and receive the strike, should the clearinghouse exercise the option.  The clearinghouse exercises options when an option of the same strike and maturity is exercised against it.  This causes the underlying asset to be passed through the clearinghouse from the short party to the long party when the long party exercises.  The strike is passed through in the opposite direction.  The short party against whom the clearinghouse exercises is chosen randomly among the people who are short that particular option.  The risk of a short party defaulting when an option is exercised is thus borne by the clearinghouse (the clearinghouse wishes to minimize this risk and therefore requires a seller of an option to post collateral in a margin account).  This procedure provides the long party assurance that the option will be honored, which would otherwise be impossible with anonymous trade.  It also makes it possible for contracts to be cancelled by making offsetting trades with a different counterparty than the counterparty to the original trade.
+
+## Patterns in Bid and Ask Prices
+
+The reader is encouraged to experiment with @fig-options-market-data to look for patterns in bid and ask prices.  We should see the following:
+
+- For call (put) options, bid and ask prices are smaller (larger) when the strike is larger.
+- For both call and put options, bid and ask prices are larger when the maturity date is further away.
+- The premium of a call is no less than the current price of the underlying asset minus the strike. 
+- The premium of a put is no more than the strike minus the underlying asset price.  
+
+Calls are worth less at higher strikes. Consider the right to pay $50 for a stock and the right to pay $100 -- which would you rather have?  Similarly, puts are worth more at higher strikes and therefore trade at higher premia when they have higher strikes.  American options are always worth more if they have longer maturities, because that means a longer period of time during which there is a right to exercise.   
+
+The last two patterns listed above hold for American options, because it is possible to buy an American call and immediately exercise it and sell the underlying asset to earn the underlying asset price minus the strike.  This would be an arbitrage oppornuity if the cost of the call plus the strike were less than the underlying asset price.  Likewise, there would be an arbitrage opportunity in buying puts if the cost of the put were less than the strike minus the underlying asset price.
+
+We will investigate patterns in volume, open interest, and trade dates after discussing applications of options.
+
+## Payoff Diagrams
+
+
+
+
+
+**Protective Puts**  
+An owner of an asset may buy a put option on it. The payoff of the asset combined with a put is  
+$$S_T + \max(0,K-S_T) = \max(Sg_T,K)\,.$$  
+This reflects the fact that the owner can obtain at least $K$ by exercising the put; thus, the put is insurance for the underlying asset. Similarly, someone who is short the underlying asset can buy a call option to insure the short position.
+
+**Covered Calls**  
+An owner of an asset may sell a call option on it. The payoff of the asset combined with a short call is  
+$$S_T - \max(0,S_T-K) = S_T + \min(0,K-S_T) = \min(S_T,K)\,.$$  
+This means that the upside is capped at $K$. In exchange for accepting this cap, the seller of the call receives income (the option premium). The call is said to be covered because the seller owns the underlying and hence will not have to buy it in the market to deliver if the call is exercised. If the seller does not own the underlying, the call is said to be naked. Similarly, someone who is short the underlying asset might sell a put for income.
+
+**Leverage**  
+Buying a call is similar to buying the underlying on margin. This is shown explicitly in Section [s_op_hedging]. Very high leverage (and very high risk) can be created by buying options. Unlike someone who buys on margin, the buyer of a call has no default risk. In practice, this often makes it possible to obtain higher leverage by buying calls than by buying the underlying asset on margin. Similarly, buying a put is an alternative to short selling, and higher leverage can be obtained by buying puts than by short selling the underlying asset.
+
+**Trading Volatility**  
+A straddle is a put and a call with the same strike. It will profit if the underlying moves in either direction from the strike. Someone who buys straddles is buying volatility, and someone who sells straddles is selling volatility.
+
+
+- Volume and open interest is concentrated in strikes near the current price of the underlying asset.
+- Volume is generally larger when the maturity date is nearer.
+- The last trade date is generally further in the past for strikes further away from the current price of the underlying asset.
+- Call (put) open interest is generally higher for strikes above (below) the current underlying asset price.
+
+
+
+## Intrinsic Value and Time Value
+
+
+
+
+
+## Investing in Options
+
+
+## Hedging with Options
+
+
+## Selling Options for Income
+
+
+## Option Spreads
+
+
+::: {#fig-option_portfolios fig-cap="The value at maturity of a portfolio of options is plotted, assuming all of the options have the same maturity.  Enter positive quantities for long positions in options and negative quantities for short positions.  Long or short positions in the underlying asset can also be included. Cash means a position in a risk-free asset sufficient to deliver the specified amount of cash at the option maturity, for example, a long or short position in a zero-couponbond that matures at the option maturity."}
+
+<iframe width="780" height="400" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/option_portfolios"></iframe>
+
+
+:::
+
+## Put-Call Parity
+
+
+## American Options
+
+
+## Dividends
+
+
