@@ -1,10 +1,28 @@
 {{< include macros.qmd >}}
 
+```{python}
+#| echo: false
+
+import plotly
+from IPython.display import display, HTML
+
+plotly.offline.init_notebook_mode(connected=True)
+display(
+    HTML(
+        '<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>'
+    )
+)
+```
+
 # Options {#sec-c:options} 
 
 Options are among the most actively traded financial instruments in the world, with billions of contracts changing hands annually across global exchanges. These versatile contracts provide investors with tools for speculation, hedging, and income generation that are impossible to replicate with stocks and bonds alone.
 
-This chapter provides an introduction to the mechanics and motives for trading options. A **call option** is the right to buy an underlying asset at a fixed price called the strike or strike price. Symmetrically, a **put option** is the right to sell an underlying asset at the strike price. The **underlying asset** can be a stock, index, exchange-traded fund (ETF), commodity, or other financial instrument. The buyer of an option pays the seller upfront for the right to exercise the option later, at the buyer's discretion.
+This chapter provides an introduction to the mechanics and motives for trading options. Recall from @sec-c:introderivatives that a **call option** is the right to buy an underlying asset at a fixed price called the strike or strike price. Symmetrically, a **put option** is the right to sell an underlying asset at the strike price. The **underlying asset** can be a stock, index, exchange-traded fund (ETF), commodity, or other financial instrument. The buyer of an option pays the seller upfront for the right to exercise the option later, at the buyer's discretion.
+
+## Option Basics
+
+Options have a finite lifetime, with the contract specifying an expiration date. Most exchange-traded options can be exercised at any time prior to expiration (**American options**), while others can only be exercised at the expiration date (**European options**). Despite their names, both types trade on exchanges worldwide.
 
 ::: {.callout-note}
 ## Key Options Terminology
@@ -17,103 +35,60 @@ This chapter provides an introduction to the mechanics and motives for trading o
 - **Contract Size**: Most equity options represent 100 shares of the underlying stock
 :::
 
-## Exercise Styles and Contract Features
+### Moneyness and Time Value
 
-Options have a finite lifetime, with the contract specifying an expiration date. Most exchange-traded options can be exercised at any time prior to expiration (**American options**), while others can only be exercised at the expiration date (**European options**). Despite their names, both types trade on exchanges worldwide.
+Options are often described according to their relationship to the current price of the underlying asset:
 
-Options also differ by their relationship to the current underlying price:
 - **In-the-money (ITM)**: Options with intrinsic value (calls with strike < current price, puts with strike > current price)
+    - Example: call with strike = 50 when underlying asset is trading at 60.  Intrinsic value is 60 - 50 = 10.
+    - Example: put with strike = 80 when underlying asset is trading at 60.  Intrinsic value is 80 - 60 = 20.
 - **At-the-money (ATM)**: Options with strike price equal or very close to the current underlying price  
 - **Out-of-the-money (OTM)**: Options with no intrinsic value (calls with strike > current price, puts with strike < current price)
+  - Example: call with strike of 50 when underlying is trading at 40.  Intrinsic value is zero.
+  - Example: put with strike of 30 when underlying is trading at 40.  Intrinsic value is zero.
 
-As expiration approaches, options lose **time value** - the portion of their premium beyond intrinsic value. This time decay accelerates as expiration nears, making timing crucial in options trading.
+The **time value** of an option is defined to be the excess of the option premium above its intrinsic value.  As time passes and expiration approaches, options lose time value, called **time decay**.
 
-## Motivations for Trading Options
+### Rights, Obligations, and Motivations
 
-### Speculation and Leverage
-One motive for buying options is to speculate on price movements with higher leverage than direct stock ownership. A small price change in the underlying can produce large percentage changes in option value, amplifying both potential gains and losses.
+Option buyers pay the premium upfront.  Subsequently they have rights - they can choose whether to exercise the option - but no obligations.  The maximum loss of an option buyer is the option premium.  On the other hand, option sellers receive the premium upfront but subsequently they have obligations: they must fulfill the contract if the option is exercised.  They face potentially unlimited losses (especially for calls).  The motivation for buying an option can be to speculate on the underlying asset price or it can be to hedge an existing risk.  The motivation for selling an option is always to receive the option premium. 
 
-### Hedging and Insurance  
-Options serve as insurance contracts for existing positions. For example, owning a protective put on your stock holdings limits downside risk, much like buying car insurance protects against accident costs. The option premium represents the "insurance cost" for this protection.
+In summary, the motivations for trading options are:
 
-### Income Generation
-Option sellers collect premiums upfront, similar to insurance companies collecting policy premiums. However, this income comes with obligations and potential risks if the market moves against the seller's position.
-
-## Option Positions and Obligations
-
-**Option Buyers (Long Positions)**:
-- Pay premium upfront
-- Have rights but no obligations
-- Can choose whether to exercise
-- Maximum loss is limited to premium paid
-
-**Option Sellers (Short Positions)**:  
-- Receive premium upfront
-- Have obligations but no rights
-- Must fulfill contract if exercised against
-- Face potentially unlimited losses (especially for calls)
-
-Most options are closed before expiration through offsetting trades rather than exercise. This allows traders to capture profits, limit losses, or adjust strategies as market conditions change.
-
+- **Speculation and Leverage**: One motive for buying options is to speculate on price movements with higher leverage than direct stock ownership. A small price change in the underlying can produce large percentage changes in option value, amplifying both potential gains and losses.
+- **Hedging and Insurance**: Options serve as insurance contracts for existing positions. For example, owning a protective put on your stock holdings limits downside risk, much like buying car insurance protects against accident costs. The option premium represents the "insurance cost" for this protection.
+- **Income Generation**: Option sellers collect premiums upfront, similar to insurance companies collecting policy premiums. However, this income comes with obligations and potential risks if the market moves against the seller's position.
 
 ## Trading Options on Exchanges
 
 Options are actively traded on organized exchanges and also arranged as private contracts (called over-the-counter or OTC). Exchange-traded options offer standardized contracts with transparent pricing, while OTC options can be customized but involve counterparty risk.
 
-### Understanding Options Market Data
+Most option positions on exchanges are closed before expiration through offsetting trades rather than exercise. This allows traders to capture profits, limit losses, or adjust strategies as market conditions change.
 
-@fig-options-market-data allows us to browse current market data for exchange-traded options. Understanding each column helps interpret market conditions and liquidity:
 
-**Contract Specifications:**
-- **Strike**: The price at which the option can be exercised
-- **Expiration**: When the contract expires (shown in the interactive tool's controls)
+### Strikes and Maturities
 
-**Pricing Information:**
-- **Bid Price**: Highest price buyers are willing to pay (where you can sell)
-- **Ask Price**: Lowest price sellers will accept (where you can buy)  
-- **Last Price**: Most recent transaction price
-- **Bid-Ask Spread**: The difference between ask and bid (ask - bid)
+ Exchanges determine which strike prices and expiration dates are available for trading. As time passes and options expire, new expiration cycles are introduced. New strike prices are added when the underlying price moves, ensuring strikes bracket the current market price. The number of available strikes and expirations depends on trading interest and exchange policies.
 
-**Trading Activity:**
-- **Volume**: Number of contracts traded during the current session
-- **Open Interest**: Total outstanding contracts that haven't been closed
-- **Time of Last Trade**: When the option last changed hands
+### Order Types and Execution
 
-::: {.callout-tip}
-## Reading the Bid-Ask Spread
+Traders can submit either market orders or limit orders.  Market orders execute immediately "at market."  Limit buy orders specify a maximum price the trader is willing to pay and limit sell orders specify a minimum price the trader is willing to accept.  A limit order can execute immediately if someone else is willing to take the other side.  Otherwise, it joins the queue of limit orders and will eventually execute against an incoming market order when and if the limit price becomes the best available price for the counterparty (the highest price among limit buy orders or the lowest price among limit sell orders) and when it achieves time priority among other limit orders at the same price (i.e., it was the first to arrive).
 
-A bid of $2.50 and ask of $2.60 means:
-- You can sell the option for $2.50 (bid)
-- You can buy the option for $2.60 (ask)  
-- The spread is $0.10, representing the market-maker's profit margin
-- Tighter spreads indicate more liquid markets
-:::
+For an option sell order, trading "at market" means trading at the highest limit buy price in the market.  This is the best price, from the seller's point of view, that other traders are bidding for the option, and it is called the bid price.  For an option buy order, trading at market means trading at the lowest limit sell price in the market.  This is the best price that other traders are asking for the option, and it is called the ask price. In summary, 
 
-::: {#fig-options-market-data} 
-<iframe height="750" width ="720" src="https://options-market-data.koyeb.app/"></iframe>
-**Market options data courtesy of Yahoo Finance.** The left sidebar has user controls for ticker, call versus put, and maturity.  If it is not visible, use the  <i class="bi bi-chevron-right"></i> icon at the top of the figure to open it.  To move around the table, first hover over it to bring up an inner vertical slider.
-:::
+- **Market Orders** execute immediately at the best available price:
+  - Market buy order → executes at the ask price
+  - Market sell order → executes at the bid price
+  - Guaranteed execution but uncertain price
+- **Limit Orders** specify a maximum buy price or minimum sell price:
+  - Limit buy at $2.40 when ask is $2.60 → order waits in queue
+  - May get better execution price but risks non-execution
+  - Provides price control but no execution guarantee
+- **Example**: If you want to buy a call option with bid $2.50 / ask $2.60:
+  - Market order: Pay $2.60 immediately  
+  - Limit order at $2.55: Wait for seller willing to accept $2.55 (may never happen)
+  - Limit order at $2.40: Less likely to execute than a limit order at $2.55 
 
-### How Exchanges Structure Options Markets
-
-**Strike Price and Expiration Cycles**: Exchanges determine which strike prices and expiration dates are available for trading. As time passes and options expire, new expiration cycles are introduced. New strike prices are added when the underlying price moves, ensuring strikes bracket the current market price. The number of available strikes and expirations depends on trading interest and exchange policies.
-
-**Order Types and Execution**:
-
-**Market Orders** execute immediately at the best available price:
-- Market buy order → executes at the ask price
-- Market sell order → executes at the bid price
-- Guaranteed execution but uncertain price
-
-**Limit Orders** specify a maximum buy price or minimum sell price:
-- Limit buy at $2.40 when ask is $2.60 → order waits in queue
-- May get better execution price but risks non-execution
-- Provides price control but no execution guarantee
-
-**Example**: If you want to buy a call option with bid $2.50 / ask $2.60:
-- Market order: Pay $2.60 immediately  
-- Limit order at $2.55: Wait for seller willing to accept $2.55 (may never happen)
-- Limit order at $2.40: Very unlikely to execute unless market falls 
 
 ### Open Interest and Contract Creation
 
@@ -126,72 +101,81 @@ Unlike stocks, options have no pre-existing supply. When a new option series (sp
 
 At any time, the number of long positions exactly equals the number of short positions, and this total is called **open interest**.
 
+
 ### The Role of the Clearinghouse
 
 Exchange clearinghouses serve as the counterparty to every options trade, providing several crucial functions:
 
-**Counterparty Guarantee**: 
-- Long call holders have the right to buy from the clearinghouse (not from the original seller)
-- Short call writers have an obligation to deliver to the clearinghouse (if assigned)
-- This eliminates counterparty risk for traders
+- **Counterparty Guarantee**: 
+  - Long call holders have the right to buy from the clearinghouse (not from the original seller)
+  - Short call writers have an obligation to deliver to the clearinghouse (if assigned)
+  - This eliminates counterparty risk for traders
+- **Exercise and Assignment Process**:
+  1. Option holder notifies broker of exercise decision
+  2. Broker notifies clearinghouse  
+  3. Clearinghouse randomly selects a short position for assignment
+  4. Underlying shares and strike payment flow through clearinghouse
+- **Margin**: Option sellers must post collateral (margin) to ensure they can meet their obligations. This protects the clearinghouse and, ultimately, option buyers from default risk.
+- **Benefits of the Clearinghouse System**:
+  - Anonymous trading without knowing your counterparty
+  - Ability to close positions with different traders than your original counterparty  
+  - Standardized contract terms and settlement procedures
+  - Reduced counterparty risk for all market participants
 
-**Exercise and Assignment Process**:
-1. Option holder notifies broker of exercise decision
-2. Broker notifies clearinghouse  
-3. Clearinghouse randomly selects a short position for assignment
-4. Underlying shares and strike payment flow through clearinghouse
 
-**Margin Requirements**: 
-Option sellers must post collateral (margin) to ensure they can meet their obligations. This protects the clearinghouse and, ultimately, option buyers from default risk.
+## Patterns in Option Prices
 
-**Benefits of the Clearinghouse System**:
-- Anonymous trading without knowing your counterparty
-- Ability to close positions with different traders than your original counterparty  
-- Standardized contract terms and settlement procedures
-- Reduced counterparty risk for all market participants
+@fig-options-market-data allows us to browse current market data for exchange-traded options. The columns of the table are:
 
-## Patterns in Options Pricing
+- **Strike**: the price at which the owner of a call (put) has the right to buy (sell) the underlying asset.
+- **Bid price**: the price that a market sell order will pay (it is the best price that limit orders are bidding for the option)
+- **Ask price**: the price that a price buy order will pay (it is the best price that limit orders are asking for the option)
+- **Last price**: the last price at which the option traded.
+- **Time of last trade**: the day and time at which the option last traded.
+- **Volume**: the number of contracts traded during the day.  Each contract is for 100 shares of the underlying asset.
+- **Open interest**: The number of contracts for which there are currently outstanding positions.
 
-Experimenting with @fig-options-market-data reveals consistent patterns in how options are priced relative to each other. Understanding these patterns helps build intuition about option values.
+::: {#fig-options-market-data} 
+<iframe height="750" width ="720" src="https://streamlit-options-market-data-boo
+  k-derivative-securiti-197f76ed.koyeb.app"></iframe>
+**Options market data courtesy of Yahoo Finance.** <br> The left sidebar has user controls for ticker, call versus put, and maturity.  If it is not visible, use the  <i class="bi bi-chevron-right"></i> icon at the top of the figure to open it.  To move around the table, first hover over it to bring up an inner vertical slider.
+:::
 
-### Strike Price Relationships
+Experimenting with @fig-options-market-data reveals consistent patterns in how options are priced relative to each other. Understanding these patterns helps build intuition about option values.  We should see the following.
 
-**Call Options**: Prices decrease as strike prices increase
-- A call with strike $50 is worth more than a call with strike $100  
-- Intuition: The right to buy at $50 is more valuable than the right to buy at $100
-- **Example**: If AAPL trades at $150, a $140 call is more valuable than a $160 call
+### Strike Price Effects 
 
-**Put Options**: Prices increase as strike prices increase  
-- A put with strike $100 is worth more than a put with strike $50
-- Intuition: The right to sell at $100 is more valuable than the right to sell at $50
-- **Example**: If AAPL trades at $150, a $160 put is more valuable than a $140 put
+- **Call Options**: Prices decrease as strike prices increase
+  - A call with strike $50 is worth more than a call with strike $100, so it trades at a higher premium 
+  - Example: If AAPL trades at $150, a $140 call is more valuable than a $160 call
+- **Put Options**: Prices increase as strike prices increase  
+  - A put with strike $100 is worth more than a put with strike $50, so it trades at a higher price
+  - Example: If AAPL trades at $150, a $160 put is more valuable than a $140 put
 
 ### Time to Expiration Effects
 
-**Longer-dated options cost more** because they provide:
+Longer-dated options cost more because they provide:
+
 - More time for favorable price movements
 - Greater flexibility (American options can be exercised over a longer period)
-- Higher probability of finishing in-the-money
 
 ### Arbitrage Bounds
 
-Option prices must respect certain minimum values to prevent arbitrage:
+American option prices must respect certain minimum values to prevent arbitrage:
 
-**Call Option Lower Bound**: $C \geq \max(S - K, 0)$
-- A call must be worth at least its immediate exercise value
-- **Example**: If AAPL = $150 and call strike = $140, then call price ≥ $10
+- **Call Option Lower Bound**: $C \geq \max(S - K, 0)$
+  - A call must be worth at least its immediate exercise value
+  - Example: If AAPL = $150 and call strike = $140, then call price ≥ $10
+- **Put Option Lower Bound**: $P \geq \max(K - S, 0)$  
+  - A put must be worth at least its immediate exercise value
+  - Example: If AAPL = $140 and put strike = $150, then put price ≥ $10
+- **Why These Bounds Hold**: If violated, an arbitrageur could:
+  1. Buy the underpriced option
+  2. Immediately exercise it  
+  3. Trade the underlying asset in the opposite direction
+  4. Lock in risk-free profit
 
-**Put Option Lower Bound**: $P \geq \max(K - S, 0)$  
-- A put must be worth at least its immediate exercise value
-- **Example**: If AAPL = $140 and put strike = $150, then put price ≥ $10
-
-**Why These Bounds Hold**: If violated, an arbitrageur could:
-1. Buy the underpriced option
-2. Immediately exercise it  
-3. Trade the underlying asset in the opposite direction
-4. Lock in risk-free profit
-
-These arbitrage bounds ensure that option prices reflect their intrinsic value as a minimum, with additional time value on top.
+These arbitrage bounds mean that option prices equal their intrinsic value with additional time value on top.
 
 ## Payoff Diagrams
 
@@ -254,7 +238,9 @@ fig.update_layout(
     template="plotly_white",
     width=600,
     height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -305,7 +291,9 @@ fig.update_layout(
     template="plotly_white",
     width=600,
     height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -356,7 +344,9 @@ fig.update_layout(
     template="plotly_white",
     width=600,
     height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -407,7 +397,9 @@ fig.update_layout(
     template="plotly_white",
     width=600,
     height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -476,7 +468,9 @@ fig.update_layout(
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", width=600, height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -521,7 +515,9 @@ fig.update_layout(
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", width=600, height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -571,7 +567,9 @@ fig.update_layout(
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", width=600, height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -618,7 +616,9 @@ fig.update_layout(
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", width=600, height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -666,7 +666,9 @@ fig.update_layout(
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", width=600, height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -723,7 +725,9 @@ fig.update_layout(
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", width=600, height=400,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top')
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black'
 )
 
 fig.show()
@@ -735,12 +739,16 @@ The butterfly spread achieves its maximum value when the stock price equals the 
 
 The strategies shown above represent just a few of the many possible option combinations. The interactive figure below allows you to experiment with different option portfolios by entering quantities for various option positions and the underlying asset.
 
-::: {#fig-option_portfolios fig-cap="The value at maturity of a portfolio of options is plotted, assuming all of the options have the same maturity.  Enter positive quantities for long positions in options and negative quantities for short positions.  Long or short positions in the underlying asset can also be included. Cash means a position in a risk-free asset sufficient to deliver the specified amount of cash at the option maturity."}
-
+::: {#fig-option_portfolios}
 <iframe width="780" height="400" src="https://derivatives-book-26ac36570fb8.herokuapp.com/chapter1/option_portfolios"></iframe>
+
+**Interactive portfolio builder.** 
+
+The value at maturity of a portfolio of options is plotted, assuming all of the options have the same maturity.  Enter positive quantities for long positions in options and negative quantities for short positions.  Long or short positions in the underlying asset can also be included. Cash means a position in a risk-free asset sufficient to deliver the specified amount of cash at the option maturity.
 :::
 
 This interactive tool enables you to:
+
 - Build complex option strategies by combining multiple positions
 - Visualize the payoff profile of any portfolio combination
 - Experiment with different strike prices and position sizes
