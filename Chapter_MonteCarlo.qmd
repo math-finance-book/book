@@ -211,7 +211,7 @@ The average-price call pays $\max(0,A_T-K)$ at its maturity $T$, and we can writ
 where 
 $$K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A_0\; .$$
 Therefore, the value at date $0$ of the discretely-sampled average-price call is
-$$\frac{T}{T+\tau} \,\mathrm{e}^{-rT} \\mathrm{E}^R\left[\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\right]\; .$$
+$$\frac{T}{T+\tau} \,\mathrm{e}^{-rT} \mathbb{E}^R\left[\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\right]\; .$$
 In terms of the discussion above, the random variable  the mean of which we want to estimate is
 $$x = \mathrm{e}^{-rT}\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\; .$$
 A random variable $y$ that will be closely correlated to $x$ is
@@ -308,10 +308,10 @@ $$
 
 The bias is induced by the third case above.  We can see this as follows.  We are trying to estimate
 $$
-\frac{\partial }{\partial S} \mathrm{e}^{-rT}\\mathrm{E}^R \big[\max(0,S_T-K)\big] = \mathrm{e}^{-rT}\\mathrm{E}^R  \left[ \frac{\partial }{\partial S} \max(0,S_T-K)\right]\;.
+\frac{\partial }{\partial S} \mathrm{e}^{-rT}\mathbb{E}^R \big[\max(0,S_T-K)\big] = \mathrm{e}^{-rT}\mathbb{E}^R  \left[ \frac{\partial }{\partial S} \max(0,S_T-K)\right]\;.
 $$ {#eq-montecarlodelta4}
 
-The delta estimate $(C_u-C_d)/(S_u-S_d)$ replaces the mean $\\mathrm{E}^R$ with the sample mean and replaces
+The delta estimate $(C_u-C_d)/(S_u-S_d)$ replaces the mean $\mathbb{E}^R$ with the sample mean and replaces
 $$
 \frac{\partial }{\partial S} \max(0,S_T-K)
 $$ {#eq-montecarlodelta3}
@@ -323,9 +323,9 @@ with the ratio @eq-montecarlodelta2.  The derivative @eq-montecarlodelta3 takes 
 - If $S_T>K$,  then $\max(0,S_T-K) = S_T-K$ and the derivative equals 
 $$\frac{\partial S_T}{\partial S}=\mathrm{e}^{(r-q-\sigma^2/2)T + \sigma B_T} = \frac{S_T}{S}\; .$$
 
-Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}\\mathrm{E}^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c:blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c:blackscholes, $V_t=\mathrm{e}^{qt}S_t$ denotes the value of the dividend-reinvested portfolio created from the stock).] 
+Therefore, the true delta---the expectation @eq-montecarlodelta4---equals^[By changing numeraires, we can show that @eq-montecarlodelta5 equals $\mathrm{e}^{-qT}\mathbb{E}^V[x] = \mathrm{e}^{-qT}\mathrm{N}(d_1)$, as we know from @sec-c:blackscholes is the delta of a European call in the Black-Scholes model (here, as in @sec-c:blackscholes, $V_t=\mathrm{e}^{qt}S_t$ denotes the value of the dividend-reinvested portfolio created from the stock).] 
 $$
-\mathrm{e}^{-rT}\\mathrm{E}^R\left[\frac{S_T}{S} x\right]\;,
+\mathrm{e}^{-rT}\mathbb{E}^R\left[\frac{S_T}{S} x\right]\;,
 $$ {#eq-montecarlodelta5}
 
 where $x$ is the random variable defined as
@@ -336,7 +336,7 @@ x =  \begin{cases} 1 & \text{if $S_T>K$}\; ,\\
 \end{equation*}
  On the other hand, our  analysis of the ratio @eq-montecarlodelta2 shows that the expected value of the delta estimate $(C_u-C_d)/(S_u-S_d)$ is
 $$
-\mathrm{e}^{-rT}\\mathrm{E}^R\left[\frac{S_T}{S} y\right] + \mathrm{e}^{-rT}\\mathrm{E}^R\left[\frac{S_uS_T-SK}{S(S_u-S_d)}z\right]\;,
+\mathrm{e}^{-rT}\mathbb{E}^R\left[\frac{S_T}{S} y\right] + \mathrm{e}^{-rT}\mathbb{E}^R\left[\frac{S_uS_T-SK}{S(S_u-S_d)}z\right]\;,
 $$ {#eq-montecarlodelta6}
 
 where
@@ -356,7 +356,7 @@ z &=  \begin{cases} 1 & \text{if} S_u(T)>K>S_d(T)\; ,\\
 \end{align*}
 $$
 To contrast @eq-montecarlodelta5 and @eq-montecarlodelta6, note that if $y=1$ then $x=1$, so the term 
-$\\mathrm{E}^R\left[\frac{S_T}{S} y\right]$ in @eq-montecarlodelta6 is part of @eq-montecarlodelta5.  However, there are two partially offsetting errors in @eq-montecarlodelta6: $z$ sometimes equals one when $x$ is zero, and when both $z$ and $x$ are one, then the factor multiplying $z$ is smaller than the factor multiplying $x$.  In any case, the expected value @eq-montecarlodelta6  is not the same as the true delta @eq-montecarlodelta5.  As noted before, this implies that the delta estimate will be incorrect even if its standard error is zero.  The bias can be made as small as one wishes by taking the magnitude $S_u-S_d$ of the perturbation to be small, but taking the perturbation to be very small will introduce unacceptable roundoff error.
+$\mathbb{E}^R\left[\frac{S_T}{S} y\right]$ in @eq-montecarlodelta6 is part of @eq-montecarlodelta5.  However, there are two partially offsetting errors in @eq-montecarlodelta6: $z$ sometimes equals one when $x$ is zero, and when both $z$ and $x$ are one, then the factor multiplying $z$ is smaller than the factor multiplying $x$.  In any case, the expected value @eq-montecarlodelta6  is not the same as the true delta @eq-montecarlodelta5.  As noted before, this implies that the delta estimate will be incorrect even if its standard error is zero.  The bias can be made as small as one wishes by taking the magnitude $S_u-S_d$ of the perturbation to be small, but taking the perturbation to be very small will introduce unacceptable roundoff error.
 
 The obvious way to estimate the delta in this situation is simply to compute the discounted sample average of $[S_T/S]x$.  This is called a pathwise estimate \index{pathwise Monte Carlo Greeks} of the delta, because it only uses the sample paths of $S_t$ rather than considering up and down perturbations.  This method is due to Broadie and Glasserman [@bg2]. Because the pathwise estimate is a sample average, its standard error can be computed in the usual way.
 
@@ -482,7 +482,7 @@ K^* = \frac{T+\tau}{T}K - \frac{\tau}{T}A_0\;.
 $$
 Therefore, the value at date $0$ of the discretely-sampled average-price call is
 $$
-\frac{T}{T+\tau} \,\mathrm{e}^{-rT} \\mathrm{E}^R\left[\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\right]\;.
+\frac{T}{T+\tau} \,\mathrm{e}^{-rT} \mathbb{E}^R\left[\max \left(\frac{\sum_{i=1}^N S_{t_i}}{N} - K^*,0\right)\right]\;.
 $$
 In terms of the discussion above, the random variable  the mean of which we want to estimate is
 $$
