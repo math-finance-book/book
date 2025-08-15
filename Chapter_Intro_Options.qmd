@@ -58,17 +58,15 @@ Most option positions on exchanges are closed before expiration through offsetti
 
 #### Order Types and Execution
 
-As in stock markets, traders can submit either market orders or limit orders.  **Market orders** execute immediately "at market," which is explained below.  A **limit buy order** specifies a maximum price the trader is willing to pay, and a limit sell order** specifies a minimum price the trader is willing to accept.  A limit order can execute immediately if someone else is willing to take the other side.  Otherwise, it joins the queue of limit orders and will eventually execute against an incoming market order when and if the limit price becomes the best available price for the counterparty (the highest price among limit buy orders or the lowest price among limit sell orders) and when it achieves time priority among other limit orders at the same price (i.e., it was the first to arrive).
+As in stock markets, traders can submit either market orders or limit orders.  **Market orders** execute immediately "at market," which is explained below.  **Limit orders** are price-contingent orders.  A limit buy order specifies a maximum price the trader is willing to pay, and a limit sell order specifies a minimum price the trader is willing to accept.  A limit order can execute immediately if someone else is willing to take the other side.  Otherwise, it joins the queue of limit orders and will eventually execute against an incoming market order when and if the limit price becomes the best available price for the counterparty (the highest price among limit buy orders or the lowest price among limit sell orders) and when it achieves time priority among other limit orders at the same price (i.e., it was the first to arrive).
 
 For an option sell order, trading "at market" means trading at the highest limit buy price in the market.  This is the best price, from the seller's point of view, that other traders are bidding for the option, and it is called the **bid price**.  For an option buy order, trading at market means trading at the lowest limit sell price in the market.  This is the best price that other traders are asking for the option, and it is called the **ask price**. In summary, 
 
 - *Market Orders* execute immediately at the best available price:
   - Market buy order → executes at the ask price
   - Market sell order → executes at the bid price
-
- - *Limit Orders* specify a maximum buy price or minimum sell price:
+- *Limit Orders* specify a maximum buy price or minimum sell price:
   - May get better execution price but risks non-execution
-
 - *Example*: If you want to buy a call option trading at bid $2.50 / ask $2.60:
   - Market order: Pay $2.60 immediately  
   - Limit order at $2.55: Wait for seller willing to accept $2.55 (may never happen)
@@ -101,10 +99,12 @@ Exchange clearinghouses serve as the counterparty to every options trade, provid
   2. Broker notifies clearinghouse  
   3. Clearinghouse randomly selects a short position for assignment
   4. Underlying shares and strike payment flow through clearinghouse
-- *Margin*: Option sellers must post collateral (margin) to ensure they can meet their obligations. This protects the clearinghouse from default risk.
+- *Margin*: 
+  - Option sellers must post collateral (margin) to ensure they can meet their obligations. 
+  - This protects the clearinghouse from default risk.
 - *Benefits of the Clearinghouse System*:
   - Reduced counterparty default risk for all market participants
-  - Ability to close positions with different traders than your original counterparty  
+  - Ability to close positions by making trades with different traders than your original counterparty  
 
 
 ## Patterns in Option Prices
@@ -124,44 +124,37 @@ Exchange clearinghouses serve as the counterparty to every options trade, provid
 ::: {#fig-options-market-data} 
 <iframe height="750" width="720" src="https://options-market-data.koyeb.app/"></iframe>
 
-**Options Market Data Courtesy of Yahoo Finance.**  Hover over the table to reveal a vertical slider. 
+The options market data is from the CBOE and is proivided courtesy of Yahoo Finance.  Hover over the table to reveal a vertical slider. 
 :::
 
-Experimenting with @fig-options-market-data reveals consistent patterns in how options are priced relative to each other. Understanding these patterns helps build intuition about option values.  We should see the following.
+Experimenting with @fig-options-market-data reveals consistent patterns in how options are priced relative to each other. Understanding these patterns helps build intuition about option values.  We should see the following:
 
-#### Strike Price Effects 
-
-- **Call Options**: Prices decrease as strike prices increase
-  - A call with strike $50 is worth more than a call with strike $100, so it trades at a higher premium 
-- **Put Options**: Prices increase as strike prices increase  
-  - A put with strike $100 is worth more than a put with strike $50, so it trades at a higher price
-
-#### Time to Expiration Effects
-
-Longer-dated options cost more because they provide:
-
-- More time for favorable price movements
-- Greater flexibility (American options can be exercised over a longer period)
+- *Strike Price Effects:*
+  - Call Options: Prices decrease as strike prices increase.  For example, a call with strike $50 is worth more than a call with strike $100, so it trades at a higher premium. 
+  - Put Options: Prices increase as strike prices increase.  For example, a put with strike $100 is worth more than a put with strike $50, so it trades at a higher premium.
+- *Time to Expiration Effects:* Longer-dated options cost more because they provide:
+  - More time for favorable price movements
+  - Greater flexibility (American options can be exercised over a longer period)
 
 
 ## Intrinsic Value, Time Value, and Moneyness
 
-The **intrinsic value** of an option is the maximum that anyone would be willing to pay for it if it had to be exercised immediately or would expire.  For a call option, this is the difference between the underlying asset price and the strike of the call, if that is positive, and is zero otherwise.  Letting $S$ denote the price of the underlying asset and $K$ the strike price, the intrinsic value of a call is
+The **intrinsic value** of an option is what the option would be worth if it had to be exercised immediately or would expire.  For a call option, this is the difference between the underlying asset price and the strike of the call, if that is positive, and is zero otherwise.  Letting $S$ denote the price of the underlying asset and $K$ the strike price, the intrinsic value of a call is
 $$\begin{cases} S-K & \text{if $S>K$}\\
-0 $\text{if $S \le K}\end{cases}\,.$$
-This can be written more compactly as $\max(S-K, 0)$.  For example, if the underlying asset is trading at \$50, and the strike is \$40, then the intrinsic value is \$10.  This reflects the fact that we could pay \$10 for the option, pay the strike of \$40 to exercise, then sell the underlying asset in the market for \$50 and break even.  Of course, we would never bother to do this but in principle if the option could be purchased at any lower price, then we would want to make these trades.  Thus, the maximum price anyone would pay for the option in this circumstance is \$10.  Symmetrically, the intrinsic value of a put option is
+0 & \text{if $S \le K$}\end{cases}\,.$$
+This can be written more compactly as $\max(S-K, 0)$.  For example, if the underlying asset is trading at \$50, and the strike is \$40, then the intrinsic value is \$10.  This reflects the fact that we could pay \$10 for the option, pay the strike of \$40 to exercise, then sell the underlying asset in the market for \$50 and break even.   Symmetrically, the intrinsic value of a put option is
 $$\max(K-S, 0) = \begin{cases}K-S & \text{if  $K>S$}\\
-0 $\text{if $K \le S$}\end{cases}\,.$$
+0 & text{if $K \le S$}\end{cases}\,.$$
 
-If the intrinsic value of an option is positive, then the option is said to be **in the money**.  Thus, if $S>K$, then a call option is in the money.  If $S=K$ (or, in practice, approximately equal), then a call is said to be **at the money**.  If $S<K$, then a call is said to be **out of the money**.  The same terminology applies to puts, but with the roles of $S$ and $K$ reversed.
+If the intrinsic value of an option is positive, then the option is said to be **in the money**.  Thus, a call option with strike $K$ is in the money if $S>K$, and a put option with strike $K$ is in the money if $S<K$.  If $S=K$ (or, in practice, approximately equal), then a call is said to be **at the money**.  If an option is neither in the money nor out of the money, then it is **out of the money**.  
 
-American option values are always at least as large as their intrinsic values.  This is because exercising immediately is a possibility with an American option.  As mentioned above, we would want to buy call (put) options trading below their intrinsic values, exercise, and simultaneously sell (buy) the underlying asset to make a riskless profit.  This is called an arbitrage opportunity, and it is safe to assume we will not find such arbitrage opportunities in the market.
+American options are always worth at least their intrinsic values, because exercising immediately is a possibility. If one could buy an in-the-money American option at less than its intrinsic value, then buying it and immediately exercising would be an arbitrage opportunity.  It is safe to assume we will not find such arbitrage opportunities in the market.
 
 Prior to expiration, the value of an option is usually larger than its intrinsic value.  This is because there is time remaining for the underlying asset to move in a direction that is favorable for the option holder.  The excess of the value over the intrinsic value is called the option's **time value**.  As time passes and the option approaches expiration, the time value decreases.  This phenomenon is called **time decay**.
 
 ## Payoff Diagrams
 
-Understanding option payoffs is fundamental to options trading. A **payoff diagram** shows the intrinsic value of an option position as a function of the price of the underlying asset.  This is the value the option position would have at expiration.  A **profit diagram** shows the profit from an option position as a function of the price of the underlying asset.  The difference between the profit and the payoff is the premium paid (for long positions) or received (for short positions).  Here are the payoff and profit diagrams for each of the four basic option positions:
+Understanding option payoffs is fundamental to options trading. A **payoff diagram** shows the intrinsic value of an option position as a function of the price of the underlying asset.  This is the value the option position would have at expiration.  A **profit diagram** shows the profit from putting on an option position and holding to maturity as a function of the price of the underlying asset at maturity.  The difference between the profit and the payoff is the premium paid (for long positions) or received (for short positions).  Here are the payoff and profit diagrams for each of the four basic option positions:
 
 #### Long Call
 
@@ -211,7 +204,6 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
 
 # Formatting
 fig.update_layout(
-    title="Long Call Option",
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Payoff or Profit ($)",
     template="plotly_white",
@@ -265,7 +257,6 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
               annotation_text=f"Strike = ${K}")
 
 fig.update_layout(
-    title="Long Put Option",
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Payoff or Profit ($)",
     template="plotly_white",
@@ -318,7 +309,6 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
               annotation_text=f"Strike = ${K}")
 
 fig.update_layout(
-    title="Short Call Option",
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Payoff or Profit ($)",
     template="plotly_white",
@@ -343,6 +333,7 @@ fig.show()
 ```{python}
 #| label: fig-short-put
 #| fig-cap: A short put position (writing a put) benefits from rising or stable stock prices. The maximum profit is the premium received ($5 in this figure), while the maximum loss occurs if the stock price falls to zero (loss = strike price - premium).
+
 
 # Short put payoff and profit (opposite of long put)
 short_put_payoff = -put_payoff
@@ -371,7 +362,6 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
               annotation_text=f"Strike = ${K}")
 
 fig.update_layout(
-    title="Short Put Option",
     xaxis_title="Stock Price at Expiration ($)",
     yaxis_title="Payoff orProfit ($)",
     template="plotly_white",
@@ -418,7 +408,7 @@ A protective put combines a long position in the underlying asset with a long pu
 ::: {#fig-protective-put fig-height=400}
 ```{python}
 #| label: fig-protective-put
-#| fig-cap: The protective put acts like insurance for a stock position. The value at maturity is always at least the put strike price, providing downside protection, while maintaining unlimited upside potential with the stock.
+#| fig-cap: The protective put acts like insurance for a stock position. The value of the portfolio at maturity is always at least the put strike price, because the asset can be delivered in exchange for the strike by exercising the put.
 #| out-width: "100%"
 
 # Parameters for all strategies
@@ -427,15 +417,8 @@ K_put = 95   # Put strike
 K_call = 105 # Call strike (for other strategies)
 put_premium = 3
 call_premium = 2
-S = np.concatenate([
-    np.linspace(0, 90, 30),
-    np.linspace(90, 95, 15),
-    np.linspace(95, 100, 15),
-    np.linspace(100, 105, 15),
-    np.linspace(105, 110, 15),
-    np.linspace(110, 140, 30)
-])[:-1]  # Include 0 and all strike prices (90, 95, 100, 105, 110)
 
+S = np.arange(161)
 # Protective put: Long stock + Long put
 stock_payoff = S  # Stock value at maturity
 put_payoff = np.maximum(K_put - S, 0)  # Put payoff at maturity
@@ -644,7 +627,7 @@ fig.show()
 
 #### Bear Put Spread
 
-A bear put spread involves buying a put option and selling another put option with a lower strike price. This strategy profits from moderate downward price movement.  The motivation for the spread is to buy a put either for protection (i.e., hedging/insurance) or as a bet on the downside of an asset.  The put with a lower strike is sold to reduce the cost of the bet.  As with a bull call spread, the payoff is always nonnegative, so there must be a net premium paid to put it on (the put that is sold will have a lower price than the put that is bought, so the trader must pay the difference).
+A bear put spread involves buying a put option and selling another put option with a lower strike price. This strategy profits from moderate downward price movement.  The motivation for putting on a bear spread is the desire to own a put either for protection (i.e., hedging/insurance) or as a bet on the downside of an asset.  This protection or bet is provided by the put with the higher strike.  The put with the lower strike is sold to reduce the cost of the bet.  As with a bull call spread, the payoff is always nonnegative, so there must be a net premium paid to put it on (the put that is sold will have a lower price than the put that is bought, so the trader must pay the difference).
 
 ::: {#fig-bear-spread fig-height=400}
 ```{python}
@@ -684,7 +667,7 @@ fig.update_layout(
     template="plotly_white", 
     height=400,
     autosize=True,
-    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    legend=dict(x=0.02, y=0.77, xanchor='left', yanchor='top'),
     yaxis_zeroline=False,
     xaxis_zeroline=True,
     xaxis_zerolinecolor='black'
@@ -821,7 +804,7 @@ fig.show()
 
 The strategies shown above represent just a few of the many possible option combinations. The interactive figure below allows you to experiment with option portfolios.  The value at maturity of a portfolio of options is plotted, assuming all of the options have the same maturity.  Enter positive quantities for long positions in options and negative quantities for short positions.  Long or short positions in the underlying asset can also be included. Cash means a position in a risk-free asset sufficient to deliver the specified amount of cash at the option maturity.
 
-Try recreating the strategies we've discussed above, or experiment with your own combinations to develop intuition about how option portfolios behave
+Try recreating the strategies we've discussed above, or experiment with your own combinations to develop intuition about how option portfolios behave.
 
 ::: {#fig-option_portfolios}
 <iframe width="780" height="400" src="https://option-portfolios.koyeb.app"></iframe>
@@ -844,6 +827,7 @@ When an exchange first introduces a new option series (a specific combination of
 *Peak Activity*: Open interest typically reaches its peak when the option has several weeks or months remaining until expiration and the strike price is reasonably close to the current stock price. During this phase, the option attracts both speculators and hedgers.
 
 *Decline Phase*: As expiration approaches, open interest generally declines for several reasons:
+
 - Traders close positions by making offsetting trades rather than holding to expiration
 - Some positions are exercised early (for American options)
 - Risk managers prefer not to hold options too close to expiration due to increased time decay and volatility
@@ -856,6 +840,7 @@ Examining @fig-options-market-data reveals that trading activity and open intere
 
 *1. Leverage and Cost Efficiency*
 Out-of-the-money options cost significantly less than in-the-money or at-the-money options. This lower cost provides higher leverage, allowing traders to control more shares with the same dollar investment. A trader with $1,000 might be able to buy:
+
 - 2 in-the-money calls at $500 each, or  
 - 20 out-of-the-money calls at $50 each
 
@@ -873,16 +858,19 @@ Out-of-the-money options consist entirely of time value (no intrinsic value). Tr
 When examining options market data, several consistent patterns emerge:
 
 *Strike Price Distribution*: 
+
 - Volume and open interest concentrate in strikes within roughly 10-20% of the current stock price
 - Call activity tends to be higher in strikes above the current price
 - Put activity tends to be higher in strikes below the current price
 
 *Maturity Effects*:
+
 - Near-term expirations (1-8 weeks) typically show the highest volume due to active trading
 - Longer-term options (3+ months) may show high open interest but lower daily volume
 - Options expiring in less than a week often see volume spikes as traders close positions
 
 *Time Decay Impact*:
+
 - Options with strikes far from the current price show less frequent trading
 - Last trade dates for these **deep out-of-the-money** options may be days or weeks old
 - Bid-ask spreads widen significantly for strikes with little trading interest
@@ -899,7 +887,8 @@ For European options on stocks that do not pay dividends prior to option expiry,
 
 $$\text{Cash} + \text{Call} = \text{Put} + \text{Underlying}$$
 
-More precisely, if we denote:
+More precisely, denote:
+
 - $C$ = price of a European call option
 - $P$ = price of a European put option  
 - $S$ = current price of the underlying stock
@@ -908,39 +897,40 @@ More precisely, if we denote:
 - $T$ = time to expiration
 
 Then put-call parity requires:
-$$Ke^{-rT} + C = P + S$$
+$$K\e^{-rT} + C = P + S$$
 
-The term $Ke^{-rT}$ represents the present value of the strike price - the amount of cash that, when invested at the risk-free rate, will grow to exactly $K$ at expiration.  Here we are using continuous compounding/discounting, so $e^{-rT}$ is the discount factor.  This is a common and convenient way to represent discount factors when considering various fractions of a year.  The appropriate discount rate for a particular period can be imputed from the yields of Treasury bonds at nearby maturities.
+The term $K\e^{-rT}$ represents the present value of the strike price - the amount of cash that, when invested at the risk-free rate, will grow to exactly $K$ at expiration.  Here we are using continuous compounding/discounting, so $\e^{-rT}$ is the discount factor.  This is a common and convenient way to represent discount factors when considering various fractions of a year.  The appropriate discount rate for a particular period can be imputed from the yields of Treasury bonds at nearby maturities.
 
 #### Understanding the Economic Logic
 
 The put-call parity relationship reflects the fact that two different portfolios have identical payoffs at expiration:
 
-*Portfolio A (Left Side)*: Cash + Call
-- Hold cash worth $Ke^{-rT}$ (which grows to $K$ by expiration)
+*Portfolio A*: Cash + Call
+
+- Hold cash worth $K\e^{-rT}$ (which grows to $K$ by expiration)
 - Own a call option with strike $K$
 
-*Portfolio B (Right Side)*: Put + Underlying  
+*Portfolio B*: Put + Underlying 
+
 - Own a put option with strike $K$
 - Own one share of the underlying stock
 
 Let's examine what happens at expiration for any stock price $S_T$:
 
-*Case 1: Stock price at expiration $S_T > K$*
+- *Case 1: Stock price at expiration $S_T > K$*
+  - Portfolio A: Cash grows to $K$, call is worth $(S_T - K)$, total value = $K + (S_T - K) = S_T$
+  - Portfolio B: Put expires worthless, stock is worth $S_T$, total value = $0 + S_T = S_T$
 
-- Portfolio A: Cash grows to $K$, call is worth $(S_T - K)$, total value = $K + (S_T - K) = S_T$
-- Portfolio B: Put expires worthless, stock is worth $S_T$, total value = $0 + S_T = S_T$
+- *Case 2: Stock price at expiration $S_T \leq K$*  
+  - Portfolio A: Cash grows to $K$, call expires worthless, total value = $K + 0 = K$
+  - Portfolio B: Put is worth $(K - S_T)$, stock is worth $S_T$, total value = $(K - S_T) + S_T = K$
 
-*Case 2: Stock price at expiration $S_T \leq K$*  
-
-- Portfolio A: Cash grows to $K$, call expires worthless, total value = $K + 0 = K$
-- Portfolio B: Put is worth $(K - S_T)$, stock is worth $S_T$, total value = $(K - S_T) + S_T = K$
-
-Since both portfolios have identical payoffs in all possible scenarios, they must have the same current value to prevent arbitrage opportunities.
+Because both portfolios have identical payoffs in all possible scenarios, they must have the same current value to prevent arbitrage opportunities.
 
 #### Arbitrage Example
 
 Suppose put-call parity is violated. For example, assume:
+
 - Stock price: $S = \$100$
 - Strike price: $K = \$100$  
 - Time to expiration: $T = 0.25$ years (3 months)
@@ -948,11 +938,11 @@ Suppose put-call parity is violated. For example, assume:
 - Call price: $C = \$6$
 - Put price: $P = \$4$
 
-Present value of strike: $Ke^{-rT} = 100e^{-0.05 \times 0.25} = \$98.76$
+Then, we have:
 
-Put-call parity requires: $98.76 + 6 = 4 + 100$, or $104.76 = 104$
-
-Since $104.76 > 104$, the left side is overpriced relative to the right side. An arbitrageur would:
+- Present value of strike: $K\e^{-rT} = 100\e^{-0.05 \times 0.25} = \$98.76$
+- Put-call parity requires: $98.76 + 6 = 4 + 100$, or $104.76 = 104$
+- Because $104.76 > 104$, the left side is overpriced relative to the right side. An arbitrageur would:
 
 1. *Sell the expensive side*: Sell the call and lend $98.76 at the risk-free rate
 2. *Buy the cheap side*: Buy the put and buy the stock
@@ -967,89 +957,67 @@ Put-call parity has several important applications:
 *1. Option Pricing*: If we know the prices of a call, the underlying stock, and the risk-free rate, we can determine what the put price should be (and vice versa).
 
 *2. Synthetic Instruments*: We can create synthetic positions:
-- Synthetic call: $C = P + S - Ke^{-rT}$  
-- Synthetic put: $P = C - S + Ke^{-rT}$
-- Synthetic stock: $S = C - P + Ke^{-rT}$
+
+- Synthetic call: $C = P + S - K\e^{-rT}$  
+- Synthetic put: $P = C - S + K\e^{-rT}$
+- Synthetic stock: $S = C - P + K\e^{-rT}$
 
 *3. Conversion and Reversal Strategies*: Professional traders use these synthetic relationships to identify mispriced options and construct arbitrage trades.
 
 #### Important Limitations
 
 Put-call parity as stated above applies specifically to:
+
 - *European options* (cannot be exercised before expiration)
 - *Non-dividend-paying stocks* (dividends complicate the relationship)
 - *Same strike price and expiration* for both call and put
 
-For American options, the relationship becomes an inequality because early exercise rights have value. For dividend-paying stocks, the present value of expected dividends must be subtracted from the stock price in the parity relationship.
-
-Despite these limitations, put-call parity remains one of the most reliable and useful relationships in options theory, providing a foundation for understanding options pricing and identifying trading opportunities.
+For American options, the put-call parity relation does not always hold, and, for stocks that pay dividends prior to the option's maturity, the present value of expected dividends must be subtracted from the stock price in the parity relationship.
+Despite these limitations, put-call parity is one of the most reliable and useful relationships in options theory, providing a foundation for understanding options pricing and identifying trading opportunities.
 
 ## Early Exercise of American Options
 
 Most exchange-traded options are American-style, meaning they can be exercised at any time before expiration. However, early exercise is not always optimal and should be considered carefully. Understanding when early exercise might be beneficial requires analyzing the trade-off between immediate payoff and the option's remaining time value.
 
-#### The General Principle: Time Value vs. Intrinsic Value
-
-An option's market price consists of two components:
+An option's value consists of two components:
 
 - *Intrinsic value*: The value if it were expiring now
 - *Time value*: The additional value from the possibility of more favorable price movements before expiration
 
-When you exercise an option early, you capture the intrinsic value but forfeit all remaining time value. Therefore, early exercise is generally only optimal when the time value has become negligible.
+Early exercise is optimal when the value is equal to the intrinsic value alone, meaning that the time value has shrunk to zero.
 
-#### American Calls on Non-Dividend-Paying Stocks
 
-For American call options on stocks that pay no dividends, early exercise is never optimal. This important result follows from the fact that:
+#### American Calls 
 
-1. The call's market value always exceeds its intrinsic value when time remains
-2. You can always sell the call in the market for more than you would receive from exercising
-3. There's no benefit (like dividend capture) that would offset the loss of time value
+For American call options on stocks that pay no dividends prior to the option maturity, early exercise is never optimal. This important result is sometimes stated as "calls are better alive than dead."  It follows from two facts:  
 
-*Example*: Suppose you own a call option with strike $100 on a stock currently trading at $110. The intrinsic value is $10, but the option trades for $12 due to remaining time value. Exercising gives you $10, while selling gives you $12 - clearly, selling is superior.
+1.  In financial markets, as in life generally, "keeping your options open" is valuable.  In other words, there is value to the flexibility that an option provides.  This flexibility is lost once it is exercised.
 
-#### American Puts: When Early Exercise May Be Optimal
+2.  Early exercise of a call means paying the strike early, which has an opportunity cost equal to the foregone interest that could be earned if the cash were held instead of being used to pay the strike.  
 
-American put options, unlike calls, may sometimes benefit from early exercise. This typically occurs when:
+The only time that a call should be exercised early is to capture a dividend (or other cash flow) paid by the underlying asset.  Call holders do not receive dividends, so it may be optimal to exercise to avoid missing the dividend.  Even in this circumstance, individual investors will generally find it better to sell the call in the market rather than exercising.  However, institutional investors, who can trade at lower costs, may find it profitable to exercise.  Regardless, if anyone finds it optimal to exercise, the bid price of the call must have fallen to the call's intrinsic value, meaning the time value of the option has shrunk to zero.  This typically occurs only just before an ex-dividend date, and even then the dividend must be large enough to offset the value of preserving flexibility for the remaining maturity of the option.  In subsequent chapters, we will investigate models for determining how large the dividend must be.
 
-*1. Deep In-the-Money Puts*
-When a put is very deep in-the-money, its time value becomes small relative to intrinsic value. If the stock price has fallen dramatically, the put may trade close to its intrinsic value, making early exercise reasonable.
+#### American Puts
 
-*2. High Interest Rates*
-Early exercise of a put provides immediate cash that can be invested at the risk-free rate. When interest rates are high, this immediate investment opportunity may outweigh the option's remaining time value.
+It is more likely that an American put should be exercised early than it is that an American call should be exercised early.  This is because the second factor above (the time value of money for the strike) is reversed for puts.  Early exercise of a put implies early receipt of the strike, which can be invested to earn interest.  
 
-*3. Extreme Scenarios*
-If the underlying stock becomes worthless (bankruptcy), a put with any strike greater than zero should be exercised immediately since the maximum payoff has been achieved.
+Whether it is optimal to exercise an American put early depends on how deeply in the money it is and how high interest rates are.  When a put is deeply in the money (meaning the underlying asset price is low), there is little value to the flexibility of keeping the option open, because it becomes nearly certain that exercise at some date will be optimal.  In this case, one should exercise to get the strike early and forego flexibility.  When interest rates are high, the time value of money is high, so again it can be optimal to exercise early.  Whether one should exercise early depends on both of these factors - how deeply in the money the option should be before exercising depends on how high interest rates are.  The volatility of the underlying asset price is also a critical factor, because it determines the value of maintaining flexibility.  Again, we will investigate models for making this determination in later chapters. 
 
-#### Calls on Dividend-Paying Stocks
+#### Put-Call Parity, Option Bounds, and Early Exercise
 
-American calls on dividend-paying stocks present a more complex situation. Early exercise might be optimal just before the ex-dividend date: When a stock pays a dividend, the stock price typically drops by approximately the dividend amount on the ex-dividend date.  Call holders do not receive the dividend, so they may prefer to exercise the call just before the ex-dividend date to capture the dividend.
+The put-call parity formula for European options on non-dividend-paying assets is 
+$$ C + \e^{-rT}K = P + S$$
+Because the put value must be at least zero, this gives us the inequality
+$$C + \e^{-rT}K \ge S \;\Leftrightarrow\; C \ge S - \e^{-rT}K > S - K\,.$$
+Thus, we can see that the value of a European call on a non-dividend-paying asset must be strictly greater than the intrinsic value.   Because American calls are worth at least as much as their European counterparts, the value of an American call on a non-dividend-paying asset must also be strictly greater than its intrinsic value and hence should not be exercised early.
 
-#### Practical Considerations
+The "strictly greater" rather than "greater than or equal to" is due to the time value of money, as encapsulated in the fact that $\e^{-rT}K < K$.  This is factor \#2 described above as to why American calls on non-dividend-paying assets should never be exercised early. 
 
-In practice, individual investors rarely find early exercise optimal because:
-
-*1. Time Value Loss*: The mathematical conditions favoring early exercise are uncommon
-*2. Transaction Costs*: Exercise triggers stock purchase/sale with associated costs  
-*3. Tax Implications*: Early exercise may accelerate tax liabilities
-*4. Liquidity*: Selling the option is usually more efficient than exercising
-
-Professional Arbitrageurs are more likely to exercise early when:
-- They can immediately hedge the resulting stock position
-- They have identified precise arbitrage opportunities
-- Transaction costs are minimal due to their trading infrastructure
-
-#### Looking Ahead
-
-The precise mathematical conditions for optimal early exercise involve sophisticated option pricing models that account for factors like:
-
-- Interest rate differentials
-- Dividend timing and amounts  
-- Volatility dynamics
-- The option's moneyness and time to expiration
-
-These topics are explored in detail in later chapters on American option pricing and numerical methods. For now, the key insight is that while American options provide early exercise flexibility, this right is valuable primarily in specific circumstances rather than as a general trading strategy.
-
-The early exercise feature does make American options more valuable than otherwise identical European options, but this premium is often small except in the special cases outlined above.
+Because call values are also at least zero, we can likewise obtain an inequality for put values from put-call parity, namely, 
+$$\e^{-rT}K \le P + S \; \Leftrightarrow \; P \ge \e^{-rT}K - S\,.$$
+Put-call parity is for European options, but, because American options are worth at least as much as European options, this inequality also holds for American options on non-dividend-paying assets.  However, this does not tell us that early exercise is suboptimal, because, as discussed before, the time value of money operates in reverse fashion for puts compared to calls (the present value of the strike appears with a positive sign on the right-hand side of the inequality for puts but with a negative sign for calls).  In fact, it is possible that
+$$K - S = P > \e^{-rT}K-S\,.$$
+In this circumstance, the time value of the put has shrunk to zero, and early exercise is optimal.
 
 
 ## Exercises
