@@ -18,33 +18,33 @@ display(
 ```
 
 
-This chapter expands the discussion of the very important Black-Scholes formulas for the values of European calls and puts.  Options are written on asset prices, not dividend-reinvested asset prices, with which we have been primarily dealing to this point.  U.S. companies pay dividends quarterly (if they pay dividends).  If the option will mature before the next dividend is paid (to be more precise, if it matures before the next ex-dividend date, which is when the stock begins trading without right to the subsequent dividend) then dividends are not an issue.  We discuss a model suitable for valuing options that mature after one or more upcoming dividend payments in @sec-c:binomial.  In this chapter, we make a simplifying assumption.  We assume that dividends are paid continuously at a rate proportional to the underlying asset price.   The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
+This chapter expands the discussion of the Black-Scholes formulas for European call and put option values. Options are written on asset prices, not dividend-reinvested asset prices, which we have primarily considered until now. U.S. companies typically pay dividends quarterly. If an option matures before the next dividend payment (or more precisely, before the next ex-dividend date when the stock begins trading without the right to the subsequent dividend), then dividends do not affect the option pricing. We discuss a model suitable for valuing options that mature after one or more upcoming dividend payments in @sec-c:binomial. In this chapter, we make a simplifying assumption that dividends are paid continuously at a rate proportional to the underlying asset price.
+
+The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
 $$
 \frac{\mathrm{d}  S}{S} = (\mu - q) \,\mathrm{d}   t + \sigma\,\mathrm{d}   B
 $$ {#eq-bs1}
 
-for a Brownian motion B.  Here $\sigma$ is assumed to be constant (though we will allow it to vary in a non-random way at the end of the chapter) and $\mu$ can be a quite general random process.  It is also assumed that there is a constant continuously-compounded risk-free rate $r$.
+for a Brownian motion $B$. Here $\sigma$ is assumed to be constant, though we allow it to vary in a non-random way at the end of the chapter. The parameter $\mu$ can be a quite general random process. We also assume a constant continuously-compounded risk-free rate $r$.
 
-Under these assumptions, we  complete the discussion of @sec-c:pdes and @sec-c:girsanov to derive  option pricing formulas.  Recall that, to price a European call option, all that remains to be done is to calculate the probabilities of the option finishing in the money when we use the risk-free asset and the underlying asset as numeraires.  We do this using the results of @sec-s:girsanov.  
+Under these assumptions, we complete the discussion from @sec-c:pdes and @sec-c:girsanov to derive option pricing formulas. Recall that to price a European call option, we need only calculate the probabilities of the option finishing in the money when we use the risk-free asset and the underlying asset as numeraires. We accomplish this using the results of @sec-s:girsanov.
 
 ## European Call and Put Values
 
-
-In @sec-s:girsanov---see  @eq-riskneutral11---we learned that under the 
-Black-Scholes assumption @eq-bs1 we have
+In @sec-s:girsanov—see @eq-riskneutral11—we learned that under the Black-Scholes assumption @eq-bs1 we have
 $$\frac{\mathrm{d}  S}{S} =( r-q)\,\mathrm{d}   t+\sigma\,\mathrm{d}   B^*\; ,$$
-where $B^*$ is a Brownian motion under the risk-neutral probability.^[There is no other risky asset price $Y$ in this model, so the subscripts we used in @sec-s:girsanov] on the volatility coefficients and on $B$ and $B^*$ to distinguish the Brownian motion driving $S$ from the Brownian motion driving $Y$ and to distinguish their volatilities are not needed here.
+where $B^*$ is a Brownian motion under the risk-neutral probability.^[There is no other risky asset price $Y$ in this model, so the subscripts we used in @sec-s:girsanov on the volatility coefficients and on $B$ and $B^*$ to distinguish the Brownian motion driving $S$ from the Brownian motion driving $Y$ and to distinguish their volatilities are not needed here.]
+
 In @sec-c:geometricbrownianmotion, we observed that this is equivalent to
 $$\mathrm{d}  \log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d}   t + \sigma\,\mathrm{d}   B^*\; .$$
 
-
-A European call option pays $S_T-K$ at date $T$ if $S_T>K$ and 0 otherwise.  Again letting
+A European call option pays $S_T-K$ at date $T$ if $S_T>K$ and zero otherwise. Let
 \begin{equation*}
 x =  \begin{cases} 1 & \text{if $S_T>K$}\; ,\\
-0 & \text{otherwise}\;,
+0 & \text{otherwise}\;.
 \end{cases}
 \end{equation*}
-the payoff of the call can be written as $xS_T-xK$.  This is equivalent to one share digital minus $K$ digitals, with the digitals paying in the event that $S_T>K$.  The share digital is worth $\mathrm{e}^{-q T}S_0\mathrm{N}(d_1)$ at date $0$ and each digital is worth $\mathrm{e}^{-rT}\mathrm{N}(d_2)$.  Note that  @eq-digital_d2 and @eq-sharedigital_d1 for $d_1$ and $d_2$ imply $d_2 = d_1-\sigma{\sqrt{T}}$.  Therefore, combining the results of the previous two sections yields the Black-Scholes formula: \index{Black-Scholes formula}
+The payoff of the call can be written as $xS_T-xK$. This is equivalent to one share digital minus $K$ digitals, with the digitals paying in the event that $S_T>K$. The share digital is worth $\mathrm{e}^{-q T}S_0\mathrm{N}(d_1)$ at date $0$ and each digital is worth $\mathrm{e}^{-rT}\mathrm{N}(d_2)$. Note that @eq-digital_d2 and @eq-sharedigital_d1 for $d_1$ and $d_2$ imply $d_2 = d_1-\sigma{\sqrt{T}}$. Therefore, combining the results of the previous two sections yields the Black-Scholes formula:
 
 ::: Rule
 ## 
@@ -56,15 +56,13 @@ $$ {#eq-blackscholescall}
 where $d_1$ is defined in @eq-sharedigital_d1 and $d_2 = d_1-\sigma{\sqrt{T}}$.
 :::
 
-
-
-A European put option pays $K-S_T$ at date $T$ if $S_T<K$ and 0 otherwise.  As before, let
+A European put option pays $K-S_T$ at date $T$ if $S_T<K$ and zero otherwise. Let
 \begin{equation*}
 y =  \begin{cases} 1 & \text{if $S_T<K$}\; ,\\
 0 & \text{otherwise}\;.
 \end{cases}
 \end{equation*}
-The payoff of the put option is $yK-yS_T$.  This is equivalent to $K$ digitals minus one  share digital, all of the digitals paying when $S_T<K$.  Thus, we have:
+The payoff of the put option is $yK-yS_T$. This is equivalent to $K$ digitals minus one share digital, with all digitals paying when $S_T<K$. Thus, we have:
 
 ::: Rule
 ## 
@@ -76,13 +74,12 @@ $$ {#eq-blackscholesput}
 where $d_1$ is defined in @eq-sharedigital_d1 and $d_2 = d_1-\sigma{\sqrt{T}}$.
 :::
 
-
-The values of the European put and call satisfy put-call parity, \index{put-call parity} and we can also find one from the other by^[The put-call parity relation follows from the fact that both the left and the right-hand sides are the prices of portfolios that have value $\max(S_T,K)$ at the maturity of the option.  To see this for the left-hand side, note that $\mathrm{e}^{-rT}K$ is sufficient cash to accumulate to $K$ at date $T$, allowing exercise of the call when it is in the money and retention of the cash $K$ otherwise.  For the right-hand side, note that $\mathrm{e}^{-q T}S_0$ is enough cash to buy $\mathrm{e}^{-q T}$ shares of the stock at date $0$ which, with reinvestment of dividends, will accumulate to one share at date $T$, enabling exercise of the put if it is in the money or retention of the share otherwise.]
+The values of European puts and calls satisfy put-call parity, and we can derive one from the other using^[The put-call parity relation follows from the fact that both the left and the right-hand sides are the prices of portfolios that have value $\max(S_T,K)$ at the option's maturity. To see this for the left-hand side, note that $\mathrm{e}^{-rT}K$ is sufficient cash to accumulate to $K$ at date $T$, allowing exercise of the call when it is in the money and retention of the cash $K$ otherwise. For the right-hand side, note that $\mathrm{e}^{-q T}S_0$ is enough cash to buy $\mathrm{e}^{-q T}$ shares of the stock at date $0$ which, with reinvestment of dividends, will accumulate to one share at date $T$, enabling exercise of the put if it is in the money or retention of the share otherwise.]
 $$
 \mathrm{e}^{-rT}K + \text{Call Price} = \mathrm{e}^{-q T}S_0+ \text{Put Price}\;.
 $$ {#eq-putcallparity11}
 
-The following figure shows how the Black-Scholes call and put values depend on the underlying asset price and other model parameters.  The call and put values are computed with the following code.
+The following figure shows how the Black-Scholes call and put values depend on the underlying asset price and other model parameters. The call and put values are computed with the following code.
 
 ```{python}
 import numpy as np
@@ -136,11 +133,7 @@ def black_scholes_put(S, K, r, sigma, q, T):
 
 ## Greeks
 
-
-
-
-
-The derivatives (calculus derivatives, not financial derivatives!) of an option pricing formula with respect to the inputs are commonly called Greeks.  \index{Greeks} The most important Greek is  the option delta.  This measures the sensitivity of the option value to changes in the value of the underlying asset.  The following table shows the standard Greeks, with reference to the Black-Scholes pricing formula.
+The derivatives (calculus derivatives, not financial derivatives) of an option pricing formula with respect to the inputs are commonly called Greeks. The most important Greek is the option delta, which measures the sensitivity of the option value to changes in the value of the underlying asset. The following table shows the standard Greeks with reference to the Black-Scholes pricing formula.
 
 \begin{table}
 \centering
@@ -172,11 +165,11 @@ Interest rate & $r$ &\qquad& rho&\qquad & $\rho$\\
 | Interest rate      | $r$              |       | rho        |       | $\rho$           |
 
 
-The second line of the above shows $\delta$ as an input.^[The delta is frequently denoted by the upper case $\Delta$, but we will use the lower case, reserving the upper case for discrete changes, e.g., $\Delta t$.  One may have noticed also that the symbol for vega is a little different from the others; this reflects the fact that  vega is not actually a Greek letter.]  Of course, it is not an input but instead is calculated.  Gamma, the derivative of $\delta$, is the second derivative of the option price with respect to the underlying asset price.  The reason for calculating $\Theta$ as the derivative with respect to $-T$ instead of $T$ is that the time-to-maturity $T$ decreasing ($-T$ increasing) is equivalent to time passing, so $\Theta$ measures the change in the option value when time passes.  
+The second line of the table shows $\delta$ as an input.^[The delta is frequently denoted by the upper case $\Delta$, but we use the lower case, reserving the upper case for discrete changes, e.g., $\Delta t$. One may notice that the symbol for vega is different from the others; this reflects the fact that vega is not actually a Greek letter.] Of course, delta is not an input but rather is calculated from the formula. Gamma, the derivative of $\delta$, is the second derivative of the option price with respect to the underlying asset price. We calculate $\Theta$ as the derivative with respect to $-T$ instead of $T$ because time-to-maturity $T$ decreasing ($-T$ increasing) is equivalent to time passing, so $\Theta$ measures the change in the option value as time passes.
 
-We can calculate these from the Black-Scholes formula using the chain rule from differential calculus.  The derivative of the normal distribution function $\mathrm{N}$ is the normal density function $\mathrm{n}$ defined as
+We can calculate these from the Black-Scholes formula using the chain rule from differential calculus. The derivative of the normal distribution function $\mathrm{N}$ is the normal density function $\mathrm{n}$ defined as
 $$\mathrm{n}(d) = \frac{1}{\sqrt{2\pi}}\mathrm{e}^{-d^2/2}\; .$$
-One can easily verify directly that
+One can verify directly that
 $$
 \mathrm{e}^{-q T}S\mathrm{n}(d_1)=\mathrm{e}^{-rT}K\mathrm{n}(d_2)\;,
 $$ {#eq-greeksimplify}
@@ -203,12 +196,11 @@ For this formula, the Greeks are as follows:
 &=T\mathrm{e}^{-rT}K\mathrm{N}(d_2)\;.
 \end{align*} 
 
-
-We can calculate the Greeks of a European put option from the call option Greeks and put-call parity (assuming $q=0$):
+We can calculate the Greeks of a European put option from the call option Greeks and put-call parity, assuming $q=0$:
 $$\text{Put Price} = \text{Call Price} +\mathrm{e}^{-rT}K- \mathrm{e}^{-q T}S_0\; .$$
-For example, the delta of a put is the delta of a call (with the same strike and maturity) minus $\mathrm{e}^{-q T}$, and the gamma of a put is the same as the gamma of the corresponding call.
+For example, the delta of a put is the delta of a call with the same strike and maturity minus $\mathrm{e}^{-q T}$, and the gamma of a put is the same as the gamma of the corresponding call.
 
-To see how the Greeks respond to changes in the various inputs to the Black-Scholes formula (e.g., interest rate ($r$), time to maturity ($T$) and volatility ($\sigma$)), we encourage readers to interact with the plot below.  The code used for the calculations is here:
+To see how the Greeks respond to changes in the various inputs to the Black-Scholes formula—interest rate $r$, time to maturity $T$, and volatility $\sigma$—readers are encouraged to interact with the plot below. The code used for the calculations follows:
 
 ``` {python}
 import numpy as np
@@ -301,18 +293,16 @@ def greeks(S, K, r, sigma, T, option_type="call"):
 **Black-Scholes Greeks Explorer.** 
 :::
 
-
-
 ## Theta and Gamma in Delta Hedges {#sec-s:deltahedging}
 
-Let $C(t, S_t)$ denote the value at date $t$ of a European call option that matures at $T>t$ under the Black-Scholes assumption.  This value is given by the Black-Scholes call formula, taking the initial underlying asset price to be $S_t$ and the time to maturity to be $T-t$.
+Let $C(t, S_t)$ denote the value at date $t$ of a European call option that matures at $T>t$ under the Black-Scholes assumption. This value is given by the Black-Scholes call formula, taking the initial underlying asset price to be $S_t$ and the time to maturity to be $T-t$.
 Ito's formula tells us that
 
 $$
 \mathrm{d}  C = \frac{\partial C}{\partial S}\,\mathrm{d}   S + \frac{\partial C}{\partial t}\mathrm{d}   t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\mathrm{d}  S)^2  
 $$
 
-Using our notation for Greeks, this is 
+Using our notation for Greeks, this becomes
 $$
 \mathrm{d}  C = \delta \,\mathrm{d}   S + \Theta \,\mathrm{d}   t + \frac{1}{2}\Gamma (\mathrm{d}  S)^2  = \delta \,\mathrm{d} S - \Theta \,\mathrm{d} t + \frac{1}{2}\Gamma \sigma^2 S^2 \,\mathrm{d} t\,.
 $$
@@ -323,28 +313,19 @@ which simplifies to
 $$\delta q S \,\mathrm{d} t - (\delta S - C)r\,\mathrm{d} t - \Theta \,\mathrm{d} t - \frac{1}{2}\Gamma \sigma^2 S^2 \,\mathrm{d} t\,.
 $$ {#eq-hedgeprofits}
 
-Several aspects of this are noteworthy.  First, as noted earlier, the delta hedge eliminates the exposure to changes in the price of the underlying---there is no $\mathrm{d}  S$ term in @eq-hedgeprofits.  Second, $\Theta$ is negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$.  Third, this portfolio is short gamma.  We can also say it is short convexity, the term convexity \index{convexity} referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).^[A curious reader may ask why we don't say that the portfolio is long concavity instead of saying that it is short convexity.  This is a mystery to your authors also.]  The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses.  Finally, the portfolio is earning dividends but paying interest.
+Several aspects of this result are noteworthy. First, as noted earlier, the delta hedge eliminates the exposure to changes in the price of the underlying—there is no $\mathrm{d}  S$ term in @eq-hedgeprofits. Second, $\Theta$ is negative because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$. Third, this portfolio is short gamma. We can also say it is short convexity, the term convexity referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).^[A curious reader may ask why we don't say that the portfolio is long concavity instead of saying that it is short convexity. This is a mystery to your authors as well.] The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses. Finally, the portfolio is earning dividends but paying interest.
 
-It is straightforward to check, from the definitions of $\Theta$, $\Gamma$ and $\delta$ in the preceding section, that
-the sum of the terms in @eq-hedgeprofits is zero.  The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest.
-Therefore, the delta hedge is a perfect hedge.  The portfolio, which has a zero cost, neither earns nor loses money.  This is true not only on average but for every possible change in the stock price.  
-
+It is straightforward to check, from the definitions of $\Theta$, $\Gamma$ and $\delta$ in the preceding section, that the sum of the terms in @eq-hedgeprofits is zero. The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest. Therefore, the delta hedge is a perfect hedge. The portfolio, which has zero cost, neither earns nor loses money. This is true not only on average but for every possible change in the stock price.
 
 ## Implied Volatilities {#sec-s:impliedvolatility}
 
-All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient $\sigma$.  We can estimate $\sigma$ from historical data (see @sec-c:stochasticvolatility), or estimate it from the prices of other options.  The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the $\sigma$ that is input, so one can take the price as given and infer $\sigma$ from the formula. The $\sigma$ computed in this way is called the implied volatility. \index{implied volatility}  The implied volatility from one option can be used to price another (perhaps non-traded or less actively traded) option.  
+All of the inputs into the option pricing formulas are in theory observable, except for the volatility coefficient $\sigma$. We can estimate $\sigma$ from historical data (see @sec-c:stochasticvolatility), or we can estimate it from the prices of other options. The latter method exploits the fact that there is a one-to-one relationship between the price given by the Black-Scholes formula and the $\sigma$ that is input, so one can take the price as given and infer $\sigma$ from the formula. The $\sigma$ computed in this way is called the implied volatility. The implied volatility from one option can be used to price another option, perhaps one that is not traded or is less actively traded.
 
+Even if we acknowledge that the model is not perfectly correct, the computation of implied volatilities is still useful for characterizing market prices because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small. Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price alone because one must consider the price in the context of the exercise price and maturity. To some extent, the implied volatility normalizes the price relative to the exercise price and maturity. Of course, it does not always pay to sell expensive options or buy cheap options unless they are expensive or cheap relative to an accurate model.
 
-Even if we acknowledge that the model is not correct, the computation of implied volatilities is still useful for characterizing market prices, because we can quickly describe an option as expensive or cheap depending on whether its implied volatility is large or small.  Somewhat paradoxically, it is less easy to see if an option is expensive or cheap by looking at its price, because one must consider the price in the context of the exercise price and maturity.  To some extent, the implied volatility normalizes the price relative to the exercise price and maturity.  Of course, it does not always pay to sell expensive options or buy cheap options, unless they are expensive or cheap relative to an accurate model!
-
-If we compute implied volatilities for options with the same maturity but different strikes, we will typically obtain different implied volatilities for different options.  If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying (so the option is at the money).  The implied volatility then generally flattens out or increases slightly at higher strikes.  The graph looks like a twisted smile (smirk).  This pattern has been very pronounced in equity index option prices since the crash of 1987.  This moneyness structure of implied volatilities is inconsistent with the Black-Scholes model.  It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution (i.e., it has fat tails) with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns (i.e., it is skewed).  
-
+If we compute implied volatilities for options with the same maturity but different strikes, we will typically obtain different implied volatilities for different options. If we plot implied volatility against the strike, the pattern one normally sees for equities and equity indices is the implied volatility declining as the strike increases until the strike is somewhere near the current value of the underlying, so the option is at the money. The implied volatility then generally flattens out or increases slightly at higher strikes. The graph resembles a twisted smile (smirk). This pattern has been very pronounced in equity index option prices since the crash of 1987. This moneyness structure of implied volatilities is inconsistent with the Black-Scholes model. It suggests that the risk-neutral return distribution is not lognormal but instead exhibits a higher likelihood of extreme returns than the lognormal distribution—that is, it has fat tails—with the likelihood of extreme negative returns being higher than the likelihood of extreme positive returns—that is, it is skewed.
 
 ## Exercises
-
-
-
-
 
 ::: {#exr-black1}
  Use put-call parity to derive the Greeks of a put option, and write a Python function that computes the value and Greeks.
@@ -358,7 +339,3 @@ If we compute implied volatilities for options with the same maturity but differ
 ::: {#exr-black4}
  Repeat the previous problem for  $S=1.2K$ (an example of an in-the-money call option).
 :::
-
-
-
-
