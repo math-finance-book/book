@@ -504,11 +504,62 @@ fig.show()
 ```
 :::
 
+#### Selling Covered Calls
+
+A common option strategy is to sell and out-of-the-money call option on a stock that one owns.  This generates premium income, at the expense of reducing the maximum gain on the stock (it is capped at the call strike).  Whether this turns out to be profitable depends on how high the underlying goes prior to the option maturity - if it goes up sufficiently far, the trader will regret having sold the call; if it goes up less, or doesn't go up at all, then the trader will be happy to have captured the call premium.  The following is the payoff diagram of a portfolio consisting of a long position in the underlying asset and a short call.  
+
+::: {#fig-covered-call layout-ncol=1 fig-height=400}
+```{python}
+#| label: fig-covered-call
+#| fig-cap: Selling covered calls is profitable if the underlying doesn't go up too much before the option expires.
+#| out-width: "100%"
+
+# Collar: Long stock + Long put + Short call
+call_payoff = -np.maximum(S - K_call, 0)  # Short call payoff at maturity
+collar_payoff = stock_payoff + call_payoff
+
+fig = go.Figure()
+
+# Individual components
+fig.add_trace(go.Scatter(x=S, y=stock_payoff, mode='lines', 
+                        name='Long Stock', line=dict(color='blue', dash='dot')))
+fig.add_trace(go.Scatter(x=S, y=call_payoff, mode='lines', 
+                        name='Short Call', line=dict(color='orange', dash='dot')))
+
+# Combined strategy
+fig.add_trace(go.Scatter(x=S, y=collar_payoff, mode='lines', 
+                        name='Collar', line=dict(color='red', width=3)))
+
+fig.add_hline(y=0, line_dash="dot", line_color="gray")
+fig.add_vline(x=K_call, line_dash="dot", line_color="gray", 
+              annotation_text=f"Call Strike = ${K_call}")
+
+# Add vertical line at x=0 (y-axis)
+fig.add_vline(x=0, line_dash="solid", line_color="black", line_width=1)
+
+fig.update_layout(
+    title="Covered Call Strategy",
+    xaxis_title="Stock Price at Expiration ($)",
+    yaxis_title="Portfolio Value ($)",
+    template="plotly_white", 
+    height=400,
+    autosize=True,
+    legend=dict(x=0.02, y=0.98, xanchor='left', yanchor='top'),
+    xaxis_zeroline=True,
+    xaxis_zerolinecolor='black',
+    yaxis_zeroline=True,
+    yaxis_zerolinecolor='black'
+)
+
+fig.show()
+
+```
+:::
 
 
 #### Collar
 
-A collar combines a protective put with a covered call (selling a call option against the stock position). This strategy provides downside protection while capping upside potential in exchange for reducing the net premium cost.  If the premium received from the call that is sold equals (or, in practice, is approximately equal to) the premium paid for the put, then the collar is called a **zero-cost collar**.
+A collar combines a protective put with selling a covered call. This strategy provides downside protection and pays for some or all of the protection by capping the upside potential.  If the premium received from the call that is sold equals (or, in practice, is approximately equal to) the premium paid for the put, then the collar is called a **zero-cost collar**.
 
 ::: {#fig-collar layout-ncol=1 fig-height=400}
 ```{python}
@@ -1066,5 +1117,22 @@ These topics are explored in detail in later chapters on American option pricing
 The early exercise feature does make American options more valuable than otherwise identical European options, but this premium is often small except in the special cases outlined above.
 
 
+## Exercises
 
+
+::: {#exr-intro-options-1}
+As illustrated in the protective put, covered call, and collar examples, a long position in one unit of the underlying asset has a payoff diagram equal to the 45-degree line.  Symmetrically, a short position in one unit of the underlying asset has a payoff diagram equal to the negative of the 45-degree line.  What option position would cap the possible loss from a short position?  How would you collar a short position?  Write python code to generate the payoff diagrams of these porttolios.
+::: 
+
+::: {#exr-intro-options-2}
+The text explains a bull call spread.  Using put-call parity, explain how we can obtain the same payoff diagram using puts.  Write python code to generate the payoff diagrams of the bull call spread and the bull put spread.
+::: 
+
+::: {#exr-intro-options-3}
+Repeat the previous exercise, but for a bear spread in calls and puts.
+::: 
+
+::: {#exr-intro-options-2}
+Write python code to generate the payoff diagram of a short straddle (short call and short put with the same strike and expiration).  What option positions would cap the possible losses from a short straddle?  Write python code to generate the payoff diagram of the short straddle with these additional options.  Using put-call parity, explain the similarity of this payoff diagram with the payoff diagram of a butterfly spread.
+::: 
 
