@@ -92,39 +92,72 @@ One of the most distinctive features of futures trading is the **daily settlemen
 
 **Liquidity Enhancement**: Reduced counterparty risk attracts more participants, increasing market liquidity.
 
+#3 The Expectations Hypothesis
+
+The **expectations hypothesis** states that futures prices represent the market's unbiased expectation of future spot prices. Mathematically, this can be written as:
+$$F = E[S_T]$$
+
+Where $E[S_T]$ is the expected spot price at the futures expiration date $T$.  This is a convenient hypothesis, because, if true, then futures prices provide a readily observable measure of the market's expectations for future spot prices.
+
+The motivation for the expectations hypothesis is the idea that, if the futures price were lower than the expected spot price, then traders "should" buy the futures contract and plan to sell the spot asset when delivered on the futures at maturity.  This strategy has a positive expected profit when the futures price is lower than the expected spot price.  This buying activity should drive up the price of the futures contract, until it converges to the expected spot price.  Symmetrically, investors "should" sell the futures if its price is above the expected spot price, planning to buy the spot asset at the futures maturity to cover the delivery obligation on the futures, and this selling activity should cause the futures price to fall, until it converges to the expected spot price.  Thus, in equilibrium, futures prices "should" equal the expected spot price. 
+
+All of the quotation marks around "should" in the previous paragraph reflect the fact that the theory presumes risk neutrality on the part of a large enough group of investors to move the futures price to the expected spot price.  If investors are risk averse, then they may buy a limited quantity of the futures when its price is low relative to the expected spot price and sell a limited quantity of the futures when its price is high relative to the expected spot price, generating an expected profit as described in the previous paragraph.  However, risk averse investors will weigh the expected profit against the risk, considering their other investments as well, and only allocate a limited amount of capital to the bet.  This amount of capital may not be enough to move the futures price fully to the expected spot price.  Empirically, futures prices seem to frequently deviate from expected spot prices in significant ways, indicating that the risk-neutrality assumption underlying the expectations hypothesis is not a good one.
+
 ## Spot-Futures Parity
 
-The relationship between spot prices and futures prices is governed by arbitrage principles similar to those in options markets. **Spot-futures parity** establishes the theoretical fair value of a futures contract based on the current spot price and carrying costs.
+In contrast to the expectations hypothesis, which predicts a relationship between today's futures price and the expected future spot price, **spot-futures parity** is a relationship between today's futures price and today's spot price.  The foundation for spot-futures parity is arbitrage activity (making riskless profits) rather than making positive expected return but risky investments (as for the expectations hypothesis).
 
 #### The Basic Parity Relationship
 
-For a futures contract on a non-dividend-paying asset:
+For a futures contract on an asset that does not pay dividends and has no storage costs, spot-futures parity states that
 
 $$F = S e^{rT}$$
 
-Where:
-- $F$ = Futures price
-- $S$ = Current spot price  
-- $r$ = Risk-free interest rate
-- $T$ = Time to expiration
+where $F=\,$ futures price, $S=\,$ current spot price, $r=\,$ isk-free interest rate, and $T=\,$ time to expiration.
 
-This relationship reflects the **cost of carry** - the net cost of holding the underlying asset until the futures expiration date.
+This is an arbitrage relationship, meaning that, if it were not true, then there would be an arbitrage opportunity.  Consider two strategies with identical payoffs at time $T$:
 
-#### Derivation Through Arbitrage
+- Strategy A: Buy futures contract at price $F$
+  - Cost today: $0$ (ignoring margin)
+  - Payoff at $T$: $S_T - F$
 
-Consider two strategies with identical payoffs at time $T$:
+- Strategy B: Buy underlying asset, finance with borrowing
+  - Cost today: $S - S = 0$ (borrow $S$ to buy asset worth $S$)  
+  - Payoff at $T$: $S_T - Se^{rT}$ (asset value minus loan repayment)
 
-**Strategy A**: Buy futures contract at price $F$
-- Cost today: $0$ (ignoring margin)
-- Payoff at $T$: $S_T - F$
+Both strategies have zero cost at initiation and pay the underlying asset value at the futures maturity less *an amount known at strategy initiation*.  There is an arbitrage opportunity if these amounts differ, so it must be that they are the same; that is,  $F = Se^{rT}$.
 
-**Strategy B**: Buy underlying asset, finance with borrowing
-- Cost today: $S - S = 0$ (borrow $S$ to buy asset worth $S$)  
-- Payoff at $T$: $S_T - Se^{rT}$ (asset value minus loan repayment)
+The spot-futures-parity formula holds for all maturities $T$.  By varying $T$, we obtain a formula for how futures prices should vary with the contract maturity.  The relationship between the contract maturity and the futures price is known as the **forward curve**.  @fig:gold_forward_curve presents the gold forward curve at a single point in time.  The upward slope reflects the fact that the future value factor $e^{rT}$ is larger for larger $T$.  Because gold pays no dividends and has negligible storage costs, and because interest rates are positive, the gold forward curve is always upward sloping, reflecting the interest rate.
 
-Since both strategies have identical payoffs, they must have equal costs:
-$$S_T - F = S_T - Se^{rT}$$
-$$F = Se^{rT}$$
+In the gold example, the interest rate is the **cost of carry**.  This is the cost of holding gold - it is the opportunity cost of having money tied up in gold rather than invested in interest-bearing assets.  As we discuss below, storage costs are another important component of the cost of carry for commodities.  
+
+#### Dividends
+
+For an asset that generates cash flows - for example, dividends - the futures contract is worth less compared to owning the asset outright, because the holder of the futures contract does not receive the dividends.  Thus, given the spot price and the interest rate, the futures price is lower than in the previous formula.  We generally use the term "dividends," but the cash flows could be other things - for example, the cash flow that is generated by holding a foreign currency is the foreign interest that is earned by depositing the currency.   
+
+The spot-futures-parity formula for a dividend-paying asset is:
+
+$$F = (S - PV(\text{Dividends}))e^{rT}$$
+
+The derivation of this formula is again by arbitrage with the same two strategies as above.  The only difference is that in Strategy B, the trader will have the dividends (plus interest on the dividends) in addition to the value of the spot asset available to repay the loan, so the payoff at $T$ is 
+$$S_T + FV(\text{Dividends}) - Se^{rT} \,.$$
+
+Assuming the future value of the dividends can be predicted at strategy initiation, the same arbitrage logic as before implies that 
+
+$$F = S e^{rT}- FV(\text{Dividends}) = (S- \text{PV}(\text{Dividends}))e^{rT}\,.$$
+
+This relationship is very useful for understanding futures contracts on currencies, stock indices, and the like.  We can usually approximate the dividend payments as being paid continuously at a known rate
+**Commodities with Storage Costs**:
+$$F = Se^{(r+c)T}$$
+
+Where $c$ = storage cost rate. Storage costs increase the futures price because they represent an additional carrying cost.
+
+**Convenience Yield**:
+For commodities, there may be benefits to physical ownership (convenience yield $y$):
+$$F = Se^{(r+c-y)T}$$
+
+Convenience yield can make futures prices lower than the basic cost-of-carry model predicts.
+
 
 #### Incorporating Dividends and Storage Costs
 
