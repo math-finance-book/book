@@ -109,49 +109,42 @@ In contrast to the expectations hypothesis, which predicts a relationship betwee
 
 #### The Basic Parity Relationship
 
-For a futures contract on a non-dividend-paying asset:
+For a futures contract on an asset that does not pay dividends and has no storage costs, spot-futures parity states that
 
 $$F = S e^{rT}$$
 
-Where:
+where $F=\,$ futures price, $S=\,$ current spot price, $r=\,$ isk-free interest rate, and $T=\,$ time to expiration.
 
-- $F$ = Futures price
-- $S$ = Current spot price  
-- $r$ = Risk-free interest rate
-- $T$ = Time to expiration
+This is an arbitrage relationship, meaning that, if it were not true, then there would be an arbitrage opportunity.  Consider two strategies with identical payoffs at time $T$:
 
+- Strategy A: Buy futures contract at price $F$
+  - Cost today: $0$ (ignoring margin)
+  - Payoff at $T$: $S_T - F$
 
-#### Derivation Through Arbitrage
+- Strategy B: Buy underlying asset, finance with borrowing
+  - Cost today: $S - S = 0$ (borrow $S$ to buy asset worth $S$)  
+  - Payoff at $T$: $S_T - Se^{rT}$ (asset value minus loan repayment)
 
-Consider two strategies with identical payoffs at time $T$:
+Both strategies have zero cost at initiation and pay the underlying asset value at the futures maturity less *an amount known at strategy initiation*.  There is an arbitrage opportunity if these amounts differ, so it must be that they are the same; that is,  $F = Se^{rT}$.
 
-**Strategy A**: Buy futures contract at price $F$
+The spot-futures-parity formula holds for all maturities $T$.  By varying $T$, we obtain a formula for how futures prices should vary with the contract maturity.  The relationship between the contract maturity and the futures price is known as the **forward curve**.  @fig:gold_forward_curve presents the gold forward curve at a single point in time.  The upward slope reflects the fact that the future value factor $e^{rT}$ is larger for larger $T$.  Because gold pays no dividends and has negligible storage costs, and because interest rates are positive, the gold forward curve is always upward sloping.
 
-- Cost today: $0$ (ignoring margin)
-- Payoff at $T$: $S_T - F$
+#### Dividends
 
-**Strategy B**: Buy underlying asset, finance with borrowing
+For an asset that pays dividends, the futures price is lower than the previous formula predicts, because futures holders don't receive dividend payments.  The term "dividends" should be interpreted here in a broad sense as any cash flows generated from holding the spot asset.  For example, the spot-parity formula holds for futures contracts on currencies by interpreting "dividends" as the interest payments received from investing the foreign currency at the foreign interest rate.  
 
-- Cost today: $S - S = 0$ (borrow $S$ to buy asset worth $S$)  
-- Payoff at $T$: $S_T - Se^{rT}$ (asset value minus loan repayment)
-
-Both strategies have zero cost at initiation and pay the underlying asset value at the futures maturity less *an amount known at strategy initiation*.  There is an arbitrage opportunity if these amounts differ, so it must be that they are the same; that is,  
-$$F = Se^{rT}\,.$$
-
-
-#### Incorporating Dividends and Storage Costs
-
-For an asset that pays dividends, the futures price is lower than the previous formula predicts, because futures holders don't receive dividend payments.  The correct formula for a dividend-paying asset is:
+The spot-futures-parity formula for a dividend-paying asset is:
 
 $$F = (S - PV(\text{Dividends}))e^{rT}$$
 
-The derivation of this formula is again by arbitrage with the same two strategies as above.  The only difference is that in Strategy B, the trader can use the future value of the dividends to repay part of the loan, so the payoff at $T$ is 
-$$S_T - Se^{rT} + FV(\text{Dividends})\,.$$
+The derivation of this formula is again by arbitrage with the same two strategies as above.  The only difference is that in Strategy B, the trader will have the dividends (plus interest on the dividends) in addition to the value of the spot asset available to repay the loan, so the payoff at $T$ is 
+$$S_T + FV(\text{Dividends}) - Se^{rT} \,.$$
 
-Assume the future value of the dividends can be predicted at strategy initiation, the same arbitrage logic as before implies that 
+Assuming the future value of the dividends can be predicted at strategy initiation, the same arbitrage logic as before implies that 
 
 $$F = S e^{rT}- FV(\text{Dividends}) = (S- \text{PV}(\text{Dividends}))e^{rT}\,.$$
 
+This relationship is very useful for understanding futures contracts on currencies, stock indices, and the like.  We can usually approximate the dividend payments as being paid continuously at a known rate
 **Commodities with Storage Costs**:
 $$F = Se^{(r+c)T}$$
 
@@ -162,24 +155,6 @@ For commodities, there may be benefits to physical ownership (convenience yield 
 $$F = Se^{(r+c-y)T}$$
 
 Convenience yield can make futures prices lower than the basic cost-of-carry model predicts.
-
-#### Arbitrage When Parity Is Violated
-
-**If $F > Se^{rT}$ (Futures overpriced)**:
-
-1. Sell futures contract
-2. Buy underlying asset  
-3. Finance purchase by borrowing $S$
-4. At expiration: Deliver asset against futures, collect $F$, repay loan $Se^{rT}$
-5. Risk-free profit: $F - Se^{rT}$
-
-**If $F < Se^{rT}$ (Futures underpriced)**:
-
-1. Buy futures contract
-2. Sell underlying asset short
-3. Invest proceeds $S$ at risk-free rate
-4. At expiration: Take delivery via futures, return borrowed asset, collect investment proceeds
-5. Risk-free profit: $Se^{rT} - F$
 
 #### Practical Considerations
 
@@ -239,15 +214,17 @@ $$F = E[S_T] - \text{Risk Premium}$$
 
 ## Options on Futures
 
-Many exchanges offer **options on futures contracts**, creating a derivative on a derivative. These instruments combine the features of options (limited downside risk) with the efficiency and liquidity of futures markets.
+Many exchanges offer **options on futures contracts**, creating a derivative on a derivative. These instruments combine the features of options (limited downside risk for buyers) with the efficiency and liquidity of futures markets.
 
 #### Contract Specifications
 
 **Call Option on Futures**: Right to buy a futures contract at a specified strike price
+
 - Exercise creates a long futures position at the strike price
 - Immediate mark-to-market profit/loss upon exercise
 
 **Put Option on Futures**: Right to sell a futures contract at a specified strike price
+
 - Exercise creates a short futures position at the strike price
 - Immediate mark-to-market profit/loss upon exercise
 
