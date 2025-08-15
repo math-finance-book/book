@@ -24,7 +24,7 @@ Let $\delta_t$ be the number of shares of the stock held at time $t$ and $\alpha
 $$  d W_t = \delta_t d S(t) + \delta_t q S(t) dt + \alpha_t  d R(t) = \delta_t \left(\mu S(t) dt  + \sigma S(t) d B_t\right)  + \alpha_t r R(t) dt$$
 with terminal condition 
 $$ W_T = \alpha_T R(T) + \delta_T S(T) = (S(T) - K)^{+} $$
-The problem is to find $\delta_t$ and $\alpha_t$ for all times and states.  If we can accomplish this, then by `no-arbitrage' the call price must be the value of the initial investment.  Assume the call price is a function of the stock price and time: $C(t,S(t))$.  Then by Ito's Lemma
+The problem is to find $\delta_t$ and $\alpha_t$ for all times and states.  If we can accomplish this, then by `no-arbitrage** the call price must be the value of the initial investment.  Assume the call price is a function of the stock price and time: $C(t,S(t))$.  Then by Ito**s Lemma
 $$ d C(t,S(t)) = \left(\frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S(t) + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S_t^2 \right) dt + \frac{\partial C}{\partial S} \sigma S(t) dB_t $$
 It should be apparent that we want to hold $\delta = \frac{\partial C}{\partial S}$, which is called the delta of the call option.  By doing so, we match the diffusion term in the change in wealth and the change in the call option.  Then matching the drift terms in both expressions
 $$ \frac{\partial C}{\partial S} \mu S(t) + \alpha_t r R(t) = \frac{\partial C}{\partial t} + \frac{\partial C}{\partial S} (\mu-q) S(t) + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S(t)^2$$
@@ -208,7 +208,7 @@ $$ {#eq-changeportfoliovalue}
 
 The first term reflects the change in the value of the option, the second term is the capital gain or loss on $\delta$ shares of stock, the third term is the dividends received on $\delta$ shares of stock, and the fourth term is the interest expense on the short cash position.
 
-On the other hand, we know from Ito's formula that
+On the other hand, we know from Ito**s formula that
 
 $$
 \mathrm{d} C = \frac{\partial C}{\partial S}\,\mathrm{d} S + \frac{\partial C}{\partial t}\,\mathrm{d} t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\mathrm{d} S)^2  
@@ -237,26 +237,26 @@ To attempt to improve the performance of a discretely rebalanced delta hedge, on
 
 A delta/gamma hedge can be constructed as follows.  Suppose we have written (shorted) a call option and we want to hedge both the delta and gamma using the underlying asset and another option, for example, another call option with a different strike.  In practice, one would want to use a liquid option for this purpose, which typically means that the strike of the option will be near the current value of the underlying (i.e., the option used to hedge would be approximately at the money). 
 
-Let $\delta$ and $\Gamma$ denote the delta and gamma of the written option and let $\delta'$ and $\Gamma'$ denote the delta and gamma of the option used to hedge.  Consider holding  $a$ of shares of the stock and $b$ units of the option used to hedge in conjunction with the short option.  The delta of the stock is one ($\mathrm{d} S/\mathrm{d} S = 1$), so to obtain a zero portfolio delta we need
+Let $\delta$ and $\Gamma$ denote the delta and gamma of the written option and let $\delta**$ and $\Gamma**$ denote the delta and gamma of the option used to hedge.  Consider holding  $a$ of shares of the stock and $b$ units of the option used to hedge in conjunction with the short option.  The delta of the stock is one ($\mathrm{d} S/\mathrm{d} S = 1$), so to obtain a zero portfolio delta we need
 
 $$
-0 = - \delta + a + b\delta'.
+0 = - \delta + a + b\delta**.
 $$ {#eq-portfoliodelta}
 
 The gamma of the stock is zero ($\mathrm{d}^2 S/\mathrm{d} S^2 = d\,1/\mathrm{d} S = 0$), so to obtain a zero portfolio gamma we need
 
 $$
-0 = - \Gamma + b\Gamma'\;. 
+0 = - \Gamma + b\Gamma**\;. 
 $$ {#eq-portfoliogamma}
 
 
 Equation @eq-portfoliogamma shows that we should hold enough of the second option to neutralize the gamma of the option we have shorted; i.e.,
 $$\
-b= \frac{\Gamma}{\Gamma'}
+b= \frac{\Gamma}{\Gamma**}
 $$
 Equation @eq-portfoliodelta shows that we should use the stock to delta hedge the portfolio of options; i.e.,
 $$
-a=\delta - \frac{\Gamma}{\Gamma'}\delta'\;.
+a=\delta - \frac{\Gamma}{\Gamma**}\delta**\;.
 $$
 
 ### Discretely-Rebalanced Delta Hedges
@@ -265,7 +265,7 @@ In practice of course, we cannot continuously rebalance to maintain a perfect de
 To compute the real-world distribution of gains and losses from a discretely-rebalanced delta hedge, we input the expected rate of return $\mu$.  We consider adjusting the hedge at dates $0=t_0<t_1<\cdots<t_N=T$, with $t_i-t_{i-1}=\Delta t = T/N$ for each $i$.  The changes in the natural logarithm of the stock price between successive dates $t_{i-1}$ and $t_i$ are simulated as
 $$\Delta \log S = \left(\mu-q-\frac{1}{2}\sigma^2\right)\,\Delta t + \sigma\,\Delta B\; ,$$
 where $\Delta B$ is normally distributed with mean zero and variance $\Delta t$.  The random variables $\Delta B$ are simulated as standard normals multiplied by
-$\sqrt{\Delta t}$.  We begin with the portfolio that is short a call, long $\delta$ shares of the underlying, and short $\delta S-C$ in cash.  After the stock price changes, say from $S$ to $S'$, we compute the new delta $\delta'$.  The cash flow from adjusting the hedge is $(\delta-\delta')S'$.  Accumulation (or payment) of interest on the cash position is captured by the factor $e^{r\Delta t}$.  Continuous payment of dividends is modelled similarly: the dividends earned during the period $\Delta t$ is taken to be $\delta S\left(e^{q\Delta t}-1\right)$.  The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge.  At date $T$, the value of the portfolio is the cash position less the intrinsic value of the option.
+$\sqrt{\Delta t}$.  We begin with the portfolio that is short a call, long $\delta$ shares of the underlying, and short $\delta S-C$ in cash.  After the stock price changes, say from $S$ to $S**$, we compute the new delta $\delta**$.  The cash flow from adjusting the hedge is $(\delta-\delta**)S**$.  Accumulation (or payment) of interest on the cash position is captured by the factor $e^{r\Delta t}$.  Continuous payment of dividends is modelled similarly: the dividends earned during the period $\Delta t$ is taken to be $\delta S\left(e^{q\Delta t}-1\right)$.  The cash position is adjusted due to interest, dividends, and the cash flow from adjusting the hedge.  At date $T$, the value of the portfolio is the cash position less the intrinsic value of the option.
 
  Suppose we set up a delta hedge at date $0$ for a call option that we have sold.  We sell the call at the Black-Scholes price $C(0, S_0)$.  We use the proceeds plus borrowed funds to buy $\delta_0 = \mathrm{e}^{-qT}\mathrm{N}(d_1)$ shares, where $d_1$ is the parameter at date 0 for the Black-Scholes call value and delta.   We rebalance the hedge at each date $t_1, \ldots, t_n$, holding the short call position until it matures at date $T$.  Rebalancing means that we trade to re-establish the delta hedge based on the Black-Scholes call delta at that date, buying shares when the delta has gone up and selling shares when the delta has fallen.  Let $\delta_t$ denote the Black-Scholes delta at each $t$ and let $C_t$ denote the Black-Scholes call value $C(t, S_t)$.  
 
@@ -353,7 +353,7 @@ print(f"Delta Hedge Profit (95th percentile): {delta_hedge_profit}")
 ```
 
 ::: {#fig-delta-hedges}
-<iframe width="780" height="1000" src="https://delta-hedges.koyeb.app/"></iframe>
+<iframe width=**780** height=**1000** src=**https://delta-hedges.koyeb.app/**></iframe>
 
 **Simulated Discretely Rebalanced Delta Hedges.** 
 :::

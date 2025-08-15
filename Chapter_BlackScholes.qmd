@@ -18,7 +18,7 @@ display(
 ```
 
 
-This chapter expands the discussion of the very important Black-Scholes formulas for the values of European calls and puts.  Options are written on asset prices, not dividend-reinvested asset prices, with which we have been primarily dealing to this point.  U.S. companies pay dividends quarterly (if they pay dividends).  If the option will mature before the next dividend is paid (to be more precise, if it matures before the next ex-dividend date, which is when the stock begins trading without right to the subsequent dividend) then dividends are not an issue.  We discuss a model suitable for valuing options that mature after one or more upcoming dividend payments in @sec-c:americans.  In this chapter, we make a simplifying assumption.  We assume that dividends are paid continuously at a rate proportional to the underlying asset price.   The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
+This chapter expands the discussion of the very important Black-Scholes formulas for the values of European calls and puts.  Options are written on asset prices, not dividend-reinvested asset prices, with which we have been primarily dealing to this point.  U.S. companies pay dividends quarterly (if they pay dividends).  If the option will mature before the next dividend is paid (to be more precise, if it matures before the next ex-dividend date, which is when the stock begins trading without right to the subsequent dividend) then dividends are not an issue.  We discuss a model suitable for valuing options that mature after one or more upcoming dividend payments in @sec-c:binomial.  In this chapter, we make a simplifying assumption.  We assume that dividends are paid continuously at a rate proportional to the underlying asset price.   The Black-Scholes assumptions are that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
 $$
 \frac{\mathrm{d}  S}{S} = (\mu - q) \,\mathrm{d}   t + \sigma\,\mathrm{d}   B
 $$ {#eq-bs1}
@@ -34,7 +34,7 @@ In @sec-s:girsanov---see  @eq-riskneutral11---we learned that under the
 Black-Scholes assumption @eq-bs1 we have
 $$\frac{\mathrm{d}  S}{S} =( r-q)\,\mathrm{d}   t+\sigma\,\mathrm{d}   B^*\; ,$$
 where $B^*$ is a Brownian motion under the risk-neutral probability.^[There is no other risky asset price $Y$ in this model, so the subscripts we used in @sec-s:girsanov] on the volatility coefficients and on $B$ and $B^*$ to distinguish the Brownian motion driving $S$ from the Brownian motion driving $Y$ and to distinguish their volatilities are not needed here.
-In @sec-s:geometricbrownianmotion, we observed that this is equivalent to
+In @sec-c:geometricbrownianmotion, we observed that this is equivalent to
 $$\mathrm{d}  \log S = \left(r-q-\frac{1}{2}\sigma^2\right)\,\mathrm{d}   t + \sigma\,\mathrm{d}   B^*\; .$$
 
 
@@ -129,7 +129,7 @@ def black_scholes_put(S, K, r, sigma, q, T):
 
 
 ::: {#fig-bs-call-put} 
-<iframe height="800" width ="720" src="https://black-scholes.koyeb.app/"></iframe>
+<iframe height=**800** width =**720** src=**https://black-scholes.koyeb.app/**></iframe>
 
 **Black-Scholes Explorer.** 
 :::
@@ -297,7 +297,7 @@ def greeks(S, K, r, sigma, T, option_type="call"):
 
 
 ::: {#fig-bs-greeks} 
-<iframe height="750" width ="720" src="https://greeks.koyeb.app/"></iframe>
+<iframe height=**750** width =**720** src=**https://greeks.koyeb.app/**></iframe>
 **Black-Scholes Greeks Explorer.** 
 :::
 
@@ -306,7 +306,7 @@ def greeks(S, K, r, sigma, T, option_type="call"):
 ## Theta and Gamma in Delta Hedges {#sec-s:deltahedging}
 
 Let $C(t, S_t)$ denote the value at date $t$ of a European call option that matures at $T>t$ under the Black-Scholes assumption.  This value is given by the Black-Scholes call formula, taking the initial underlying asset price to be $S_t$ and the time to maturity to be $T-t$.
-Ito's formula tells us that
+Ito**s formula tells us that
 
 $$
 \mathrm{d}  C = \frac{\partial C}{\partial S}\,\mathrm{d}   S + \frac{\partial C}{\partial t}\mathrm{d}   t + \frac{1}{2}\frac{\partial^2C}{\partial S^2} (\mathrm{d}  S)^2  
@@ -323,7 +323,7 @@ which simplifies to
 $$\delta q S \,\mathrm{d} t - (\delta S - C)r\,\mathrm{d} t - \Theta \,\mathrm{d} t - \frac{1}{2}\Gamma \sigma^2 S^2 \,\mathrm{d} t\,.
 $$ {#eq-hedgeprofits}
 
-Several aspects of this are noteworthy.  First, as noted earlier, the delta hedge eliminates the exposure to changes in the price of the underlying---there is no $\mathrm{d}  S$ term in @eq-hedgeprofits.  Second, $\Theta$ is negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$.  Third, this portfolio is short gamma.  We can also say it is short convexity, the term convexity \index{convexity} referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).^[A curious reader may ask why we don't say that the portfolio is long concavity instead of saying that it is short convexity.  This is a mystery to your authors also.]  The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses.  Finally, the portfolio is earning dividends but paying interest.
+Several aspects of this are noteworthy.  First, as noted earlier, the delta hedge eliminates the exposure to changes in the price of the underlying---there is no $\mathrm{d}  S$ term in @eq-hedgeprofits.  Second, $\Theta$ is negative, because it captures the time decay in the option value; being short the option means the portfolio will profit from time decay at rate $-\Theta$.  Third, this portfolio is short gamma.  We can also say it is short convexity, the term convexity \index{convexity} referring to the convex shape of the option value as a function of the price of the underlying, which translates mathematically to a positive second derivative (gamma).^[A curious reader may ask why we don**t say that the portfolio is long concavity instead of saying that it is short convexity.  This is a mystery to your authors also.]  The volatility in the stock makes convexity valuable, and a portfolio that is short convexity will suffer losses.  Finally, the portfolio is earning dividends but paying interest.
 
 It is straightforward to check, from the definitions of $\Theta$, $\Gamma$ and $\delta$ in the preceding section, that
 the sum of the terms in @eq-hedgeprofits is zero.  The time decay in the option value and dividends received on the shares of the underlying exactly offset the losses due to convexity and interest.
@@ -359,6 +359,6 @@ If we compute implied volatilities for options with the same maturity but differ
  Repeat the previous problem for  $S=1.2K$ (an example of an in-the-money call option).
 :::
 
-:::
+
 
 
