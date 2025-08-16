@@ -1,53 +1,37 @@
 {{< include macros.qmd >}}
 
-# Futures  {#sec-c:futures}
+```{python}
+#| echo: false
 
-Futures contracts are among the oldest and most important derivative securities, with organized futures trading dating back centuries. These standardized agreements to buy or sell an asset at a predetermined price on a future date serve critical functions in modern financial markets, from price discovery and risk management to speculation and arbitrage.
+import plotly
+from IPython.display import display, HTML
 
-A **futures contract** is a standardized agreement between two parties to trade a specific asset at a predetermined price on a specified future date. Unlike forward contracts, which are customized over-the-counter agreements, futures contracts are traded on organized exchanges with standardized terms, daily settlement, and clearinghouse guarantees.
+plotly.offline.init_notebook_mode(connected=True)
+display(
+    HTML(
+        '<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>'
+    )
+)
+```
 
-## Key Features of Futures Contracts
+# Futures Markets {#sec-c:futures}
 
-#### Standardization and Exchange Trading
+Futures contracts are among the oldest and most important derivative securities, with organized futures trading dating back centuries. These contracts are standardized agreements to buy or sell an asset at a predetermined price on a future date.  They serve critical functions in modern financial markets, from price discovery and risk management to speculation and arbitrage.
 
-**Contract Specifications**: Exchanges standardize every aspect of futures contracts:
-- **Underlying asset**: Specific grade, quality, and delivery location
-- **Contract size**: Standard quantity (e.g., 5,000 bushels of corn, 100 troy ounces of gold)
-- **Delivery months**: Specific months when contracts expire
-- **Tick size**: Minimum price movement (e.g., $0.25 per bushel for corn)
-- **Daily price limits**: Maximum allowed price changes in a single session
+The predetermined price in the previous paragraph is the price that the traders agreed upon when the contract was bought by one party and sold by the other and is called the futures price.  The futures price is determined by the market, like stock and option prices.  Traders can submit either limit orders or market orders to buy or sell.
 
-**Example**: The Chicago Mercantile Exchange (CME) E-mini S&P 500 futures contract specifies:
-- Underlying: S&P 500 Index
-- Contract size: $50 × S&P 500 Index value
-- Delivery months: March, June, September, December
-- Tick size: 0.25 index points = $12.50 per contract
+Futures trading is similar to options trading.  A clearinghouse stands as the counterparty to each trade, guaranteeing the fulfillment of the contract.  The clearinghouse imposes margin requirements to ensure that traders have the financial wherewithal to meet their obligations. There is no pre-existing supply of futures contracts.  Contracts are created by trade.  The number of outstanding long contracts is always equal to the number of short contracts and is called open interest.  A contrast with options markets is that both buyers and sellers of futures contracts have future obligations, and both parties must post margin.  In options markets, only the seller of an option has a future obligation and must post margin.
 
-#### Long and Short Positions
+The buyer of a futures contract (who is said to be long the contract) has the obligation to accept delivery of the underlying asset at the  futures expiration date and to pay the futures price at which he bought the contract.  The seller of a contract (who is said to be short the contract) has an obligation to deliver the underlying asset at the futures price at the futures expiration date.  For example, the buyer of a corn contract will get corn and pay for it (if she does not offset the obligations by selling a contract prior to the contract's expiration) and the seller of a corn contract will deliver corn and receive payment (if he does not offset the obligations by buying a contract prior to the contract's expiration).
 
-**Long Position**: Agreement to buy the underlying asset
-- Profits when futures price rises
-- Obligated to accept delivery (unless closed before expiration)
-- Initial margin required
+Like options, most traders unwind positions by making offsetting trades rather than holding positions to expiration.  For example, a corn farmer might sell a corn futures contract at the price of $5.00 per bushel.  The farmer can deliver on the contract and receive $5.00.  However, the farmer could instead sell the contract at the market futures price, which will be near the spot price when the contract is near expiration.  Suppose for example that the spot price of corn is near $4.00 per bushel near the contract's expiration.  Then the futures price will be also be near $4.00.  As an alternative to delivering on the futures contract at $5.00, the farmer could instead sell the futures contract at $4.00, canceling the delivery obligation.  In this scenario, the farmer makes $1.00 per bushel from selling the contract at $5.00 and buying it at $4.00.  The farmer can then sell her corn in the spot market for $4.00.  Combined with the $1.00 profit on the futures contract, the net proceeds for the farmer are again $5.00 per bushel.  The fact that futures prices must be near spot prices at expiration is called **spot-futures convergence**.  It results from the simple fact that a futures contract for delivery in the very near term is essentially the same as a spot contract.  
 
-**Short Position**: Agreement to sell the underlying asset  
-- Profits when futures price falls
-- Obligated to make delivery (unless closed before expiration)
-- Initial margin required
+The delivery terms on futures contracts are standardized and specified by the exchange.  The exchange designates a delivery location and a delivery date.  The exchange also specifies the quantity and quality of the underlying asset that must be delivered.  The specifications of the [corn futures contract on the CME](https://www.cmegroup.com/markets/agriculture/grains/corn.contractSpecs.html) gives a good sense for how this works.
 
-Unlike options, both parties to a futures contract have obligations, not rights.
+Some futures contracts are **cash settled**.  For such contracts, there are no provisions for physical delivery.  Instead, contracts that are held to expiration are settled based a formula tied to an underlying asset at the time of expiration.  For example, the [e-mini S&P 500 futures contract at the CME](https://www.cmegroup.com/markets/equities/sp/e-mini-sandp500.contractSpecs.html) is cash settled.  The contract is settled based on the value of the S&P 500 index at the time of expiration.  This eliminates the need to deliver or receive delivery of the 500 stocks that make up the index.  The "quantity" specification for cash settled contracts is a **multiplier** that determines the dollar value of a contract.  The e-mini S&P 500 contract has a multiplier of 50 dollars per unit of the index.  If someone buys a contract at a futures price of 6000 and holds to expiration and the index is at 6500 on the expiration date, then that trader makes 50 $\,\times\,$ (6500 - 6000) $\,=\,$ 250,000 dollars profit on the trade.
 
-#### Physical vs. Cash Settlement
+Futures contracts in the modern sense began trading in the United States in 1851, but cash-settled contracts did not begin trading until 1981.^[Millo, Y., 2007, "Making Things Deliverable: The Origins of Index-Based Derivatives", *Sociological Review*, vol. 55.]  Part of the complication with introducing cash-settled contracts is that they blur the line between trading and gambling.  The buyer and seller of an S&P 500 futures contract are clearly betting on how the S&P 500 index will perform.  The buyer wins if the index finishes above the futures price, and the seller wins otherwise.  There are other cash settled contracts that do not even involve an underlying asset.  For example, there are weather contracts that are cash settled based on the number of heating degree days in a particular time frame.  The distinction that has been drawn between legal trading of cash-settled futures contracts and possibly illegal gambling is that futures contracts must satisfy legitimate risk-management needs of the part of some market participants.  For example, a fund manager who wants to reduce her stock market exposure at a minimal trading cost can sell S&P 500 futures contracts to hedge the fund's stock portfolio.  
 
-**Physical Settlement**: Actual delivery of the underlying asset
-- Common for commodities (agricultural products, metals, energy)
-- Delivery occurs at exchange-designated locations
-- Most contracts are closed before delivery
-
-**Cash Settlement**: Payment of cash difference between futures and spot prices
-- Used for financial futures (stock indices, interest rates)
-- No physical asset changes hands
-- Settlement price typically based on underlying index value
 
 ## Marking to Market
 
@@ -55,49 +39,49 @@ One of the most distinctive features of futures trading is the **daily settlemen
 
 #### The Daily Settlement Process
 
-**End-of-Day Valuation**: Each trading day, the exchange establishes a **settlement price** (typically close to the closing price) for each futures contract. All open positions are marked to this price.
+*End-of-Day Valuation*: Each trading day, the exchange establishes a *settlement price* (typically close to the closing price) for each futures contract. All open positions are marked to this price.
 
-**Variation Margin**: The daily profit or loss on each position is calculated and immediately transferred between accounts:
-- **Profit**: Credited to the trader's margin account
-- **Loss**: Debited from the trader's margin account
+*Variation Margin*: The daily profit or loss on each position is calculated and immediately transferred between accounts:
+- *Profit*: Credited to the trader's margin account
+- *Loss*: Debited from the trader's margin account
 
-**Example**: Suppose you buy one S&P 500 futures contract at 4,000:
+*Example*: Suppose you buy one S&P 500 futures contract at 4,000:
 - Day 1: Settlement price = 4,010 → Gain = (4,010 - 4,000) × $50 = $500 (credited to your account)
 - Day 2: Settlement price = 3,990 → Loss = (3,990 - 4,010) × $50 = $1,000 (debited from your account)
 - Day 3: Settlement price = 4,020 → Gain = (4,020 - 3,990) × $50 = $1,500 (credited to your account)
 
 #### Margin Requirements
 
-**Initial Margin**: Deposit required to open a futures position
+*Initial Margin*: Deposit required to open a futures position
 - Typically 3-12% of contract value (much lower than stock margin)
 - Provides leverage but amplifies risk
 - Set by exchanges based on volatility and risk assessment
 
-**Maintenance Margin**: Minimum account balance required to keep position open
+*Maintenance Margin*: Minimum account balance required to keep position open
 - Usually 75-80% of initial margin
 - If account falls below maintenance margin, a **margin call** occurs
 
-**Margin Call Process**:
+*Margin Call Process*:
 1. Account balance falls below maintenance margin
 2. Trader must deposit additional funds (variation margin) to restore account to initial margin level
 3. If trader fails to meet margin call, position is liquidated
 
 #### Why Marking to Market Works
 
-**Eliminates Credit Risk**: Daily settlement ensures that losers pay winners immediately, preventing the accumulation of large credit exposures.
+*Eliminates Credit Risk*: Daily settlement ensures that losers pay winners immediately, preventing the accumulation of large credit exposures.
 
-**Enables Leverage**: Because credit risk is minimized, exchanges can offer high leverage ratios that would be impossible in other markets.
+*Enables Leverage*: Because credit risk is minimized, exchanges can offer high leverage ratios that would be impossible in other markets.
 
-**Price Transparency**: Daily marking provides continuous price discovery and ensures that futures prices reflect current market conditions.
+*Price Transparency*: Daily marking provides continuous price discovery and ensures that futures prices reflect current market conditions.
 
-**Liquidity Enhancement**: Reduced counterparty risk attracts more participants, increasing market liquidity.
+*Liquidity Enhancement*: Reduced counterparty risk attracts more participants, increasing market liquidity.
 
-#3 The Expectations Hypothesis
+## The Expectations Hypothesis
 
-The **expectations hypothesis** states that futures prices represent the market's unbiased expectation of future spot prices. Mathematically, this can be written as:
-$$F = E[S_T]$$
+The expectations hypothesis states that futures prices represent the market's unbiased expectation of future spot prices. Mathematically, this can be written as:
+$$F = \mathbb{E}[S_T]$$
 
-Where $E[S_T]$ is the expected spot price at the futures expiration date $T$.  This is a convenient hypothesis, because, if true, then futures prices provide a readily observable measure of the market's expectations for future spot prices.
+Where $\mathbb{E}[S_T]$ is the expected spot price at the futures expiration date $T$.  This is a convenient hypothesis, because, if true, then futures prices provide a readily observable measure of the market's expectations for future spot prices.
 
 The motivation for the expectations hypothesis is the idea that, if the futures price were lower than the expected spot price, then traders "should" buy the futures contract and plan to sell the spot asset when delivered on the futures at maturity.  This strategy has a positive expected profit when the futures price is lower than the expected spot price.  This buying activity should drive up the price of the futures contract, until it converges to the expected spot price.  Symmetrically, investors "should" sell the futures if its price is above the expected spot price, planning to buy the spot asset at the futures maturity to cover the delivery obligation on the futures, and this selling activity should cause the futures price to fall, until it converges to the expected spot price.  Thus, in equilibrium, futures prices "should" equal the expected spot price. 
 
@@ -105,15 +89,31 @@ All of the quotation marks around "should" in the previous paragraph reflect the
 
 ## Spot-Futures Parity
 
-In contrast to the expectations hypothesis, which predicts a relationship between today's futures price and the expected future spot price, **spot-futures parity** is a relationship between today's futures price and today's spot price.  The foundation for spot-futures parity is arbitrage activity (making riskless profits) rather than making positive expected return but risky investments (as for the expectations hypothesis).
+In contrast to the expectations hypothesis, which predicts a relationship between today's futures price and the expected future spot price, **spot-futures parity** is a relationship between today's futures price and today's spot price.  The foundation for spot-futures parity is arbitrage activity (making riskless profits) rather than making positive expected return but risky investments (as for the expectations hypothesis).  The arbitrage can be viewed as creating a synthetic futures using the spot asset.  
+
+On a long futures contract, we receive the underlying asset and pay for it at a later date.  The synthetic version of this is to borrow enough money to buy the spot asset, store the spot asset until the future date and then repay the loan at that date.  On both the actual and synthetic futures, the asset is owned at the future date and payment is made at the future date.  
+
+On a short futures contract, we deliver the underlying asset and receive payment for it at a later date.    The synthetic version of this is to borrow the underlying asset, sell it, and deposit the funds received.  At the future date, we can deliver the asset to whomever we borrowed it from.  At that date, we will deliver and we have cash (the proceeds from selling plus interest), mirroring the actual short futures.  
+
+There are four issues to consider in equating the synthetic futures to the actual futures.  These are commonly grouped into two categories:
+
+- *Cost of carry*: 
+  - The cost of carry is the cost of holding the spot asset over a period of time.  It has two components.
+  - If we own spot, it ties up money, and we incur an opportunity cost of the foregone interest that could be earned by depositing the tied-up funds instead.  This shows up in the synthetic futures as the interest expense on the loan in the synthetic long futures and as the interest earned on the deposit in the synthetic short futures.
+  - There can be significant storage costs involved in owning spot commodities.  This is the second component of the cost of carry.  It shows up in the synthetic futures as an expense for the synthetic long futures and as an expense of which we relieve the original owner when we borrow the spot asset in the synthetic short futures. 
+- *Convenience yield:
+  - There can also be advantages to owning the spot asset.  These advantages are called the convenience yield
+  - If the underlying asset pays dividends or other cash flows, then 
+  
+  The cost ofinterest. This opportunity cost of foregone interest is part of the cost of carry.  store it until the future date and then repay the loan at that date.  On both the actual and synthetic futures, the asset is owned at the future date and payment is made at the future date.  
 
 #### The Basic Parity Relationship
 
 For a futures contract on an asset that does not pay dividends and has no storage costs, spot-futures parity states that
 
-$$F = S e^{rT}$$
+$$F = S \e^{rT}$$
 
-where $F=\,$ futures price, $S=\,$ current spot price, $r=\,$ isk-free interest rate, and $T=\,$ time to expiration.
+where $F=\,$ futures price, $S=\,$ current spot price, $r=\,$ risk-free interest rate, and $T=\,$ time to expiration.
 
 This is an arbitrage relationship, meaning that, if it were not true, then there would be an arbitrage opportunity.  Consider two strategies with identical payoffs at time $T$:
 
@@ -123,11 +123,11 @@ This is an arbitrage relationship, meaning that, if it were not true, then there
 
 - Strategy B: Buy underlying asset, finance with borrowing
   - Cost today: $S - S = 0$ (borrow $S$ to buy asset worth $S$)  
-  - Payoff at $T$: $S_T - Se^{rT}$ (asset value minus loan repayment)
+  - Payoff at $T$: $S_T - S\e^{rT}$ (asset value minus loan repayment)
 
-Both strategies have zero cost at initiation and pay the underlying asset value at the futures maturity less *an amount known at strategy initiation*.  There is an arbitrage opportunity if these amounts differ, so it must be that they are the same; that is,  $F = Se^{rT}$.
+Both strategies have zero cost at initiation and pay the underlying asset value at the futures maturity less *an amount known at strategy initiation*.  There is an arbitrage opportunity if these amounts differ, so it must be that they are the same; that is,  $F = S\e^{rT}$.
 
-The spot-futures-parity formula holds for all maturities $T$.  By varying $T$, we obtain a formula for how futures prices should vary with the contract maturity.  The relationship between the contract maturity and the futures price is known as the **forward curve**.  @fig:gold_forward_curve presents the gold forward curve at a single point in time.  The upward slope reflects the fact that the future value factor $e^{rT}$ is larger for larger $T$.  Because gold pays no dividends and has negligible storage costs, and because interest rates are positive, the gold forward curve is always upward sloping, reflecting the interest rate.
+The spot-futures-parity formula holds for all maturities $T$.  By varying $T$, we obtain a formula for how futures prices should vary with the contract maturity.  The relationship between the contract maturity and the futures price is known as the **forward curve**.  @fig:gold_forward_curve presents the gold forward curve at a single point in time.  The upward slope reflects the fact that the future value factor $\e^{rT}$ is larger for larger $T$.  Because gold pays no dividends and has negligible storage costs, and because interest rates are positive, the gold forward curve is always upward sloping, reflecting the interest rate.
 
 In the gold example, the interest rate is the **cost of carry**.  This is the cost of holding gold - it is the opportunity cost of having money tied up in gold rather than invested in interest-bearing assets.  As we discuss below, storage costs are another important component of the cost of carry for commodities.  
 
@@ -137,24 +137,24 @@ For an asset that generates cash flows - for example, dividends - the futures co
 
 The spot-futures-parity formula for a dividend-paying asset is:
 
-$$F = (S - PV(\text{Dividends}))e^{rT}$$
+$$F = (S - PV(\text{Dividends}))\e^{rT}$$
 
 The derivation of this formula is again by arbitrage with the same two strategies as above.  The only difference is that in Strategy B, the trader will have the dividends (plus interest on the dividends) in addition to the value of the spot asset available to repay the loan, so the payoff at $T$ is 
-$$S_T + FV(\text{Dividends}) - Se^{rT} \,.$$
+$$S_T + FV(\text{Dividends}) - S\e^{rT} \,.$$
 
 Assuming the future value of the dividends can be predicted at strategy initiation, the same arbitrage logic as before implies that 
 
-$$F = S e^{rT}- FV(\text{Dividends}) = (S- \text{PV}(\text{Dividends}))e^{rT}\,.$$
+$$F = S \e^{rT}- FV(\text{Dividends}) = (S- \text{PV}(\text{Dividends}))\e^{rT}\,.$$
 
 This relationship is very useful for understanding futures contracts on currencies, stock indices, and the like.  We can usually approximate the dividend payments as being paid continuously at a known rate
 **Commodities with Storage Costs**:
-$$F = Se^{(r+c)T}$$
+$$F = S\e^{(r+c)T}$$
 
 Where $c$ = storage cost rate. Storage costs increase the futures price because they represent an additional carrying cost.
 
 **Convenience Yield**:
 For commodities, there may be benefits to physical ownership (convenience yield $y$):
-$$F = Se^{(r+c-y)T}$$
+$$F = S\e^{(r+c-y)T}$$
 
 Convenience yield can make futures prices lower than the basic cost-of-carry model predicts.
 
@@ -162,105 +162,45 @@ Convenience yield can make futures prices lower than the basic cost-of-carry mod
 #### Incorporating Dividends and Storage Costs
 
 **Dividend-Paying Assets**:
-$$F = (S - PV(\text{Dividends}))e^{rT}$$
+$$F = (S - PV(\text{Dividends}))\e^{rT}$$
 
 Expected dividends reduce the futures price because futures holders don't receive dividend payments.
 
 **Commodities with Storage Costs**:
-$$F = Se^{(r+c)T}$$
+$$F = S\e^{(r+c)T}$$
 
 Where $c$ = storage cost rate. Storage costs increase the futures price because they represent an additional carrying cost.
 
 **Convenience Yield**:
 For commodities, there may be benefits to physical ownership (convenience yield $y$):
-$$F = Se^{(r+c-y)T}$$
+$$F = S\e^{(r+c-y)T}$$
 
 Convenience yield can make futures prices lower than the basic cost-of-carry model predicts.
 
 #### Arbitrage When Parity Is Violated
 
-**If $F > Se^{rT}$ (Futures overpriced)**:
+*If $F > S\e^{rT}$ (Futures overpriced)*:
 1. Sell futures contract
 2. Buy underlying asset  
 3. Finance purchase by borrowing $S$
-4. At expiration: Deliver asset against futures, collect $F$, repay loan $Se^{rT}$
-5. Risk-free profit: $F - Se^{rT}$
+4. At expiration: Deliver asset against futures, collect $F$, repay loan $S\e^{rT}$
+5. Risk-free profit: $F - S\e^{rT}$
 
-**If $F < Se^{rT}$ (Futures underpriced)**:
+*If $F < S\e^{rT}$ (Futures underpriced)*:
 1. Buy futures contract
 2. Sell underlying asset short
 3. Invest proceeds $S$ at risk-free rate
 4. At expiration: Take delivery via futures, return borrowed asset, collect investment proceeds
-5. Risk-free profit: $Se^{rT} - F$
+5. Risk-free profit: $S\e^{rT} - F$
 
 #### Practical Considerations
 
-**Transaction Costs**: Reduce arbitrage opportunities and create a **no-arbitrage band** around theoretical parity.
+*Transaction Costs*: Reduce arbitrage opportunities and create a no-arbitrage band around theoretical parity.
 
-**Borrowing vs. Lending Rates**: Different rates for borrowing and lending create wider no-arbitrage bands.
+*Borrowing vs. Lending Rates*: Different rates for borrowing and lending create wider no-arbitrage bands.
 
-**Delivery Options**: Many futures contracts give the short party choices about delivery timing, location, or grade, making exact parity calculations complex.
+*Delivery Options*: Many futures contracts give the short party choices about delivery timing, location, or grade, making exact parity calculations complex.
 
-## The Expectations Hypothesis
-
-The **expectations hypothesis** proposes that futures prices represent the market's unbiased expectation of future spot prices. This theory attempts to explain how futures prices relate to expected future spot prices, though empirical evidence provides mixed support.
-
-#### The Basic Expectations Hypothesis
-
-$$F = E[S_T]$$
-
-Where $E[S_T]$ is the expected spot price at the futures expiration date $T$.
-
-Under this hypothesis:
-- Futures markets are purely informational, aggregating diverse opinions about future prices
-- No risk premium is embedded in futures prices
-- Futures prices should be unbiased predictors of future spot prices
-
-#### Backwardation vs. Contango
-
-**Backwardation**: Futures prices below expected future spot prices
-- $F < E[S_T]$
-- Hedgers are net short, speculators are net long
-- Speculators earn risk premium for bearing price risk
-
-**Contango**: Futures prices above expected future spot prices  
-- $F > E[S_T]$
-- Hedgers are net long, speculators are net short
-- Hedgers pay risk premium to transfer price risk
-
-**Example**: Agricultural commodities often exhibit seasonal patterns:
-- Post-harvest: Abundant supply, low spot prices, futures in contango
-- Pre-harvest: Low inventory, high spot prices, futures in backwardation
-
-#### The Theory of Storage
-
-The **theory of storage** explains futures price patterns for storable commodities:
-
-**High Inventory Periods**:
-- Storage is costly, convenience yield is low
-- Futures prices exceed spot prices (contango)
-- Market expects lower future prices as new supply arrives
-
-**Low Inventory Periods**:
-- Storage provides high convenience yield
-- Spot prices exceed futures prices (backwardation)  
-- Market fears supply shortages
-
-#### Modern Portfolio Theory Perspective
-
-Modern finance theory suggests that futures prices should include risk premiums related to systematic risk:
-
-$$F = E[S_T] - \text{Risk Premium}$$
-
-**Risk Premium Determinants**:
-- Correlation between commodity returns and market portfolio
-- Systematic risk of the underlying asset
-- Risk aversion of market participants
-
-**Empirical Evidence**:
-- Mixed support for pure expectations hypothesis
-- Some commodities show persistent backwardation or contango
-- Risk premiums appear to vary over time and across commodities
 
 ## Options on Futures
 
@@ -268,25 +208,25 @@ Many exchanges offer **options on futures contracts**, creating a derivative on 
 
 #### Contract Specifications
 
-**Call Option on Futures**: Right to buy a futures contract at a specified strike price
+*Call Option on Futures*: Right to buy a futures contract at a specified strike price
 - Exercise creates a long futures position at the strike price
 - Immediate mark-to-market profit/loss upon exercise
 
-**Put Option on Futures**: Right to sell a futures contract at a specified strike price
+*Put Option on Futures*: Right to sell a futures contract at a specified strike price
 - Exercise creates a short futures position at the strike price
 - Immediate mark-to-market profit/loss upon exercise
 
 #### Exercise and Settlement
 
-**American-Style**: Most options on futures can be exercised any time before expiration
+*American-Style*: Most options on futures can be exercised any time before expiration
 
-**Exercise Process**:
+*Exercise Process*:
 1. Option holder notifies broker of exercise decision
 2. Clearinghouse assigns exercise to a random short option holder
 3. Assigned option writer receives a futures position
 4. Both parties receive immediate mark-to-market settlement
 
-**Example**: Crude oil futures trading at $80, holder exercises $75 call:
+*Example*: Crude oil futures trading at $80, holder exercises $75 call:
 - Call holder receives long futures position at $75
 - Immediate credit: $(80 - 75) × 1,000 = $5,000$ per contract
 - Option writer receives short futures position at $75
@@ -295,41 +235,41 @@ Many exchanges offer **options on futures contracts**, creating a derivative on 
 
 #### Strategic Applications
 
-**Hedging Futures Positions**:
+*Hedging Futures Positions*:
 - Long futures + long put = Limited downside, unlimited upside
 - Short futures + long call = Limited downside, unlimited upside
 
-**Speculation with Limited Risk**:
+*Speculation with Limited Risk*:
 - Buy calls/puts instead of futures to limit maximum loss to premium
 - Leverage benefits of futures with risk management of options
 
-**Spread Trading**:
+*Spread Trading*:
 - Calendar spreads using options on different expiration futures
 - Volatility trading using straddles and strangles
 
 #### Advantages Over Options on Spot Assets
 
-**Leverage**: Futures provide inherent leverage, amplifying option sensitivity
+*Leverage*: Futures provide inherent leverage, amplifying option sensitivity
 
-**Liquidity**: Major futures markets often more liquid than spot markets
+*Liquidity*: Major futures markets often more liquid than spot markets
 
-**No Storage Costs**: Options on financial futures avoid physical storage issues
+*No Storage Costs*: Options on financial futures avoid physical storage issues
 
-**Extended Trading Hours**: Many futures markets trade nearly 24 hours
+*Extended Trading Hours*: Many futures markets trade nearly 24 hours
 
-**Mark-to-Market**: Immediate settlement reduces counterparty risk
+*Mark-to-Market*: Immediate settlement reduces counterparty risk
 
 ## Futures Markets in the Modern Economy
 
 Futures markets serve several crucial economic functions beyond simple speculation:
 
-**Price Discovery**: Aggregating information from diverse market participants to establish forward-looking prices
+*Price Discovery*: Aggregating information from diverse market participants to establish forward-looking prices
 
-**Risk Management**: Enabling producers, consumers, and investors to hedge price risks
+*Risk Management*: Enabling producers, consumers, and investors to hedge price risks
 
-**Market Efficiency**: Facilitating arbitrage that links spot and futures markets
+*Market Efficiency*: Facilitating arbitrage that links spot and futures markets
 
-**Capital Efficiency**: Providing leverage and liquidity that enhance capital allocation
+*Capital Efficiency*: Providing leverage and liquidity that enhance capital allocation
 
 ## Hedging with Options vs Futures
 
@@ -339,89 +279,40 @@ When facing price risk, market participants often choose between futures contrac
 
 Consider an oil refiner who needs to purchase crude oil three months from now to produce gasoline. The refiner faces the risk that crude oil prices will rise, increasing production costs and potentially reducing profit margins. Two primary hedging strategies are available:
 
-**Strategy 1: Buy Crude Oil Futures**
+*Strategy 1: Buy Crude Oil Futures*
 - Lock in today's futures price for delivery in three months
 - Completely eliminate price risk
 - No additional cost beyond margin requirements
 
-**Strategy 2: Buy Call Options on Crude Oil Futures**  
+*Strategy 2: Buy Call Options on Crude Oil Futures*  
 - Establish a maximum purchase price (strike price)
 - Retain the ability to benefit if prices fall
 - Pay an upfront premium for this flexibility
 
 ### The Problem of Ex-Post Regret
 
-The fundamental trade-off between these strategies becomes apparent when we consider **ex-post regret** - the retrospective evaluation of hedging decisions after outcomes are known.
+The fundamental trade-off between these strategies becomes apparent when we consider ex-post regret - the retrospective evaluation of hedging decisions after outcomes are known.
 
-**Futures Hedging and Regret**:
+*Futures Hedging and Regret*:
 When a refiner uses futures to lock in crude oil prices, perfect price certainty is achieved. However, this certainty comes with the psychological cost of regret when market conditions move favorably:
 
-- **If crude prices rise**: The refiner feels satisfied with the hedge, having avoided higher costs
-- **If crude prices fall**: The refiner experiences regret, knowing they could have purchased oil at lower market prices without the hedge
+- *If crude prices rise*: The refiner feels satisfied with the hedge, having avoided higher costs
+- *If crude prices fall*: The refiner experiences regret, knowing they could have purchased oil at lower market prices without the hedge
 
 This regret is not merely psychological - it represents real economic opportunity cost. The futures hedge prevented the refiner from capitalizing on favorable price movements.
 
-**Options Hedging and Asymmetric Outcomes**:
+*Options Hedging and Asymmetric Outcomes*:
 Call options on futures provide a fundamentally different risk profile:
 
-- **If crude prices rise above the strike**: Exercise the option and purchase at the predetermined strike price, similar to the futures outcome
-- **If crude prices fall below the strike**: Let the option expire and purchase at the lower market prices
+- *If crude prices rise above the strike*: Exercise the option and purchase at the predetermined strike price, similar to the futures outcome
+- *If crude prices fall below the strike*: Let the option expire and purchase at the lower market prices
 
 The option strategy eliminates regret from favorable price movements while maintaining protection against adverse moves. However, this flexibility requires paying the option premium upfront.
-
-### Quantifying the Trade-Off
-
-The choice between futures and options hinges on the relative costs and benefits:
-
-**Futures Advantages**:
-- No upfront premium cost
-- Complete price certainty
-- No time decay concerns
-- High liquidity in major markets
-
-**Options Advantages**:
-- Asymmetric risk profile (limited downside, unlimited upside)
-- Elimination of regret from favorable price movements  
-- Flexibility to participate in beneficial market moves
-- Preservation of competitive advantages when input costs fall
-
-**Options Disadvantages**:
-- Upfront premium cost that may not be recovered
-- Time decay reduces option value over time
-- Complex pricing dependent on volatility and other factors
-- May provide no benefit if markets move unfavorably
-
-### When to Choose Each Strategy
-
-**Futures are Optimal When**:
-- Budget certainty is paramount (e.g., fixed-price customer contracts)
-- Risk tolerance is low and any price uncertainty is unacceptable
-- Option premiums are expensive relative to expected volatility
-- The hedger has strong directional views about future price movements
-
-**Options are Optimal When**:
-- The hedger wants to maintain upside potential
-- Competitive dynamics reward flexibility in input costs
-- Option premiums are reasonable relative to the protection provided
-- The hedger cannot tolerate the regret associated with missed opportunities
 
 ### Portfolio Considerations
 
 In practice, sophisticated hedgers often combine both approaches:
 
-**Partial Hedging**: Use futures to hedge a baseline amount and options for additional protection
-**Time-Varying Strategies**: Adjust the futures-to-options ratio based on market conditions and premium levels
-**Strike Selection**: Choose option strikes that balance premium costs with desired protection levels
-
-### Market Efficiency Implications
-
-The availability of both futures and options markets enhances overall market efficiency by:
-
-- Accommodating different risk preferences and hedging needs
-- Providing price discovery for both expected values (futures) and volatility (options)
-- Enabling more precise risk management tailored to specific business requirements
-- Creating opportunities for arbitrage that link futures and options prices
-
-The oil refinery example illustrates broader principles applicable across commodity and financial markets. Whether hedging currency exposure, interest rate risk, or agricultural price volatility, the fundamental choice between certainty (futures) and flexibility (options) remains central to effective risk management strategy.
-
-Understanding these markets and their relationships to spot prices, expectations, and options provides essential foundation for derivatives pricing and risk management in modern finance.
+*Partial Hedging*: Use futures to hedge a baseline amount and options for additional protection
+*Time-Varying Strategies*: Adjust the futures-to-options ratio based on market conditions and premium levels
+*Strike Selection*: Choose option strikes that balance premium costs with desired protection levels
