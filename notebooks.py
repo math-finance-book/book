@@ -2,7 +2,7 @@ import os
 import json
 import subprocess
 
-subprocess.run("rm ../book-published-code/*.ipynb")
+# subprocess.run("rm ../book-published-code/*.ipynb")
 
 nocode = ["Arbitrage"]
 nocode = ["Chapter_" + f + ".qmd" for f in nocode]
