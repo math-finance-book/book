@@ -2,6 +2,7 @@ import os
 import json
 import subprocess
 
+subprocess.run("rm ../book-published-code/*.ipynb")
 
 nocode = ["Arbitrage"]
 nocode = ["Chapter_" + f + ".qmd" for f in nocode]
@@ -62,7 +63,7 @@ for chapter, notebook_in, notebook_out in zip(chapters, notebooks_in, notebooks_
         js['cells'].insert(0, new_cell)
         with open("../book-published-code/" + notebook_out, 'w') as f:
             json.dump(js, f, indent=2)    
-        subprocess.run("del " + notebook_in, shell=True, check=True)
+        subprocess.run("rm " + notebook_in, shell=True, check=True)
 
 subprocess.run("git -C ../book-published-code pull origin main", shell=True, check=True)
 subprocess.run("git -C ../book-published-code add .", shell=True, check=True)
