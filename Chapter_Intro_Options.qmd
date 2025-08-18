@@ -16,7 +16,7 @@ display(
 
 # Options Markets {#sec-c:options} 
 
-Options are among the most actively traded financial instruments in the world, with billions of contracts changing hands annually across global exchanges. These versatile contracts provide investors with tools for speculation, hedging, and income generation that are impossible to replicate with stocks and bonds alone.
+Options are among the most actively traded financial instruments in the world, with billions of contracts changing hands annually across global exchanges. These versatile contracts provide investors with tools for speculation, hedging, and income generation that are impossible to replicate with assets and bonds alone.
 
 This chapter provides an introduction to the mechanics and motives for trading options. Recall from @sec-c:introderivatives that a **call option** is the right to buy an underlying asset at a fixed price called the strike or strike price. Symmetrically, a **put option** is the right to sell an underlying asset at the strike price. The **underlying asset** can be a stock, index, exchange-traded fund (ETF), commodity, or other financial instrument. The buyer of an option pays the seller upfront for the right to exercise the option later, at the buyer's discretion.
 
@@ -41,7 +41,7 @@ An option buyer pays the premium upfront.  Subsequently, the buyer has rights (t
 
 In more detail, the motivations for trading options are:
 
-- *Speculation and Leverage*: One motive for buying options is to speculate on price movements with higher leverage than direct stock ownership. A small price change in the underlying can produce large percentage changes in option value, amplifying both potential gains and losses.
+- *Speculation and Leverage*: One motive for buying options is to speculate on price movements with higher leverage than direct ownership of the underlying asset. A small price change in the underlying can produce large percentage changes in option value, amplifying both potential gains and losses.
 - *Hedging and Insurance*: Options serve as insurance contracts for existing positions. For example, owning a protective put on your stock holdings limits downside risk, much like buying car insurance protects against accident costs. The option premium represents the insurance cost for this protection.
 - *Income Generation*: Option sellers collect premiums upfront, similar to insurance companies collecting policy premiums. However, this income comes with obligations and potential risks if the market moves against the seller's position.
 
@@ -158,7 +158,7 @@ Understanding option payoffs is fundamental to options trading. A **payoff diagr
 
 #### Long Call
 
-A long call position benefits from rising stock prices. The maximum loss is limited to the premium paid, while the potential profit is unlimited. The breakeven point is at the strike price plus the premium.
+A long call position benefits if the underlying asset does well. The maximum loss is limited to the premium paid, while the potential profit is unlimited. The breakeven point is at the strike price plus the premium.
 
 ```{python}
 #| label: fig-long-call
@@ -225,7 +225,7 @@ fig.show()
 
 #### Long Put
 
-A long put position benefits from falling stock prices. Like the long call, the maximum loss is the premium paid, but the maximum profit is limited (the stock price cannot fall below zero). The breakeven point is at the strike price minus the premium.
+A long put position benefits when the underlying asset does poorly. Like a long call, the maximum loss is the premium paid.  Unlike a long call, the maximum profit of a long put is limited, but it is limited only by the fact that the underlying asset price cannot fall below zero. The breakeven point is at the strike price minus the premium.
 
 ```{python}
 #| label: fig-long-put
@@ -277,7 +277,7 @@ fig.show()
 
 #### Short Call
 
-A short call position (writing a call) benefits from falling or stable stock prices. The maximum profit is the premium received, while the potential loss is unlimited.
+A short call position (writing a call) benefits if the underlying asset does poorly, like a long put.  However, the potential profit and loss of a short call are very different from those of a long put.  The maximum profit is the premium received, while the potential loss is unlimited.
 
 ```{python}
 #| label: fig-short-call
@@ -331,7 +331,7 @@ fig.show()
 
 #### Short Put
 
-A short put position (writing a put) benefits from rising or stable stock prices. The maximum profit is the premium received, while the maximum loss occurs if the stock price falls to zero (loss = strike price - premium).
+A short put position (writing a put) benefits if the underlying asset does well, like a long call.  But, the profit and loss possibilities for a short put are very different from those of a long call. The maximum profit is the premium received, while the maximum loss occurs if the underlying asset price falls to zero (loss = strike price - premium).
 
 ```{python}
 #| label: fig-short-put
@@ -405,7 +405,7 @@ The payoff of a portfolio is the sum of the payoffs of its constituent positions
 #### Protective Put
 
 A protective put combines a long position in the underlying asset with a long put option. 
-The protective put acts like insurance for a stock position. The value of the portfolio at maturity is always at least the put strike price, because the asset can be delivered in exchange for the strike by exercising the put.This strategy provides downside protection while maintaining upside potential.
+The protective put acts like insurance for a long position in the underlying asset. The value of the portfolio at maturity is always at least the put strike price, because the asset can be delivered in exchange for the strike by exercising the put.This strategy provides downside protection while maintaining upside potential.
 
 ```{python}
 #| label: fig-protective-put
@@ -414,22 +414,22 @@ The protective put acts like insurance for a stock position. The value of the po
 #| out-width: "100%"
 
 # Parameters for all strategies
-S0 = 100  # Current stock price
+S0 = 100  # Current asset price
 K_put = 95   # Put strike
 K_call = 105 # Call strike (for other strategies)
 put_premium = 3
 call_premium = 2
 
 S = np.arange(161)
-# Protective put: Long stock + Long put
-stock_payoff = S  # Stock value at maturity
+# Protective put: Long asset + Long put
+asset_payoff = S  # asset value at maturity
 put_payoff = np.maximum(K_put - S, 0)  # Put payoff at maturity
-protective_put_payoff = stock_payoff + put_payoff
+protective_put_payoff = asset_payoff + put_payoff
 
 fig = go.Figure()
 
 # Individual components
-fig.add_trace(go.Scatter(x=S, y=stock_payoff, mode='lines', 
+fig.add_trace(go.Scatter(x=S, y=asset_payoff, mode='lines', 
                         name='Long Underlying Asset', line=dict(color='blue', dash='dot')))
 fig.add_trace(go.Scatter(x=S, y=put_payoff, mode='lines', 
                         name='Long Put', line=dict(color='green', dash='dot')))
@@ -462,7 +462,7 @@ fig.show()
 
 #### Selling Covered Calls
 
-A common option strategy is to sell an out-of-the-money call option on a stock that one owns.  This is called selling a covered call (the risk exposure from writing the call is "covered" by owning the underlying asset).Selling a covered call generates premium income, at the expense of reducing the maximum gain on the stock (it is capped at the call strike).  Whether this turns out to be profitable depends on how high the underlying goes prior to the option maturity - if it goes up sufficiently far, then the trader will regret having sold the call; if it goes up less, or doesn't go up at all, then the trader will be happy to have captured the call premium.   
+A common option strategy is to sell an out-of-the-money call option on an asset that one owns.  This is called selling a covered call (the risk exposure from writing the call is "covered" by owning the underlying asset).Selling a covered call generates premium income, at the expense of reducing the maximum gain on the asset (it is capped at the call strike).  Whether this turns out to be profitable depends on how high the underlying goes prior to the option maturity - if it goes up sufficiently far, then the trader will regret having sold the call; if it goes up less, or doesn't go up at all, then the trader will be happy to have captured the call premium.   
 
 ```{python}
 #| label: fig-covered-call
@@ -471,12 +471,12 @@ A common option strategy is to sell an out-of-the-money call option on a stock t
 #| out-width: "100%"
 
 call_payoff = np.maximum(S - K_call, 0)  # 
-covered_call_payoff = stock_payoff - call_payoff
+covered_call_payoff = asset_payoff - call_payoff
 
 fig = go.Figure()
 
 # Individual components
-fig.add_trace(go.Scatter(x=S, y=stock_payoff, mode='lines', 
+fig.add_trace(go.Scatter(x=S, y=asset_payoff, mode='lines', 
                         name='Long Underlying Asset', line=dict(color='blue', dash='dot')))
 fig.add_trace(go.Scatter(x=S, y=-call_payoff, mode='lines', 
                         name='Short Call', line=dict(color='orange', dash='dot')))
@@ -508,21 +508,22 @@ fig.show()
 
 #### Collar
 
-A collar combines a protective put with selling a covered call. This strategy provides downside protection and pays for some or all of the protection by capping the upside potential.  If the premium received from the call that is sold equals (or, in practice, is approximately equal to) the premium paid for the put, then the collar is called a **zero-cost collar**.
+A collar combines a protective put with selling a covered call. This strategy provides downside protection and pays for some or all of the protection by capping the upside potential.   The portfolio value is limited to a minimum of the put strike and a maximum of the call strike, regardless of how far the underlying asset price moves.  If the premium received from the call that is sold equals (or, in practice, is approximately equal to) the premium paid for the put, then the collar is called a **zero-cost collar**.
 
 ```{python}
 #| label: fig-collar
 #| fig-height: 400
-#| fig-cap: A collar provides a bounded range of values at maturity. The portfolio value is limited to a minimum of the put strike and a maximum of the call strike, regardless of how far the stock price moves.
+#| fig-cap: Payoff diagram of a collar (long the underlying asset, long a put option, and short a call option at a higher strike). 
 #| out-width: "100%"
-# Collar: Long stock + Long put + Short call
+
+# Collar: Long asset + Long put + Short call
 call_payoff = -np.maximum(S - K_call, 0)  # Short call payoff at maturity
-collar_payoff = stock_payoff + put_payoff + call_payoff
+collar_payoff = asset_payoff + put_payoff + call_payoff
 
 fig = go.Figure()
 
 # Individual components
-fig.add_trace(go.Scatter(x=S, y=stock_payoff, mode='lines', 
+fig.add_trace(go.Scatter(x=S, y=asset_payoff, mode='lines', 
                         name='Long Underlying Asset', line=dict(color='blue', dash='dot')))
 fig.add_trace(go.Scatter(x=S, y=put_payoff, mode='lines', 
                         name='Long Put', line=dict(color='green', dash='dot')))
@@ -627,7 +628,8 @@ A bear put spread involves buying a put option and selling another put option wi
 ```{python}
 #| label: fig-bear-spread
 #| fig-height: 400
-#| fig-cap: The bear put spread has a maximum value of (high strike - low strike) when the stock price is at or below the lower strike, and a minimum value of zero when the stock price is at or above the higher strike.
+#| fig-cap: Payoff diagram of a bear put spread (long a put and short a put at a lower strike).
+#| out-width: "100%"
 
 # Bear put spread: Long high-strike put + Short low-strike put
 high_put_premium = 8
@@ -669,7 +671,6 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
@@ -681,7 +682,8 @@ A straddle involves buying both a call and a put option with the same strike pri
 ```{python}
 #| label: fig-straddle
 #| fig-height: 400
-#| fig-cap: A straddle has its minimum value of zero when the stock price equals the strike price at maturity. The value increases as the stock price moves away from the strike in either direction, with no upper limit on potential value.
+#| fig-cap: Payoff diagram of a straddle (long a call and put with the same strike).
+#| out-width: "100%"
 
 # Straddle: Long call + Long put (same strike)
 K_straddle = 100
@@ -721,19 +723,19 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
 
 #### Butterfly Spread
 
-A butterfly spread involves buying options at two different strike prices and selling two options at a middle strike price. This strategy profits when the stock price stays near the middle strike (low volatility).  As with the other spreads we have examined, the payoff is nonnegative, so the trader must pay a net premium to put the position on.
+A butterfly spread involves buying options at two different strike prices and selling two options at a strike price midway between the other two strikes. This strategy profits when the underlying asset price stays near the middle strike (low volatility).  As with the other spreads we have examined, the payoff is nonnegative, so the trader must pay a net premium to put the position on.
 
 ```{python}
 #| label: fig-butterfly
 #| fig-height: 400
-#| fig-cap: The butterfly spread achieves its maximum value when the stock price equals the middle strike at expiration. The value decreases as the stock price moves away from the middle strike, reaching zero when the stock price is at or beyond either outer strike.
+#| fig-cap: Payoff diagram of a butterfly spread (long a call at a low strike, short two calls at a middle strike, and long a call at a high strike, with the middle strike being the average of the low and high strikes.).
+#| out-width: "100%"
 
 # Butterfly spread parameters
 K_low_bf = 90
@@ -787,7 +789,6 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
@@ -816,7 +817,7 @@ When an exchange first introduces a new option series (a specific combination of
 - Day 2: Trader C buys 5 call contracts from Trader D → Open interest = 15  
 - Day 3: Trader E buys 3 call contracts from Trader A (closing A's position) → Open interest = 15 (unchanged)
 
-*Peak Activity*: Open interest typically reaches its peak when the option has several weeks or months remaining until expiration and the strike price is reasonably close to the current stock price. During this phase, the option attracts both speculators and hedgers.
+*Peak Activity*: Open interest typically reaches its peak when the option has several weeks or months remaining until expiration and the strike price is reasonably close to the current price of the underlying asset. During this phase, the option attracts both speculators and hedgers.
 
 *Decline Phase*: As expiration approaches, open interest generally declines for several reasons:
 
@@ -837,7 +838,7 @@ Out-of-the-money options cost significantly less than in-the-money or at-the-mon
 - 20 out-of-the-money calls at $50 each
 
 *2. Speculative Appeal*
-Out-of-the-money options offer the potential for large percentage returns if the underlying stock moves favorably. While the probability of profit may be lower, the potential rewards are proportionally higher, attracting speculative traders.
+Out-of-the-money options offer the potential for large percentage returns if the underlying asset moves favorably. While the probability of profit may be lower, the potential rewards are proportionally higher, attracting speculative traders.
 
 *3. Hedging Applications*
 Portfolio managers often use out-of-the-money puts as portfolio insurance. These **tail risk** hedges provide protection against large market declines while minimizing the cost of insurance premiums.
@@ -851,7 +852,7 @@ When examining options market data, several consistent patterns emerge:
 
 *Strike Price Distribution*: 
 
-- Volume and open interest concentrate in strikes within roughly 10-20% of the current stock price
+- Volume and open interest concentrate in strikes within roughly 10-20% of the current price of the underlying asset
 - Call activity tends to be higher in strikes above the current price
 - Put activity tends to be higher in strikes below the current price
 
@@ -871,27 +872,28 @@ These patterns reflect the diverse motivations of options traders: speculation, 
 
 ## Put-Call Parity
 
-Put-call parity is one of the most important relationships in options pricing. It establishes a precise connection between the prices of European calls, puts, the underlying asset, and risk-free bonds. This relationship must hold to prevent arbitrage opportunities - riskless profit possibilities that would be quickly eliminated by trader activity.
+Put-call parity is one of the most important relationships in option pricing. It establishes a precise connection between the prices of European calls, puts, the underlying asset, and risk-free bonds. This relationship must hold to prevent arbitrage opportunities - riskless profit possibilities that would be quickly eliminated by trader activity.
 
 #### The Put-Call Parity Relationship
 
-For European options on stocks that do not pay dividends prior to option expiry, put-call parity states that:
+For European options on assets that do not pay dividends prior to option expiry, put-call parity states that:
 
 $$\text{Cash} + \text{Call} = \text{Put} + \text{Underlying}$$
 
-More precisely, denote:
+More precisely, 
+
+$$\e^{-rT}K + C = P + S$$
+
+where
 
 - $C$ = price of a European call option
 - $P$ = price of a European put option  
-- $S$ = current price of the underlying stock
+- $S$ = current price of the underlying asset
 - $K$ = strike price (same for both call and put)
 - $r$ = risk-free interest rate
 - $T$ = time to expiration
 
-Then put-call parity requires:
-$$K\e^{-rT} + C = P + S$$
-
-The term $K\e^{-rT}$ represents the present value of the strike price - the amount of cash that, when invested at the risk-free rate, will grow to exactly $K$ at expiration.  Here we are using continuous compounding/discounting, so $\e^{-rT}$ is the discount factor.  This is a common and convenient way to represent discount factors when considering various fractions of a year.  The appropriate discount rate for a particular period can be imputed from the yields of Treasury bonds at nearby maturities.
+The term $\e^{-rT}K$ represents the present value of the strike price - the amount of cash that, when invested at the risk-free rate, will grow to exactly $K$ at expiration.  Here we are using continuous compounding/discounting, so $\e^{-rT}$ is the discount factor.  This is a common and convenient way to represent discount factors when considering various fractions of a year.  The appropriate discount rate for a particular period can be imputed from the yields of Treasury bonds at nearby maturities.
 
 #### Understanding the Economic Logic
 
@@ -905,54 +907,32 @@ The put-call parity relationship reflects the fact that two different portfolios
 *Portfolio B*: Put + Underlying 
 
 - Own a put option with strike $K$
-- Own one share of the underlying stock
+- Own one share of the underlying asset
 
-Let's examine what happens at expiration for any stock price $S_T$:
+Let's examine what happens at expiration for any possible price $S_T$ of the underlying asset:
 
-- *Case 1: Stock price at expiration $S_T > K$*
+- *Case 1: Asset price at expiration $S_T > K$*
   - Portfolio A: Cash grows to $K$, call is worth $(S_T - K)$, total value = $K + (S_T - K) = S_T$
-  - Portfolio B: Put expires worthless, stock is worth $S_T$, total value = $0 + S_T = S_T$
+  - Portfolio B: Put expires worthless, underlying asset is worth $S_T$, total value = $0 + S_T = S_T$
 
-- *Case 2: Stock price at expiration $S_T \leq K$*  
+- *Case 2: Asset price at expiration $S_T \leq K$*  
   - Portfolio A: Cash grows to $K$, call expires worthless, total value = $K + 0 = K$
-  - Portfolio B: Put is worth $(K - S_T)$, stock is worth $S_T$, total value = $(K - S_T) + S_T = K$
+  - Portfolio B: Put is worth $(K - S_T)$, underlying asset is worth $S_T$, total value = $(K - S_T) + S_T = K$
 
 Because both portfolios have identical payoffs in all possible scenarios, they must have the same current value to prevent arbitrage opportunities.
 
-#### Arbitrage Example
-
-Suppose put-call parity is violated. For example, assume:
-
-- Stock price: $S = \$100$
-- Strike price: $K = \$100$  
-- Time to expiration: $T = 0.25$ years (3 months)
-- Risk-free rate: $r = 5\%$
-- Call price: $C = \$6$
-- Put price: $P = \$4$
-
-Then, we have:
-
-- Present value of strike: $K\e^{-rT} = 100\e^{-0.05 \times 0.25} = \$98.76$
-- Put-call parity requires: $98.76 + 6 = 4 + 100$, or $104.76 = 104$
-- Because $104.76 > 104$, the left side is overpriced relative to the right side. An arbitrageur would:
-
-1. *Sell the expensive side*: Sell the call and lend $98.76 at the risk-free rate
-2. *Buy the cheap side*: Buy the put and buy the stock
-3. *Initial cash flow*: $+6 + 98.76 - 4 - 100 = +\$0.76$ (immediate profit!)
-
-At expiration, regardless of the stock price, the arbitrageur can close all positions with zero net cash flow, keeping the initial $0.76 as riskless profit.
 
 #### Practical Implications
 
 Put-call parity has several important applications:
 
-*1. Option Pricing*: If we know the prices of a call, the underlying stock, and the risk-free rate, we can determine what the put price should be (and vice versa).
+*1. Option Pricing*: If we know the prices of a call, the underlying asset, and the risk-free rate, we can determine what the put price should be (and vice versa).
 
 *2. Synthetic Instruments*: We can create synthetic positions:
 
 - Synthetic call: $C = P + S - K\e^{-rT}$  
 - Synthetic put: $P = C - S + K\e^{-rT}$
-- Synthetic stock: $S = C - P + K\e^{-rT}$
+- Synthetic underlying: $S = C - P + K\e^{-rT}$
 
 *3. Conversion and Reversal Strategies*: Professional traders use these synthetic relationships to identify mispriced options and construct arbitrage trades.
 
@@ -961,11 +941,11 @@ Put-call parity has several important applications:
 Put-call parity as stated above applies specifically to:
 
 - *European options* (cannot be exercised before expiration)
-- *Non-dividend-paying stocks* (dividends complicate the relationship)
+- *Non-dividend-paying assets* (dividends complicate the relationship)
 - *Same strike price and expiration* for both call and put
 
-For American options, the put-call parity relation does not always hold, and, for stocks that pay dividends prior to the option's maturity, the present value of expected dividends must be subtracted from the stock price in the parity relationship.
-Despite these limitations, put-call parity is one of the most reliable and useful relationships in options theory, providing a foundation for understanding options pricing and identifying trading opportunities.
+For American options, the put-call parity relation does not always hold, and, for assets that pay dividends prior to the option's maturity, the present value of expected dividends must be subtracted from the asset price in the parity relationship.
+Despite these limitations, put-call parity is one of the most reliable and useful relationships in options theory, providing a foundation for understanding option pricing and identifying trading opportunities.
 
 ## Early Exercise of American Options
 
@@ -981,7 +961,7 @@ Early exercise is optimal when the value is equal to the intrinsic value alone, 
 
 #### American Calls 
 
-For American call options on stocks that pay no dividends prior to the option maturity, early exercise is never optimal. This important result is sometimes stated as "calls are better alive than dead."  It follows from two facts:  
+For American call options on assets that pay no dividends prior to the option maturity, early exercise is never optimal. This important result is sometimes stated as "calls are better alive than dead."  It follows from two facts:  
 
 1.  In financial markets, as in life generally, "keeping your options open" is valuable.  In other words, there is value to the flexibility that an option provides.  This flexibility is lost once it is exercised.
 
