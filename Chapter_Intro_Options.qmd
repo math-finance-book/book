@@ -152,16 +152,19 @@ American options are always worth at least their intrinsic values, because exerc
 
 Prior to expiration, the value of an option is usually larger than its intrinsic value.  This is because there is time remaining for the underlying asset to move in a direction that is favorable for the option holder.  The excess of the value over the intrinsic value is called the option's **time value**.  As time passes and the option approaches expiration, the time value decreases.  This phenomenon is called **time decay**.
 
-## Payoff Diagrams
+## Payoff and ProfitDiagrams
 
 Understanding option payoffs is fundamental to options trading. A **payoff diagram** shows the intrinsic value of an option position as a function of the price of the underlying asset.  This is the value the option position would have at expiration.  A **profit diagram** shows the profit from putting on an option position and holding to maturity as a function of the price of the underlying asset at maturity.  The difference between the profit and the payoff is the premium paid (for long positions) or received (for short positions).  Here are the payoff and profit diagrams for each of the four basic option positions:
 
 #### Long Call
 
+A long call position benefits from rising stock prices. The maximum loss is limited to the premium paid, while the potential profit is unlimited. The breakeven point is at the strike price plus the premium.
+
 ```{python}
 #| label: fig-long-call
 #| fig-height: 400
-#| fig-cap: A long call position benefits from rising stock prices. The maximum loss is limited to the premium paid ($5 in this figure), while the potential profit is unlimited. The breakeven point is at the strike price plus the premium ($105 in this figure).
+#| fig-cap: Payoff and profit diagrams of a long call position (buying a call option), assuming the call premium was $5.00.
+#| out-width: "100%"
 
 import numpy as np
 import plotly.graph_objects as go
@@ -190,7 +193,7 @@ fig.add_trace(go.Scatter(
 fig.add_trace(go.Scatter(
     x=S, y=call_profit,
     mode='lines',
-    name='Profit/Loss',
+    name='Profit or Loss',
     line=dict(color='red', width=2, dash='dash')
 ))
 
@@ -204,7 +207,7 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
 
 # Formatting
 fig.update_layout(
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Payoff or Profit ($)",
     template="plotly_white",
     autosize=True,
@@ -216,18 +219,19 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
 
 #### Long Put
 
+A long put position benefits from falling stock prices. Like the long call, the maximum loss is the premium paid, but the maximum profit is limited (the stock price cannot fall below zero). The breakeven point is at the strike price minus the premium.
+
 ```{python}
 #| label: fig-long-put
 #| fig-height: 400
-#| fig-cap: A long put position benefits from falling stock prices. Like the long call, the maximum loss is the premium paid ($5 in this figure), but the maximum profit is limited (the stock price cannot fall below zero). The breakeven point is at the strike price minus the premium ($95 in this figure).
-
+#| fig-cap: Payoff and profit diagrams of a long put position (buying a put option), assuming the put premium was $5.00.
+#| out-width: "100%"
 # Long put payoff and profit
 put_payoff = np.maximum(K - S, 0)
 put_profit = put_payoff - premium
@@ -246,7 +250,7 @@ fig.add_trace(go.Scatter(
 fig.add_trace(go.Scatter(
     x=S, y=put_profit,
     mode='lines',
-    name='Profit/Loss',
+    name='Profit or Loss',
     line=dict(color='red', width=2, dash='dash')
 ))
 
@@ -256,7 +260,7 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
               annotation_text=f"Strike = ${K}")
 
 fig.update_layout(
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Payoff or Profit ($)",
     template="plotly_white",
     autosize=True,
@@ -268,16 +272,18 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
 #### Short Call
 
+A short call position (writing a call) benefits from falling or stable stock prices. The maximum profit is the premium received, while the potential loss is unlimited.
+
 ```{python}
 #| label: fig-short-call
 #| fig-height: 400
-#| fig-cap: A short call position (writing a call) benefits from falling or stable stock prices. The maximum profit is the premium received ($5 in this figure), while the potential loss is unlimited.
+#| fig-cap: Payoff and profit diagrams of a short call position (writing a call option), assuming the call premium was $5.00.
+#| out-width: "100%"
 
 # Short call payoff and profit (opposite of long call)
 short_call_payoff = -call_payoff
@@ -297,7 +303,7 @@ fig.add_trace(go.Scatter(
 fig.add_trace(go.Scatter(
     x=S, y=short_call_profit,
     mode='lines',
-    name='Profit/Loss',
+    name='Profit or Loss',
     line=dict(color='red', width=2, dash='dash')
 ))
 
@@ -307,7 +313,7 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
               annotation_text=f"Strike = ${K}")
 
 fig.update_layout(
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Payoff or Profit ($)",
     template="plotly_white",
     autosize=True,
@@ -319,20 +325,19 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
 
 #### Short Put
 
+A short put position (writing a put) benefits from rising or stable stock prices. The maximum profit is the premium received, while the maximum loss occurs if the stock price falls to zero (loss = strike price - premium).
+
 ```{python}
 #| label: fig-short-put
 #| fig-height: 400
-#| fig-cap: A short put position (writing a put) benefits from rising or stable stock prices. The maximum profit is the premium received ($5 in this figure), while the maximum loss occurs if the stock price falls to zero (loss = strike price - premium).
+#| fig-cap: Payoff and profit diagrams of a short put position (writing a put option), assuming the put premium was $5.00.
 #| out-width: "100%"
-
-
 
 short_put_payoff = -put_payoff
 short_put_profit = premium - put_payoff
@@ -351,7 +356,7 @@ fig.add_trace(go.Scatter(
 fig.add_trace(go.Scatter(
     x=S, y=short_put_profit,
     mode='lines',
-    name='Profit/Loss',
+    name='Profit or Loss',
     line=dict(color='red', width=2, dash='dash')
 ))
 
@@ -360,7 +365,7 @@ fig.add_vline(x=K, line_dash="dot", line_color="gray",
               annotation_text=f"Strike = ${K}")
 
 fig.update_layout(
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Payoff orProfit ($)",
     template="plotly_white",
     autosize=True,
@@ -399,12 +404,13 @@ The payoff of a portfolio is the sum of the payoffs of its constituent positions
 
 #### Protective Put
 
-A protective put combines a long position in the underlying asset with a long put option. This strategy provides downside protection while maintaining upside potential.
+A protective put combines a long position in the underlying asset with a long put option. 
+The protective put acts like insurance for a stock position. The value of the portfolio at maturity is always at least the put strike price, because the asset can be delivered in exchange for the strike by exercising the put.This strategy provides downside protection while maintaining upside potential.
 
 ```{python}
 #| label: fig-protective-put
 #| fig-height: 400
-#| fig-cap: The protective put acts like insurance for a stock position. The value of the portfolio at maturity is always at least the put strike price, because the asset can be delivered in exchange for the strike by exercising the put.
+#| fig-cap: Payoff diagram of a protective put position (long the underlying asset and long a put option).
 #| out-width: "100%"
 
 # Parameters for all strategies
@@ -424,7 +430,7 @@ fig = go.Figure()
 
 # Individual components
 fig.add_trace(go.Scatter(x=S, y=stock_payoff, mode='lines', 
-                        name='Long Stock', line=dict(color='blue', dash='dot')))
+                        name='Long Underlying Asset', line=dict(color='blue', dash='dot')))
 fig.add_trace(go.Scatter(x=S, y=put_payoff, mode='lines', 
                         name='Long Put', line=dict(color='green', dash='dot')))
 
@@ -440,7 +446,7 @@ fig.add_vline(x=0, line_dash="solid", line_color="black", line_width=1)
 
 fig.update_layout(
     title="Protective Put Strategy",
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", 
     height=400,
@@ -452,41 +458,39 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 #### Selling Covered Calls
 
-A common option strategy is to sell an out-of-the-money call option on a stock that one owns.  This generates premium income, at the expense of reducing the maximum gain on the stock (it is capped at the call strike).  Whether this turns out to be profitable depends on how high the underlying goes prior to the option maturity - if it goes up sufficiently far, then the trader will regret having sold the call; if it goes up less, or doesn't go up at all, then the trader will be happy to have captured the call premium.  The following is the payoff diagram of a portfolio consisting of a long position in the underlying asset and a short call.  
+A common option strategy is to sell an out-of-the-money call option on a stock that one owns.  This is called selling a covered call (the risk exposure from writing the call is "covered" by owning the underlying asset).Selling a covered call generates premium income, at the expense of reducing the maximum gain on the stock (it is capped at the call strike).  Whether this turns out to be profitable depends on how high the underlying goes prior to the option maturity - if it goes up sufficiently far, then the trader will regret having sold the call; if it goes up less, or doesn't go up at all, then the trader will be happy to have captured the call premium.   
 
 ```{python}
 #| label: fig-covered-call
 #| fig-height: 400
-#| fig-cap: Selling covered calls is profitable if the underlying doesn't go up too much before the option expires.
+#| fig-cap: Payoff diagram of a covered call position (long the underlying asset and short a call option).
 #| out-width: "100%"
 
-# Collar: Long stock + Long put + Short call
-call_payoff = -np.maximum(S - K_call, 0)  # Short call payoff at maturity
-collar_payoff = stock_payoff + call_payoff
+call_payoff = np.maximum(S - K_call, 0)  # 
+covered_call_payoff = stock_payoff - call_payoff
 
 fig = go.Figure()
 
 # Individual components
 fig.add_trace(go.Scatter(x=S, y=stock_payoff, mode='lines', 
-                        name='Long Stock', line=dict(color='blue', dash='dot')))
-fig.add_trace(go.Scatter(x=S, y=call_payoff, mode='lines', 
+                        name='Long Underlying Asset', line=dict(color='blue', dash='dot')))
+fig.add_trace(go.Scatter(x=S, y=-call_payoff, mode='lines', 
                         name='Short Call', line=dict(color='orange', dash='dot')))
 
 # Combined strategy
-fig.add_trace(go.Scatter(x=S, y=collar_payoff, mode='lines', 
-                        name='Collar', line=dict(color='red', width=3)))
+fig.add_trace(go.Scatter(x=S, y=covered_call_payoff, mode='lines', 
+                        name='Covered Call', line=dict(color='red', width=3)))
 
 fig.add_vline(x=K_call, line_dash="dot", line_color="gray", 
               annotation_text=f"Call Strike = ${K_call}")
 
 fig.update_layout(
     title="Covered Call Strategy",
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", 
     height=400,
@@ -510,7 +514,7 @@ A collar combines a protective put with selling a covered call. This strategy pr
 #| label: fig-collar
 #| fig-height: 400
 #| fig-cap: A collar provides a bounded range of values at maturity. The portfolio value is limited to a minimum of the put strike and a maximum of the call strike, regardless of how far the stock price moves.
-
+#| out-width: "100%"
 # Collar: Long stock + Long put + Short call
 call_payoff = -np.maximum(S - K_call, 0)  # Short call payoff at maturity
 collar_payoff = stock_payoff + put_payoff + call_payoff
@@ -519,7 +523,7 @@ fig = go.Figure()
 
 # Individual components
 fig.add_trace(go.Scatter(x=S, y=stock_payoff, mode='lines', 
-                        name='Long Stock', line=dict(color='blue', dash='dot')))
+                        name='Long Underlying Asset', line=dict(color='blue', dash='dot')))
 fig.add_trace(go.Scatter(x=S, y=put_payoff, mode='lines', 
                         name='Long Put', line=dict(color='green', dash='dot')))
 fig.add_trace(go.Scatter(x=S, y=call_payoff, mode='lines', 
@@ -537,7 +541,7 @@ fig.add_vline(x=K_call, line_dash="dot", line_color="gray",
 
 fig.update_layout(
     title="Collar Strategy",
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", 
     height=400,
@@ -550,7 +554,6 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
@@ -567,7 +570,8 @@ A bull call spread involves buying a call option and selling another call option
 ```{python}
 #| label: fig-bull-spread
 #| fig-height: 400
-#| fig-cap: The bull call spread has a maximum value of (high strike - low strike) when the stock price is at or above the higher strike, and a minimum value of zero when the stock price is at or below the lower strike.
+#| fig-cap: Payoff diagram of a bull call spread (long a call and short a call at a higher strike).
+#| out-width: "100%"
 
 # Bull call spread parameters
 K_low = 95   # Lower strike (long call)
@@ -600,7 +604,7 @@ fig.add_vline(x=K_high, line_dash="dot", line_color="gray",
 
 fig.update_layout(
     title="Bull Call Spread",
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", 
     height=400,
@@ -612,7 +616,6 @@ fig.update_layout(
 )
 
 fig.show()
-#| out-width: "100%"
 ```
 
 
@@ -654,7 +657,7 @@ fig.add_vline(x=K_high, line_dash="dot", line_color="gray",
 
 fig.update_layout(
     title="Bear Put Spread",
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", 
     height=400,
@@ -706,7 +709,7 @@ fig.add_vline(x=K_straddle, line_dash="dot", line_color="gray",
 
 fig.update_layout(
     title="Long Straddle",
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", 
     height=400,
@@ -772,7 +775,7 @@ fig.add_vline(x=K_high_bf, line_dash="dot", line_color="gray",
 
 fig.update_layout(
     title="Butterfly Spread",
-    xaxis_title="Stock Price at Expiration ($)",
+    xaxis_title="Underlying Asset Price at Expiration ($)",
     yaxis_title="Portfolio Value ($)",
     template="plotly_white", 
     height=400,
