@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; Derivative Securities – Pricing and Hedging Derivative Securities</title>
+<title>8&nbsp; Arbitrage Pricing – Pricing and Hedging Derivative Securities</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,15 +23,15 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./Chapter_IntroOptions.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./Chapter_BlackScholes_updated.html" rel="next">
+<link href="./Chapter_GeometricBrownianMotion.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -79,20 +79,27 @@ ul.task-list li input[type="checkbox"] {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 <style>
-div.callout-Example.callout {
-  border-left-color: #a1bced;
-}
-div.callout-Example.callout-style-default > .callout-header {
-  background-color: rgba(161, 188, 237, 0.13);
-}
-div.callout-Example .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
-div.callout-Example.callout-style-default .callout-icon::before, div.callout-Example.callout-titled .callout-icon::before {
-  font-family: 'Font Awesome 6 Free';
-  content: '\f185';
-  background-image: none;
-}
 div.callout-Principle.callout {
   border-left-color: #eb4034;
 }
@@ -103,18 +110,6 @@ div.callout-Principle .callout-toggle::before {  background-image: url('data:ima
 div.callout-Principle.callout-style-default .callout-icon::before, div.callout-Principle.callout-titled .callout-icon::before {
   font-family: 'Font Awesome 6 Free';
   content: '\f06a';
-  background-image: none;
-}
-div.callout-Rule.callout {
-  border-left-color: #12801f;
-}
-div.callout-Rule.callout-style-default > .callout-header {
-  background-color: rgba(18, 128, 31, 0.13);
-}
-div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
-div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
-  font-family: 'Font Awesome 6 Free';
-  content: '\f164';
   background-image: none;
 }
 div.callout-Extra.callout {
@@ -129,8 +124,61 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
   content: '\f48b';
   background-image: none;
 }
+div.callout-Example.callout {
+  border-left-color: #a1bced;
+}
+div.callout-Example.callout-style-default > .callout-header {
+  background-color: rgba(161, 188, 237, 0.13);
+}
+div.callout-Example .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Example.callout-style-default .callout-icon::before, div.callout-Example.callout-titled .callout-icon::before {
+  font-family: 'Font Awesome 6 Free';
+  content: '\f185';
+  background-image: none;
+}
+div.callout-Rule.callout {
+  border-left-color: #12801f;
+}
+div.callout-Rule.callout-style-default > .callout-header {
+  background-color: rgba(18, 128, 31, 0.13);
+}
+div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
+  font-family: 'Font Awesome 6 Free';
+  content: '\f164';
+  background-image: none;
+}
 </style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -305,7 +353,7 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_IntroDerivatives.html">Part 1: Introduction</a></li><li class="breadcrumb-item"><a href="./Chapter_IntroDerivatives.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Derivative Securities</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_ArbitragePricing.html">Part 3: Option Pricing</a></li><li class="breadcrumb-item"><a href="./Chapter_ArbitragePricing.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -357,7 +405,7 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_IntroDerivatives.html" class="sidebar-item-text sidebar-link active">
+  <a href="./Chapter_IntroDerivatives.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Derivative Securities</span></span></a>
   </div>
 </li>
@@ -421,7 +469,7 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_ArbitragePricing.html" class="sidebar-item-text sidebar-link">
+  <a href="./Chapter_ArbitragePricing.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></span></a>
   </div>
 </li>
@@ -507,9 +555,9 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_IntroDerivatives.html">Part 1: Introduction</a></li><li class="breadcrumb-item"><a href="./Chapter_IntroDerivatives.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Derivative Securities</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_ArbitragePricing.html">Part 3: Option Pricing</a></li><li class="breadcrumb-item"><a href="./Chapter_ArbitragePricing.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-c:introderivatives" class="quarto-section-identifier"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Derivative Securities</span></span></h1>
+<h1 class="title"><span id="sec-c:arbitrage_pricing" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></span></h1>
 </div>
 
 
@@ -526,63 +574,237 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
 </header>
 
 
-<p>Derivative securities are financial instruments whose value is derived from an underlying asset, index, or rate. These instruments are used for hedging risks and for speculation. The underlying assets can be stocks, bonds, commodities, currencies, interest rates, or market indices. The fundamental characteristic of derivatives is that their values fluctuate based on changes in the price of the underlying assets.</p>
-<p>Derivatives play a significant role in financial markets by allowing investors to manage risk exposures and take speculative positions with a relatively small amount of capital. They are also widely used by corporations and financial institutions to hedge against fluctuations in interest rates, currency values, and commodity prices. The rapid growth of the derivatives market over the past few decades has made these instruments an essential part of global financial markets.</p>
-<p>One of the key advantages of derivatives is their ability to provide leverage. Investors can control large positions with relatively small amounts of capital, amplifying potential gains. However, this also increases the risk of substantial losses. Furthermore, derivatives facilitate price discovery, enhance market efficiency, and contribute to overall liquidity by allowing market participants to express diverse opinions about future asset prices.</p>
-<section id="types-of-derivative-securities" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="types-of-derivative-securities"><span class="header-section-number">1.1</span> Types of Derivative Securities</h2>
-<p>Major derivative securities can be broadly classified into four main types:</p>
-<section id="forwards" class="level4">
-<h4 class="anchored" data-anchor-id="forwards">Forwards</h4>
-<p>Forwards are customized contracts between two parties to buy or sell an asset at a predetermined future date and price. Unlike standardized contracts, forwards are traded over-the-counter (OTC), making them more flexible but less liquid. Forwards are commonly used in the foreign exchange and commodities markets to hedge against price fluctuations.</p>
-<p>One key feature of forward contracts is that they are non-standardized, meaning that the terms, such as contract size, expiration date, and settlement procedure, are determined by the parties involved. However, this flexibility also increases counterparty risk, as the default risk is not mitigated through a clearinghouse. Another drawback is the potential for price manipulation due to the lack of regulatory oversight in OTC markets.</p>
+<div id="d422a5c0" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
+<p>This chapter develops the fundamental principles of arbitrage pricing, starting from the concept of linear pricing and building up to continuous-time models with change of numeraire.</p>
+<section id="linear-pricing" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="linear-pricing"><span class="header-section-number">8.1</span> Linear Pricing</h2>
+<p>The fundamental concept underlying most finance theory, from Miller-Modigliani to the Black-Scholes model, is linear pricing. The concept of linear pricing is essentially the same as asking for the price of five apples and six oranges. Of course, this is the price of one apple times five plus the price of one orange times six. However, instead of pricing bundles of commodities today, we will find prices of dollars in different contingencies at times in the future.</p>
+<p>An arbitrage opportunity is a trading strategy that produces nonnegative cash flows at all times in all contingencies with a strictly positive cash flow at some time in some contingency. If such an opportunity were to exist, traders would exploit it until prices adjust to eliminate the possibility. Although simple, this has powerful implications.</p>
+<p>Consider a world where there are <span class="math inline">\(J\)</span> possible states of the world at time <span class="math inline">\(t\)</span>. No arbitrage then implies the following properties:</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are time <span class="math inline">\(t\)</span> random cash flows, the time 0 price of the random cash flow <span class="math inline">\(aX+bY\)</span> is <span class="math inline">\(a\)</span> times the time 0 price of <span class="math inline">\(X\)</span> plus <span class="math inline">\(b\)</span> times the time 0 price of <span class="math inline">\(Y\)</span>. If <span class="math inline">\(P(\cdot)\)</span> is a pricing function that gives us the price of a random cash flow today, then <span class="math inline">\(P(aX+bY)=aP(X) + bP(Y)\)</span>. In other words, the pricing operator is linear. This follows because if this fails to hold, there is an arbitrage assuming an agent can buy and sell any quantities at these prices. Because the pricing operator is linear, it must have the form <span class="math inline">\(P(X) = \sum_{j=1}^J \pi_j X_j\)</span> where <span class="math inline">\(X_j\)</span> is the random cash flow in state~<span class="math inline">\(j\)</span>. We call <span class="math inline">\(\pi_j\)</span> the price of a dollar at time <span class="math inline">\(t\)</span> in state <span class="math inline">\(j\)</span> or a state price.</p></li>
+<li><p>The price of any positive nonzero random cash flow at time <span class="math inline">\(t\)</span> is strictly positive. Again, this follows from no arbitrage (think how much of an asset paying a positive dividend you would want if it were free or even if you were paid to take the asset). This implies the state prices are strictly positive.</p></li>
+<li><p>The pricing operator obeys time value of money: <span class="math inline">\(1=\sum_{j=1}^J \pi_j e^{rt}\)</span>, where <span class="math inline">\(r\)</span> is the continuously compounded yield to maturity of a bond maturing at <span class="math inline">\(t\)</span>. This is the present value rule: the present value of the future value <span class="math inline">\(e^{rt}\)</span> is one or, equivalently, the present value of a dollar paid at <span class="math inline">\(t\)</span> is <span class="math inline">\(e^{-rt}\)</span>.</p></li>
+<li><p>The pricing operator must be consistent with observable prices. The price <span class="math inline">\(S_0\)</span> of a traded asset with random cash flows at time <span class="math inline">\(t\)</span> is given by <span class="math inline">\(S_0= \sum_{j=1}^J \pi_j S_j\)</span> where <span class="math inline">\(S_j\)</span> is the random cash flow in state <span class="math inline">\(j\)</span>.</p></li>
+</ol>
+<div class="callout callout-style-simple callout-Principle callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important Principle
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the absence of arbitrage opportunities, there exist positive state prices such that the price of any security is the sum across the states of the world of its payoff multiplied by the state price.</p>
+</div>
+</div>
+<p>This conclusion generalizes to other models, including models in which the stock price takes a continuum of possible values, interpreting the sum in that case as an integral.</p>
 </section>
-<section id="futures" class="level4">
-<h4 class="anchored" data-anchor-id="futures">Futures</h4>
-<p>Futures are standardized contracts traded on exchanges, obligating the buyer to purchase and the seller to sell an underlying asset at a specific price on a future date. Futures markets are highly liquid and regulated, reducing counterparty risk. They are used extensively for hedging and speculative purposes across various asset classes, including commodities, equities, interest rates, and foreign exchange.</p>
-<p>A key advantage of futures contracts is that they are cleared through centralized clearinghouses, reducing default risk. Additionally, futures contracts require margin deposits, which serve as collateral and help maintain market stability. The presence of daily mark-to-market settlements ensures that gains and losses are realized continuously, preventing excessive accumulation of risk.</p>
-<p>Futures markets are crucial for global trade and investment. For example, agricultural futures help farmers lock in prices for their crops, ensuring financial stability amid unpredictable market conditions. Similarly, crude oil futures allow energy companies to hedge against fluctuations in oil prices.</p>
-</section>
-<section id="options" class="level4">
-<h4 class="anchored" data-anchor-id="options">Options</h4>
-<p>Options give the holder the right, but not the obligation, to buy (call option) or sell (put option) an asset at a predetermined price before or at expiration. They are widely used for hedging and speculative purposes. Options are traded both on exchanges and in OTC markets.</p>
-<p>Options provide strategic flexibility for investors, as they allow for various trading strategies, including covered calls, protective puts, straddles, and spreads. The pricing of options depends on several factors, including the price of the underlying asset, volatility, time to expiration, interest rates, and dividends. The Black-Scholes model and binomial tree model are widely used for option pricing.</p>
-<p>The versatility of options allows investors to construct positions that range from conservative hedging strategies to highly speculative trades. For example, covered call strategies can generate income in sideways markets, while long straddles can profit from significant price swings in either direction.</p>
-</section>
-<section id="swaps" class="level4">
-<h4 class="anchored" data-anchor-id="swaps">Swaps</h4>
-<p>Swaps involve the exchange of cash flows based on different financial instruments. The most common types include interest rate swaps, currency swaps, and credit default swaps (CDS). Swaps are mainly traded in OTC markets and are primarily used for hedging risks associated with fluctuating interest rates and currency values.</p>
-<p>Interest rate swaps, for instance, allow two parties to exchange fixed and floating interest rate payments, enabling companies to manage interest rate exposure. Currency swaps help multinational corporations hedge against exchange rate fluctuations. Credit default swaps played a crucial role in the 2008 financial crisis, as they were used to transfer credit risk between financial institutions.</p>
-<p>Swaps have evolved to become sophisticated financial tools, providing tailored risk management solutions. However, their complexity also necessitates rigorous risk assessment and regulatory oversight to prevent systemic risks.</p>
-</section>
-</section>
-<section id="historical-evolution-of-derivative-securities" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="historical-evolution-of-derivative-securities"><span class="header-section-number">1.2</span> Historical Evolution of Derivative Securities</h2>
-<p>The origins of derivative securities date back to ancient civilizations. The first recorded derivatives can be traced to Mesopotamian grain contracts and ancient Greek olive oil options. Modern derivatives markets evolved significantly in the 20th century:</p>
-<ul>
-<li>Chicago Board of Trade (CBOT) was established in 1848, marking the beginning of organized futures trading.</li>
-<li>Chicago Mercantile Exchange (CME) introduced financial futures in the 1970s, expanding the scope of derivatives markets.</li>
-<li>Black-Scholes Model (1973) provided a theoretical framework for option pricing, revolutionizing derivatives trading and making options more accessible.</li>
-<li>Growth of OTC Markets in the late 20th and early 21st centuries expanded the use of swaps and structured derivatives, allowing institutions to tailor risk management solutions.</li>
-</ul>
-<p>The rapid expansion of derivatives markets has been driven by advancements in financial engineering, technology, and increased globalization. However, the complexity of these instruments has also led to significant regulatory challenges and financial crises, necessitating increased oversight and risk management practices.</p>
-</section>
-<section id="trading-of-derivative-securities" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="trading-of-derivative-securities"><span class="header-section-number">1.3</span> Trading of Derivative Securities</h2>
-<section id="exchange-traded-derivatives" class="level4">
-<h4 class="anchored" data-anchor-id="exchange-traded-derivatives">Exchange-Traded Derivatives</h4>
-<p>These derivatives are traded on regulated exchanges such as the CME, NYSE Euronext, and Intercontinental Exchange (ICE). Exchange-traded derivatives are standardized and cleared through central counterparties, reducing counterparty risk. The standardization ensures price transparency and facilitates liquidity, making these markets highly efficient.</p>
-</section>
-<section id="over-the-counter-otc-derivatives" class="level4">
-<h4 class="anchored" data-anchor-id="over-the-counter-otc-derivatives">Over-the-Counter (OTC) Derivatives</h4>
-<p>OTC derivatives are privately negotiated contracts between two parties, offering greater customization but higher counterparty risk. Common OTC derivatives include forward contracts, swaps, and exotic options. The flexibility of OTC markets allows financial institutions to create tailored risk management solutions, but the lack of centralized clearing increases default risk.</p>
-<p>The growth of electronic trading platforms and regulatory reforms has transformed the OTC derivatives market, improving transparency and reducing systemic risks.</p>
+<section id="state-prices-in-the-binomial-model" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="state-prices-in-the-binomial-model"><span class="header-section-number">8.2</span> State Prices in the Binomial Model</h2>
+<p>In the single-period binomial model with up and down states, we have two equations for the state prices <span class="math inline">\(\pi_u\)</span> and <span class="math inline">\(\pi_d\)</span>:</p>
+<p><span class="math display">\[ 1 = \pi_u e^{rt} + \pi_d e^{rt} \]</span> <span class="math display">\[ S = \pi_u S_u + \pi_d S_d \]</span></p>
+<p>The first equation prices the risk-free asset (invest $1 today, receive <span class="math inline">\(e^{rt}\)</span> in both states). The second prices the stock.</p>
+<p>Solving these equations gives:</p>
+<p><span class="math display">\[\pi_u  = \frac{S-e^{-rt}S_d}{S_u - S_d}, \quad \pi_d = \frac{e^{-rt}S_u-S}{S_u - S_d}\]</span></p>
+<p>Notice that the requirement <span class="math inline">\(\pi_u, \pi_d &gt; 0\)</span> is precisely the no-arbitrage condition:</p>
+<p><span class="math display">\[\frac{S_u}{S} &gt; e^{rt} &gt; \frac{S_d}{S}\]</span></p>
+<p>We can think of any security as a portfolio of Arrow securities. An Arrow security pays $1 at time <span class="math inline">\(t\)</span> if a specific state occurs and pays nothing otherwise. In our binomial model, <span class="math inline">\(\pi_u\)</span> is the price of an Arrow security paying $1 in the up state, and <span class="math inline">\(\pi_d\)</span> is the price of an Arrow security paying $1 in the down state.</p>
+<p>For any derivative with payoffs <span class="math inline">\(C_u\)</span> and <span class="math inline">\(C_d\)</span>:</p>
+<p><span class="math display">\[C = \pi_u C_u + \pi_d C_d\]</span></p>
+<section id="risk-neutral-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="risk-neutral-probabilities">Risk-Neutral Probabilities</h3>
+<p>Define <span class="math inline">\(p_u = \pi_u e^{rt}\)</span> and <span class="math inline">\(p_d = \pi_d e^{rt}\)</span>. Since <span class="math inline">\(p_u + p_d = 1\)</span> and both are positive, we can interpret them as probabilities—the risk-neutral probabilities. Then:</p>
+<p><span class="math display">\[C = e^{-rt}[p_u C_u + p_d C_d]\]</span></p>
+<p>The asset price equals its expected payoff discounted at the risk-free rate, where the expectation uses risk-neutral probabilities. Note that:</p>
+<p><span class="math display">\[p_u = \frac{e^{rt} - S_d/S}{S_u/S - S_d/S}\]</span></p>
 </section>
 </section>
-<section id="size-of-the-derivatives-market" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="size-of-the-derivatives-market"><span class="header-section-number">1.4</span> Size of the Derivatives Market</h2>
-<p>The global derivatives market is one of the largest financial markets. According to estimates from the Bank for International Settlements (BIS), the notional value of outstanding derivatives contracts exceeded $667 trillion at the end of 2023, with interest rate derivatives accounting for approximately $530 trillion and foreign exchange derivatives reaching $118 trillion. (<a href="https://www.bis.org/publ/otc_hy2405.htm">BIS Report</a>)</p>
-<p>The rapid expansion of derivatives markets highlights their importance in global finance, but it also underscores the need for sound risk management practices.</p>
+<section id="multiple-states" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="multiple-states"><span class="header-section-number">8.3</span> Multiple States</h2>
+<p>Now consider a market with <span class="math inline">\(J &gt; 2\)</span> possible states at time <span class="math inline">\(t\)</span>. We need to find <span class="math inline">\(J\)</span> state prices <span class="math inline">\(\pi_1, \ldots, \pi_J\)</span>. If we have <span class="math inline">\(J\)</span> traded assets (including the risk-free asset) with linearly independent payoffs, we can solve:</p>
+<p><span class="math display">\[\begin{bmatrix}
+e^{rt} &amp; e^{rt} &amp; \cdots &amp; e^{rt} \\
+S_1^{(1)} &amp; S_2^{(1)} &amp; \cdots &amp; S_J^{(1)} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+S_1^{(J-1)} &amp; S_2^{(J-1)} &amp; \cdots &amp; S_J^{(J-1)}
+\end{bmatrix}
+\begin{bmatrix}
+\pi_1 \\ \pi_2 \\ \vdots \\ \pi_J
+\end{bmatrix} =
+\begin{bmatrix}
+1 \\ S^{(1)} \\ \vdots \\ S^{(J-1)}
+\end{bmatrix}\]</span></p>
+<p>where <span class="math inline">\(S^{(i)}\)</span> is the current price of asset <span class="math inline">\(i\)</span> and <span class="math inline">\(S_j^{(i)}\)</span> is its payoff in state <span class="math inline">\(j\)</span>.</p>
+<p>With state prices determined, we can value any derivative:</p>
+<p><span class="math display">\[V = \sum_{j=1}^J \pi_j V_j\]</span></p>
+<p>The risk-neutral probabilities are <span class="math inline">\(p_j = \pi_j e^{rt}\)</span>, giving:</p>
+<p><span class="math display">\[V = e^{-rt} \sum_{j=1}^J p_j V_j = e^{-rt} \mathbb{E}^p[V_t]\]</span></p>
+</section>
+<section id="martingale-pricing" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="martingale-pricing"><span class="header-section-number">8.4</span> Martingale Pricing</h2>
+<p>A martingale is a stochastic process for which the expected value of tomorrow’s value is today’s value. In our framework, discounted values of non-dividend paying trading strategies are martingales under the risk-neutral measure.</p>
+<p>If <span class="math inline">\(X(0)\)</span> is today’s value of a portfolio with random payoff <span class="math inline">\(X\)</span> at time <span class="math inline">\(t\)</span>:</p>
+<p><span class="math display">\[\frac{X(0)}{R(0)} = \sum_{s=1}^S p_s \frac{X_s}{e^{rt}} = \mathbb{E}^R\left[\frac{X}{R_t}\right]\]</span></p>
+<p>where <span class="math inline">\(R(0) = 1\)</span> and <span class="math inline">\(R_t = e^{rt}\)</span>. The ratio of any asset price to the risk-free asset price is a martingale under the risk-neutral measure.</p>
+</section>
+<section id="continuous-time" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="continuous-time"><span class="header-section-number">8.5</span> Continuous Time</h2>
+<p>We now extend to continuous-time models where the stock price can take a continuum of values. The principle becomes:</p>
+<div class="callout callout-style-simple callout-Principle callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important Principle
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If there are no arbitrage opportunities, then there exists for each date <span class="math inline">\(t\)</span> a strictly positive random variable <span class="math inline">\(m_t\)</span>, called a stochastic discount factor, such that the date-0 value of any dividend-reinvested asset with price <span class="math inline">\(P\)</span> is:</p>
+<p><span class="math display">\[P_0 = \mathbb{E}[m_t P_t]\]</span></p>
+</div>
+</div>
+<p>The stochastic discount factor <span class="math inline">\(m_t\)</span> generalizes state prices to continuous distributions. For a finite number of states, <span class="math inline">\(m_t = \pi_j/\text{prob}_j\)</span> in state <span class="math inline">\(j\)</span>, where <span class="math inline">\(\text{prob}_j\)</span> is the actual probability.</p>
+<section id="connection-to-risk-neutral-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="connection-to-risk-neutral-probabilities">Connection to Risk-Neutral Probabilities</h3>
+<p>The risk-free asset satisfies:</p>
+<p><span class="math display">\[1 = \mathbb{E}[m_t e^{rt}]\]</span></p>
+<p>This means <span class="math inline">\(m_t e^{rt}\)</span> has expectation 1. We can define a new probability measure by:</p>
+<p><span class="math display">\[\mathbb{E}^R[Z] = \mathbb{E}[m_t e^{rt} Z]\]</span></p>
+<p>for any random variable <span class="math inline">\(Z\)</span>. Under this risk-neutral measure:</p>
+<p><span class="math display">\[P_0 = e^{-rt} \mathbb{E}^R[P_t]\]</span></p>
+</section>
+</section>
+<section id="change-of-numeraire" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="change-of-numeraire"><span class="header-section-number">8.6</span> Change of Numeraire</h2>
+<p>Our choice of the risk-free asset as numeraire was arbitrary. Any strictly positive non-dividend paying trading strategy can serve as a numeraire.</p>
+<p>For a dividend-reinvested asset <span class="math inline">\(Y\)</span> with strictly positive value:</p>
+<p><span class="math display">\[Y(0) = \mathbb{E}[m_t Y_t]\]</span></p>
+<p>Define new probabilities by:</p>
+<p><span class="math display">\[\text{prob}^Y_s = \frac{\mathbb{E}[m_t Y_t \mathbf{1}_{\{s\}}]}{Y(0)}\]</span></p>
+<p>where <span class="math inline">\(\mathbf{1}_{\{s\}}\)</span> is the indicator function for state <span class="math inline">\(s\)</span>. Then:</p>
+<p><span class="math display">\[S(0) = Y(0) \mathbb{E}^Y\left[\frac{S_t}{Y_t}\right]\]</span></p>
+<p>The ratio <span class="math inline">\(S_t/Y_t\)</span> is a martingale under the probability measure induced by using <span class="math inline">\(Y\)</span> as numeraire.</p>
+<section id="fundamental-pricing-formula" class="level3">
+<h3 class="anchored" data-anchor-id="fundamental-pricing-formula">Fundamental Pricing Formula</h3>
+<div class="callout callout-style-simple callout-Principle callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important Principle
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the absence of arbitrage opportunities, prices <span class="math inline">\(P\)</span> and <span class="math inline">\(Y\)</span> of dividend-reinvested assets satisfy, for all <span class="math inline">\(s &lt; t\)</span>:</p>
+<p><span class="math display">\[Y_s = P_s \mathbb{E}^P_s \left[\frac{Y_t}{P_t}\right]\]</span></p>
+</div>
+</div>
+<p>This is the fundamental pricing formula. The value at time <span class="math inline">\(s\)</span> of asset <span class="math inline">\(Y\)</span> is the expectation, under the appropriate probability measure, of its value <span class="math inline">\(Y_t\)</span> at time <span class="math inline">\(t\)</span> discounted by the factor <span class="math inline">\(P_s/P_t\)</span>.</p>
+<p>When <span class="math inline">\(P\)</span> is the risk-free asset:</p>
+<p><span class="math display">\[Y_s = e^{-r(t-s)} \mathbb{E}^R_s[Y_t]\]</span></p>
+</section>
+<section id="changing-probability-measures" class="level3">
+<h3 class="anchored" data-anchor-id="changing-probability-measures">Changing Probability Measures</h3>
+<p>For continuous distributions, the probability of event <span class="math inline">\(A\)</span> using <span class="math inline">\(S\)</span> as numeraire is:</p>
+<p><span class="math display">\[\text{prob}^S(A) = \mathbb{E}\left[\mathbf{1}_A m_t \frac{S_t}{S_0}\right]\]</span></p>
+<p>The expectation of any random variable <span class="math inline">\(X\)</span> using <span class="math inline">\(S\)</span> as numeraire is:</p>
+<p><span class="math display">\[\mathbb{E}^S[X] = \mathbb{E}\left[X m_t \frac{S_t}{S_0}\right]\]</span></p>
+<p>Different numeraires lead to different probability measures but the same derivative prices.</p>
+</section>
+</section>
+<section id="stock-as-numeraire" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="stock-as-numeraire"><span class="header-section-number">8.7</span> Stock as Numeraire</h2>
+<p>Using the stock as numeraire is particularly useful for certain derivatives. In the binomial model, define:</p>
+<p><span class="math display">\[\text{prob}^S_u = \frac{\pi_u S_u}{S}, \quad \text{prob}^S_d = \frac{\pi_d S_d}{S}\]</span></p>
+<p>These sum to 1 and are positive. For a call option:</p>
+<p><span class="math display">\[\frac{C}{S} = \text{prob}^S_u \frac{C_u}{S_u} + \text{prob}^S_d \frac{C_d}{S_d}\]</span></p>
+<p>The ratio <span class="math inline">\(C/S\)</span> (number of shares the call is worth) is a martingale under the stock numeraire measure.</p>
+<p>In continuous time, for any derivative <span class="math inline">\(V\)</span> on stock <span class="math inline">\(S\)</span>:</p>
+<p><span class="math display">\[V_0 = S_0 \mathbb{E}^S\left[\frac{V_T}{S_T}\right]\]</span></p>
+<p>This formulation is often convenient for options that depend on the stock price relative to some level.</p>
+</section>
+<section id="changes-of-probability-and-girsanovs-theorem" class="level2" data-number="8.8">
+<h2 data-number="8.8" class="anchored" data-anchor-id="changes-of-probability-and-girsanovs-theorem"><span class="header-section-number">8.8</span> Changes of Probability and Girsanov’s Theorem</h2>
+<p>When we change probability measures, we cannot expect a process <span class="math inline">\(B\)</span> that was a Brownian motion to remain a Brownian motion. The expected change in a Brownian motion must always be zero, but when we change probabilities, the expected change of <span class="math inline">\(B\)</span> is likely to become nonzero. However, the Brownian motion <span class="math inline">\(B\)</span> will still be an Ito process under the new probability measure.</p>
+<p>Changing probabilities only changes the drift of an Ito process—the diffusion coefficient remains unchanged. This is because the diffusion coefficient determines how much each path “jiggles,” which is unaffected by changing the probability measure.</p>
+<section id="example-risk-neutral-probability" class="level3">
+<h3 class="anchored" data-anchor-id="example-risk-neutral-probability">Example: Risk-Neutral Probability</h3>
+<p>Suppose the stock price follows:</p>
+<p><span class="math display">\[\frac{\mathrm{d}S}{S} = \mu \mathrm{d}t + \sigma \mathrm{d}B\]</span></p>
+<p>where <span class="math inline">\(B\)</span> is a Brownian motion under the actual probability measure. Under the risk-neutral measure, the drift must be the risk-free rate <span class="math inline">\(r\)</span>:</p>
+<p><span class="math display">\[\frac{\mathrm{d}S}{S} = r \mathrm{d}t + \sigma \mathrm{d}B^*\]</span></p>
+<p>where <span class="math inline">\(B^*\)</span> is a Brownian motion under the risk-neutral probability.</p>
+</section>
+</section>
+<section id="girsanovs-theorem-in-the-black-scholes-model" class="level2" data-number="8.9">
+<h2 data-number="8.9" class="anchored" data-anchor-id="girsanovs-theorem-in-the-black-scholes-model"><span class="header-section-number">8.9</span> Girsanov’s Theorem in the Black-Scholes Model</h2>
+<p>In the Black-Scholes model, the dividend-reinvested stock price follows:</p>
+<p><span class="math display">\[\mathrm{d}S_t = \mu S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t\]</span></p>
+<p>We can rewrite this as:</p>
+<p><span class="math display">\[\mathrm{d}S_t = r S_t \mathrm{d}t + \sigma S_t \mathrm{d}\left(B_t + \frac{\mu - r}{\sigma}t\right)\]</span></p>
+<p>Define <span class="math inline">\(\kappa = \frac{\mu - r}{\sigma}\)</span>, called the market price of risk or Sharpe ratio.</p>
+<div class="callout callout-style-simple callout-Principle callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important Principle
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Define the exponential martingale:</p>
+<p><span class="math display">\[Z_t = \exp\left(-\frac{1}{2}\kappa^2 t - \kappa B_t\right)\]</span></p>
+<p>Since <span class="math inline">\(Z_T\)</span> is lognormal, <span class="math inline">\(\mathbb{E}[Z_T] = 1\)</span>. Under the probability measure defined by:</p>
+<p><span class="math display">\[\mathbb{E}^\kappa[Y] = \mathbb{E}[Z_T Y]\]</span></p>
+<p>for any function <span class="math inline">\(Y\)</span> of <span class="math inline">\(B_t\)</span> (<span class="math inline">\(0 \leq t \leq T\)</span>), the process <span class="math inline">\(B_t^\kappa = B_t + \kappa t\)</span> is a Brownian motion. Moreover, if <span class="math inline">\(M_t\)</span> is a martingale under the new measure, then <span class="math inline">\(Z_t M_t\)</span> is a martingale under the original measure.</p>
+</div>
+</div>
+<p>This is Girsanov’s Theorem. It tells us how to construct the risk-neutral measure from the original measure. Using Ito’s lemma, we can verify that <span class="math inline">\(Z_t \frac{S_t}{R_t}\)</span> is indeed a martingale:</p>
+<p><span class="math display">\[Z_t \frac{S_t}{R_t} = S_0 \exp\left(-\frac{1}{2}(\sigma - \kappa)^2 t + (\sigma - \kappa)B_t\right)\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[\mathbb{E}\left[Z_t \frac{S_t}{R_t}\right] = S_0\]</span></p>
+<section id="stock-as-numeraire-revisited" class="level3">
+<h3 class="anchored" data-anchor-id="stock-as-numeraire-revisited">Stock as Numeraire Revisited</h3>
+<p>When using the stock as numeraire, we need the process <span class="math inline">\(\frac{R_t}{S_t}\)</span> to be a martingale. Following similar analysis with Girsanov’s Theorem, we find that under the stock numeraire measure:</p>
+<p><span class="math display">\[\mathrm{d}S_t = (r + \sigma^2) S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t^S\]</span></p>
+<p>where <span class="math inline">\(B_t^S = B_t^R - \sigma t\)</span> is a Brownian motion under the stock numeraire measure.</p>
+</section>
+<section id="digital-options-in-black-scholes" class="level3">
+<h3 class="anchored" data-anchor-id="digital-options-in-black-scholes">Digital Options in Black-Scholes</h3>
+<p>Using these results, we can value digital options in the Black-Scholes model. The digital option paying <span class="math inline">\(\mathbf{1}_{\{S(T) \geq K\}}\)</span> has value:</p>
+<p><span class="math display">\[e^{-rT} \mathbb{E}^R\left[\mathbf{1}_{\{S(T) \geq K\}}\right] = e^{-rT} N(d_2)\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[d_2 = \frac{\log(S_0/K) + (r - \frac{\sigma^2}{2})T}{\sigma\sqrt{T}}\]</span></p>
+<p>and <span class="math inline">\(N(\cdot)\)</span> is the standard normal cumulative distribution function.</p>
+<p>For the digital option paying <span class="math inline">\(S(T)\mathbf{1}_{\{S(T) \geq K\}}\)</span>, it’s easier to use the stock as numeraire:</p>
+<p><span class="math display">\[S_0 \mathbb{E}^S\left[\mathbf{1}_{\{S(T) \geq K\}}\right] = S_0 N(d_1)\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[d_1 = \frac{\log(S_0/K) + (r + \frac{\sigma^2}{2})T}{\sigma\sqrt{T}}\]</span></p>
+</section>
+</section>
+<section id="summary" class="level2" data-number="8.10">
+<h2 data-number="8.10" class="anchored" data-anchor-id="summary"><span class="header-section-number">8.10</span> Summary</h2>
+<p>We have developed a unified framework for derivative pricing based on the absence of arbitrage:</p>
+<ol type="1">
+<li><strong>Linear pricing</strong> implies the existence of state prices</li>
+<li><strong>State prices</strong> can be converted to risk-neutral probabilities<br>
+</li>
+<li><strong>Asset price ratios</strong> are martingales under appropriate probability measures</li>
+<li><strong>Any positive asset</strong> can serve as numeraire, inducing its own probability measure</li>
+<li>The <strong>fundamental pricing formula</strong> expresses values as expectations of discounted payoffs</li>
+<li><strong>Girsanov’s Theorem</strong> provides the mathematical machinery to change between probability measures in continuous time</li>
+</ol>
+<p>This framework extends from simple binomial models to general continuous-time models, providing the foundation for modern derivative pricing theory.</p>
 
 
 </section>
@@ -1002,13 +1224,13 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Preface">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      <a href="./Chapter_GeometricBrownianMotion.html" class="pagination-link" aria-label="Geometric Brownian Motion">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Geometric Brownian Motion</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./Chapter_IntroOptions.html" class="pagination-link" aria-label="Options Markets">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Options Markets</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Chapter_BlackScholes_updated.html" class="pagination-link" aria-label="The Black-Scholes Model">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Black-Scholes Model</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1017,4 +1239,4 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-published-code.git/blob/main/Chapter_IntroDerivatives.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-published-code.git/blob/main/Chapter_ArbitragePricing.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
