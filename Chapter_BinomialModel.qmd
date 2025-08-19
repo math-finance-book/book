@@ -285,7 +285,19 @@ at maturity with (iii) calculation of the value at the penultimate date as the
 larger of intrinsic value and the Black-Scholes value of a European option with
 one period to maturity.
 ```{python}
-# uses blackscholes(S0, K, r, q, sig, T, call = False)
+# First define the Black-Scholes function needed for the acceleration method
+def blackscholes(S0, K, r, q, sig, T, call=True):
+    """Calculate option price using B-S formula."""
+    from scipy import stats
+    import numpy as np
+    
+    d1 = (np.log(S0/K) + (r - q + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+    norm = stats.norm
+    if call:
+        return np.exp(-q*T)*S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1)
+    else:
+        return -np.exp(-q*T)*S0 * norm.cdf(-d1,0,1) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
 
 def binomialbd(n,r,sig,S0,y,K,T):
 
@@ -326,7 +338,7 @@ def binomialbd(n,r,sig,S0,y,K,T):
 
     S = S0 * u**(2*vec - (n-1)*vec1)
 
-    AP = np.maximum(K-S,blackscholes(S, K, r, q, sig, dt, call = False))
+    AP = np.maximum(K-S,blackscholes(S, K, r, y, sig, dt, call = False))
     
     
     # Backward recursion in the loop
