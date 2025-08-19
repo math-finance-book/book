@@ -17,7 +17,9 @@ display(
 )
 ```
 
-In the previous chapter, we developed a general framework for derivative pricing based on the absence of arbitrage. We saw how linear pricing leads to state prices, risk-neutral probabilities, and the fundamental pricing formula. We also introduced Girsanov's Theorem, which provides the mathematical machinery to change between probability measures in continuous time. In this chapter, we apply these principles to derive and analyze the celebrated Black-Scholes formula for European option pricing.
+In the previous chapter, we developed a general framework for derivative pricing based on the absence of arbitrage. We saw how linear pricing leads to state prices, risk-neutral probabilities, and the fundamental pricing formula. We also introduced change of numeraire methods, which allow us to compute option values as expectations under different probability measures. In this chapter, we apply these principles to derive and analyze the celebrated Black-Scholes formula for European option pricing.
+
+A fundamental insight is that standard European options can be expressed as combinations of digital options. Understanding this connection provides both theoretical insight and practical computational advantages.
 
 The Black-Scholes model assumes that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
 
@@ -25,33 +27,101 @@ $$\frac{\mathrm{d}S}{S} = (\mu - q) \mathrm{d}t + \sigma \mathrm{d}B$$
 
 for a Brownian motion $B$, where $\sigma$ is assumed constant and $\mu$ can be a quite general random process. We also assume a constant continuously-compounded risk-free rate $r$.
 
-## Derivation via Change of Numeraire
+## Digital Options as Building Blocks
 
-We can derive the Black-Scholes formula directly using the change of numeraire approach developed in the previous chapter. A European call option pays $(S_T - K)^+$ at maturity $T$. We can decompose this payoff as:
+Before deriving the Black-Scholes formula, we need to understand how standard options relate to digital options. A **digital option** (also called binary option) has a discontinuous payoff—it pays a fixed amount if a condition is met, zero otherwise.
+
+### Two Types of Digitals
+
+Consider a call option with strike $K$ and maturity $T$. Its payoff $(S_T - K)^+$ can be decomposed as:
 
 $$(S_T - K)^+ = \mathbf{1}_{\{S_T > K\}} S_T - K \mathbf{1}_{\{S_T > K\}}$$
 
-This represents one share digital minus $K$ cash digitals, both paying when $S_T > K$.
+This reveals that a call option is the difference between two digital options:
 
-### Digital Options
+1. **Share digital**: Pays $S_T$ when $S_T > K$, zero otherwise
+2. **Cash digital**: Pays $K$ when $S_T > K$, zero otherwise
 
-In continuous time, digital options serve as the primitive securities. A digital option paying \$1 when $S_T > K$ has value:
+Similarly, a put option with payoff $(K - S_T)^+$ can be written as:
 
-$$e^{-r(T-t)} \mathbb{E}_t^R[\mathbf{1}_{\{S_T > K\}}] = e^{-r(T-t)} \text{prob}^R(S_T > K)$$
+$$(K - S_T)^+ = K \mathbf{1}_{\{S_T < K\}} - \mathbf{1}_{\{S_T < K\}} S_T$$
 
-Under the risk-neutral measure from our previous analysis:
+This is $K$ cash digitals minus share digitals, both paying when $S_T < K$.
 
-$$\frac{\mathrm{d}S}{S} = (r - q) \mathrm{d}t + \sigma \mathrm{d}B^R$$
+### Why This Decomposition Matters
+
+This decomposition is powerful because:
+
+1. **Computational efficiency**: Digital options have closed-form expressions involving only normal probabilities
+2. **Theoretical insight**: It connects discrete payoffs to continuous probability distributions
+3. **Risk management**: Greeks can be computed directly from the normal density function
+4. **Generalization**: The approach extends to exotic options and other underlying processes
+
+## Girsanov's Theorem in the Black-Scholes Model
+
+To value digital options, we need to understand how probability measures change in continuous time. When we change probability measures, a process $B$ that was a Brownian motion cannot be expected to remain a Brownian motion under the new measure. However, Girsanov's Theorem tells us exactly how the drift changes.
+
+In the Black-Scholes model, the dividend-reinvested stock price follows:
+
+$$\mathrm{d}S_t = \mu S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t$$
+
+We can rewrite this as:
+
+$$\mathrm{d}S_t = r S_t \mathrm{d}t + \sigma S_t \mathrm{d}\left(B_t + \frac{\mu - r}{\sigma}t\right)$$
+
+Define $\kappa = \frac{\mu - r}{\sigma}$, called the market price of risk or Sharpe ratio.
+
+::: Principle
+**Girsanov's Theorem**: Define the exponential martingale:
+
+$$Z_t = \exp\left(-\frac{1}{2}\kappa^2 t - \kappa B_t\right)$$
+
+Since $Z_T$ is lognormal, $\mathbb{E}[Z_T] = 1$. Under the probability measure defined by:
+
+$$\mathbb{E}^\kappa[Y] = \mathbb{E}[Z_T Y]$$
+
+for any function $Y$ of $B_t$ ($0 \leq t \leq T$), the process $B_t^\kappa = B_t + \kappa t$ is a Brownian motion. Moreover, if $M_t$ is a martingale under the new measure, then $Z_t M_t$ is a martingale under the original measure.
+:::
+
+This theorem tells us how to construct the risk-neutral measure from the original measure. Using Ito's lemma, we can verify that $Z_t \frac{S_t}{R_t}$ is indeed a martingale:
+
+$$Z_t \frac{S_t}{R_t} = S_0 \exp\left(-\frac{1}{2}(\sigma - \kappa)^2 t + (\sigma - \kappa)B_t\right)$$
 
 Therefore:
 
-$$S_T = S_t \exp\left((r - q - \frac{\sigma^2}{2})(T-t) + \sigma B_{T-t}^R\right)$$
+$$\mathbb{E}\left[Z_t \frac{S_t}{R_t}\right] = S_0$$
 
-The condition $S_T > K$ is equivalent to:
+### Stock as Numeraire
 
-$$\frac{\log(S_t/K) + (r - q - \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}} > -\frac{B_{T-t}^R}{\sqrt{T-t}}$$
+When using the stock as numeraire, we need the process $\frac{R_t}{S_t}$ to be a martingale. Following similar analysis with Girsanov's Theorem, we find that under the stock numeraire measure:
 
-Since $-B_{T-t}^R/\sqrt{T-t}$ is standard normal under the risk-neutral measure:
+$$\mathrm{d}S_t = (r + \sigma^2) S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t^S$$
+
+where $B_t^S = B_t^R - \sigma t$ is a Brownian motion under the stock numeraire measure.
+
+## Derivation of the Black-Scholes Formula
+
+Now we apply the valuation theory from Chapter 3 (Arbitrage Pricing) and the tail probability calculations from Chapter 2 (Geometric Brownian Motion) to derive the Black-Scholes formula.
+
+### Cash Digital Options
+
+A cash digital option paying \$1 when $S_T > K$ has value under the risk-neutral measure:
+
+$$e^{-r(T-t)} \mathbb{E}_t^R[\mathbf{1}_{\{S_T > K\}}] = e^{-r(T-t)} \text{prob}^R(S_T > K)$$
+
+Under the risk-neutral measure, the stock price follows:
+
+$$\frac{\mathrm{d}S}{S} = (r - q) \mathrm{d}t + \sigma \mathrm{d}B^R$$
+
+This means:
+
+$$\mathrm{d}\log S = \left(r - q - \frac{\sigma^2}{2}\right) \mathrm{d}t + \sigma \mathrm{d}B^R$$
+
+From Chapter 2, we know this has the solution:
+
+$$S_T = S_t \exp\left(\left(r - q - \frac{\sigma^2}{2}\right)(T-t) + \sigma B_{T-t}^R\right)$$
+
+Applying the tail probability formula from @sec-tailprobs with $\alpha = r - q - \sigma^2/2$:
 
 $$\text{prob}^R(S_T > K) = N(d_2)$$
 
@@ -61,11 +131,15 @@ $$d_2 = \frac{\log(S_t/K) + (r - q - \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}}
 
 ### Share Digital Options
 
-For the share digital paying $S_T \mathbf{1}_{\{S_T > K\}}$, we use the stock as numeraire. From our Girsanov's Theorem analysis:
+For the share digital paying $S_T \mathbf{1}_{\{S_T > K\}}$, we use the stock as numeraire. From the change of numeraire theory in Chapter 3:
 
-$$\mathrm{d}S_t = (r - q + \sigma^2) S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t^S$$
+$$\text{Value} = S_t \mathbb{E}_t^S[\mathbf{1}_{\{S_T > K\}}] = S_t \cdot \text{prob}^S(S_T > K)$$
 
-under the stock numeraire measure. Following similar calculations:
+Under the stock numeraire measure:
+
+$$\mathrm{d}\log S = \left(r - q + \frac{\sigma^2}{2}\right) \mathrm{d}t + \sigma \mathrm{d}B^S$$
+
+Applying the tail probability formula from @sec-tailprobs with $\alpha = r - q + \sigma^2/2$:
 
 $$\text{prob}^S(S_T > K) = N(d_1)$$
 
@@ -73,9 +147,26 @@ where:
 
 $$d_1 = \frac{\log(S_t/K) + (r - q + \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}} = d_2 + \sigma\sqrt{T-t}$$
 
+### Combining the Results
+
+Now we can derive the Black-Scholes formula by combining our digital option results. A European call option has payoff:
+
+$$(S_T - K)^+ = \mathbf{1}_{\{S_T > K\}} S_T - K \mathbf{1}_{\{S_T > K\}}$$
+
+The first term is a share digital worth $S_t \cdot \text{prob}^S(S_T > K) = S_t N(d_1)$.
+
+The second term is $K$ cash digitals worth $K \cdot e^{-r(T-t)} \cdot \text{prob}^R(S_T > K) = K e^{-r(T-t)} N(d_2)$.
+
+Since we need $e^{-q(T-t)}$ in front of the share digital to account for dividends, the call value is:
+
 ### The Black-Scholes Formula
 
-Combining our results:
+This derivation shows how the fundamental arbitrage pricing theory leads directly to the Black-Scholes formula. The key steps were:
+
+1. **Linear pricing**: From Chapter 3, any security's value is a linear combination of Arrow securities (digitals)
+2. **Change of numeraire**: Different measures give different probabilities for the same event  
+3. **Tail probabilities**: From Chapter 2, we can compute $\text{prob}(S_T > K)$ under any measure
+4. **Girsanov's Theorem**: Provides the mathematical foundation for changing measures
 
 ::: Rule
 The value of a European call option is:
@@ -94,6 +185,16 @@ $$P(t, S_t) = e^{-r(T-t)} K N(-d_2) - e^{-q(T-t)} S_t N(-d_1)$$
 The call and put values satisfy put-call parity:
 
 $$e^{-r(T-t)} K + C(t, S_t) = e^{-q(T-t)} S_t + P(t, S_t)$$
+
+### Interactive Black-Scholes Explorer
+
+The following interactive tool allows you to explore how the Black-Scholes formula behaves as you vary the input parameters. You can see how option prices change with stock price, volatility, time to expiration, interest rates, and dividend yields.
+
+::: {#fig-bs-call-put} 
+<iframe height="800" width="100%" src="https://black-scholes.koyeb.app/"></iframe>
+
+**Black-Scholes Explorer.** This interactive calculator shows how call and put option prices vary with the underlying parameters. Notice how the option prices change smoothly with the stock price, and observe the effects of time decay and volatility on option values.
+:::
 
 ## Replication and Delta Hedging
 
@@ -163,6 +264,16 @@ The sensitivity to interest rates:
 
 $$\rho_{call} = (T-t) e^{-r(T-t)} K N(d_2)$$
 
+### Interactive Greeks Explorer
+
+The Greeks measure how option prices change with respect to various parameters. The following interactive tool lets you visualize how the Greeks behave across different stock prices and parameter values.
+
+::: {#fig-bs-greeks} 
+<iframe height="750" width="100%" src="https://greeks.koyeb.app/"></iframe>
+
+**Black-Scholes Greeks Explorer.** This tool shows how delta, gamma, theta, vega, and rho vary with the stock price and other parameters. Pay particular attention to how gamma peaks near the strike price and how theta becomes more negative as expiration approaches.
+:::
+
 ## Theta and Gamma in Delta Hedges
 
 The relationship between theta and gamma provides deep insight into option hedging. Consider a delta-hedged portfolio (short call, long $\delta$ shares). From the fundamental PDE and our Greeks:
@@ -183,6 +294,187 @@ where $\Delta S$ is the stock price change. The hedging error increases with:
 - Larger gamma (near the strike at expiration)
 - Higher volatility
 - Longer time between rebalances
+
+## Discretely Rebalanced Delta Hedges
+
+The theoretical analysis above assumes continuous rebalancing, but in practice, hedging must be done at discrete intervals. This introduces hedging error that we can analyze through simulation.
+
+### The Discrete Hedging Problem
+
+Consider a delta hedge that is rebalanced at discrete times $0 = t_0 < t_1 < \cdots < t_N = T$ with $\Delta t = T/N$. Between rebalancing dates, the hedge portfolio consists of:
+- Short position in the option
+- Long $\delta_{t_i}$ shares of stock (where $\delta_{t_i}$ is computed at the last rebalancing date)
+- Cash position to finance the hedge
+
+The key insight from the analysis in @sec-s_deltahedging is that perfect continuous hedging relies on the relationship:
+
+$$-\Theta \,\mathrm{d} t - \frac{1}{2}\Gamma \sigma^2S^2\,\mathrm{d} t+ q \delta S\,\mathrm{d} t+(C-\delta S)r\,\mathrm{d} t = 0$$
+
+With discrete rebalancing, this balance is disrupted. The portfolio gains and losses come from:
+
+1. **Time decay**: $-\Theta \Delta t$ (predictable, typically positive for short option)
+2. **Gamma exposure**: $-\frac{1}{2}\Gamma (\Delta S)^2$ (stochastic losses when short gamma)
+3. **Interest and dividends**: Financing costs and dividend income
+4. **Delta drift**: Changes in delta between rebalancing dates
+
+### Simulation of Discrete Hedging
+
+The following code simulates the performance of discretely rebalanced delta hedges:
+
+```{python}
+#| echo: true
+#| eval: true
+
+import numpy as np
+from scipy.stats import norm
+
+def blackscholes(S0, K, r, q, sig, T, call = True):
+    '''Calculate option price using Black-Scholes formula.'''
+    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+    d2 = d1 - sig*np.sqrt(T)
+    if call:
+        return np.exp(-q*T)*S0 * norm.cdf(d1,0,1) - K * np.exp(-r * T) * norm.cdf(d2,0, 1)
+    else:
+        return np.exp(-q*T)*S0 * (-norm.cdf(-d1,0,1)) + K * np.exp(-r * T) * norm.cdf(-d2,0, 1)
+
+def blackscholes_delta(S0, K, r, q, sig, T, call = True):
+    '''Calculate option delta using Black-Scholes formula.'''
+    d1 = (np.log(S0/K) + (r -q + sig**2/2) * T)/(sig*np.sqrt(T))
+    if call:
+        return np.exp(-q*T)*norm.cdf(d1,0,1)
+    else:
+        return np.exp(-q*T)*norm.cdf(-d1,0,1)
+
+def simulated_delta_hedge_profit(S0, K, r, sigma, q, T, mu, M, N, pct):
+    """
+    Simulate profits/losses from discretely rebalanced delta hedge
+    
+    Parameters:
+    S0: initial stock price
+    K: strike price  
+    r: risk-free rate
+    sigma: volatility
+    q: dividend yield
+    T: time to maturity
+    mu: expected stock return (actual, not risk-neutral)
+    M: number of simulations
+    N: number of rebalancing periods
+    pct: percentile to return
+    """
+    dt = T / N
+    vol_dt = sigma * np.sqrt(dt)
+    drift = (mu - q - 0.5 * sigma**2) * dt
+    discount = np.exp(r * dt)
+    div_factor = np.exp(q * dt) - 1
+    
+    # Initial setup
+    call_0 = blackscholes(S0, K, r, q, sigma, T, True)
+    delta_0 = blackscholes_delta(S0, K, r, q, sigma, T, True)
+    cash_0 = call_0 - delta_0 * S0
+    
+    profits = np.zeros(M)
+    
+    np.random.seed(42)  # For reproducible results
+    
+    for i in range(M):
+        log_s = np.log(S0)
+        cash = cash_0
+        s = S0
+        delta = delta_0
+        
+        # Rebalancing loop
+        for j in range(1, N):
+            # Stock price evolution
+            log_s += drift + vol_dt * np.random.randn()
+            new_s = np.exp(log_s)
+            
+            # New delta for rebalancing
+            time_remaining = T - j * dt
+            new_delta = blackscholes_delta(new_s, K, r, q, sigma, time_remaining, True)
+            
+            # Update cash position: interest + dividends - rebalancing cost
+            cash = (discount * cash + 
+                   delta * s * div_factor - 
+                   (new_delta - delta) * new_s)
+            
+            s = new_s
+            delta = new_delta
+        
+        # Final period
+        log_s += drift + vol_dt * np.random.randn()
+        final_s = np.exp(log_s)
+        
+        # Final hedge value
+        final_hedge_value = (discount * cash + 
+                           delta * s * div_factor + 
+                           delta * final_s)
+        
+        # Profit = hedge value - option payoff
+        option_payoff = max(final_s - K, 0)
+        profits[i] = final_hedge_value - option_payoff
+    
+    return np.percentile(profits, pct * 100)
+
+# Example: Hedge a call option with discrete rebalancing
+S0 = 100      # Initial stock price
+K = 100       # Strike price (at-the-money)
+r = 0.05      # Risk-free rate
+sigma = 0.2   # Volatility
+q = 0.02      # Dividend yield
+T = 0.25      # 3 months to maturity
+mu = 0.12     # Expected stock return
+
+print("Discrete Delta Hedging Analysis")
+print("==============================")
+print(f"Parameters: S0={S0}, K={K}, r={r:.2f}, σ={sigma:.2f}, q={q:.2f}, T={T}")
+print(f"Expected stock return μ={mu:.2f}\\n")
+
+# Test different rebalancing frequencies
+rebalancing_frequencies = [4, 12, 52, 252]  # Weekly, monthly, daily, etc.
+M = 5000  # Number of simulations
+
+print("Hedging Error Analysis (95th percentile of absolute profits):")
+print("Rebalancing Frequency | Periods | 95th Percentile Error")
+print("-" * 55)
+
+for N in rebalancing_frequencies:
+    # Get both tails of the distribution
+    p95 = simulated_delta_hedge_profit(S0, K, r, sigma, q, T, mu, M, N, 0.95)
+    p5 = simulated_delta_hedge_profit(S0, K, r, sigma, q, T, mu, M, N, 0.05)
+    
+    # Report the larger absolute error
+    max_error = max(abs(p95), abs(p5))
+    
+    freq_name = {4: "Weekly", 12: "Monthly", 52: "Daily", 252: "Intraday"}[N]
+    print(f"{freq_name:<20} | {N:>7} | {max_error:>18.4f}")
+
+print(f"\\nNote: Errors should decrease as rebalancing frequency increases.")
+print(f"The Black-Scholes price is {blackscholes(S0, K, r, q, sigma, T, True):.4f}")
+```
+
+### Understanding Hedging Errors
+
+The simulation results illustrate several key points about discrete hedging:
+
+1. **Gamma is the enemy**: When an option has high gamma (near expiration, near the strike), small stock moves between rebalances cause large hedging errors
+
+2. **Frequency matters**: More frequent rebalancing reduces hedging error, but with diminishing returns and higher transaction costs
+
+3. **Volatility creates error**: Higher realized volatility generally increases hedging errors for short gamma positions
+
+4. **The hedge is model-independent**: Notice that the expected stock return $\mu$ affects the distribution of stock paths but not the systematic hedging error - this confirms the model-free nature of delta hedging
+
+### Practical Implications
+
+In practice, traders must balance:
+- **Hedging accuracy**: More frequent rebalancing reduces error
+- **Transaction costs**: Every rebalance incurs bid-ask spreads and commissions  
+- **Market impact**: Large hedging flows can move prices unfavorably
+
+The discrete hedging analysis shows why options market makers require:
+- Sophisticated risk management systems for continuous monitoring
+- Careful consideration of gamma exposure, especially near expiration
+- Transaction cost models to optimize rebalancing frequency
 
 ## Implied Volatilities
 

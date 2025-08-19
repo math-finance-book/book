@@ -217,65 +217,139 @@ $$\frac{\mathrm{d}S}{S} = r \mathrm{d}t + \sigma \mathrm{d}B^*$$
 
 where $B^*$ is a Brownian motion under the risk-neutral probability.
 
-## Girsanov's Theorem in the Black-Scholes Model
+The details of how to construct these new probability measures using Girsanov's Theorem are covered in the next chapter, where we apply them to derive the Black-Scholes formula.
 
-In the Black-Scholes model, the dividend-reinvested stock price follows:
+## Exercises
 
-$$\mathrm{d}S_t = \mu S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t$$
+### Linear Pricing and State Prices
 
-We can rewrite this as:
+::: {#exr-linear-pricing}
+Consider a market with 3 possible states at time $T = 1$. There are two traded assets:
+- Risk-free bond: pays $e^{0.05}$ in all states  
+- Risky asset: pays $(10, 15, 5)$ in states $(1, 2, 3)$ respectively, currently priced at $S_0 = 9$
 
-$$\mathrm{d}S_t = r S_t \mathrm{d}t + \sigma S_t \mathrm{d}\left(B_t + \frac{\mu - r}{\sigma}t\right)$$
-
-Define $\kappa = \frac{\mu - r}{\sigma}$, called the market price of risk or Sharpe ratio.
-
-::: Principle
-Define the exponential martingale:
-
-$$Z_t = \exp\left(-\frac{1}{2}\kappa^2 t - \kappa B_t\right)$$
-
-Since $Z_T$ is lognormal, $\mathbb{E}[Z_T] = 1$. Under the probability measure defined by:
-
-$$\mathbb{E}^\kappa[Y] = \mathbb{E}[Z_T Y]$$
-
-for any function $Y$ of $B_t$ ($0 \leq t \leq T$), the process $B_t^\kappa = B_t + \kappa t$ is a Brownian motion. Moreover, if $M_t$ is a martingale under the new measure, then $Z_t M_t$ is a martingale under the original measure.
+a) Set up the system of equations to find state prices $(\pi_1, \pi_2, \pi_3)$
+b) Solve for the state prices
+c) Find the risk-neutral probabilities $(p_1, p_2, p_3)$
+d) Price a derivative that pays $(0, 20, 0)$ in the three states
+e) Verify that the risk-neutral expected return on the risky asset equals the risk-free rate
 :::
 
-This is Girsanov's Theorem. It tells us how to construct the risk-neutral measure from the original measure. Using Ito's lemma, we can verify that $Z_t \frac{S_t}{R_t}$ is indeed a martingale:
+::: {#exr-arrow-securities}
+In the three-state model from the previous exercise:
+a) What is the price of an Arrow security that pays $1 in state 2 and $0 in states 1 and 3?
+b) Show that any derivative payoff can be written as a portfolio of Arrow securities
+c) Price a "digital option" that pays $100 if the risky asset's payoff exceeds $12, and $0 otherwise
+d) Compare this to pricing the same payoff using risk-neutral probabilities
+:::
 
-$$Z_t \frac{S_t}{R_t} = S_0 \exp\left(-\frac{1}{2}(\sigma - \kappa)^2 t + (\sigma - \kappa)B_t\right)$$
+::: {#exr-no-arbitrage-conditions}
+Consider a two-period binomial model where the stock can go from $S_0 = 100$ to either $S_u = 120$ or $S_d = 80$ in the first period, with risk-free rate $r = 5\%$ per period.
 
-Therefore:
+a) Find the no-arbitrage bounds: show that $S_d < S_0 e^r < S_u$ must hold
+b) Calculate the risk-neutral probability $p$ for the up move
+c) If the stock goes to $S_u = 120$ in the first period, it can go to $S_{uu} = 144$ or $S_{ud} = 96$ in the second period. If the stock goes to $S_d = 80$, it can go to $S_{du} = 96$ or $S_{dd} = 64$. Verify that the tree recombines ($S_{ud} = S_{du}$)
+d) Calculate the state prices for all four final states: $(\pi_{uu}, \pi_{ud}, \pi_{du}, \pi_{dd})$
+:::
 
-$$\mathbb{E}\left[Z_t \frac{S_t}{R_t}\right] = S_0$$
+### Risk-Neutral Measures and Martingales
 
-### Stock as Numeraire Revisited
+::: {#exr-martingale-property}
+In the Black-Scholes model with constant dividend yield $q$, show that:
+a) $e^{-qt}S_t$ is a martingale under the risk-neutral measure
+b) $S_t/R_t$ is a martingale under the risk-neutral measure, where $R_t = e^{rt}$
+c) If $V_t$ is the value of any derivative, then $e^{-rt}V_t$ is a martingale under the risk-neutral measure
+:::
 
-When using the stock as numeraire, we need the process $\frac{R_t}{S_t}$ to be a martingale. Following similar analysis with Girsanov's Theorem, we find that under the stock numeraire measure:
+::: {#exr-risk-neutral-simulation}
+Use simulation to verify the martingale property in a simple setting. Generate 10,000 paths of geometric Brownian motion under the risk-neutral measure:
+$$\frac{dS}{S} = (r-q) dt + \sigma dB^R$$
 
-$$\mathrm{d}S_t = (r + \sigma^2) S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t^S$$
+With parameters $S_0 = 100$, $r = 5\%$, $q = 2\%$, $\sigma = 20\%$, and $T = 1$:
 
-where $B_t^S = B_t^R - \sigma t$ is a Brownian motion under the stock numeraire measure.
+a) Verify that $\mathbb{E}^R[S_T e^{-qT}] \approx S_0$ (martingale property)
+b) Verify that $\mathbb{E}^R[e^{-rT}S_T] \approx S_0 e^{-qT}$ (discounted expectation)
+c) Calculate the sample variance of both expressions and comment on the simulation error
+:::
 
-### Digital Options in Black-Scholes
+### Change of Numeraire
 
-Using these results, we can value digital options in the Black-Scholes model. The digital option paying $\mathbf{1}_{\{S(T) \geq K\}}$ has value:
+::: {#exr-numeraire-digital}
+Use simulation to verify the change of numeraire for digital options. Consider a digital option that pays $1$ if $S_T \geq K$ with $S_0 = 100$, $K = 105$, $r = 5\%$, $q = 2\%$, $\sigma = 20\%$, $T = 0.5$.
 
-$$e^{-rT} \mathbb{E}^R\left[\mathbf{1}_{\{S(T) \geq K\}}\right] = e^{-rT} N(d_2)$$
+Price this option using two methods:
+a) Risk-neutral measure: $\mathbb{E}^R[e^{-rT} \mathbf{1}_{\{S_T \geq K\}}]$
+b) Stock numeraire: $S_0 \mathbb{E}^S[\frac{1}{S_T} \mathbf{1}_{\{S_T \geq K\}}]$
 
-where:
+Under the stock numeraire, the stock follows:
+$$\frac{dS}{S} = (r-q+\sigma^2) dt + \sigma dB^S$$
 
-$$d_2 = \frac{\log(S_0/K) + (r - \frac{\sigma^2}{2})T}{\sigma\sqrt{T}}$$
+Verify that both methods give the same price up to simulation error.
+:::
 
-and $N(\cdot)$ is the standard normal cumulative distribution function.
+::: {#exr-share-digital}
+Calculate the price of a "share digital" option that pays $S_T$ if $S_T \leq K$ and $0$ otherwise, using the Black-Scholes model assumptions.
 
-For the digital option paying $S(T)\mathbf{1}_{\{S(T) \geq K\}}$, it's easier to use the stock as numeraire:
+a) Use the stock as numeraire to show the price is $S_0 \mathbb{E}^S[\mathbf{1}_{\{S_T \leq K\}}]$
+b) Under the stock numeraire measure, show that $\log S_T$ is normally distributed
+c) Calculate the price analytically in terms of the normal CDF
+d) Verify your result by simulation
+:::
 
-$$S_0 \mathbb{E}^S\left[\mathbf{1}_{\{S(T) \geq K\}}\right] = S_0 N(d_1)$$
+::: {#exr-cross-asset-option}
+Suppose two assets $S$ and $V$ follow geometric Brownian motions under the risk-neutral measure:
+$$\frac{dS}{S} = r dt + \sigma_S dB_S^R$$
+$$\frac{dV}{V} = r dt + \sigma_V dB_V^R$$
 
-where:
+with correlation $\rho$ between the Brownian motions.
 
-$$d_1 = \frac{\log(S_0/K) + (r + \frac{\sigma^2}{2})T}{\sigma\sqrt{T}}$$
+Find the value of an option that pays $V_T \mathbf{1}_{\{V_T \geq S_T\}}$ using $V$ as the numeraire. 
+
+*Hint: Under the $V$-numeraire measure, determine the dynamics of $S/V$ and use the fact that $S_T/V_T \leq 1$ when $V_T \geq S_T$.*
+:::
+
+### Fundamental Pricing Formula
+
+::: {#exr-fundamental-formula}
+The fundamental pricing formula states that for any two assets $P$ and $Y$:
+$$Y_s = P_s \mathbb{E}^P_s\left[\frac{Y_t}{P_t}\right]$$
+
+a) Verify this formula when $P$ is the risk-free asset and $Y$ is a stock
+b) Verify this formula when $P$ is a stock and $Y$ is the risk-free asset  
+c) Show that this implies $Y_t/P_t$ is a martingale under the $P$-numeraire measure
+d) Use this formula to derive the Black-Scholes formula by setting $P$ as the risk-free asset and $Y$ as a call option
+:::
+
+::: {#exr-stochastic-discount-factor}
+In a single-period model with stochastic discount factor $m$:
+a) Show that if there are no arbitrage opportunities, then $\mathbb{E}[m] > 0$ and the law of one price holds
+b) Prove that $\mathbb{E}[mR] = 1$ where $R = e^{rT}$ is the gross risk-free return
+c) Show that the risk-neutral probabilities are given by $p_j = \frac{m_j \cdot \text{prob}_j}{\mathbb{E}[m]}$ where $\text{prob}_j$ is the actual probability of state $j$
+d) Verify that under the risk-neutral measure, all assets have expected return equal to the risk-free rate
+:::
+
+### Advanced Applications
+
+::: {#exr-quanto-option}
+A quanto option pays in domestic currency but depends on a foreign asset price. Consider a call option that pays $(S_T^f - K)^+$ dollars, where $S^f$ is a foreign stock price.
+
+If the exchange rate is $X_t$ (domestic per foreign currency), the foreign stock in domestic currency is $S_t = X_t S_t^f$.
+
+a) Show that under the domestic risk-neutral measure, if $S^f$ and $X$ are correlated with correlation $\rho$, then $S^f$ has drift $r^d - r^f - \rho \sigma_X \sigma_S$
+b) Price the quanto call option using this adjusted drift
+c) Compare this to a standard call option on the domestic value $S_t = X_t S_t^f$
+
+*Note: $r^d$ and $r^f$ are domestic and foreign risk-free rates respectively.*
+:::
+
+::: {#exr-multi-asset-rainbow}
+Consider a "rainbow option" that pays $\max(S_T^{(1)}, S_T^{(2)}, K)$ where $S^{(1)}$ and $S^{(2)}$ are two correlated stocks.
+
+a) Using the fundamental pricing formula, show that this can be priced as $\mathbb{E}^R[e^{-rT}\max(S_T^{(1)}, S_T^{(2)}, K)]$
+b) Explain why you cannot easily use a single asset as numeraire for this payoff
+c) Set up a Monte Carlo simulation to price this option with realistic parameters
+d) Compare the rainbow option price to the sum of two individual call options minus a call on the minimum of the two stocks
+:::
 
 ## Summary
 
