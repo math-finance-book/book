@@ -335,13 +335,7 @@ Now let's explore how N-period binomial trees behave with different parameters u
 <iframe width="100%" height="800" src="https://binomial-trees.koyeb.app/"></iframe>
 
 **Interactive Binomial Trees Explorer.** 
-This tool allows you to experiment with N-period binomial trees. Key features:
-- **Interest rate**: Enter the rate per period (for annual rate with N periods, use r/N)
-- **Up move**: This corresponds to $(u-1)$ where $u$ is our up factor
-- **Down move**: The model automatically sets $d = 1/u$ to ensure recombination
-- **Number of periods**: See how increasing N affects option values and convergence
-- **Option types**: Compare European and American option pricing
-- **Parameters**: Observe how volatility, strike price, and time to maturity affect values
+This tool allows you to experiment with N-period binomial trees. Key features: (i) **Interest rate**: Enter the rate per period (for annual rate with N periods, use r/N), (ii) **Up move**: This corresponds to $(u-1)$ where $u$ is our up factor, (iii) **Down move**: The model automatically sets $d = 1/u$ to ensure recombination, (iv) **Number of periods**: See how increasing N affects option values and convergence, (v) **Option types**: Compare European and American option pricing, (vi) **Parameters**: Observe how volatility, strike price, and time to maturity affect values
 
 :::
 
@@ -416,62 +410,24 @@ print(f"American call (K=105): {call_american:.4f}")
    - For American options, compare with immediate exercise value
    - Take the maximum (American feature)
 
-4. **Risk-neutral probability**: The tree converges to the Black-Scholes model when $p = \frac{e^{r\Delta t} - d}{u - d}$ and we use the Cox-Ross-Rubinstein parameters.
-
-**Computational complexity**: 
-- Time: $O(N^2)$ for American options (must visit all nodes)  
-- Space: $O(N)$ (only current time step stored)
-- This is much better than the $O(2^N)$ complexity of path enumeration
-
 ## Parameter Calibration
 
-The key question is how to choose the parameters $u$, $d$, and $p$ so that the binomial model approximates the continuous-time Black-Scholes model as $N \to \infty$.
 
-#### Cox-Ross-Rubinstein Parameters
+We need $\Delta t$ to be small for it to be reasonable to assume that the underlying asset can only do two possible things over the next time period.  If we're going to take it be very small, we might as well ask what happens if we take it to be infinitesimal, meaning that we take $\Delta t \rightarrow 0$. This is the **continuous-time limit.**
 
-The most popular choice, proposed by Cox, Ross, and Rubinstein, sets:
+We should choose the parameters of the model to match the properties of the underlying asset. If we're going to take the limit, then the important feature is that the limiting parameters match the properties of the underlying asset. 
+Several choices are possible, but the most popular set of parameters is that proposed by [@CRR].  
+
+They set
 
 $$u = \mathrm{e}^{\sigma\sqrt{\Delta t}}, \quad d = \frac{1}{u}, \quad p = \frac{\mathrm{e}^{(r-q)\Delta t} - d}{u - d}$$
 
-where $q$ is the dividend yield. This choice ensures:
+where $\sigma$ is the standard deviation of the underlying asset return, $r$ is the risk-free rate, and $q$ is the dividend yield. This choice ensures:
 - The tree recombines ($ud = 1$)
-- The discrete model converges to geometric Brownian motion
+- The discrete model converges to geometric Brownian motion (see @sec-c:gbm).
 - The risk-neutral probability is well-defined when $d < \mathrm{e}^{(r-q)\Delta t} < u$
 
-#### Matching Moments
-
-For the binomial model to converge properly to the continuous-time model, we need:
-
-$$\frac{\mathbb{E}[\Delta \log S]}{\Delta t} \to r - q - \frac{\sigma^2}{2}$$
-
-$$\frac{\mathrm{Var}[\Delta \log S]}{\Delta t} \to \sigma^2$$
-
-The Cox-Ross-Rubinstein parameters satisfy these conditions. With $u = \mathrm{e}^{\sigma\sqrt{\Delta t}}$ and $d = 1/u$:
-
-- $\log u = \sigma\sqrt{\Delta t}$ and $\log d = -\sigma\sqrt{\Delta t}$
-- The variance of $\log(S_{t+\Delta t}/S_t)$ is approximately $\sigma^2 \Delta t$ for small $\Delta t$
-
-#### Alternative Parameters
-
-Other popular choices include:
-
-**Jarrow-Rudd**: Set $p = 1/2$ and adjust $u$ and $d$ to match the mean and variance:
-$$u = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t + \sigma\sqrt{\Delta t}\right)$$
-$$d = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t - \sigma\sqrt{\Delta t}\right)$$
-
-**Equal Probabilities**: This choice simplifies calculations but requires different up and down factors.
-
-#### Convergence and Accuracy
-
-The binomial model converges to the continuous-time limit as $N \to \infty$, but convergence is not monotonic. For European options:
-- Accuracy improves roughly as $O(1/N)$
-- Oscillations occur due to the discrete nature of the tree
-- Using $N \approx 100$ typically gives prices accurate to a few cents
-
-For American options:
-- The binomial model provides one of the most efficient numerical methods
-- Early exercise boundaries can be extracted from the tree
-- Smooth convergence requires larger $N$ than for European options
+The following interactive figure shows how the option prices derived from the binomial model settle down around fixed values as the number of periods in a given time period increases (that is, as $\Delta t = T/N \rightarrow 0$).  We will later see that this limit is the celebrated Black-Scholes formula (see @sec-c:blackscholes_updated).
 
 ::: {#fig-binomial-convergence}
 
@@ -484,7 +440,6 @@ are the same for both calls and puts, reflecting put-call parity in both the dis
 
 :::
 
-As $N \to \infty$, the binomial model converges to the Black-Scholes model (see @sec-c:blackscholes_updated), which provides the analytical solution for European options in the continuous-time setting.
 
 ## Summary
 
@@ -493,9 +448,7 @@ The binomial tree model provides an intuitive and flexible framework for option 
 1. **One-period model**: Introduces replication and risk-neutral valuation
 2. **Multi-period extension**: Uses backward induction for path-independent claims
 3. **Parameter choice**: Cox-Ross-Rubinstein parameters with $u = \mathrm{e}^{\sigma\sqrt{\Delta t}}$ and $d = 1/u$ ensure convergence
-4. **Implementation**: Efficient for American options and provides exercise boundaries
 
-The model's strength lies in its simplicity and ability to handle early exercise features. However, for path-dependent options or multiple underlying assets, the computational requirements grow exponentially, making Monte Carlo methods more attractive in those cases.
 
 ## Exercises
 
