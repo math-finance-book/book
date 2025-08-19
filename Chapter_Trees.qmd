@@ -31,21 +31,36 @@ The key insight is that we can replicate the option payoff using a portfolio of 
 
 $$\delta = \frac{C_u - C_d}{S_u - S_d}$$
 
-The portfolio consists of:
-- $\delta$ shares of stock
-- A position in the risk-free asset worth $B = \mathrm{e}^{-rt}(\delta S_u - C_u) = \mathrm{e}^{-rt}(\delta S_d - C_d)$
+To see why this works, consider a portfolio that holds $\delta$ shares of stock and borrows an amount $B$ at the risk-free rate. The portfolio value at maturity will be:
+- Up state: $\delta S_u - B e^{rt}$
+- Down state: $\delta S_d - B e^{rt}$
 
-By no-arbitrage, the option value must equal the cost of the replicating portfolio:
+For replication, we need these to equal the option payoffs:
+$$\delta S_u - B e^{rt} = C_u$$
+$$\delta S_d - B e^{rt} = C_d$$
 
-$$C = \delta S - B = \delta S - \mathrm{e}^{-rt}(\delta S_u - C_u)$$
+Subtracting the second equation from the first:
+$$\delta(S_u - S_d) = C_u - C_d$$
+
+This gives us our delta formula. We can solve for the borrowing amount:
+$$B = e^{-rt}(\delta S_u - C_u) = e^{-rt}(\delta S_d - C_d)$$
+
+The initial cost of this replicating portfolio is:
+$$\text{Portfolio Cost} = \delta S - B = \delta S - e^{-rt}(\delta S_u - C_u)$$
+
+By no-arbitrage, this must equal the option price.
 
 ::: Example
-Suppose $S = 100$, $S_u = 110$, $S_d = 90$, $K = 105$, $r = 0.05t$. Then:
+Suppose $S = 100$, $S_u = 110$, $S_d = 90$, $K = 105$, $r = 0.05$, $t = 1$. Then:
 - $C_u = \max(0, 110 - 105) = 5$
 - $C_d = \max(0, 90 - 105) = 0$
-- $\delta = \frac{5 - 0}{110 - 90} = \frac{1}{4}$
+- $\delta = \frac{5 - 0}{110 - 90} = 0.25$
+- $B = e^{-0.05}(0.25 \times 110 - 5) = e^{-0.05} \times 22.5 \approx 21.43$
+- Option price $= 0.25 \times 100 - 21.43 = 3.57$
 
-The replicating portfolio requires buying 0.25 shares and borrowing money. The option value equals the cost of this portfolio.
+**Verification:** In the up state, the portfolio is worth $0.25 \times 110 - 22.5 = 5$, matching $C_u$. In the down state, it's worth $0.25 \times 90 - 22.5 = 0$, matching $C_d$.
+
+This delta hedging shows that by holding 0.25 shares and borrowing $21.43, we can perfectly replicate the option payoff.
 :::
 
 ### Risk-Neutral Valuation
@@ -80,21 +95,49 @@ Now consider a two-period model where the stock price evolves over two time step
 
 Starting from $S$, after one period the stock price is either $uS$ or $dS$. After two periods, the possible prices are:
 - $u^2S$ (two up moves)
-- $udS = S$ (one up, one down)
+- $udS = S$ (one up, one down)  
 - $d^2S$ (two down moves)
 
 The tree recombines because $ud = du = 1$, so the middle node has price $S$ regardless of the path taken.
 
-### Backward Induction
+::: {#fig-binomial-trees}
 
-To value a European option, we work backwards through the tree:
+<iframe width="720" height="800" src="https://binomial-trees.koyeb.app/"></iframe>
 
-1. At maturity (period 2), calculate option payoffs at each node
-2. At period 1, calculate option values as discounted expected values:
-   $$C_{period 1} = \mathrm{e}^{-r\Delta t}[p C_{up} + (1-p) C_{down}]$$
-3. At period 0, repeat to get the initial option value
+**Interactive Binomial Trees.** 
+The interest rate should be the rate per period. The **up move** parameter corresponds to $(u-1)$ where $u$ is our up factor. The model takes $d = 1/u$. You can explore how option values change with different parameters and see both European and American option pricing.
 
-For American options, at each node we compare the continuation value (from holding) with the intrinsic value (from exercising) and take the maximum.
+:::
+
+### Backward Induction Process
+
+The key to valuing options in multi-period trees is **backward induction**. We start at maturity and work backwards to find today's value.
+
+**Step 1: Final Period (t = 2)**
+Calculate option payoffs at each terminal node:
+- Node (2,2): $C_{uu} = \max(0, u^2S - K)$ 
+- Node (2,1): $C_{ud} = \max(0, udS - K) = \max(0, S - K)$
+- Node (2,0): $C_{dd} = \max(0, d^2S - K)$
+
+**Step 2: Intermediate Period (t = 1)**
+At each node, calculate the option value as the discounted risk-neutral expectation of the next period's values. 
+
+At the up node (1,1) with stock price $uS$:
+$$C_u = e^{-r\Delta t}[p \cdot C_{uu} + (1-p) \cdot C_{ud}]$$
+
+At the down node (1,0) with stock price $dS$:
+$$C_d = e^{-r\Delta t}[p \cdot C_{ud} + (1-p) \cdot C_{dd}]$$
+
+**Step 3: Initial Period (t = 0)**
+Finally, calculate today's option value:
+$$C_0 = e^{-r\Delta t}[p \cdot C_u + (1-p) \cdot C_d]$$
+
+**For American Options:**
+At each intermediate node, compare continuation value with immediate exercise:
+- Up node: $C_u = \max(\text{continuation value}, \max(0, uS - K))$
+- Down node: $C_d = \max(\text{continuation value}, \max(0, dS - K))$
+
+This backward induction process automatically finds the optimal exercise strategy by comparing holding vs. exercising at each node.
 
 ## N-Period Model
 
@@ -102,82 +145,98 @@ The extension to N periods is straightforward. With parameters $u$ and $d = 1/u$
 
 $$S_j = u^j d^{n-j} S = u^{2j-n} S, \quad j = 0, 1, \ldots, n$$
 
-### European Option Valuation
+The critical insight for efficient implementation is backward induction rather than computing all possible paths.
 
-For a European option, the value is:
+### Backward Induction Implementation
 
-$$C = \mathrm{e}^{-rT} \sum_{j=0}^N \binom{N}{j} p^j (1-p)^{N-j} \max(u^{2j-N}S - K, 0)$$
-
-where $\binom{N}{j} = \frac{N!}{j!(N-j)!}$ is the binomial coefficient giving the number of paths to node $j$.
-
-### Implementation for European Options
+For American options especially, we must use backward induction. Here's how the algorithm works:
 
 ```{python}
 #| echo: true
 #| eval: true
 
-import numpy as np
-from scipy.special import comb
-
-def binomial_european(S0, K, r, sigma, T, N, option_type='call'):
+def binomial_american_detailed(S0, K, r, sigma, T, N, option_type='put'):
     """
-    Price European option using binomial tree
+    Price American option using binomial tree with detailed backward induction
     
-    Parameters:
-    S0: initial stock price
-    K: strike price
-    r: risk-free rate
-    sigma: volatility
-    T: time to maturity
-    N: number of time steps
-    option_type: 'call' or 'put'
+    This function shows exactly how backward induction works step by step
     """
-    dt = T / N
-    u = np.exp(sigma * np.sqrt(dt))
-    d = 1 / u
-    p = (np.exp(r * dt) - d) / (u - d)
+    # Step 1: Set up tree parameters
+    dt = T / N                          # Time per step
+    u = np.exp(sigma * np.sqrt(dt))     # Up factor
+    d = 1 / u                           # Down factor (ensures recombining tree)
+    p = (np.exp(r * dt) - d) / (u - d)  # Risk-neutral probability
+    disc = np.exp(-r * dt)              # Discount factor
     
-    # Stock prices at maturity
-    S = S0 * u**(2*np.arange(N+1) - N)
+    print(f"Tree parameters: u={u:.4f}, d={d:.4f}, p={p:.4f}")
     
-    # Option payoffs at maturity
-    if option_type == 'call':
-        payoffs = np.maximum(S - K, 0)
-    else:
-        payoffs = np.maximum(K - S, 0)
+    # Step 2: Initialize option values at maturity (time N)
+    # At maturity, we have N+1 possible stock prices
+    V = np.zeros(N+1)  # Option values
+    S = np.zeros(N+1)  # Stock prices
     
-    # Expected value under risk-neutral measure
-    option_value = 0
     for j in range(N+1):
-        option_value += comb(N, j, exact=True) * p**j * (1-p)**(N-j) * payoffs[j]
+        S[j] = S0 * (u**j) * (d**(N-j))  # Stock price at node j
+        if option_type == 'call':
+            V[j] = max(0, S[j] - K)      # Call payoff
+        else:
+            V[j] = max(0, K - S[j])      # Put payoff
     
-    return np.exp(-r * T) * option_value
+    print(f"\nAt maturity (time {N}):")
+    print(f"Stock prices: {[f'{s:.2f}' for s in S]}")
+    print(f"Option values: {[f'{v:.4f}' for v in V]}")
+    
+    # Step 3: Backward induction through the tree
+    for i in range(N-1, -1, -1):  # Work backwards from time N-1 to 0
+        print(f"\nTime step {i}:")
+        
+        # At time i, we have i+1 nodes
+        new_V = np.zeros(i+1)
+        new_S = np.zeros(i+1)
+        
+        for j in range(i+1):
+            # Stock price at this node
+            new_S[j] = S0 * (u**j) * (d**(i-j))
+            
+            # Continuation value (discounted expected value)
+            continuation = disc * (p * V[j+1] + (1-p) * V[j])
+            
+            # Immediate exercise value
+            if option_type == 'call':
+                exercise = max(0, new_S[j] - K)
+            else:
+                exercise = max(0, K - new_S[j])
+            
+            # American option: take maximum of continuation and exercise
+            new_V[j] = max(continuation, exercise)
+            
+            print(f"  Node {j}: S={new_S[j]:.2f}, Cont={continuation:.4f}, "
+                  f"Exercise={exercise:.4f}, Value={new_V[j]:.4f}")
+        
+        # Update for next iteration
+        V = new_V.copy()
+        S = new_S.copy()
+    
+    return V[0]
 
-# Example
-S0 = 100
-K = 100
-r = 0.05
-sigma = 0.2
-T = 1
-N = 100
-
-call_value = binomial_european(S0, K, r, sigma, T, N, 'call')
-print(f"European call value: {call_value:.4f}")
+# Example with small tree to see the process
+print("Detailed backward induction for 3-step American put:")
+S0, K, r, sigma, T, N = 50, 50, 0.05, 0.3, 0.25, 3
+put_value = binomial_american_detailed(S0, K, r, sigma, T, N, 'put')
+print(f"\nFinal American put value: {put_value:.4f}")
 ```
 
-### Implementation for American Options
-
-For American options, we must use backward induction and check for early exercise at each node:
+Now here's the streamlined version for practical use:
 
 ```{python}
 #| echo: true
 #| eval: true
 
-def binomial_american(S0, K, r, sigma, T, N, option_type='put'):
+def binomial_american_fast(S0, K, r, sigma, T, N, option_type='put'):
     """
-    Price American option using binomial tree with backward induction
+    Efficient American option pricing using backward induction
     
-    Parameters as before
+    This version uses vectorized operations for speed
     """
     dt = T / N
     u = np.exp(sigma * np.sqrt(dt))
@@ -185,35 +244,63 @@ def binomial_american(S0, K, r, sigma, T, N, option_type='put'):
     p = (np.exp(r * dt) - d) / (u - d)
     disc = np.exp(-r * dt)
     
-    # Stock prices at maturity
-    S = S0 * u**(2*np.arange(N+1) - N)
+    # Initialize option values at maturity
+    # Use vectorized operations for efficiency
+    j_values = np.arange(N+1)
+    S_final = S0 * (u**j_values) * (d**(N-j_values))
     
-    # Option values at maturity
     if option_type == 'call':
-        V = np.maximum(S - K, 0)
+        V = np.maximum(S_final - K, 0)
     else:
-        V = np.maximum(K - S, 0)
+        V = np.maximum(K - S_final, 0)
     
     # Backward induction
     for i in range(N-1, -1, -1):
-        # Stock prices at time i
-        S = S0 * u**(2*np.arange(i+1) - i)
+        j_values = np.arange(i+1)
+        S_current = S0 * (u**j_values) * (d**(i-j_values))
         
-        # Continuation values
-        V = disc * (p * V[1:i+2] + (1-p) * V[0:i+1])
+        # Continuation values (vectorized)
+        V_new = disc * (p * V[1:i+2] + (1-p) * V[0:i+1])
         
-        # Compare with immediate exercise
+        # Exercise values
         if option_type == 'call':
-            V = np.maximum(V, S - K)
+            exercise = np.maximum(S_current - K, 0)
         else:
-            V = np.maximum(V, K - S)
+            exercise = np.maximum(K - S_current, 0)
+        
+        # Take maximum (American feature)
+        V = np.maximum(V_new, exercise)
     
     return V[0]
 
-# Example
-put_value = binomial_american(S0, K, r, sigma, T, N, 'put')
-print(f"American put value: {put_value:.4f}")
+# Examples
+print("\nAmerican option values:")
+put_american = binomial_american_fast(100, 105, 0.05, 0.2, 1, 100, 'put')
+call_american = binomial_american_fast(100, 105, 0.05, 0.2, 1, 100, 'call')
+print(f"American put (K=105): {put_american:.4f}")
+print(f"American call (K=105): {call_american:.4f}")
 ```
+
+### How the Code Works
+
+**Key algorithmic insights:**
+
+1. **Vectorization**: Instead of nested loops, we use NumPy arrays to compute all nodes at each time step simultaneously
+
+2. **Memory efficiency**: We only store option values for the current time step, not the entire tree
+
+3. **Backward induction logic**:
+   - Start with payoffs at maturity
+   - At each prior time step, compute continuation value as discounted expectation
+   - For American options, compare with immediate exercise value
+   - Take the maximum (American feature)
+
+4. **Risk-neutral probability**: The tree converges to the Black-Scholes model when $p = \frac{e^{r\Delta t} - d}{u - d}$ and we use the Cox-Ross-Rubinstein parameters.
+
+**Computational complexity**: 
+- Time: $O(N^2)$ for American options (must visit all nodes)  
+- Space: $O(N)$ (only current time step stored)
+- This is much better than the $O(2^N)$ complexity of path enumeration
 
 ## Parameter Calibration
 
