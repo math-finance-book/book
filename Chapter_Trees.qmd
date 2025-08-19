@@ -23,7 +23,7 @@ This chapter introduces binomial tree models for valuing derivative securities. 
 
 We start with the simplest possible model. A stock has price $S$ today (date 0) and will have one of two possible values at date $t$: either $S_u$ (up state) or $S_d$ (down state), where $S_u > S_d$. There is also a risk-free asset earning a continuously compounded rate $r$.
 
-### Delta Hedging and Replication
+#### Delta Hedging and Replication
 
 Consider a European call option with strike $K$ and maturity $t$. Its payoff will be $C_u = \max(0, S_u - K)$ in the up state and $C_d = \max(0, S_d - K)$ in the down state.
 
@@ -63,7 +63,7 @@ Suppose $S = 100$, $S_u = 110$, $S_d = 90$, $K = 105$, $r = 0.05$, $t = 1$. Then
 This delta hedging shows that by holding 0.25 shares and borrowing $21.43, we can perfectly replicate the option payoff.
 :::
 
-### Risk-Neutral Valuation
+#### Risk-Neutral Valuation
 
 We can rearrange the replication formula to express the option value as:
 
@@ -100,7 +100,7 @@ Starting from $S$, after one period the stock price is either $uS$ or $dS$. Afte
 
 The tree recombines because $ud = du = 1$, so the middle node has price $S$ regardless of the path taken.
 
-### Backward Induction Process
+#### Backward Induction Process
 
 The key to valuing options in multi-period trees is **backward induction**. We start at maturity and work backwards to find today's value.
 
@@ -130,7 +130,7 @@ At each intermediate node, compare continuation value with immediate exercise:
 
 This backward induction process automatically finds the optimal exercise strategy by comparing holding vs. exercising at each node.
 
-### Visual Representation of Two-Period Tree
+#### Visual Representation of Two-Period Tree
 
 To illustrate this backward induction process, let's create a visual representation of a two-period binomial tree:
 
@@ -256,7 +256,7 @@ $$S_j = u^j d^{n-j} S = u^{2j-n} S, \quad j = 0, 1, \ldots, n$$
 
 The critical insight for efficient implementation is backward induction rather than computing all possible paths.
 
-### Interactive N-Period Trees
+#### Interactive N-Period Trees
 
 Before diving into the implementation details, let's explore how N-period binomial trees behave with different parameters using an interactive tool:
 
@@ -277,7 +277,7 @@ Experiment with different values to see how the theoretical concepts we've discu
 
 :::
 
-### Backward Induction Implementation
+#### Backward Induction Implementation
 
 For American options especially, we must use backward induction. Here's how the algorithm works:
 
@@ -412,7 +412,7 @@ print(f"American put (K=105): {put_american:.4f}")
 print(f"American call (K=105): {call_american:.4f}")
 ```
 
-### How the Code Works
+#### How the Code Works
 
 **Key algorithmic insights:**
 
@@ -437,7 +437,7 @@ print(f"American call (K=105): {call_american:.4f}")
 
 The key question is how to choose the parameters $u$, $d$, and $p$ so that the binomial model approximates the continuous-time Black-Scholes model as $N \to \infty$.
 
-### Cox-Ross-Rubinstein Parameters
+#### Cox-Ross-Rubinstein Parameters
 
 The most popular choice, proposed by Cox, Ross, and Rubinstein, sets:
 
@@ -448,7 +448,7 @@ where $q$ is the dividend yield. This choice ensures:
 - The discrete model converges to geometric Brownian motion
 - The risk-neutral probability is well-defined when $d < \mathrm{e}^{(r-q)\Delta t} < u$
 
-### Matching Moments
+#### Matching Moments
 
 For the binomial model to converge properly to the continuous-time model, we need:
 
@@ -461,7 +461,7 @@ The Cox-Ross-Rubinstein parameters satisfy these conditions. With $u = \mathrm{e
 - $\log u = \sigma\sqrt{\Delta t}$ and $\log d = -\sigma\sqrt{\Delta t}$
 - The variance of $\log(S_{t+\Delta t}/S_t)$ is approximately $\sigma^2 \Delta t$ for small $\Delta t$
 
-### Alternative Parameters
+#### Alternative Parameters
 
 Other popular choices include:
 
@@ -471,7 +471,7 @@ $$d = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t - \sigma\sqrt{\Delta t}\rig
 
 **Equal Probabilities**: This choice simplifies calculations but requires different up and down factors.
 
-### Convergence and Accuracy
+#### Convergence and Accuracy
 
 The binomial model converges to the Black-Scholes model as $N \to \infty$, but convergence is not monotonic. For European options:
 - Accuracy improves roughly as $O(1/N)$
@@ -496,7 +496,7 @@ The model's strength lies in its simplicity and ability to handle early exercise
 
 ## Exercises
 
-### One-Period Model Exercises
+#### One-Period Model Exercises
 
 ::: {#exr-trees1}
 In a one-period binomial model with $S = 50$, $S_u = 60$, $S_d = 40$, and $r = 0.05$:
@@ -524,7 +524,7 @@ In a two-state model, a put option is equivalent to $\delta_p$ shares of the sto
 Using the result of the previous exercise, repeat @exr-binomialcall for a put option using all four pricing methods.
 :::
 
-### Two-Period and Multi-Period Exercises
+#### Two-Period and Multi-Period Exercises
 
 ::: {#exr-trees-visual}
 Modify the visual tree code to create a two-period tree for an American put option with $S_0 = 100$, $K = 105$, $r = 0.05$, $\sigma = 0.3$, and $T = 0.5$. At each intermediate node, show both the continuation value and the immediate exercise value, highlighting when early exercise is optimal.
@@ -538,7 +538,7 @@ Compare the detailed backward induction algorithm with the fast vectorized versi
 Show that in the Cox-Ross-Rubinstein model, the expected return on the stock under the risk-neutral measure equals the risk-free rate: $\mathbb{E}^p[S_{t+\Delta t}/S_t] = \mathrm{e}^{r\Delta t}$
 :::
 
-### Parameter Calibration and Convergence
+#### Parameter Calibration and Convergence
 
 ::: {#exr-binomial1}
 Consider an at-the-money European call option on a dividend-reinvested stock with six months to maturity. Take the initial stock price to be $50, the interest rate to be 5% and $\sigma = 30\%$. Compute the value in a binomial model with $N = 10, 11, \ldots, 30$ and plot the values against $N$. Is convergence monotone? Comment on the oscillations you observe.
@@ -564,7 +564,7 @@ b) Show that $\frac{\mathrm{Var}[\Delta \log S]}{\Delta t} \to \sigma^2$ as $\De
 where the expectation and variance are under the risk-neutral measure.
 :::
 
-### American Options and Early Exercise
+#### American Options and Early Exercise
 
 ::: {#exr-binomial4}
 The early exercise premium is the difference between the value of an American option and the value of a European option with the same parameters. Compute the early exercise premium for an American put with varying:
@@ -583,7 +583,7 @@ Implement a function to compute the early exercise boundary for an American put 
 For an American call option on a dividend-paying stock, show analytically that it may be optimal to exercise just before an ex-dividend date. Implement this in your binomial tree by adding discrete dividend payments and compare American and European call values.
 :::
 
-### Advanced Applications
+#### Advanced Applications
 
 ::: {#exr-shout-option}
 A shout option is an option where the holder is entitled to "shout" at any time before expiration. Upon shouting, the holder receives the immediate exercise value paid at expiration, plus an at-the-money option with the same expiration. The payoff if the holder shouts at time $\tau$ is $\max(0, S(\tau)-K, S_T-S(\tau))$ where $K$ is the original strike.

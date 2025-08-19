@@ -31,7 +31,7 @@ for a Brownian motion $B$, where $\sigma$ is assumed constant and $\mu$ can be a
 
 Before deriving the Black-Scholes formula, we need to understand how standard options relate to digital options. A **digital option** (also called binary option) has a discontinuous payoff—it pays a fixed amount if a condition is met, zero otherwise.
 
-### Two Types of Digitals
+#### Two Types of Digitals
 
 Consider a call option with strike $K$ and maturity $T$. Its payoff $(S_T - K)^+$ can be decomposed as:
 
@@ -48,7 +48,7 @@ $$(K - S_T)^+ = K \mathbf{1}_{\{S_T < K\}} - \mathbf{1}_{\{S_T < K\}} S_T$$
 
 This is $K$ cash digitals minus share digitals, both paying when $S_T < K$.
 
-### Why This Decomposition Matters
+#### Why This Decomposition Matters
 
 This decomposition is powerful because:
 
@@ -91,7 +91,7 @@ Therefore:
 
 $$\mathbb{E}\left[Z_t \frac{S_t}{R_t}\right] = S_0$$
 
-### Stock as Numeraire
+#### Stock as Numeraire
 
 When using the stock as numeraire, we need the process $\frac{R_t}{S_t}$ to be a martingale. Following similar analysis with Girsanov's Theorem, we find that under the stock numeraire measure:
 
@@ -103,7 +103,7 @@ where $B_t^S = B_t^R - \sigma t$ is a Brownian motion under the stock numeraire 
 
 Now we apply the valuation theory from Chapter 3 (Arbitrage Pricing) and the tail probability calculations from Chapter 2 (Geometric Brownian Motion) to derive the Black-Scholes formula.
 
-### Cash Digital Options
+#### Cash Digital Options
 
 A cash digital option paying \$1 when $S_T > K$ has value under the risk-neutral measure:
 
@@ -129,7 +129,7 @@ where:
 
 $$d_2 = \frac{\log(S_t/K) + (r - q - \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}}$$
 
-### Share Digital Options
+#### Share Digital Options
 
 For the share digital paying $S_T \mathbf{1}_{\{S_T > K\}}$, we use the stock as numeraire. From the change of numeraire theory in Chapter 3:
 
@@ -147,7 +147,7 @@ where:
 
 $$d_1 = \frac{\log(S_t/K) + (r - q + \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}} = d_2 + \sigma\sqrt{T-t}$$
 
-### Combining the Results
+#### Combining the Results
 
 Now we can derive the Black-Scholes formula by combining our digital option results. A European call option has payoff:
 
@@ -159,7 +159,7 @@ The second term is $K$ cash digitals worth $K \cdot e^{-r(T-t)} \cdot \text{prob
 
 Since we need $e^{-q(T-t)}$ in front of the share digital to account for dividends, the call value is:
 
-### The Black-Scholes Formula
+#### The Black-Scholes Formula
 
 This derivation shows how the fundamental arbitrage pricing theory leads directly to the Black-Scholes formula. The key steps were:
 
@@ -186,7 +186,7 @@ The call and put values satisfy put-call parity:
 
 $$e^{-r(T-t)} K + C(t, S_t) = e^{-q(T-t)} S_t + P(t, S_t)$$
 
-### Interactive Black-Scholes Explorer
+#### Interactive Black-Scholes Explorer
 
 The following interactive tool allows you to explore how the Black-Scholes formula behaves as you vary the input parameters. You can see how option prices change with stock price, volatility, time to expiration, interest rates, and dividend yields.
 
@@ -236,35 +236,35 @@ The Black-Scholes formula satisfies this PDE with the appropriate boundary condi
 
 The sensitivities of option values to various inputs are called Greeks. From the Black-Scholes formula:
 
-### Delta ($\delta$)
+#### Delta ($\delta$)
 The sensitivity to stock price changes:
 
 $$\delta_{call} = e^{-q(T-t)} N(d_1)$$
 $$\delta_{put} = -e^{-q(T-t)} N(-d_1)$$
 
-### Gamma ($\Gamma$)
+#### Gamma ($\Gamma$)
 The rate of change of delta:
 
 $$\Gamma = \frac{e^{-q(T-t)} n(d_1)}{S \sigma \sqrt{T-t}}$$
 
 where $n(\cdot)$ is the standard normal density. Gamma is the same for calls and puts.
 
-### Theta ($\Theta$)
+#### Theta ($\Theta$)
 The time decay (using $\partial/\partial(-T)$ so positive theta means value increases as time passes):
 
 $$\Theta_{call} = -\frac{e^{-q(T-t)} S n(d_1) \sigma}{2\sqrt{T-t}} + q e^{-q(T-t)} S N(d_1) - r e^{-r(T-t)} K N(d_2)$$
 
-### Vega ($\mathcal{V}$)
+#### Vega ($\mathcal{V}$)
 The sensitivity to volatility:
 
 $$\mathcal{V} = e^{-q(T-t)} S n(d_1) \sqrt{T-t}$$
 
-### Rho ($\rho$)
+#### Rho ($\rho$)
 The sensitivity to interest rates:
 
 $$\rho_{call} = (T-t) e^{-r(T-t)} K N(d_2)$$
 
-### Interactive Greeks Explorer
+#### Interactive Greeks Explorer
 
 The Greeks measure how option prices change with respect to various parameters. The following interactive tool lets you visualize how the Greeks behave across different stock prices and parameter values.
 
@@ -295,11 +295,11 @@ where $\Delta S$ is the stock price change. The hedging error increases with:
 - Higher volatility
 - Longer time between rebalances
 
-## Discretely Rebalanced Delta Hedges
+#### Discretely Rebalanced Delta Hedges
 
 The theoretical analysis above assumes continuous rebalancing, but in practice, hedging must be done at discrete intervals. This introduces hedging error that we can analyze through simulation.
 
-### The Discrete Hedging Problem
+#### The Discrete Hedging Problem
 
 Consider a delta hedge that is rebalanced at discrete times $0 = t_0 < t_1 < \cdots < t_N = T$ with $\Delta t = T/N$. Between rebalancing dates, the hedge portfolio consists of:
 - Short position in the option
@@ -317,7 +317,7 @@ With discrete rebalancing, this balance is disrupted. The portfolio gains and lo
 3. **Interest and dividends**: Financing costs and dividend income
 4. **Delta drift**: Changes in delta between rebalancing dates
 
-### Simulation of Discrete Hedging
+#### Simulation of Discrete Hedging
 
 The following code simulates the performance of discretely rebalanced delta hedges:
 
@@ -452,7 +452,7 @@ print(f"\\nNote: Errors should decrease as rebalancing frequency increases.")
 print(f"The Black-Scholes price is {blackscholes(S0, K, r, q, sigma, T, True):.4f}")
 ```
 
-### Understanding Hedging Errors
+#### Understanding Hedging Errors
 
 The simulation results illustrate several key points about discrete hedging:
 
@@ -464,7 +464,7 @@ The simulation results illustrate several key points about discrete hedging:
 
 4. **The hedge is model-independent**: Notice that the expected stock return $\mu$ affects the distribution of stock paths but not the systematic hedging error - this confirms the model-free nature of delta hedging
 
-### Practical Implications
+#### Practical Implications
 
 In practice, traders must balance:
 - **Hedging accuracy**: More frequent rebalancing reduces error
@@ -486,7 +486,7 @@ Implied volatilities serve several purposes:
 2. **Relative value**: Comparing implied volatilities helps identify expensive or cheap options
 3. **Market views**: Implied volatilities reflect market expectations of future volatility
 
-### The Volatility Smile
+#### The Volatility Smile
 
 If the Black-Scholes model were perfect, all options with the same maturity would have the same implied volatility. In practice, plotting implied volatility against strike typically shows:
 
@@ -502,7 +502,7 @@ The smile has been particularly pronounced for equity index options since the 19
 
 ## Exercises
 
-### Digital Options and Building Blocks
+#### Digital Options and Building Blocks
 
 ::: {#exr-digital-pricing}
 Consider a cash digital option that pays $1 when $S_T > K$ and a share digital that pays $S_T$ when $S_T > K$. Using Black-Scholes parameters $S_0 = 100$, $K = 105$, $r = 5\%$, $q = 2\%$, $\sigma = 20\%$, $T = 0.25$:
@@ -525,7 +525,7 @@ c) Explain why delta hedging a short digital position near expiration and near t
 d) What happens to the digital delta as time to expiration approaches zero?
 :::
 
-### Change of Numeraire and Girsanov's Theorem
+#### Change of Numeraire and Girsanov's Theorem
 
 ::: {#exr-measure-verification}
 Using simulation, verify the change of numeraire formulas for digital options:
@@ -546,7 +546,7 @@ c) Show that $Z_t S_t/R_t$ is a martingale under the original measure
 d) Compare the distribution of $B_t + \kappa t$ to standard Brownian motion under the new measure
 :::
 
-### Black-Scholes Formula and Properties
+#### Black-Scholes Formula and Properties
 
 ::: {#exr-bs-implementation}
 Implement the complete Black-Scholes formula with all Greeks:
@@ -575,7 +575,7 @@ c) For which moneyness is the option price most sensitive to volatility changes?
 d) Explain this pattern in terms of the option's probability of finishing in-the-money
 :::
 
-### Greeks and Risk Management
+#### Greeks and Risk Management
 
 ::: {#exr-greeks-plots}
 Create comprehensive plots of the Greeks using the interactive Greeks explorer as reference:
@@ -604,7 +604,7 @@ c) Verify both satisfy the fundamental PDE: $rV = \frac{\partial V}{\partial t} 
 d) Compare the hedging difficulty (gamma exposure) of these payoffs to standard options
 :::
 
-### Discrete Hedging and Practical Implementation
+#### Discrete Hedging and Practical Implementation
 
 ::: {#exr-discrete-hedging-analysis}
 Extend the discrete hedging simulation from the chapter:
@@ -633,7 +633,7 @@ c) Demonstrate that selling options when implied volatility > realized volatilit
 d) Account for the theta decay and show the complete P&L attribution
 :::
 
-### Implied Volatility and Market Practice
+#### Implied Volatility and Market Practice
 
 ::: {#exr-implied-vol-calculation}
 Implement an implied volatility calculator:
@@ -662,7 +662,7 @@ c) Create scenarios where the model significantly misprices options
 d) Propose practical adjustments traders might make to account for these limitations
 :::
 
-### Advanced Applications
+#### Advanced Applications
 
 ::: {#exr-dividend-timing}
 Analyze the impact of discrete dividends on American call options:
