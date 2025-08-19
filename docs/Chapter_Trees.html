@@ -6,11 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Kerry Back, Rice University">
-<meta name="author" content="Hong Liu, Washington University in St.&nbsp;Louis">
-<meta name="author" content="Mark Loewenstein, University of Maryland">
 
-<title>Pricing and Hedging Derivative Securities</title>
+<title>4&nbsp; Binomial Tree Models – Pricing and Hedging Derivative Securities</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,17 +20,53 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./Chapter_IntroDerivatives.html" rel="next">
+<link href="./Chapter_BrownianMotion.html" rel="next">
+<link href="./Chapter_IntroFutures.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,6 +114,25 @@ ul.task-list li input[type="checkbox"] {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 <style>
 div.callout-Principle.callout {
@@ -133,6 +185,35 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 }
 </style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -307,7 +388,7 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_IntroDerivatives.html">Part 1: Introduction</a></li><li class="breadcrumb-item"><a href="./Chapter_Trees.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Binomial Tree Models</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -344,7 +425,7 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -377,7 +458,7 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_Trees.html" class="sidebar-item-text sidebar-link">
+  <a href="./Chapter_Trees.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Binomial Tree Models</span></span></a>
   </div>
 </li>
@@ -509,23 +590,15 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_IntroDerivatives.html">Part 1: Introduction</a></li><li class="breadcrumb-item"><a href="./Chapter_Trees.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Binomial Tree Models</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Pricing and Hedging Derivative Securities</h1>
+<h1 class="title"><span id="sec-c:trees" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Binomial Tree Models</span></span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Authors</div>
-    <div class="quarto-title-meta-contents">
-             <p>Kerry Back, Rice University </p>
-             <p>Hong Liu, Washington University in St.&nbsp;Louis </p>
-             <p>Mark Loewenstein, University of Maryland </p>
-          </div>
-  </div>
     
   
     
@@ -536,12 +609,250 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This is an incomplete and in-progress draft of a python-based introduction to derivative security pricing.</p>
-<p>The chat icon below the book title on the top left is a link to a chatbot that can answer questions using the book as a source. Like any chatbot, it can make mistakes, so check its answers with the sources in the book that it should provide. The Github icon next to the chat icon is a link to a Github repository of Jupyter notebooks. The notebooks contain all of the code in the book and include <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> buttons. The notebooks can be opened in Colab or downloaded from the Github repo (or you can clone the repo). The icon to the right of the Github icon enables toggling between light and dark modes.</p>
-<p>Figures in the text are interactive. Hover your cursor over plot elements to see additional data. Also, hover over footnote numbers to see footnotes.</p>
-<p>The book is <a href="https://web.hypothes.is/">Hypothesis</a> enabled. Click the icons at the top right to log in or sign up and to create annotations or to highlight text. The annotations and highlights will be visible to you in subsequent visits to the book once you log in to your Hypothesis account. We prefer that you do not post annotations or highlights to the Public account.</p>
+<div id="112493de" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
+<p>This chapter introduces binomial tree models for valuing derivative securities. We begin with the fundamental concepts of arbitrage pricing in a one-period model, extend to multi-period trees, and then discuss practical implementation and parameter calibration.</p>
+<section id="one-period-binomial-model" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="one-period-binomial-model"><span class="header-section-number">4.1</span> One-Period Binomial Model</h2>
+<p>We start with the simplest possible model. A stock has price <span class="math inline">\(S\)</span> today (date 0) and will have one of two possible values at date <span class="math inline">\(t\)</span>: either <span class="math inline">\(S_u\)</span> (up state) or <span class="math inline">\(S_d\)</span> (down state), where <span class="math inline">\(S_u &gt; S_d\)</span>. There is also a risk-free asset earning a continuously compounded rate <span class="math inline">\(r\)</span>.</p>
+<section id="delta-hedging-and-replication" class="level3">
+<h3 class="anchored" data-anchor-id="delta-hedging-and-replication">Delta Hedging and Replication</h3>
+<p>Consider a European call option with strike <span class="math inline">\(K\)</span> and maturity <span class="math inline">\(t\)</span>. Its payoff will be <span class="math inline">\(C_u = \max(0, S_u - K)\)</span> in the up state and <span class="math inline">\(C_d = \max(0, S_d - K)\)</span> in the down state.</p>
+<p>The key insight is that we can replicate the option payoff using a portfolio of the stock and risk-free asset. Let <span class="math inline">\(\delta\)</span> be the number of shares we hold. This delta is chosen so that the portfolio has the same payoff as the option in both states:</p>
+<p><span class="math display">\[\delta = \frac{C_u - C_d}{S_u - S_d}\]</span></p>
+<p>The portfolio consists of: - <span class="math inline">\(\delta\)</span> shares of stock - A position in the risk-free asset worth <span class="math inline">\(B = \mathrm{e}^{-rt}(\delta S_u - C_u) = \mathrm{e}^{-rt}(\delta S_d - C_d)\)</span></p>
+<p>By no-arbitrage, the option value must equal the cost of the replicating portfolio:</p>
+<p><span class="math display">\[C = \delta S - B = \delta S - \mathrm{e}^{-rt}(\delta S_u - C_u)\]</span></p>
+<div class="callout callout-style-simple callout-Example callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Suppose <span class="math inline">\(S = 100\)</span>, <span class="math inline">\(S_u = 110\)</span>, <span class="math inline">\(S_d = 90\)</span>, <span class="math inline">\(K = 105\)</span>, <span class="math inline">\(r = 0.05t\)</span>. Then: - <span class="math inline">\(C_u = \max(0, 110 - 105) = 5\)</span> - <span class="math inline">\(C_d = \max(0, 90 - 105) = 0\)</span> - <span class="math inline">\(\delta = \frac{5 - 0}{110 - 90} = \frac{1}{4}\)</span></p>
+<p>The replicating portfolio requires buying 0.25 shares and borrowing money. The option value equals the cost of this portfolio.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="risk-neutral-valuation" class="level3">
+<h3 class="anchored" data-anchor-id="risk-neutral-valuation">Risk-Neutral Valuation</h3>
+<p>We can rearrange the replication formula to express the option value as:</p>
+<p><span class="math display">\[C = \pi_u C_u + \pi_d C_d\]</span></p>
+<p>where the state prices are:</p>
+<p><span class="math display">\[\pi_u = \frac{S - \mathrm{e}^{-rt}S_d}{S_u - S_d}, \quad \pi_d = \frac{\mathrm{e}^{-rt}S_u - S}{S_u - S_d}\]</span></p>
+<p>These state prices satisfy: - <span class="math inline">\(\pi_u, \pi_d &gt; 0\)</span> (under no-arbitrage condition <span class="math inline">\(S_u/S &gt; \mathrm{e}^{rt} &gt; S_d/S\)</span>) - <span class="math inline">\(\pi_u \mathrm{e}^{rt} + \pi_d \mathrm{e}^{rt} = 1\)</span></p>
+<p>This motivates defining risk-neutral probabilities:</p>
+<p><span class="math display">\[p_u = \pi_u \mathrm{e}^{rt}, \quad p_d = \pi_d \mathrm{e}^{rt}\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[C = \mathrm{e}^{-rt}[p_u C_u + p_d C_d]\]</span></p>
+<p>The option value is the discounted expected payoff under the risk-neutral probability measure. Note that:</p>
+<p><span class="math display">\[p_u = \frac{\mathrm{e}^{rt} - S_d/S}{S_u/S - S_d/S}\]</span></p>
+</section>
+</section>
+<section id="two-period-model" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="two-period-model"><span class="header-section-number">4.2</span> Two-Period Model</h2>
+<p>Now consider a two-period model where the stock price evolves over two time steps of length <span class="math inline">\(\Delta t = t/2\)</span>. To simplify notation and ensure the tree recombines, we parameterize the price movements using multiplicative factors <span class="math inline">\(u &gt; 1\)</span> and <span class="math inline">\(d = 1/u &lt; 1\)</span>.</p>
+<p>Starting from <span class="math inline">\(S\)</span>, after one period the stock price is either <span class="math inline">\(uS\)</span> or <span class="math inline">\(dS\)</span>. After two periods, the possible prices are: - <span class="math inline">\(u^2S\)</span> (two up moves) - <span class="math inline">\(udS = S\)</span> (one up, one down) - <span class="math inline">\(d^2S\)</span> (two down moves)</p>
+<p>The tree recombines because <span class="math inline">\(ud = du = 1\)</span>, so the middle node has price <span class="math inline">\(S\)</span> regardless of the path taken.</p>
+<section id="backward-induction" class="level3">
+<h3 class="anchored" data-anchor-id="backward-induction">Backward Induction</h3>
+<p>To value a European option, we work backwards through the tree:</p>
+<ol type="1">
+<li>At maturity (period 2), calculate option payoffs at each node</li>
+<li>At period 1, calculate option values as discounted expected values: <span class="math display">\[C_{period 1} = \mathrm{e}^{-r\Delta t}[p C_{up} + (1-p) C_{down}]\]</span></li>
+<li>At period 0, repeat to get the initial option value</li>
+</ol>
+<p>For American options, at each node we compare the continuation value (from holding) with the intrinsic value (from exercising) and take the maximum.</p>
+</section>
+</section>
+<section id="n-period-model" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="n-period-model"><span class="header-section-number">4.3</span> N-Period Model</h2>
+<p>The extension to N periods is straightforward. With parameters <span class="math inline">\(u\)</span> and <span class="math inline">\(d = 1/u\)</span>, after <span class="math inline">\(n\)</span> periods we have <span class="math inline">\(n+1\)</span> nodes with stock prices:</p>
+<p><span class="math display">\[S_j = u^j d^{n-j} S = u^{2j-n} S, \quad j = 0, 1, \ldots, n\]</span></p>
+<section id="european-option-valuation" class="level3">
+<h3 class="anchored" data-anchor-id="european-option-valuation">European Option Valuation</h3>
+<p>For a European option, the value is:</p>
+<p><span class="math display">\[C = \mathrm{e}^{-rT} \sum_{j=0}^N \binom{N}{j} p^j (1-p)^{N-j} \max(u^{2j-N}S - K, 0)\]</span></p>
+<p>where <span class="math inline">\(\binom{N}{j} = \frac{N!}{j!(N-j)!}\)</span> is the binomial coefficient giving the number of paths to node <span class="math inline">\(j\)</span>.</p>
+</section>
+<section id="implementation-for-european-options" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-for-european-options">Implementation for European Options</h3>
+<div id="9491f5a5" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> comb</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binomial_european(S0, K, r, sigma, T, N, option_type<span class="op">=</span><span class="st">'call'</span>):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Price European option using binomial tree</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    S0: initial stock price</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    K: strike price</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    r: risk-free rate</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    sigma: volatility</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    T: time to maturity</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    N: number of time steps</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    option_type: 'call' or 'put'</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(sigma <span class="op">*</span> np.sqrt(dt))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> (np.exp(r <span class="op">*</span> dt) <span class="op">-</span> d) <span class="op">/</span> (u <span class="op">-</span> d)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Stock prices at maturity</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>np.arange(N<span class="op">+</span><span class="dv">1</span>) <span class="op">-</span> N)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Option payoffs at maturity</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> option_type <span class="op">==</span> <span class="st">'call'</span>:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        payoffs <span class="op">=</span> np.maximum(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        payoffs <span class="op">=</span> np.maximum(K <span class="op">-</span> S, <span class="dv">0</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Expected value under risk-neutral measure</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    option_value <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(N<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        option_value <span class="op">+=</span> comb(N, j, exact<span class="op">=</span><span class="va">True</span>) <span class="op">*</span> p<span class="op">**</span>j <span class="op">*</span> (<span class="dv">1</span><span class="op">-</span>p)<span class="op">**</span>(N<span class="op">-</span>j) <span class="op">*</span> payoffs[j]</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> option_value</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Example</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>S0 <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>call_value <span class="op">=</span> binomial_european(S0, K, r, sigma, T, N, <span class="st">'call'</span>)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"European call value: </span><span class="sc">{</span>call_value<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>European call value: 10.4306</code></pre>
+</div>
+</div>
+</section>
+<section id="implementation-for-american-options" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-for-american-options">Implementation for American Options</h3>
+<p>For American options, we must use backward induction and check for early exercise at each node:</p>
+<div id="a8cfe72e" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binomial_american(S0, K, r, sigma, T, N, option_type<span class="op">=</span><span class="st">'put'</span>):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Price American option using binomial tree with backward induction</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters as before</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> np.exp(sigma <span class="op">*</span> np.sqrt(dt))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> u</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> (np.exp(r <span class="op">*</span> dt) <span class="op">-</span> d) <span class="op">/</span> (u <span class="op">-</span> d)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    disc <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> dt)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Stock prices at maturity</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>np.arange(N<span class="op">+</span><span class="dv">1</span>) <span class="op">-</span> N)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Option values at maturity</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> option_type <span class="op">==</span> <span class="st">'call'</span>:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        V <span class="op">=</span> np.maximum(S <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        V <span class="op">=</span> np.maximum(K <span class="op">-</span> S, <span class="dv">0</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward induction</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Stock prices at time i</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        S <span class="op">=</span> S0 <span class="op">*</span> u<span class="op">**</span>(<span class="dv">2</span><span class="op">*</span>np.arange(i<span class="op">+</span><span class="dv">1</span>) <span class="op">-</span> i)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Continuation values</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        V <span class="op">=</span> disc <span class="op">*</span> (p <span class="op">*</span> V[<span class="dv">1</span>:i<span class="op">+</span><span class="dv">2</span>] <span class="op">+</span> (<span class="dv">1</span><span class="op">-</span>p) <span class="op">*</span> V[<span class="dv">0</span>:i<span class="op">+</span><span class="dv">1</span>])</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Compare with immediate exercise</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> option_type <span class="op">==</span> <span class="st">'call'</span>:</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>            V <span class="op">=</span> np.maximum(V, S <span class="op">-</span> K)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>            V <span class="op">=</span> np.maximum(V, K <span class="op">-</span> S)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> V[<span class="dv">0</span>]</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Example</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>put_value <span class="op">=</span> binomial_american(S0, K, r, sigma, T, N, <span class="st">'put'</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"American put value: </span><span class="sc">{</span>put_value<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>American put value: 6.0824</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="parameter-calibration" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="parameter-calibration"><span class="header-section-number">4.4</span> Parameter Calibration</h2>
+<p>The key question is how to choose the parameters <span class="math inline">\(u\)</span>, <span class="math inline">\(d\)</span>, and <span class="math inline">\(p\)</span> so that the binomial model approximates the continuous-time Black-Scholes model as <span class="math inline">\(N \to \infty\)</span>.</p>
+<section id="cox-ross-rubinstein-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="cox-ross-rubinstein-parameters">Cox-Ross-Rubinstein Parameters</h3>
+<p>The most popular choice, proposed by Cox, Ross, and Rubinstein, sets:</p>
+<p><span class="math display">\[u = \mathrm{e}^{\sigma\sqrt{\Delta t}}, \quad d = \frac{1}{u}, \quad p = \frac{\mathrm{e}^{(r-q)\Delta t} - d}{u - d}\]</span></p>
+<p>where <span class="math inline">\(q\)</span> is the dividend yield. This choice ensures: - The tree recombines (<span class="math inline">\(ud = 1\)</span>) - The discrete model converges to geometric Brownian motion - The risk-neutral probability is well-defined when <span class="math inline">\(d &lt; \mathrm{e}^{(r-q)\Delta t} &lt; u\)</span></p>
+</section>
+<section id="matching-moments" class="level3">
+<h3 class="anchored" data-anchor-id="matching-moments">Matching Moments</h3>
+<p>For the binomial model to converge properly to the continuous-time model, we need:</p>
+<p><span class="math display">\[\frac{\mathbb{E}[\Delta \log S]}{\Delta t} \to r - q - \frac{\sigma^2}{2}\]</span></p>
+<p><span class="math display">\[\frac{\mathrm{Var}[\Delta \log S]}{\Delta t} \to \sigma^2\]</span></p>
+<p>The Cox-Ross-Rubinstein parameters satisfy these conditions. With <span class="math inline">\(u = \mathrm{e}^{\sigma\sqrt{\Delta t}}\)</span> and <span class="math inline">\(d = 1/u\)</span>:</p>
+<ul>
+<li><span class="math inline">\(\log u = \sigma\sqrt{\Delta t}\)</span> and <span class="math inline">\(\log d = -\sigma\sqrt{\Delta t}\)</span></li>
+<li>The variance of <span class="math inline">\(\log(S_{t+\Delta t}/S_t)\)</span> is approximately <span class="math inline">\(\sigma^2 \Delta t\)</span> for small <span class="math inline">\(\Delta t\)</span></li>
+</ul>
+</section>
+<section id="alternative-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="alternative-parameters">Alternative Parameters</h3>
+<p>Other popular choices include:</p>
+<p><strong>Jarrow-Rudd</strong>: Set <span class="math inline">\(p = 1/2\)</span> and adjust <span class="math inline">\(u\)</span> and <span class="math inline">\(d\)</span> to match the mean and variance: <span class="math display">\[u = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t + \sigma\sqrt{\Delta t}\right)\]</span> <span class="math display">\[d = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t - \sigma\sqrt{\Delta t}\right)\]</span></p>
+<p><strong>Equal Probabilities</strong>: This choice simplifies calculations but requires different up and down factors.</p>
+</section>
+<section id="convergence-and-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="convergence-and-accuracy">Convergence and Accuracy</h3>
+<p>The binomial model converges to the Black-Scholes model as <span class="math inline">\(N \to \infty\)</span>, but convergence is not monotonic. For European options: - Accuracy improves roughly as <span class="math inline">\(O(1/N)\)</span> - Oscillations occur due to the discrete nature of the tree - Using <span class="math inline">\(N \approx 100\)</span> typically gives prices accurate to a few cents</p>
+<p>For American options: - The binomial model provides one of the most efficient numerical methods - Early exercise boundaries can be extracted from the tree - Smooth convergence requires larger <span class="math inline">\(N\)</span> than for European options</p>
+</section>
+</section>
+<section id="summary" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="summary"><span class="header-section-number">4.5</span> Summary</h2>
+<p>The binomial tree model provides an intuitive and flexible framework for option pricing:</p>
+<ol type="1">
+<li><strong>One-period model</strong>: Introduces replication and risk-neutral valuation</li>
+<li><strong>Multi-period extension</strong>: Uses backward induction for path-independent claims</li>
+<li><strong>Parameter choice</strong>: Cox-Ross-Rubinstein parameters with <span class="math inline">\(u = \mathrm{e}^{\sigma\sqrt{\Delta t}}\)</span> and <span class="math inline">\(d = 1/u\)</span> ensure convergence</li>
+<li><strong>Implementation</strong>: Efficient for American options and provides exercise boundaries</li>
+</ol>
+<p>The model’s strength lies in its simplicity and ability to handle early exercise features. However, for path-dependent options or multiple underlying assets, the computational requirements grow exponentially, making Monte Carlo methods more attractive in those cases.</p>
+</section>
+<section id="exercises" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="exercises"><span class="header-section-number">4.6</span> Exercises</h2>
+<div id="exr-trees1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.1</strong></span> In a one-period binomial model with <span class="math inline">\(S = 50\)</span>, <span class="math inline">\(S_u = 60\)</span>, <span class="math inline">\(S_d = 40\)</span>, and <span class="math inline">\(r = 0.05\)</span>: a) Calculate the risk-neutral probabilities b) Price a call option with strike <span class="math inline">\(K = 55\)</span> c) Verify your answer using delta hedging</p>
+</div>
+<div id="exr-trees2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.2</strong></span> Show that in the Cox-Ross-Rubinstein model, the expected return on the stock under the risk-neutral measure equals the risk-free rate: <span class="math inline">\(\mathbb{E}^p[S_{t+\Delta t}/S_t] = \mathrm{e}^{r\Delta t}\)</span></p>
+</div>
+<div id="exr-trees3" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.3</strong></span> Implement a function to compute the early exercise boundary for an American put option. Plot the boundary as a function of time to maturity.</p>
+</div>
+<div id="exr-trees4" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.4</strong></span> Compare the convergence of European option prices using: a) Cox-Ross-Rubinstein parameters b) Jarrow-Rudd parameters Plot the option values against the number of time steps <span class="math inline">\(N\)</span>.</p>
+</div>
 
 
 </section>
@@ -961,10 +1272,13 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./Chapter_IntroFutures.html" class="pagination-link" aria-label="Futures Markets">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Futures Markets</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./Chapter_IntroDerivatives.html" class="pagination-link" aria-label="Derivative Securities">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Derivative Securities</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Chapter_BrownianMotion.html" class="pagination-link" aria-label="Brownian Motion">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Brownian Motion</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -973,4 +1287,4 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-published-code.git/blob/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-published-code.git/blob/main/Chapter_Trees.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

@@ -6,11 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Kerry Back, Rice University">
-<meta name="author" content="Hong Liu, Washington University in St.&nbsp;Louis">
-<meta name="author" content="Mark Loewenstein, University of Maryland">
 
-<title>Pricing and Hedging Derivative Securities</title>
+<title>9&nbsp; The Black-Scholes Model – Pricing and Hedging Derivative Securities</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -26,14 +23,15 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./Chapter_IntroDerivatives.html" rel="next">
+<link href="./Chapter_MertonMargrabeBlack.html" rel="next">
+<link href="./Chapter_ArbitragePricing.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,8 +79,51 @@ ul.task-list li input[type="checkbox"] {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 <style>
+div.callout-Rule.callout {
+  border-left-color: #12801f;
+}
+div.callout-Rule.callout-style-default > .callout-header {
+  background-color: rgba(18, 128, 31, 0.13);
+}
+div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
+  font-family: 'Font Awesome 6 Free';
+  content: '\f164';
+  background-image: none;
+}
+div.callout-Example.callout {
+  border-left-color: #a1bced;
+}
+div.callout-Example.callout-style-default > .callout-header {
+  background-color: rgba(161, 188, 237, 0.13);
+}
+div.callout-Example .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-Example.callout-style-default .callout-icon::before, div.callout-Example.callout-titled .callout-icon::before {
+  font-family: 'Font Awesome 6 Free';
+  content: '\f185';
+  background-image: none;
+}
 div.callout-Principle.callout {
   border-left-color: #eb4034;
 }
@@ -107,32 +148,37 @@ div.callout-Extra.callout-style-default .callout-icon::before, div.callout-Extra
   content: '\f48b';
   background-image: none;
 }
-div.callout-Example.callout {
-  border-left-color: #a1bced;
-}
-div.callout-Example.callout-style-default > .callout-header {
-  background-color: rgba(161, 188, 237, 0.13);
-}
-div.callout-Example .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
-div.callout-Example.callout-style-default .callout-icon::before, div.callout-Example.callout-titled .callout-icon::before {
-  font-family: 'Font Awesome 6 Free';
-  content: '\f185';
-  background-image: none;
-}
-div.callout-Rule.callout {
-  border-left-color: #12801f;
-}
-div.callout-Rule.callout-style-default > .callout-header {
-  background-color: rgba(18, 128, 31, 0.13);
-}
-div.callout-Rule .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
-div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.callout-titled .callout-icon::before {
-  font-family: 'Font Awesome 6 Free';
-  content: '\f164';
-  background-image: none;
-}
 </style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -307,7 +353,7 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_ArbitragePricing.html">Part 3: Option Pricing</a></li><li class="breadcrumb-item"><a href="./Chapter_BlackScholes_updated.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Black-Scholes Model</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -344,7 +390,7 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -429,7 +475,7 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Chapter_BlackScholes_updated.html" class="sidebar-item-text sidebar-link">
+  <a href="./Chapter_BlackScholes_updated.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Black-Scholes Model</span></span></a>
   </div>
 </li>
@@ -509,23 +555,15 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Chapter_ArbitragePricing.html">Part 3: Option Pricing</a></li><li class="breadcrumb-item"><a href="./Chapter_BlackScholes_updated.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Black-Scholes Model</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Pricing and Hedging Derivative Securities</h1>
+<h1 class="title"><span id="sec-c:blackscholes_updated" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Black-Scholes Model</span></span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Authors</div>
-    <div class="quarto-title-meta-contents">
-             <p>Kerry Back, Rice University </p>
-             <p>Hong Liu, Washington University in St.&nbsp;Louis </p>
-             <p>Mark Loewenstein, University of Maryland </p>
-          </div>
-  </div>
     
   
     
@@ -536,12 +574,178 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This is an incomplete and in-progress draft of a python-based introduction to derivative security pricing.</p>
-<p>The chat icon below the book title on the top left is a link to a chatbot that can answer questions using the book as a source. Like any chatbot, it can make mistakes, so check its answers with the sources in the book that it should provide. The Github icon next to the chat icon is a link to a Github repository of Jupyter notebooks. The notebooks contain all of the code in the book and include <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> buttons. The notebooks can be opened in Colab or downloaded from the Github repo (or you can clone the repo). The icon to the right of the Github icon enables toggling between light and dark modes.</p>
-<p>Figures in the text are interactive. Hover your cursor over plot elements to see additional data. Also, hover over footnote numbers to see footnotes.</p>
-<p>The book is <a href="https://web.hypothes.is/">Hypothesis</a> enabled. Click the icons at the top right to log in or sign up and to create annotations or to highlight text. The annotations and highlights will be visible to you in subsequent visits to the book once you log in to your Hypothesis account. We prefer that you do not post annotations or highlights to the Public account.</p>
+<div id="a70967f5" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>
+</div>
+</div>
+<p>In the previous chapter, we developed a general framework for derivative pricing based on the absence of arbitrage. We saw how linear pricing leads to state prices, risk-neutral probabilities, and the fundamental pricing formula. We also introduced Girsanov’s Theorem, which provides the mathematical machinery to change between probability measures in continuous time. In this chapter, we apply these principles to derive and analyze the celebrated Black-Scholes formula for European option pricing.</p>
+<p>The Black-Scholes model assumes that the underlying asset pays a constant dividend yield <span class="math inline">\(q\)</span> and has price <span class="math inline">\(S\)</span> satisfying</p>
+<p><span class="math display">\[\frac{\mathrm{d}S}{S} = (\mu - q) \mathrm{d}t + \sigma \mathrm{d}B\]</span></p>
+<p>for a Brownian motion <span class="math inline">\(B\)</span>, where <span class="math inline">\(\sigma\)</span> is assumed constant and <span class="math inline">\(\mu\)</span> can be a quite general random process. We also assume a constant continuously-compounded risk-free rate <span class="math inline">\(r\)</span>.</p>
+<section id="derivation-via-change-of-numeraire" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="derivation-via-change-of-numeraire"><span class="header-section-number">9.1</span> Derivation via Change of Numeraire</h2>
+<p>We can derive the Black-Scholes formula directly using the change of numeraire approach developed in the previous chapter. A European call option pays <span class="math inline">\((S_T - K)^+\)</span> at maturity <span class="math inline">\(T\)</span>. We can decompose this payoff as:</p>
+<p><span class="math display">\[(S_T - K)^+ = \mathbf{1}_{\{S_T &gt; K\}} S_T - K \mathbf{1}_{\{S_T &gt; K\}}\]</span></p>
+<p>This represents one share digital minus <span class="math inline">\(K\)</span> cash digitals, both paying when <span class="math inline">\(S_T &gt; K\)</span>.</p>
+<section id="digital-options" class="level3">
+<h3 class="anchored" data-anchor-id="digital-options">Digital Options</h3>
+<p>In continuous time, digital options serve as the primitive securities. A digital option paying $1 when <span class="math inline">\(S_T &gt; K\)</span> has value:</p>
+<p><span class="math display">\[e^{-r(T-t)} \mathbb{E}_t^R[\mathbf{1}_{\{S_T &gt; K\}}] = e^{-r(T-t)} \text{prob}^R(S_T &gt; K)\]</span></p>
+<p>Under the risk-neutral measure from our previous analysis:</p>
+<p><span class="math display">\[\frac{\mathrm{d}S}{S} = (r - q) \mathrm{d}t + \sigma \mathrm{d}B^R\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[S_T = S_t \exp\left((r - q - \frac{\sigma^2}{2})(T-t) + \sigma B_{T-t}^R\right)\]</span></p>
+<p>The condition <span class="math inline">\(S_T &gt; K\)</span> is equivalent to:</p>
+<p><span class="math display">\[\frac{\log(S_t/K) + (r - q - \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}} &gt; -\frac{B_{T-t}^R}{\sqrt{T-t}}\]</span></p>
+<p>Since <span class="math inline">\(-B_{T-t}^R/\sqrt{T-t}\)</span> is standard normal under the risk-neutral measure:</p>
+<p><span class="math display">\[\text{prob}^R(S_T &gt; K) = N(d_2)\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[d_2 = \frac{\log(S_t/K) + (r - q - \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}}\]</span></p>
+</section>
+<section id="share-digital-options" class="level3">
+<h3 class="anchored" data-anchor-id="share-digital-options">Share Digital Options</h3>
+<p>For the share digital paying <span class="math inline">\(S_T \mathbf{1}_{\{S_T &gt; K\}}\)</span>, we use the stock as numeraire. From our Girsanov’s Theorem analysis:</p>
+<p><span class="math display">\[\mathrm{d}S_t = (r - q + \sigma^2) S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t^S\]</span></p>
+<p>under the stock numeraire measure. Following similar calculations:</p>
+<p><span class="math display">\[\text{prob}^S(S_T &gt; K) = N(d_1)\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[d_1 = \frac{\log(S_t/K) + (r - q + \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}} = d_2 + \sigma\sqrt{T-t}\]</span></p>
+</section>
+<section id="the-black-scholes-formula" class="level3">
+<h3 class="anchored" data-anchor-id="the-black-scholes-formula">The Black-Scholes Formula</h3>
+<p>Combining our results:</p>
+<div class="callout callout-style-simple callout-Rule callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Result
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The value of a European call option is:</p>
+<p><span class="math display">\[C(t, S_t) = e^{-q(T-t)} S_t N(d_1) - e^{-r(T-t)} K N(d_2)\]</span></p>
+<p>where <span class="math inline">\(d_1\)</span> and <span class="math inline">\(d_2\)</span> are defined above and <span class="math inline">\(N(\cdot)\)</span> is the standard normal cumulative distribution function.</p>
+</div>
+</div>
+<p>For a European put option:</p>
+<div class="callout callout-style-simple callout-Rule callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Result
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math display">\[P(t, S_t) = e^{-r(T-t)} K N(-d_2) - e^{-q(T-t)} S_t N(-d_1)\]</span></p>
+</div>
+</div>
+<p>The call and put values satisfy put-call parity:</p>
+<p><span class="math display">\[e^{-r(T-t)} K + C(t, S_t) = e^{-q(T-t)} S_t + P(t, S_t)\]</span></p>
+</section>
+</section>
+<section id="replication-and-delta-hedging" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="replication-and-delta-hedging"><span class="header-section-number">9.2</span> Replication and Delta Hedging</h2>
+<p>The arbitrage pricing principle requires that we can replicate option payoffs through dynamic trading. Following Merton’s argument, we construct a portfolio holding <span class="math inline">\(\delta_t\)</span> shares of stock and <span class="math inline">\(\alpha_t\)</span> units of the risk-free asset, with value:</p>
+<p><span class="math display">\[W_t = \alpha_t e^{rt} + \delta_t S_t\]</span></p>
+<p>For continuous trading with no cash inflows or outflows:</p>
+<p><span class="math display">\[\mathrm{d}W_t = \delta_t \mathrm{d}S_t + \delta_t q S_t \mathrm{d}t + \alpha_t r e^{rt} \mathrm{d}t\]</span></p>
+<p>If the option value is <span class="math inline">\(C(t, S_t)\)</span>, then by Ito’s lemma:</p>
+<p><span class="math display">\[\mathrm{d}C = \frac{\partial C}{\partial t} \mathrm{d}t + \frac{\partial C}{\partial S} \mathrm{d}S + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S^2 \mathrm{d}t\]</span></p>
+<p>Matching the stochastic terms requires:</p>
+<p><span class="math display">\[\delta_t = \frac{\partial C}{\partial S}\]</span></p>
+<p>This is the option’s delta—the number of shares needed to hedge the option. By no-arbitrage, <span class="math inline">\(W_t = C(t, S_t)\)</span>, leading to the fundamental partial differential equation.</p>
+</section>
+<section id="the-fundamental-pde" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="the-fundamental-pde"><span class="header-section-number">9.3</span> The Fundamental PDE</h2>
+<p>Any European derivative with payoff <span class="math inline">\(V(S_T)\)</span> at maturity <span class="math inline">\(T\)</span> must satisfy:</p>
+<p><span class="math display">\[r V = \frac{\partial V}{\partial t} + \frac{\partial V}{\partial S}(r - q)S + \frac{1}{2} \frac{\partial^2 V}{\partial S^2} \sigma^2 S^2\]</span></p>
+<p>with boundary condition <span class="math inline">\(V(S_T, T) = V(S_T)\)</span>.</p>
+<p>This PDE has several important interpretations:</p>
+<ol type="1">
+<li><strong>Risk-neutral expectation</strong>: The solution is <span class="math inline">\(V(t, S_t) = \mathbb{E}_t^R[e^{-r(T-t)} V(S_T)]\)</span></li>
+<li><strong>Replication</strong>: The portfolio holds <span class="math inline">\(\frac{\partial V}{\partial S}\)</span> shares and <span class="math inline">\(V - \frac{\partial V}{\partial S}S\)</span> in cash</li>
+<li><strong>Hedging condition</strong>: The drift term equals the risk-free return when perfectly hedged</li>
+</ol>
+<p>The Black-Scholes formula satisfies this PDE with the appropriate boundary conditions for calls and puts.</p>
+</section>
+<section id="greeks" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="greeks"><span class="header-section-number">9.4</span> Greeks</h2>
+<p>The sensitivities of option values to various inputs are called Greeks. From the Black-Scholes formula:</p>
+<section id="delta-delta" class="level3">
+<h3 class="anchored" data-anchor-id="delta-delta">Delta (<span class="math inline">\(\delta\)</span>)</h3>
+<p>The sensitivity to stock price changes:</p>
+<p><span class="math display">\[\delta_{call} = e^{-q(T-t)} N(d_1)\]</span> <span class="math display">\[\delta_{put} = -e^{-q(T-t)} N(-d_1)\]</span></p>
+</section>
+<section id="gamma-gamma" class="level3">
+<h3 class="anchored" data-anchor-id="gamma-gamma">Gamma (<span class="math inline">\(\Gamma\)</span>)</h3>
+<p>The rate of change of delta:</p>
+<p><span class="math display">\[\Gamma = \frac{e^{-q(T-t)} n(d_1)}{S \sigma \sqrt{T-t}}\]</span></p>
+<p>where <span class="math inline">\(n(\cdot)\)</span> is the standard normal density. Gamma is the same for calls and puts.</p>
+</section>
+<section id="theta-theta" class="level3">
+<h3 class="anchored" data-anchor-id="theta-theta">Theta (<span class="math inline">\(\Theta\)</span>)</h3>
+<p>The time decay (using <span class="math inline">\(\partial/\partial(-T)\)</span> so positive theta means value increases as time passes):</p>
+<p><span class="math display">\[\Theta_{call} = -\frac{e^{-q(T-t)} S n(d_1) \sigma}{2\sqrt{T-t}} + q e^{-q(T-t)} S N(d_1) - r e^{-r(T-t)} K N(d_2)\]</span></p>
+</section>
+<section id="vega-mathcalv" class="level3">
+<h3 class="anchored" data-anchor-id="vega-mathcalv">Vega (<span class="math inline">\(\mathcal{V}\)</span>)</h3>
+<p>The sensitivity to volatility:</p>
+<p><span class="math display">\[\mathcal{V} = e^{-q(T-t)} S n(d_1) \sqrt{T-t}\]</span></p>
+</section>
+<section id="rho-rho" class="level3">
+<h3 class="anchored" data-anchor-id="rho-rho">Rho (<span class="math inline">\(\rho\)</span>)</h3>
+<p>The sensitivity to interest rates:</p>
+<p><span class="math display">\[\rho_{call} = (T-t) e^{-r(T-t)} K N(d_2)\]</span></p>
+</section>
+</section>
+<section id="theta-and-gamma-in-delta-hedges" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="theta-and-gamma-in-delta-hedges"><span class="header-section-number">9.5</span> Theta and Gamma in Delta Hedges</h2>
+<p>The relationship between theta and gamma provides deep insight into option hedging. Consider a delta-hedged portfolio (short call, long <span class="math inline">\(\delta\)</span> shares). From the fundamental PDE and our Greeks:</p>
+<p><span class="math display">\[\Theta + \frac{1}{2} \Gamma \sigma^2 S^2 = r C - (r - q) S \delta\]</span></p>
+<p>In continuous time, the portfolio change is:</p>
+<p><span class="math display">\[-\Theta \mathrm{d}t - \frac{1}{2} \Gamma \sigma^2 S^2 \mathrm{d}t + q \delta S \mathrm{d}t + (C - \delta S) r \mathrm{d}t\]</span></p>
+<p>These terms exactly cancel—the time decay and dividends received offset losses from being short gamma and interest payments. This perfect cancellation only holds with continuous rebalancing.</p>
+<p>With discrete rebalancing, the hedge is imperfect. The portfolio is short gamma, meaning it loses money when the stock moves significantly between rebalances. This loss is approximately:</p>
+<p><span class="math display">\[\frac{1}{2} \Gamma (\Delta S)^2\]</span></p>
+<p>where <span class="math inline">\(\Delta S\)</span> is the stock price change. The hedging error increases with: - Larger gamma (near the strike at expiration) - Higher volatility - Longer time between rebalances</p>
+</section>
+<section id="implied-volatilities" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="implied-volatilities"><span class="header-section-number">9.6</span> Implied Volatilities</h2>
+<p>While all other Black-Scholes inputs are observable, volatility must be estimated. Given an option’s market price, we can invert the Black-Scholes formula to find the implied volatility—the <span class="math inline">\(\sigma\)</span> that produces the observed price.</p>
+<p>Implied volatilities serve several purposes:</p>
+<ol type="1">
+<li><strong>Price quotes</strong>: Options are often quoted in terms of implied volatility</li>
+<li><strong>Relative value</strong>: Comparing implied volatilities helps identify expensive or cheap options</li>
+<li><strong>Market views</strong>: Implied volatilities reflect market expectations of future volatility</li>
+</ol>
+<section id="the-volatility-smile" class="level3">
+<h3 class="anchored" data-anchor-id="the-volatility-smile">The Volatility Smile</h3>
+<p>If the Black-Scholes model were perfect, all options with the same maturity would have the same implied volatility. In practice, plotting implied volatility against strike typically shows:</p>
+<ul>
+<li>Higher implied volatilities for low strikes (out-of-the-money puts)</li>
+<li>Lower implied volatilities near the at-the-money strike</li>
+<li>Slightly increasing implied volatilities for high strikes</li>
+</ul>
+<p>This “volatility smile” or “smirk” indicates that market prices reflect: - Fat tails: Higher probability of extreme moves than lognormal - Negative skewness: Larger probability of extreme downward moves</p>
+<p>The smile has been particularly pronounced for equity index options since the 1987 crash, suggesting market participants price in crash risk.</p>
+</section>
+</section>
+<section id="summary" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="summary"><span class="header-section-number">9.7</span> Summary</h2>
+<p>The Black-Scholes model combines the theoretical foundations of arbitrage pricing with practical implementation:</p>
+<ol type="1">
+<li><strong>Change of numeraire</strong>: Digital options under different measures give the formula</li>
+<li><strong>Replication</strong>: Delta hedging shows how to replicate option payoffs</li>
+<li><strong>Fundamental PDE</strong>: All derivatives satisfy the same partial differential equation</li>
+<li><strong>Greeks</strong>: Sensitivities guide risk management and hedging</li>
+<li><strong>Market practice</strong>: Implied volatilities reveal market expectations and model limitations</li>
+</ol>
+<p>The model’s elegance lies in showing that, under its assumptions, options can be perfectly hedged through dynamic trading. While real markets violate these assumptions, the Black-Scholes framework remains the foundation for understanding option pricing and hedging.</p>
 
 
 </section>
@@ -961,10 +1165,13 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./Chapter_ArbitragePricing.html" class="pagination-link" aria-label="Arbitrage Pricing">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Arbitrage Pricing</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./Chapter_IntroDerivatives.html" class="pagination-link" aria-label="Derivative Securities">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Derivative Securities</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Chapter_MertonMargrabeBlack.html" class="pagination-link" aria-label="Merton, Black, and Margrabe">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Merton, Black, and Margrabe</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -973,4 +1180,4 @@ div.callout-Rule.callout-style-default .callout-icon::before, div.callout-Rule.c
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-published-code.git/blob/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/math-finance-book/book-published-code.git/blob/main/Chapter_BlackScholes_updated.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

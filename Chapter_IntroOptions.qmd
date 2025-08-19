@@ -75,7 +75,7 @@ For an option sell order, trading "at market" means trading at the highest limit
 
 #### Open Interest and Contract Creation
 
-Unlike stocks, options have no pre-existing supply. At any time, the number of long positions exactly equals the number of short positions, and this total is called **open interest**.  When a new option series (specific strike/expiration combination) is introduced, open interest starts at zero. Options are created through trading activity:
+We say that an option buyer has a **long position**, and an option seller has a **short position**. Unlike stocks, options have no pre-existing supply. At any time, the number of long positions exactly equals the number of short positions, and this total is called **open interest**.  When a new option series (specific strike/expiration combination) is introduced, open interest starts at zero. Options are created through trading activity:
 
 - *First trade*: 1 buyer + 1 seller → Open interest = 1
 - *New position created*: New buyer + New seller → Open interest increases  
@@ -140,11 +140,15 @@ Experimenting with @fig-options-market-data reveals consistent patterns in how o
 ## Intrinsic Value, Time Value, and Moneyness
 
 The **intrinsic value** of an option is what the option would be worth if it had to be exercised immediately or would expire.  For a call option, this is the difference between the underlying asset price and the strike of the call, if that is positive, and is zero otherwise.  Letting $S$ denote the price of the underlying asset and $K$ the strike price, the intrinsic value of a call is
+
 $$\begin{cases} S-K & \text{if $S>K$}\\
 0 & \text{if $S \le K$}\end{cases}\,.$$
+
 This can be written more compactly as $\max(S-K, 0)$.  For example, if the underlying asset is trading at \$50, and the strike is \$40, then the intrinsic value is \$10.  This reflects the fact that we could pay \$10 for the option, pay the strike of \$40 to exercise, then sell the underlying asset in the market for \$50 and break even.   Symmetrically, the intrinsic value of a put option is
-$$\max(K-S, 0) = \begin{cases}K-S & \text{if  $K>S$}\\
-0 & text{if $K \le S$}\end{cases}\,.$$
+
+$$\max(K-S, 0) = 
+\begin{cases} K-S & \text{if $K>S$}\\
+0 & \text{if $K \le S$}\end{cases}\,.$$
 
 If the intrinsic value of an option is positive, then the option is said to be **in the money**.  Thus, a call option with strike $K$ is in the money if $S>K$, and a put option with strike $K$ is in the money if $S<K$.  If $S=K$ (or, in practice, approximately equal), then a call is said to be **at the money**.  If an option is neither in the money nor out of the money, then it is **out of the money**.  
 
@@ -152,7 +156,7 @@ American options are always worth at least their intrinsic values, because exerc
 
 Prior to expiration, the value of an option is usually larger than its intrinsic value.  This is because there is time remaining for the underlying asset to move in a direction that is favorable for the option holder.  The excess of the value over the intrinsic value is called the option's **time value**.  As time passes and the option approaches expiration, the time value decreases.  This phenomenon is called **time decay**.
 
-## Payoff and ProfitDiagrams
+## Payoff and Profit Diagrams
 
 Understanding option payoffs is fundamental to options trading. A **payoff diagram** shows the intrinsic value of an option position as a function of the price of the underlying asset.  This is the value the option position would have at expiration.  A **profit diagram** shows the profit from putting on an option position and holding to maturity as a function of the price of the underlying asset at maturity.  The difference between the profit and the payoff is the premium paid (for long positions) or received (for short positions).  Here are the payoff and profit diagrams for each of the four basic option positions:
 
@@ -389,8 +393,8 @@ The four basic option positions can be summarized as follows:
 |----------|-------------|------------|----------|-----------|
 | Long Call | Bullish | Unlimited | Premium paid | Strike + Premium |
 | Long Put | Bearish | Strike - Premium | Premium paid | Strike - Premium |
-| Short Call | Bearish/Neutral | Premium received | Unlimited | Strike + Premium |
-| Short Put | Bullish/Neutral | Premium received | Strike - Premium | Strike - Premium |
+| Short Call | Bearish | Premium received | Unlimited | Strike + Premium |
+| Short Put | Bullish | Premium received | Strike - Premium | Strike - Premium |
 
 These basic positions form the building blocks for more complex option strategies such as spreads, straddles, and collars.
 
@@ -405,7 +409,7 @@ The payoff of a portfolio is the sum of the payoffs of its constituent positions
 #### Protective Put
 
 A protective put combines a long position in the underlying asset with a long put option. 
-The protective put acts like insurance for a long position in the underlying asset. The value of the portfolio at maturity is always at least the put strike price, because the asset can be delivered in exchange for the strike by exercising the put.This strategy provides downside protection while maintaining upside potential.
+The protective put acts like insurance for a long position in the underlying asset. The value of the portfolio at maturity is always at least the put strike price, because the asset can be delivered in exchange for the strike by exercising the put.  This strategy provides downside protection while maintaining upside potential.
 
 ```{python}
 #| label: fig-protective-put

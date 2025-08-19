@@ -1,0 +1,221 @@
+{{< include macros.qmd >}}
+
+# The Black-Scholes Model {#sec-c:blackscholes_updated}
+
+```{python}
+#| eval: true
+#| echo: false
+
+import plotly
+from IPython.display import display, HTML
+
+plotly.offline.init_notebook_mode(connected=True)
+display(
+    HTML(
+        '<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>'
+    )
+)
+```
+
+In the previous chapter, we developed a general framework for derivative pricing based on the absence of arbitrage. We saw how linear pricing leads to state prices, risk-neutral probabilities, and the fundamental pricing formula. We also introduced Girsanov's Theorem, which provides the mathematical machinery to change between probability measures in continuous time. In this chapter, we apply these principles to derive and analyze the celebrated Black-Scholes formula for European option pricing.
+
+The Black-Scholes model assumes that the underlying asset pays a constant dividend yield $q$ and has price $S$ satisfying
+
+$$\frac{\mathrm{d}S}{S} = (\mu - q) \mathrm{d}t + \sigma \mathrm{d}B$$
+
+for a Brownian motion $B$, where $\sigma$ is assumed constant and $\mu$ can be a quite general random process. We also assume a constant continuously-compounded risk-free rate $r$.
+
+## Derivation via Change of Numeraire
+
+We can derive the Black-Scholes formula directly using the change of numeraire approach developed in the previous chapter. A European call option pays $(S_T - K)^+$ at maturity $T$. We can decompose this payoff as:
+
+$$(S_T - K)^+ = \mathbf{1}_{\{S_T > K\}} S_T - K \mathbf{1}_{\{S_T > K\}}$$
+
+This represents one share digital minus $K$ cash digitals, both paying when $S_T > K$.
+
+### Digital Options
+
+In continuous time, digital options serve as the primitive securities. A digital option paying \$1 when $S_T > K$ has value:
+
+$$e^{-r(T-t)} \mathbb{E}_t^R[\mathbf{1}_{\{S_T > K\}}] = e^{-r(T-t)} \text{prob}^R(S_T > K)$$
+
+Under the risk-neutral measure from our previous analysis:
+
+$$\frac{\mathrm{d}S}{S} = (r - q) \mathrm{d}t + \sigma \mathrm{d}B^R$$
+
+Therefore:
+
+$$S_T = S_t \exp\left((r - q - \frac{\sigma^2}{2})(T-t) + \sigma B_{T-t}^R\right)$$
+
+The condition $S_T > K$ is equivalent to:
+
+$$\frac{\log(S_t/K) + (r - q - \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}} > -\frac{B_{T-t}^R}{\sqrt{T-t}}$$
+
+Since $-B_{T-t}^R/\sqrt{T-t}$ is standard normal under the risk-neutral measure:
+
+$$\text{prob}^R(S_T > K) = N(d_2)$$
+
+where:
+
+$$d_2 = \frac{\log(S_t/K) + (r - q - \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}}$$
+
+### Share Digital Options
+
+For the share digital paying $S_T \mathbf{1}_{\{S_T > K\}}$, we use the stock as numeraire. From our Girsanov's Theorem analysis:
+
+$$\mathrm{d}S_t = (r - q + \sigma^2) S_t \mathrm{d}t + \sigma S_t \mathrm{d}B_t^S$$
+
+under the stock numeraire measure. Following similar calculations:
+
+$$\text{prob}^S(S_T > K) = N(d_1)$$
+
+where:
+
+$$d_1 = \frac{\log(S_t/K) + (r - q + \frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}} = d_2 + \sigma\sqrt{T-t}$$
+
+### The Black-Scholes Formula
+
+Combining our results:
+
+::: Rule
+The value of a European call option is:
+
+$$C(t, S_t) = e^{-q(T-t)} S_t N(d_1) - e^{-r(T-t)} K N(d_2)$$
+
+where $d_1$ and $d_2$ are defined above and $N(\cdot)$ is the standard normal cumulative distribution function.
+:::
+
+For a European put option:
+
+::: Rule
+$$P(t, S_t) = e^{-r(T-t)} K N(-d_2) - e^{-q(T-t)} S_t N(-d_1)$$
+:::
+
+The call and put values satisfy put-call parity:
+
+$$e^{-r(T-t)} K + C(t, S_t) = e^{-q(T-t)} S_t + P(t, S_t)$$
+
+## Replication and Delta Hedging
+
+The arbitrage pricing principle requires that we can replicate option payoffs through dynamic trading. Following Merton's argument, we construct a portfolio holding $\delta_t$ shares of stock and $\alpha_t$ units of the risk-free asset, with value:
+
+$$W_t = \alpha_t e^{rt} + \delta_t S_t$$
+
+For continuous trading with no cash inflows or outflows:
+
+$$\mathrm{d}W_t = \delta_t \mathrm{d}S_t + \delta_t q S_t \mathrm{d}t + \alpha_t r e^{rt} \mathrm{d}t$$
+
+If the option value is $C(t, S_t)$, then by Ito's lemma:
+
+$$\mathrm{d}C = \frac{\partial C}{\partial t} \mathrm{d}t + \frac{\partial C}{\partial S} \mathrm{d}S + \frac{1}{2} \frac{\partial^2 C}{\partial S^2} \sigma^2 S^2 \mathrm{d}t$$
+
+Matching the stochastic terms requires:
+
+$$\delta_t = \frac{\partial C}{\partial S}$$
+
+This is the option's delta—the number of shares needed to hedge the option. By no-arbitrage, $W_t = C(t, S_t)$, leading to the fundamental partial differential equation.
+
+## The Fundamental PDE
+
+Any European derivative with payoff $V(S_T)$ at maturity $T$ must satisfy:
+
+$$r V = \frac{\partial V}{\partial t} + \frac{\partial V}{\partial S}(r - q)S + \frac{1}{2} \frac{\partial^2 V}{\partial S^2} \sigma^2 S^2$$
+
+with boundary condition $V(S_T, T) = V(S_T)$.
+
+This PDE has several important interpretations:
+
+1. **Risk-neutral expectation**: The solution is $V(t, S_t) = \mathbb{E}_t^R[e^{-r(T-t)} V(S_T)]$
+2. **Replication**: The portfolio holds $\frac{\partial V}{\partial S}$ shares and $V - \frac{\partial V}{\partial S}S$ in cash
+3. **Hedging condition**: The drift term equals the risk-free return when perfectly hedged
+
+The Black-Scholes formula satisfies this PDE with the appropriate boundary conditions for calls and puts.
+
+## Greeks
+
+The sensitivities of option values to various inputs are called Greeks. From the Black-Scholes formula:
+
+### Delta ($\delta$)
+The sensitivity to stock price changes:
+
+$$\delta_{call} = e^{-q(T-t)} N(d_1)$$
+$$\delta_{put} = -e^{-q(T-t)} N(-d_1)$$
+
+### Gamma ($\Gamma$)
+The rate of change of delta:
+
+$$\Gamma = \frac{e^{-q(T-t)} n(d_1)}{S \sigma \sqrt{T-t}}$$
+
+where $n(\cdot)$ is the standard normal density. Gamma is the same for calls and puts.
+
+### Theta ($\Theta$)
+The time decay (using $\partial/\partial(-T)$ so positive theta means value increases as time passes):
+
+$$\Theta_{call} = -\frac{e^{-q(T-t)} S n(d_1) \sigma}{2\sqrt{T-t}} + q e^{-q(T-t)} S N(d_1) - r e^{-r(T-t)} K N(d_2)$$
+
+### Vega ($\mathcal{V}$)
+The sensitivity to volatility:
+
+$$\mathcal{V} = e^{-q(T-t)} S n(d_1) \sqrt{T-t}$$
+
+### Rho ($\rho$)
+The sensitivity to interest rates:
+
+$$\rho_{call} = (T-t) e^{-r(T-t)} K N(d_2)$$
+
+## Theta and Gamma in Delta Hedges
+
+The relationship between theta and gamma provides deep insight into option hedging. Consider a delta-hedged portfolio (short call, long $\delta$ shares). From the fundamental PDE and our Greeks:
+
+$$\Theta + \frac{1}{2} \Gamma \sigma^2 S^2 = r C - (r - q) S \delta$$
+
+In continuous time, the portfolio change is:
+
+$$-\Theta \mathrm{d}t - \frac{1}{2} \Gamma \sigma^2 S^2 \mathrm{d}t + q \delta S \mathrm{d}t + (C - \delta S) r \mathrm{d}t$$
+
+These terms exactly cancel—the time decay and dividends received offset losses from being short gamma and interest payments. This perfect cancellation only holds with continuous rebalancing.
+
+With discrete rebalancing, the hedge is imperfect. The portfolio is short gamma, meaning it loses money when the stock moves significantly between rebalances. This loss is approximately:
+
+$$\frac{1}{2} \Gamma (\Delta S)^2$$
+
+where $\Delta S$ is the stock price change. The hedging error increases with:
+- Larger gamma (near the strike at expiration)
+- Higher volatility
+- Longer time between rebalances
+
+## Implied Volatilities
+
+While all other Black-Scholes inputs are observable, volatility must be estimated. Given an option's market price, we can invert the Black-Scholes formula to find the implied volatility—the $\sigma$ that produces the observed price.
+
+Implied volatilities serve several purposes:
+
+1. **Price quotes**: Options are often quoted in terms of implied volatility
+2. **Relative value**: Comparing implied volatilities helps identify expensive or cheap options
+3. **Market views**: Implied volatilities reflect market expectations of future volatility
+
+### The Volatility Smile
+
+If the Black-Scholes model were perfect, all options with the same maturity would have the same implied volatility. In practice, plotting implied volatility against strike typically shows:
+
+- Higher implied volatilities for low strikes (out-of-the-money puts)
+- Lower implied volatilities near the at-the-money strike
+- Slightly increasing implied volatilities for high strikes
+
+This "volatility smile" or "smirk" indicates that market prices reflect:
+- Fat tails: Higher probability of extreme moves than lognormal
+- Negative skewness: Larger probability of extreme downward moves
+
+The smile has been particularly pronounced for equity index options since the 1987 crash, suggesting market participants price in crash risk.
+
+## Summary
+
+The Black-Scholes model combines the theoretical foundations of arbitrage pricing with practical implementation:
+
+1. **Change of numeraire**: Digital options under different measures give the formula
+2. **Replication**: Delta hedging shows how to replicate option payoffs
+3. **Fundamental PDE**: All derivatives satisfy the same partial differential equation
+4. **Greeks**: Sensitivities guide risk management and hedging
+5. **Market practice**: Implied volatilities reveal market expectations and model limitations
+
+The model's elegance lies in showing that, under its assumptions, options can be perfectly hedged through dynamic trading. While real markets violate these assumptions, the Black-Scholes framework remains the foundation for understanding option pricing and hedging.

@@ -1,0 +1,301 @@
+{{< include macros.qmd >}}
+
+# Binomial Tree Models {#sec-c:trees}
+
+```{python}
+#| eval: true
+#| echo: false
+
+import plotly
+from IPython.display import display, HTML
+
+plotly.offline.init_notebook_mode(connected=True)
+display(
+    HTML(
+        '<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_SVG"></script>'
+    )
+)
+```
+
+This chapter introduces binomial tree models for valuing derivative securities. We begin with the fundamental concepts of arbitrage pricing in a one-period model, extend to multi-period trees, and then discuss practical implementation and parameter calibration.
+
+## One-Period Binomial Model
+
+We start with the simplest possible model. A stock has price $S$ today (date 0) and will have one of two possible values at date $t$: either $S_u$ (up state) or $S_d$ (down state), where $S_u > S_d$. There is also a risk-free asset earning a continuously compounded rate $r$.
+
+### Delta Hedging and Replication
+
+Consider a European call option with strike $K$ and maturity $t$. Its payoff will be $C_u = \max(0, S_u - K)$ in the up state and $C_d = \max(0, S_d - K)$ in the down state.
+
+The key insight is that we can replicate the option payoff using a portfolio of the stock and risk-free asset. Let $\delta$ be the number of shares we hold. This delta is chosen so that the portfolio has the same payoff as the option in both states:
+
+$$\delta = \frac{C_u - C_d}{S_u - S_d}$$
+
+The portfolio consists of:
+- $\delta$ shares of stock
+- A position in the risk-free asset worth $B = \mathrm{e}^{-rt}(\delta S_u - C_u) = \mathrm{e}^{-rt}(\delta S_d - C_d)$
+
+By no-arbitrage, the option value must equal the cost of the replicating portfolio:
+
+$$C = \delta S - B = \delta S - \mathrm{e}^{-rt}(\delta S_u - C_u)$$
+
+::: Example
+Suppose $S = 100$, $S_u = 110$, $S_d = 90$, $K = 105$, $r = 0.05t$. Then:
+- $C_u = \max(0, 110 - 105) = 5$
+- $C_d = \max(0, 90 - 105) = 0$
+- $\delta = \frac{5 - 0}{110 - 90} = \frac{1}{4}$
+
+The replicating portfolio requires buying 0.25 shares and borrowing money. The option value equals the cost of this portfolio.
+:::
+
+### Risk-Neutral Valuation
+
+We can rearrange the replication formula to express the option value as:
+
+$$C = \pi_u C_u + \pi_d C_d$$
+
+where the state prices are:
+
+$$\pi_u = \frac{S - \mathrm{e}^{-rt}S_d}{S_u - S_d}, \quad \pi_d = \frac{\mathrm{e}^{-rt}S_u - S}{S_u - S_d}$$
+
+These state prices satisfy:
+- $\pi_u, \pi_d > 0$ (under no-arbitrage condition $S_u/S > \mathrm{e}^{rt} > S_d/S$)
+- $\pi_u \mathrm{e}^{rt} + \pi_d \mathrm{e}^{rt} = 1$
+
+This motivates defining risk-neutral probabilities:
+
+$$p_u = \pi_u \mathrm{e}^{rt}, \quad p_d = \pi_d \mathrm{e}^{rt}$$
+
+Then:
+
+$$C = \mathrm{e}^{-rt}[p_u C_u + p_d C_d]$$
+
+The option value is the discounted expected payoff under the risk-neutral probability measure. Note that:
+
+$$p_u = \frac{\mathrm{e}^{rt} - S_d/S}{S_u/S - S_d/S}$$
+
+## Two-Period Model
+
+Now consider a two-period model where the stock price evolves over two time steps of length $\Delta t = t/2$. To simplify notation and ensure the tree recombines, we parameterize the price movements using multiplicative factors $u > 1$ and $d = 1/u < 1$.
+
+Starting from $S$, after one period the stock price is either $uS$ or $dS$. After two periods, the possible prices are:
+- $u^2S$ (two up moves)
+- $udS = S$ (one up, one down)
+- $d^2S$ (two down moves)
+
+The tree recombines because $ud = du = 1$, so the middle node has price $S$ regardless of the path taken.
+
+### Backward Induction
+
+To value a European option, we work backwards through the tree:
+
+1. At maturity (period 2), calculate option payoffs at each node
+2. At period 1, calculate option values as discounted expected values:
+   $$C_{period 1} = \mathrm{e}^{-r\Delta t}[p C_{up} + (1-p) C_{down}]$$
+3. At period 0, repeat to get the initial option value
+
+For American options, at each node we compare the continuation value (from holding) with the intrinsic value (from exercising) and take the maximum.
+
+## N-Period Model
+
+The extension to N periods is straightforward. With parameters $u$ and $d = 1/u$, after $n$ periods we have $n+1$ nodes with stock prices:
+
+$$S_j = u^j d^{n-j} S = u^{2j-n} S, \quad j = 0, 1, \ldots, n$$
+
+### European Option Valuation
+
+For a European option, the value is:
+
+$$C = \mathrm{e}^{-rT} \sum_{j=0}^N \binom{N}{j} p^j (1-p)^{N-j} \max(u^{2j-N}S - K, 0)$$
+
+where $\binom{N}{j} = \frac{N!}{j!(N-j)!}$ is the binomial coefficient giving the number of paths to node $j$.
+
+### Implementation for European Options
+
+```{python}
+#| echo: true
+#| eval: true
+
+import numpy as np
+from scipy.special import comb
+
+def binomial_european(S0, K, r, sigma, T, N, option_type='call'):
+    """
+    Price European option using binomial tree
+    
+    Parameters:
+    S0: initial stock price
+    K: strike price
+    r: risk-free rate
+    sigma: volatility
+    T: time to maturity
+    N: number of time steps
+    option_type: 'call' or 'put'
+    """
+    dt = T / N
+    u = np.exp(sigma * np.sqrt(dt))
+    d = 1 / u
+    p = (np.exp(r * dt) - d) / (u - d)
+    
+    # Stock prices at maturity
+    S = S0 * u**(2*np.arange(N+1) - N)
+    
+    # Option payoffs at maturity
+    if option_type == 'call':
+        payoffs = np.maximum(S - K, 0)
+    else:
+        payoffs = np.maximum(K - S, 0)
+    
+    # Expected value under risk-neutral measure
+    option_value = 0
+    for j in range(N+1):
+        option_value += comb(N, j, exact=True) * p**j * (1-p)**(N-j) * payoffs[j]
+    
+    return np.exp(-r * T) * option_value
+
+# Example
+S0 = 100
+K = 100
+r = 0.05
+sigma = 0.2
+T = 1
+N = 100
+
+call_value = binomial_european(S0, K, r, sigma, T, N, 'call')
+print(f"European call value: {call_value:.4f}")
+```
+
+### Implementation for American Options
+
+For American options, we must use backward induction and check for early exercise at each node:
+
+```{python}
+#| echo: true
+#| eval: true
+
+def binomial_american(S0, K, r, sigma, T, N, option_type='put'):
+    """
+    Price American option using binomial tree with backward induction
+    
+    Parameters as before
+    """
+    dt = T / N
+    u = np.exp(sigma * np.sqrt(dt))
+    d = 1 / u
+    p = (np.exp(r * dt) - d) / (u - d)
+    disc = np.exp(-r * dt)
+    
+    # Stock prices at maturity
+    S = S0 * u**(2*np.arange(N+1) - N)
+    
+    # Option values at maturity
+    if option_type == 'call':
+        V = np.maximum(S - K, 0)
+    else:
+        V = np.maximum(K - S, 0)
+    
+    # Backward induction
+    for i in range(N-1, -1, -1):
+        # Stock prices at time i
+        S = S0 * u**(2*np.arange(i+1) - i)
+        
+        # Continuation values
+        V = disc * (p * V[1:i+2] + (1-p) * V[0:i+1])
+        
+        # Compare with immediate exercise
+        if option_type == 'call':
+            V = np.maximum(V, S - K)
+        else:
+            V = np.maximum(V, K - S)
+    
+    return V[0]
+
+# Example
+put_value = binomial_american(S0, K, r, sigma, T, N, 'put')
+print(f"American put value: {put_value:.4f}")
+```
+
+## Parameter Calibration
+
+The key question is how to choose the parameters $u$, $d$, and $p$ so that the binomial model approximates the continuous-time Black-Scholes model as $N \to \infty$.
+
+### Cox-Ross-Rubinstein Parameters
+
+The most popular choice, proposed by Cox, Ross, and Rubinstein, sets:
+
+$$u = \mathrm{e}^{\sigma\sqrt{\Delta t}}, \quad d = \frac{1}{u}, \quad p = \frac{\mathrm{e}^{(r-q)\Delta t} - d}{u - d}$$
+
+where $q$ is the dividend yield. This choice ensures:
+- The tree recombines ($ud = 1$)
+- The discrete model converges to geometric Brownian motion
+- The risk-neutral probability is well-defined when $d < \mathrm{e}^{(r-q)\Delta t} < u$
+
+### Matching Moments
+
+For the binomial model to converge properly to the continuous-time model, we need:
+
+$$\frac{\mathbb{E}[\Delta \log S]}{\Delta t} \to r - q - \frac{\sigma^2}{2}$$
+
+$$\frac{\mathrm{Var}[\Delta \log S]}{\Delta t} \to \sigma^2$$
+
+The Cox-Ross-Rubinstein parameters satisfy these conditions. With $u = \mathrm{e}^{\sigma\sqrt{\Delta t}}$ and $d = 1/u$:
+
+- $\log u = \sigma\sqrt{\Delta t}$ and $\log d = -\sigma\sqrt{\Delta t}$
+- The variance of $\log(S_{t+\Delta t}/S_t)$ is approximately $\sigma^2 \Delta t$ for small $\Delta t$
+
+### Alternative Parameters
+
+Other popular choices include:
+
+**Jarrow-Rudd**: Set $p = 1/2$ and adjust $u$ and $d$ to match the mean and variance:
+$$u = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t + \sigma\sqrt{\Delta t}\right)$$
+$$d = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t - \sigma\sqrt{\Delta t}\right)$$
+
+**Equal Probabilities**: This choice simplifies calculations but requires different up and down factors.
+
+### Convergence and Accuracy
+
+The binomial model converges to the Black-Scholes model as $N \to \infty$, but convergence is not monotonic. For European options:
+- Accuracy improves roughly as $O(1/N)$
+- Oscillations occur due to the discrete nature of the tree
+- Using $N \approx 100$ typically gives prices accurate to a few cents
+
+For American options:
+- The binomial model provides one of the most efficient numerical methods
+- Early exercise boundaries can be extracted from the tree
+- Smooth convergence requires larger $N$ than for European options
+
+## Summary
+
+The binomial tree model provides an intuitive and flexible framework for option pricing:
+
+1. **One-period model**: Introduces replication and risk-neutral valuation
+2. **Multi-period extension**: Uses backward induction for path-independent claims
+3. **Parameter choice**: Cox-Ross-Rubinstein parameters with $u = \mathrm{e}^{\sigma\sqrt{\Delta t}}$ and $d = 1/u$ ensure convergence
+4. **Implementation**: Efficient for American options and provides exercise boundaries
+
+The model's strength lies in its simplicity and ability to handle early exercise features. However, for path-dependent options or multiple underlying assets, the computational requirements grow exponentially, making Monte Carlo methods more attractive in those cases.
+
+## Exercises
+
+::: {#exr-trees1}
+In a one-period binomial model with $S = 50$, $S_u = 60$, $S_d = 40$, and $r = 0.05$:
+a) Calculate the risk-neutral probabilities
+b) Price a call option with strike $K = 55$
+c) Verify your answer using delta hedging
+:::
+
+::: {#exr-trees2}
+Show that in the Cox-Ross-Rubinstein model, the expected return on the stock under the risk-neutral measure equals the risk-free rate: $\mathbb{E}^p[S_{t+\Delta t}/S_t] = \mathrm{e}^{r\Delta t}$
+:::
+
+::: {#exr-trees3}
+Implement a function to compute the early exercise boundary for an American put option. Plot the boundary as a function of time to maturity.
+:::
+
+::: {#exr-trees4}
+Compare the convergence of European option prices using:
+a) Cox-Ross-Rubinstein parameters
+b) Jarrow-Rudd parameters
+Plot the option values against the number of time steps $N$.
+:::
