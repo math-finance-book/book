@@ -500,6 +500,188 @@ This "volatility smile" or "smirk" indicates that market prices reflect:
 
 The smile has been particularly pronounced for equity index options since the 1987 crash, suggesting market participants price in crash risk.
 
+## Exercises
+
+### Digital Options and Building Blocks
+
+::: {#exr-digital-pricing}
+Consider a cash digital option that pays $1 when $S_T > K$ and a share digital that pays $S_T$ when $S_T > K$. Using Black-Scholes parameters $S_0 = 100$, $K = 105$, $r = 5\%$, $q = 2\%$, $\sigma = 20\%$, $T = 0.25$:
+
+a) Calculate the analytical values of both digital options using the formulas from the chapter
+b) Verify your results using Monte Carlo simulation with 100,000 paths
+c) Show that a call option can be decomposed as: $C = S_0 N(d_1) e^{-qT} - K N(d_2) e^{-rT}$
+d) Implement this decomposition and verify it matches the standard Black-Scholes formula
+:::
+
+::: {#exr-digital-delta}
+The delta of a cash digital option that pays $1 when $S_T > K$ is:
+$$\Delta_{\text{digital}} = \frac{e^{-rT} n(d_2)}{\sigma S \sqrt{T}}$$
+
+where $n(\cdot)$ is the standard normal density.
+
+a) Plot this delta against stock price for $S \in [80, 120]$ with the parameters from the previous exercise
+b) Compare the magnitude of digital delta to call option delta near the strike
+c) Explain why delta hedging a short digital position near expiration and near the strike is problematic
+d) What happens to the digital delta as time to expiration approaches zero?
+:::
+
+### Change of Numeraire and Girsanov's Theorem
+
+::: {#exr-measure-verification}
+Using simulation, verify the change of numeraire formulas for digital options:
+
+a) Under the risk-neutral measure, simulate $S_T$ following $dS/S = (r-q)dt + \sigma dB^R$
+b) Under the stock numeraire measure, simulate $S_T$ following $dS/S = (r-q+\sigma^2)dt + \sigma dB^S$  
+c) Calculate $\mathbb{E}^R[e^{-rT} \mathbf{1}_{\{S_T > K\}}]$ and $S_0 \mathbb{E}^S[\mathbf{1}_{\{S_T > K\}}/S_T]$
+d) Verify both give the same digital option value up to simulation error
+e) Use 50,000 simulation paths and report the standard errors
+:::
+
+::: {#exr-girsanov-application}
+Verify the exponential martingale property in Girsanov's Theorem. With $\kappa = (\mu - r)/\sigma$:
+
+a) Simulate paths of $Z_t = \exp(-\frac{1}{2}\kappa^2 t - \kappa B_t)$ where $B_t$ is standard Brownian motion
+b) Verify that $\mathbb{E}[Z_T] = 1$ for various values of $T$
+c) Show that $Z_t S_t/R_t$ is a martingale under the original measure
+d) Compare the distribution of $B_t + \kappa t$ to standard Brownian motion under the new measure
+:::
+
+### Black-Scholes Formula and Properties
+
+::: {#exr-bs-implementation}
+Implement the complete Black-Scholes formula with all Greeks:
+
+a) Create a Python class `BlackScholesOption` that calculates price, delta, gamma, theta, vega, and rho
+b) Include both calls and puts with proper dividend yield handling
+c) Verify put-call parity: $C - P = S_0 e^{-qT} - K e^{-rT}$
+d) Test your implementation against the interactive Black-Scholes explorer values
+:::
+
+::: {#exr-bs-limits}
+Analyze the limiting behavior of the Black-Scholes formula:
+
+a) Show that as $T \to 0$, the call value approaches $\max(S_0 - K, 0)$
+b) Show that as $\sigma \to 0$, the formula approaches the deterministic payoff present value
+c) What happens to call and put values as $\sigma \to \infty$? Explain intuitively.
+d) Analyze the behavior as $r \to 0$ and as $r \to \infty$
+:::
+
+::: {#exr-volatility-impact}
+Using the interactive Black-Scholes explorer or your own implementation:
+
+a) For an at-the-money option, plot call value against volatility for $\sigma \in [0.1, 1.0]$
+b) Repeat for options that are 10% in-the-money and 10% out-of-the-money
+c) For which moneyness is the option price most sensitive to volatility changes?
+d) Explain this pattern in terms of the option's probability of finishing in-the-money
+:::
+
+### Greeks and Risk Management
+
+::: {#exr-greeks-plots}
+Create comprehensive plots of the Greeks using the interactive Greeks explorer as reference:
+
+a) Plot delta, gamma, theta, vega, and rho against stock price for an at-the-money option
+b) Repeat for different times to expiration: 1 month, 3 months, 6 months, 1 year
+c) Identify where gamma is maximized and explain why this matters for hedging
+d) Show how theta changes as expiration approaches and explain the time decay acceleration
+:::
+
+::: {#exr-gamma-hedging}
+Consider delta and gamma hedging a short call option using the underlying and a put with the same strike and maturity:
+
+a) Derive the positions in stock and put needed for a delta-gamma neutral portfolio
+b) Show that this hedge never needs adjustment (relate to put-call parity)
+c) Implement this strategy and compare hedging errors to delta-only hedging
+d) What are the practical limitations of this "perfect" hedge?
+:::
+
+::: {#exr-exotic-greeks}
+Calculate the Greeks for exotic payoffs:
+
+a) For a derivative paying $S_T^2$, find the value, delta, and gamma using risk-neutral valuation
+b) For a derivative paying $\log(S_T)$, repeat the calculation
+c) Verify both satisfy the fundamental PDE: $rV = \frac{\partial V}{\partial t} + (r-q)S\frac{\partial V}{\partial S} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2}$
+d) Compare the hedging difficulty (gamma exposure) of these payoffs to standard options
+:::
+
+### Discrete Hedging and Practical Implementation
+
+::: {#exr-discrete-hedging-analysis}
+Extend the discrete hedging simulation from the chapter:
+
+a) Compare hedging errors for different rebalancing frequencies: daily, weekly, monthly
+b) Analyze how hedging errors scale with volatility and time to expiration  
+c) Study the impact of transaction costs: assume 0.1% bid-ask spread on each rebalance
+d) Find the optimal rebalancing frequency that minimizes total cost (hedging error + transaction costs)
+:::
+
+::: {#exr-portfolio-insurance}
+Implement synthetic portfolio insurance using the discrete hedging framework:
+
+a) Create a protective put position ($\max(K, S_T)$) using dynamic hedging
+b) The delta of the protective put is $1 + \Delta_{\text{put}} = N(d_1)$
+c) Compare the final portfolio values to buying an actual put option
+d) Analyze performance during high volatility periods vs. low volatility periods
+:::
+
+::: {#exr-gamma-scalping}
+Analyze the gamma scalping strategy:
+
+a) Show that a delta-hedged short option position has P&L approximately equal to $-\frac{1}{2}\Gamma(\Delta S)^2$
+b) Simulate this P&L for different realized volatilities vs. implied volatility
+c) Demonstrate that selling options when implied volatility > realized volatility is profitable
+d) Account for the theta decay and show the complete P&L attribution
+:::
+
+### Implied Volatility and Market Practice
+
+::: {#exr-implied-vol-calculation}
+Implement an implied volatility calculator:
+
+a) Use numerical methods (bisection or Newton-Raphson) to invert the Black-Scholes formula
+b) Test with market-like option prices and verify convergence
+c) Handle edge cases: very deep ITM/OTM options, very short/long expirations
+d) Compare computational efficiency of different numerical methods
+:::
+
+::: {#exr-volatility-smile}
+Analyze volatility smile patterns:
+
+a) Using hypothetical option prices, construct a volatility smile curve
+b) Fit different smile models: quadratic, cubic, SVI (Stochastic Volatility Inspired)
+c) Analyze how the smile changes with time to expiration
+d) Explain the economic interpretation of smile skew and convexity
+:::
+
+::: {#exr-model-limitations}
+Explore Black-Scholes model limitations:
+
+a) Generate stock paths with jumps (Merton jump-diffusion model) and price options using Black-Scholes
+b) Generate paths with stochastic volatility and analyze pricing errors
+c) Create scenarios where the model significantly misprices options
+d) Propose practical adjustments traders might make to account for these limitations
+:::
+
+### Advanced Applications
+
+::: {#exr-dividend-timing}
+Analyze the impact of discrete dividends on American call options:
+
+a) Price a call option on a stock paying a discrete dividend before expiration
+b) Show when early exercise might be optimal (just before ex-dividend date)
+c) Compare American and European call values in this setting
+d) Implement the discrete dividend adjustment to the Black-Scholes formula
+:::
+
+::: {#exr-multi-asset-option}
+Price an option on the maximum of two assets using change of numeraire:
+
+a) For payoff $\max(S_1(T), S_2(T), K)$, set up the Monte Carlo pricing framework
+b) Experiment with different correlation levels between the assets
+c) Compare this "rainbow" option value to individual options on each asset
+d) Analyze which asset should be used as numeraire for variance reduction
+:::
+
 ## Summary
 
 The Black-Scholes model combines the theoretical foundations of arbitrage pricing with practical implementation:
