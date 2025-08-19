@@ -130,156 +130,8 @@ At each intermediate node, compare continuation value with immediate exercise:
 
 This backward induction process automatically finds the optimal exercise strategy by comparing holding vs. exercising at each node.
 
-#### Visual Representation of Two-Period Tree
 
-To illustrate this backward induction process, let's create a visual representation of a two-period binomial tree:
 
-```{python}
-#| echo: true
-#| eval: true
-#| label: fig-two-period-tree
-#| fig-cap: "Two-period binomial tree showing stock prices and option values with backward induction"
-
-import pydot
-from IPython.display import Image, display
-import numpy as np
-
-# Parameters for the example
-S0 = 100  # Initial stock price
-K = 100   # Strike price
-r = 0.05  # Risk-free rate
-sigma = 0.3  # Volatility
-T = 1.0   # Time to maturity
-N = 2     # Number of periods
-
-# Calculate tree parameters
-dt = T / N
-u = np.exp(sigma * np.sqrt(dt))
-d = 1 / u
-p = (np.exp(r * dt) - d) / (u - d)
-disc = np.exp(-r * dt)
-
-# Calculate stock prices at each node
-# Time 0
-S_00 = S0
-
-# Time 1
-S_10 = S0 * d      # Down
-S_11 = S0 * u      # Up
-
-# Time 2
-S_20 = S0 * d * d  # Down-Down
-S_21 = S0 * u * d  # Up-Down (= Down-Up)
-S_22 = S0 * u * u  # Up-Up
-
-# Calculate call option values (European call)
-# Time 2 (payoffs)
-C_20 = max(0, S_20 - K)
-C_21 = max(0, S_21 - K)
-C_22 = max(0, S_22 - K)
-
-# Time 1 (backward induction)
-C_10 = disc * (p * C_21 + (1-p) * C_20)  # Down node
-C_11 = disc * (p * C_22 + (1-p) * C_21)  # Up node
-
-# Time 0 (backward induction)
-C_00 = disc * (p * C_11 + (1-p) * C_10)
-
-# Create the graph
-graph = pydot.Dot(graph_type='digraph', rankdir='LR', bgcolor='white')
-
-# Set graph attributes for better layout
-graph.set_node_defaults(shape='circle', style='filled', fillcolor='lightblue', 
-                       fontname='Arial', fontsize='10')
-graph.set_edge_defaults(fontname='Arial', fontsize='9')
-
-# Add nodes with stock prices and option values
-# Time 0
-graph.add_node(pydot.Node('t0', 
-                         label=f't=0\\nS={S_00:.1f}\\nC={C_00:.2f}',
-                         fillcolor='lightgreen'))
-
-# Time 1
-graph.add_node(pydot.Node('t1_u', 
-                         label=f't=1 (Up)\\nS={S_11:.1f}\\nC={C_11:.2f}',
-                         fillcolor='lightyellow'))
-graph.add_node(pydot.Node('t1_d', 
-                         label=f't=1 (Down)\\nS={S_10:.1f}\\nC={C_10:.2f}',
-                         fillcolor='lightyellow'))
-
-# Time 2
-graph.add_node(pydot.Node('t2_uu', 
-                         label=f't=2 (UU)\\nS={S_22:.1f}\\nC={C_22:.2f}',
-                         fillcolor='lightcoral'))
-graph.add_node(pydot.Node('t2_ud', 
-                         label=f't=2 (UD)\\nS={S_21:.1f}\\nC={C_21:.2f}',
-                         fillcolor='lightcoral'))
-graph.add_node(pydot.Node('t2_dd', 
-                         label=f't=2 (DD)\\nS={S_20:.1f}\\nC={C_20:.2f}',
-                         fillcolor='lightcoral'))
-
-# Add edges with probabilities
-graph.add_edge(pydot.Edge('t0', 't1_u', label=f'p={p:.3f}'))
-graph.add_edge(pydot.Edge('t0', 't1_d', label=f'1-p={1-p:.3f}'))
-
-graph.add_edge(pydot.Edge('t1_u', 't2_uu', label=f'p={p:.3f}'))
-graph.add_edge(pydot.Edge('t1_u', 't2_ud', label=f'1-p={1-p:.3f}'))
-
-graph.add_edge(pydot.Edge('t1_d', 't2_ud', label=f'p={p:.3f}'))
-graph.add_edge(pydot.Edge('t1_d', 't2_dd', label=f'1-p={1-p:.3f}'))
-
-# Save and display
-graph.write_png('binomial_tree.png')
-display(Image('binomial_tree.png'))
-
-print(f"Tree parameters:")
-print(f"u = {u:.4f}, d = {d:.4f}")
-print(f"Risk-neutral probability p = {p:.4f}")
-print(f"Discount factor = {disc:.4f}")
-print(f"\\nFinal call option value: {C_00:.4f}")
-```
-
-The diagram shows:
-
-- **Green node**: Initial time (t=0) with today's stock price and option value
-- **Yellow nodes**: Intermediate time (t=1) showing values after backward induction
-- **Red nodes**: Terminal nodes (t=2) showing payoffs and final stock prices
-- **Edge labels**: Risk-neutral probabilities for up and down moves
-
-Notice how the option values at t=1 are computed by taking the discounted expected value of the t=2 payoffs using the risk-neutral probabilities. The tree recombines at the middle node (UD = DU), which keeps the number of nodes manageable.
-
-## N-Period Model
-
-The extension to N periods is straightforward. With parameters $u$ and $d = 1/u$, after $n$ periods we have $n+1$ nodes with stock prices:
-
-$$S_j = u^j d^{n-j} S = u^{2j-n} S, \quad j = 0, 1, \ldots, n$$
-
-The critical insight for efficient implementation is backward induction rather than computing all possible paths.
-
-#### Interactive N-Period Trees
-
-Before diving into the implementation details, let's explore how N-period binomial trees behave with different parameters using an interactive tool:
-
-::: {#fig-binomial-trees}
-
-<iframe width="100%" height="800" src="https://binomial-trees.koyeb.app/"></iframe>
-
-**Interactive Binomial Trees Explorer.** 
-This tool allows you to experiment with N-period binomial trees. Key features:
-- **Interest rate**: Enter the rate per period (for annual rate with N periods, use r/N)
-- **Up move**: This corresponds to $(u-1)$ where $u$ is our up factor
-- **Down move**: The model automatically sets $d = 1/u$ to ensure recombination
-- **Number of periods**: See how increasing N affects option values and convergence
-- **Option types**: Compare European and American option pricing
-- **Parameters**: Observe how volatility, strike price, and time to maturity affect values
-
-Experiment with different values to see how the theoretical concepts we've discussed translate into practice. Notice how American option values equal or exceed European values, and how the tree structure becomes more refined as N increases.
-
-:::
-
-#### Backward Induction Implementation
-
-For American options especially, we must use backward induction. Here's how the algorithm works:
 
 ```{python}
 #| echo: true
@@ -351,13 +203,151 @@ def binomial_american_detailed(S0, K, r, sigma, T, N, option_type='put'):
     return V[0]
 
 # Example with small tree to see the process
-print("Detailed backward induction for 3-step American put:")
-S0, K, r, sigma, T, N = 50, 50, 0.05, 0.3, 0.25, 3
+print("Detailed backward induction for 2-step American put:")
+S0, K, r, sigma, T, N = 100, 105, 0.05, 0.2, 1.0, 2
 put_value = binomial_american_detailed(S0, K, r, sigma, T, N, 'put')
 print(f"\nFinal American put value: {put_value:.4f}")
 ```
 
-Now here's the streamlined version for practical use:
+The numerical output above shows the exact backward induction process for our 2-step example. Let's visualize this same tree to better understand how the calculations flow through the nodes:
+
+```{python}
+#| echo: true
+#| eval: true
+#| label: fig-two-step-tree
+#| fig-cap: "Two-step binomial tree showing the same numerical example with backward induction"
+
+import pydot
+from IPython.display import Image, display
+import numpy as np
+
+# Use the same parameters as the detailed example above
+S0 = 100  # Initial stock price
+K = 105   # Strike price  
+r = 0.05  # Risk-free rate
+sigma = 0.2  # Volatility
+T = 1.0   # Time to maturity
+N = 2     # Number of periods
+
+# Calculate tree parameters
+dt = T / N
+u = np.exp(sigma * np.sqrt(dt))
+d = 1 / u
+p = (np.exp(r * dt) - d) / (u - d)
+disc = np.exp(-r * dt)
+
+# Calculate all stock prices and option values using same logic as detailed function
+V = np.zeros(N+1)  # Option values
+S = np.zeros(N+1)  # Stock prices
+
+# Time 2 (maturity) - put option payoffs
+for j in range(N+1):
+    S[j] = S0 * (u**j) * (d**(N-j))
+    V[j] = max(0, K - S[j])  # Put payoff
+
+S_20, S_21, S_22 = S[0], S[1], S[2]
+V_20, V_21, V_22 = V[0], V[1], V[2]
+
+# Time 1 - backward induction  
+V_new = np.zeros(2)
+S_new = np.zeros(2)
+for j in range(2):
+    S_new[j] = S0 * (u**j) * (d**(1-j))
+    continuation = disc * (p * V[j+1] + (1-p) * V[j])
+    exercise = max(0, K - S_new[j])
+    V_new[j] = max(continuation, exercise)
+
+S_10, S_11 = S_new[0], S_new[1]
+V_10, V_11 = V_new[0], V_new[1]
+V = V_new.copy()
+
+# Time 0 - final backward induction
+S_00 = S0
+continuation = disc * (p * V[1] + (1-p) * V[0])
+exercise = max(0, K - S_00)
+V_00 = max(continuation, exercise)
+
+# Create the graph
+graph = pydot.Dot(graph_type='digraph', rankdir='LR', bgcolor='white')
+graph.set_node_defaults(shape='circle', style='filled', fillcolor='lightblue', 
+                       fontname='Arial', fontsize='9')
+graph.set_edge_defaults(fontname='Arial', fontsize='8')
+
+# Time 0
+graph.add_node(pydot.Node('t0', 
+                         label=f't=0\\nS={S_00:.2f}\\nV={V_00:.4f}',
+                         fillcolor='lightgreen'))
+
+# Time 1
+graph.add_node(pydot.Node('t1_u', 
+                         label=f't=1 Up\\nS={S_11:.2f}\\nV={V_11:.4f}',
+                         fillcolor='lightyellow'))
+graph.add_node(pydot.Node('t1_d', 
+                         label=f't=1 Down\\nS={S_10:.2f}\\nV={V_10:.4f}',
+                         fillcolor='lightyellow'))
+
+# Time 2 (maturity)
+graph.add_node(pydot.Node('t2_uu', 
+                         label=f't=2 UU\\nS={S_22:.2f}\\nV={V_22:.4f}',
+                         fillcolor='lightcoral'))
+graph.add_node(pydot.Node('t2_ud', 
+                         label=f't=2 UD\\nS={S_21:.2f}\\nV={V_21:.4f}',
+                         fillcolor='lightcoral'))
+graph.add_node(pydot.Node('t2_dd', 
+                         label=f't=2 DD\\nS={S_20:.2f}\\nV={V_20:.4f}',
+                         fillcolor='lightcoral'))
+
+# Add edges
+graph.add_edge(pydot.Edge('t0', 't1_u', label=f'p={p:.3f}'))
+graph.add_edge(pydot.Edge('t0', 't1_d', label=f'1-p={1-p:.3f}'))
+
+graph.add_edge(pydot.Edge('t1_u', 't2_uu', label=f'p={p:.3f}'))
+graph.add_edge(pydot.Edge('t1_u', 't2_ud', label=f'1-p={1-p:.3f}'))
+graph.add_edge(pydot.Edge('t1_d', 't2_ud', label=f'p={p:.3f}'))
+graph.add_edge(pydot.Edge('t1_d', 't2_dd', label=f'1-p={1-p:.3f}'))
+
+# Save and display
+graph.write_png('two_step_tree.png')
+display(Image('two_step_tree.png'))
+
+print(f"Tree parameters matching the numerical example:")
+print(f"u = {u:.4f}, d = {d:.4f}")
+print(f"Risk-neutral probability p = {p:.4f}")
+print(f"\nThis tree shows the exact same values computed in the numerical output above.")
+```
+
+The tree visualization above corresponds exactly to the numerical backward induction process shown in the previous output. You can verify that the option values at each node match the calculations displayed in the step-by-step algorithm.
+
+## N-Period Model
+
+The extension to N periods is straightforward. With parameters $u$ and $d = 1/u$, after $n$ periods we have $n+1$ nodes with stock prices:
+
+$$S_j = u^j d^{n-j} S = u^{2j-n} S, \quad j = 0, 1, \ldots, n$$
+
+The critical insight for efficient implementation is backward induction rather than computing all possible paths.
+
+#### Interactive N-Period Trees
+
+Now let's explore how N-period binomial trees behave with different parameters using an interactive tool:
+
+::: {#fig-binomial-trees}
+
+<iframe width="100%" height="800" src="https://binomial-trees.koyeb.app/"></iframe>
+
+**Interactive Binomial Trees Explorer.** 
+This tool allows you to experiment with N-period binomial trees. Key features:
+- **Interest rate**: Enter the rate per period (for annual rate with N periods, use r/N)
+- **Up move**: This corresponds to $(u-1)$ where $u$ is our up factor
+- **Down move**: The model automatically sets $d = 1/u$ to ensure recombination
+- **Number of periods**: See how increasing N affects option values and convergence
+- **Option types**: Compare European and American option pricing
+- **Parameters**: Observe how volatility, strike price, and time to maturity affect values
+
+:::
+
+#### Backward Induction Implementation
+
+For American options especially, we must use backward induction. Here's the streamlined version for practical use:
 
 ```{python}
 #| echo: true
@@ -473,7 +463,7 @@ $$d = \exp\left((r - q - \frac{\sigma^2}{2})\Delta t - \sigma\sqrt{\Delta t}\rig
 
 #### Convergence and Accuracy
 
-The binomial model converges to the Black-Scholes model as $N \to \infty$, but convergence is not monotonic. For European options:
+The binomial model converges to the continuous-time limit as $N \to \infty$, but convergence is not monotonic. For European options:
 - Accuracy improves roughly as $O(1/N)$
 - Oscillations occur due to the discrete nature of the tree
 - Using $N \approx 100$ typically gives prices accurate to a few cents
@@ -482,6 +472,19 @@ For American options:
 - The binomial model provides one of the most efficient numerical methods
 - Early exercise boundaries can be extracted from the tree
 - Smooth convergence requires larger $N$ than for European options
+
+::: {#fig-binomial-convergence}
+
+<iframe width="100%" height="600" src="https://eerie-rivalee-kerrybackapps-f393e9af.koyeb.app/"></iframe>
+
+**Binomial Convergence to Continuous-Time Limit**
+The binomial model (blue dots) converges to the continuous-time limit (red dotted line) for European 
+options as the number of time steps is increased. The deviations from the continuous-time values 
+are the same for both calls and puts, reflecting put-call parity in both the discrete and continuous-time models.
+
+:::
+
+As $N \to \infty$, the binomial model converges to the Black-Scholes model (see @sec-c:blackscholes_updated), which provides the analytical solution for European options in the continuous-time setting.
 
 ## Summary
 
